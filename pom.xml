@@ -493,6 +493,11 @@
             <artifactId>jqplot</artifactId>
             <version>${jqplot.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.samply</groupId>
+            <artifactId>common-ldmclient.samplystore-biobank</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
 </project>

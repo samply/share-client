@@ -105,7 +105,7 @@ public class ApplicationBean implements Serializable {
     private static ChainFinalizer chainFinalizer = new ChainFinalizerImpl();
 
     private static MdrConnection mdrConnection;
-    private static MDRValidator dthValidator;
+    private static MDRValidator mdrValidator;
     private static LdmConnector ldmConnector;
 
     private static final ConnectCheckResult shareAvailability = new ConnectCheckResult(true, "Samply.Share.Client", ProjectInfo.INSTANCE.getVersionString());
@@ -188,7 +188,7 @@ public class ApplicationBean implements Serializable {
                     NAMESPACES,
                     true,
                     null);
-            dthValidator = new MDRValidator(mdrConnection, true);
+            mdrValidator = new MDRValidator(mdrConnection, true);
         } catch (MdrConnectionException | ExecutionException | MdrException | MdrInvalidResponseException e) {
             logger.error("Error initializing DTH Validator", e);
         }
@@ -580,8 +580,8 @@ public class ApplicationBean implements Serializable {
         return idmAvailability;
     }
 
-    public static MDRValidator getDthValidator() {
-        return dthValidator;
+    public static MDRValidator getMDRValidator() {
+        return mdrValidator;
     }
 
     /**

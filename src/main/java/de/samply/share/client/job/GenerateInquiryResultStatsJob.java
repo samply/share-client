@@ -39,7 +39,7 @@ import de.samply.share.client.model.graphData.AgeDistribution;
 import de.samply.share.client.model.graphData.GenderDistribution;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.LdmConnectorCentraxx;
-import de.samply.share.client.util.connector.LdmConnectorSamplystoreBBMRI;
+import de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.InquiryResultStatsUtil;
@@ -130,7 +130,7 @@ public class GenerateInquiryResultStatsJob implements Job {
                 genderDistribution.increaseCountForGender(getGender(patientCommon,"urn:dktk:dataelement:1:"));
             }
         }
-        if (ldmConnector instanceof LdmConnectorSamplystoreBBMRI) {
+        if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
             for (de.samply.share.model.osse.Patient donor : ((BbmriResult) queryResult).getDonors()) {
                 de.samply.share.model.common.Patient donorCommon = new de.samply.share.model.common.Patient();
                 try {

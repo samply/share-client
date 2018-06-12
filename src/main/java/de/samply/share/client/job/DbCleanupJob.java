@@ -32,14 +32,12 @@ import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.InquiryStatusType;
+import de.samply.share.client.model.db.tables.pojos.Inquiry;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
-import de.samply.share.client.util.db.ConfigurationUtil;
-import de.samply.share.client.util.db.EventLogUtil;
-import de.samply.share.client.util.db.InquiryDetailsUtil;
-import de.samply.share.client.util.db.InquiryResultUtil;
+import de.samply.share.client.util.db.*;
 import de.samply.share.common.utils.SamplyShareUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,11 +46,11 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Do some housekeeping in the database (e.g. mark inquiries as archived after a certain amount of time)
- *
  */
 @DisallowConcurrentExecution
 public class DbCleanupJob implements Job {
@@ -75,9 +73,11 @@ public class DbCleanupJob implements Job {
 
         for (InquiryDetails inquiryDetails : inquiryDetailsList) {
             EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_ARCHIVE_INQUIRY_AFTER_THRESHOLD, inquiryDetails.getInquiryId(), Integer.toString(daysThreshold));
+            Inquiry inquiry= InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
+            inquiry.setArchivedAt(SamplyShareUtils.getCurrentSqlTimestamp());
             inquiryDetails.setStatus(InquiryStatusType.IS_ARCHIVED);
+            InquiryUtil.updateInquiry(inquiry);
         }
-
         InquiryDetailsUtil.updateInquiryDetails(inquiryDetailsList);
     }
 
@@ -98,14 +98,18 @@ public class DbCleanupJob implements Job {
         List<InquiryResult> inquiryResults = InquiryResultUtil.fetchInquiryResults();
 
         for (InquiryResult inquiryResult : inquiryResults) {
-            try {
-                ldmConnector.getPageCount(inquiryResult.getLocation());
-            } catch (LDMConnectorException e) {
-                inquiryResult.setIsError(true);
-                if(!(checkInquiryID(inquiryResults,inquiryResult))) {
-                    removeResult(inquiryResult);
+            InquiryDetails inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(inquiryResult.getInquiryDetailsId());
+            if (!(inquiryDetails.getStatus().equals(InquiryStatusType.IS_LDM_ERROR))) {
+                try {
+                    ldmConnector.getPageCount(inquiryResult.getLocation());
+                } catch (LDMConnectorException e) {
+                    inquiryResult.setIsError(true);
+                    if (!(checkInquiryID(inquiryResults, inquiryResult))) {
+                        removeResult(inquiryResult);
+                    }
                 }
             }
+
         }
 
     }
@@ -118,25 +122,24 @@ public class DbCleanupJob implements Job {
     private void removeResult(InquiryResult inquiryResult) {
         InquiryDetails inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(inquiryResult.getInquiryDetailsId());
         EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_ARCHIVE_INQUIRY_RESULT_UNAVAILABLE, inquiryDetails.getInquiryId());
-
         inquiryResult.setValidUntil(SamplyShareUtils.getCurrentSqlTimestamp());
         inquiryResult.setLocation("");
         InquiryResultUtil.updateInquiryResult(inquiryResult);
-
         inquiryDetails.setStatus(InquiryStatusType.IS_ARCHIVED);
         InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
     }
 
     /**
      * Check if there is an other inquiry with the same id and with no error result
+     *
      * @param inquiryResults the list of the inquiries
-     * @param inquiryResult the current inquiry
+     * @param inquiryResult  the current inquiry
      * @return if there is an other inquiry with the same id and with no error result
      */
 
-    private boolean checkInquiryID(List<InquiryResult> inquiryResults,InquiryResult inquiryResult){
+    private boolean checkInquiryID(List<InquiryResult> inquiryResults, InquiryResult inquiryResult) {
         for (InquiryResult inquiryResultTmp : inquiryResults) {
-            if(inquiryResultTmp.getInquiryDetailsId().equals(inquiryResult.getInquiryDetailsId())&& !inquiryResultTmp.getIsError()){
+            if (inquiryResultTmp.getInquiryDetailsId().equals(inquiryResult.getInquiryDetailsId()) && !inquiryResultTmp.getIsError()) {
                 return true;
             }
         }

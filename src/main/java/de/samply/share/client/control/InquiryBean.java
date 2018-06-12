@@ -29,9 +29,6 @@
 package de.samply.share.client.control;
 
 import com.google.common.net.HttpHeaders;
-import de.samply.common.http.HttpConnector;
-import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
-import de.samply.common.mdrclient.MdrClient;
 import de.samply.dktk.converter.EnumValidationHandling;
 import de.samply.dktk.converter.PatientConverter;
 import de.samply.dktk.converter.PatientConverterUtil;
@@ -47,7 +44,7 @@ import de.samply.share.client.util.WebUtils;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.LdmConnectorCentraxx;
-import de.samply.share.client.util.connector.LdmConnectorSamplystoreBBMRI;
+import de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
@@ -56,18 +53,12 @@ import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.QueryTreeUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.bbmri.BbmriResult;
-import de.samply.share.model.bbmri.Donor;
 import de.samply.share.model.common.Container;
-import de.samply.share.model.common.Entity;
-import de.samply.share.model.common.Patient;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.Result;
 import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.utils.Converter;
-import de.samply.share.utils.QueryConverter;
 import de.samply.web.mdrFaces.MdrContext;
-import org.apache.http.HttpHost;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -84,8 +75,6 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.servlet.http.Part;
-import javax.swing.plaf.basic.BasicCheckBoxMenuItemUI;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -421,7 +410,7 @@ public class InquiryBean implements Serializable {
         if (ldmConnector instanceof LdmConnectorCentraxx) {
             latestQueryResult = (QueryResult) ldmConnector.getResultsFromPage(queryResultLocation, 0);
         }
-        if (ldmConnector instanceof LdmConnectorSamplystoreBBMRI) {
+        if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
             latestQueryResult = (BbmriResult) ldmConnector.getResultsFromPage(queryResultLocation, 0);
         }
         buildPatientPageTree(latestQueryResult);
@@ -446,7 +435,7 @@ public class InquiryBean implements Serializable {
             if (ldmConnector instanceof LdmConnectorCentraxx) {
                 latestQueryResult = (QueryResult) ldmConnector.getResultsFromPage(latestInquiryResult.getLocation(), page);
             }
-            if (ldmConnector instanceof LdmConnectorSamplystoreBBMRI) {
+            if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
                 latestQueryResult = (BbmriResult) ldmConnector.getResultsFromPage(latestInquiryResult.getLocation(), page);
             }
         } catch (LDMConnectorException e) {
@@ -491,7 +480,7 @@ public class InquiryBean implements Serializable {
                 containerTree = visitContainerNode(containerTree, containerTmp);
             }
         }
-        if (ldmConnector instanceof LdmConnectorSamplystoreBBMRI) {
+        if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
             BbmriResult queryResultPageBBMRI = (BbmriResult) queryResultPage;
             for (de.samply.share.model.osse.Patient donor : queryResultPageBBMRI.getDonors()) {
                 de.samply.share.model.osse.Container patientContainer = new de.samply.share.model.osse.Container();
@@ -545,14 +534,13 @@ public class InquiryBean implements Serializable {
         try {
             String queryResultLocation = latestInquiryResult.getLocation();
             PatientConverter patientConverter = new PatientConverter(MdrContext.getMdrContext().getMdrClient(),
-                    ApplicationBean.getDthValidator(),
+                    ApplicationBean.getMDRValidator(),
                     validationHandling,
                     blacklist);
             // TODO other types
             Workbook workbook = null;
             if (ldmConnector instanceof LdmConnectorCentraxx) {
                 QueryResult queryResult = (QueryResult) ldmConnector.getResults(queryResultLocation);
-                queryResult = ldmConnector.getExportQueryResult(queryResult);
                 logger.debug("Result completely loaded...write excel file");
                 String executionDateString = WebUtils.getExecutionDate(latestInquiryResult);
                 workbook = patientConverter.centraxxQueryResultToExcel(queryResult,
@@ -561,7 +549,7 @@ public class InquiryBean implements Serializable {
                         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.ID_MANAGER_INSTANCE_ID),
                         executionDateString
                 );
-            } else if (ldmConnector instanceof LdmConnectorSamplystoreBBMRI) {
+            } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
                 BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(queryResultLocation);
                 logger.debug("Result completely loaded...write excel file");
                 String executionDateString = WebUtils.getExecutionDate(latestInquiryResult);
