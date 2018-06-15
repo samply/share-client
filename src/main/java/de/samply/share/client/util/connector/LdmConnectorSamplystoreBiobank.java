@@ -126,38 +126,6 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param completeMdsViewFields not yet supported
-     * @param statisticsOnly        not yet supported
-     */
-//    @Override
-//    public String postQuery(Query query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException {
-//        try {
-//            View view = new View();
-//            view.setQuery(query);
-//            // TODO: How to get viewfields for samply store to use?
-//            ViewFields viewFields = new ViewFields();
-//
-//            // Add additional viewfields, as defined in the config
-////            String additionalViewfields = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.INQUIRY_ADDITIONAL_MDRKEYS);
-////            if (includeAdditionalViewfields && !SamplyShareUtils.isNullOrEmpty(additionalViewfields)) {
-////                List<String> viewFieldList = Splitter.on(';').splitToList(additionalViewfields);
-////                for (String viewField : viewFieldList) {
-////                    viewFields.getMdrKey().add(viewField);
-////                }
-////            }
-//
-//            view.setViewFields(viewFields);
-////            if (!SamplyShareUtils.isNullOrEmpty(removeKeysFromView)) {
-////                view = QueryConverter.osseRemoveAttributesFromView(view, removeKeysFromView);
-////            }
-//            return ldmClient.postView(view);
-//        } catch (LdmClientException e) {
-//            throw new LDMConnectorException(e);
-//        }
-//    }
     @Override
     public String postQuery(de.samply.share.model.common.Query query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException {
         try {
@@ -166,19 +134,7 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
             // TODO: How to get viewfields for samply store to use?
             ViewFields viewFields = new ViewFields();
 
-            // Add additional viewfields, as defined in the config
-//            String additionalViewfields = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.INQUIRY_ADDITIONAL_MDRKEYS);
-//            if (includeAdditionalViewfields && !SamplyShareUtils.isNullOrEmpty(additionalViewfields)) {
-//                List<String> viewFieldList = Splitter.on(';').splitToList(additionalViewfields);
-//                for (String viewField : viewFieldList) {
-//                    viewFields.getMdrKey().add(viewField);
-//                }
-//            }
-
             view.setViewFields(viewFields);
-//            if (!SamplyShareUtils.isNullOrEmpty(removeKeysFromView)) {
-//                view = QueryConverter.osseRemoveAttributesFromView(view, removeKeysFromView);
-//            }
             return ldmClient.postView(view);
         } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
