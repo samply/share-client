@@ -30,7 +30,6 @@ import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.IdManagerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.LdmConnectorCentraxx;
-import de.samply.share.client.util.connector.LdmConnectorSamplystoreBBMRI;
 import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;

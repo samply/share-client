@@ -58,7 +58,7 @@
         <samply.project.basename>Samply.Share.Client.DUMMY</samply.project.basename>
 
         <!-- Samply dependencies -->
-        <share-common.version>3.0.0</share-common.version>
+        <share-common.version>3.1.0</share-common.version>
 
         <jsf-renderer.version>2.0.0</jsf-renderer.version>
         <common-mailing.version>2.0.0</common-mailing.version>
