@@ -58,7 +58,6 @@ import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.Result;
 import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.utils.Converter;
-import de.samply.share.utils.QueryConverter;
 import de.samply.web.mdrFaces.MdrContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
