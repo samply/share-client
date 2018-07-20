@@ -45,7 +45,10 @@ import de.samply.share.client.util.db.*;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
 import de.samply.share.common.utils.Constants;
 import de.samply.share.common.utils.SamplyShareUtils;
+import de.samply.share.model.bbmri.BbmriResult;
 import de.samply.share.model.common.*;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -109,7 +112,8 @@ public class BrokerConnector {
     /**
      * Prevent instantiation without providing a broker
      */
-    private BrokerConnector() { }
+    private BrokerConnector() {
+    }
 
     /**
      * Instantiate a broker connector for a certain broker. Credentials are read from the database.
@@ -123,7 +127,7 @@ public class BrokerConnector {
     /**
      * Instantiate a broker connector for a certain broker
      *
-     * @param broker the broker to connect to
+     * @param broker      the broker to connect to
      * @param credentials the credentials to authenticate with that broker
      */
     public BrokerConnector(Broker broker, Credentials credentials) {
@@ -335,7 +339,7 @@ public class BrokerConnector {
             result.getMessages().add(new Message(httpGet.getMethod() + " " + path + " " + httpGet.getProtocolVersion(),
                     "fa-long-arrow-right"));
             result.getMessages().add(new Message(httpGet.getFirstHeader(HttpHeaders.AUTHORIZATION).getName() + " " +
-                                                    httpGet.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue()));
+                    httpGet.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue()));
 
             int statusCode;
             String responseString;
@@ -379,7 +383,7 @@ public class BrokerConnector {
 
     /**
      * Retrieve a reference query from the broker
-     *
+     * <p>
      * This query is used to gather performance data to report to monitoring
      *
      * @return the reference query
@@ -567,13 +571,13 @@ public class BrokerConnector {
 
     /**
      * Send a reply to the broker.
-     *
+     * <p>
      * Currently, the format of the reply is not defined. It might just be an integer...or some xml representation of a result set
      *
      * @param inquiryDetails the inquiry details object
-     * @param reply the reply to submit to the broker
+     * @param reply          the reply to submit to the broker
      */
-    public void reply(InquiryDetails inquiryDetails, Object reply) throws BrokerConnectorException {
+    public void reply(InquiryDetails inquiryDetails, Object reply, LdmConnector ldmConnector) throws BrokerConnectorException {
         try {
             de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
             int inquirySourceId = inquiry.getSourceId();
@@ -584,17 +588,22 @@ public class BrokerConnector {
             httpPut.addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
 
 
-            String replyString;
-
-            if (reply.getClass() == Integer.class) {
-                replyString = Integer.toString((Integer) reply);
-            } else {
-                replyString = reply.toString();
+            String replyString="";
+            JSONObject stats= new JSONObject();
+            if (ldmConnector instanceof LdmConnectorCentraxx) {
+                if (reply.getClass() == Integer.class) {
+                    replyString = Integer.toString((Integer) reply);
+                } else {
+                    replyString = reply.toString();
+                }
+            } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+                BbmriResult result = (BbmriResult) reply;
+                stats.put("donor",result.getNumberOfDonors());
+                stats.put("sample",result.getNumberOfSamples());
+                replyString = stats.toString();
             }
-
             StringEntity entity = new StringEntity(replyString);
             httpPut.setEntity(entity);
-
             int statusCode;
             try (CloseableHttpResponse response = httpClient.execute(httpHost, httpPut)) {
                 statusCode = response.getStatusLine().getStatusCode();

@@ -29,6 +29,7 @@
 package de.samply.share.client.job;
 
 import com.google.gson.Gson;
+import de.samply.common.ldmclient.samplystoreBiobank.LdmClientSamplystoreBiobank;
 import de.samply.dktk.converter.PatientConverterUtil;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.job.params.GenerateInquiryResultStatsJobParams;
@@ -53,6 +54,8 @@ import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.utils.Converter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.LocalDate;
+import org.joda.time.Years;
 import org.quartz.*;
 
 import javax.xml.bind.JAXBException;
@@ -138,8 +141,8 @@ public class GenerateInquiryResultStatsJob implements Job {
                 } catch (JAXBException e) {
                     e.printStackTrace();
                 }
-                ageDistribution.incrementCountForAge(getAge(donorCommon,"urn:bbmri:dataelement:7:"));
-                genderDistribution.increaseCountForGender(getGender(donorCommon,"urn:bbmri:dataelement:8:"));
+                ageDistribution.incrementCountForAge(getAge(donorCommon,"urn:mdr16:dataelement:22:"));
+                genderDistribution.increaseCountForGender(getGender(donorCommon,"urn:mdr16:dataelement:23:"));
             }
 
         }
@@ -166,6 +169,12 @@ public class GenerateInquiryResultStatsJob implements Job {
             return -1;
         } else {
             try {
+                if(ldmConnector instanceof LdmConnectorSamplystoreBiobank){
+                    LocalDate birthdate = new LocalDate (Integer.parseInt(ageString.split("\\.")[2]), Integer.parseInt(ageString.split("\\.")[1]), Integer.parseInt(ageString.split("\\.")[0]));
+                    LocalDate now = new LocalDate();
+                    Years age = Years.yearsBetween(birthdate, now);
+                    return age.getYears();
+                }
                 return Integer.parseInt(ageString);
             } catch (NumberFormatException e) {
                 return -1;

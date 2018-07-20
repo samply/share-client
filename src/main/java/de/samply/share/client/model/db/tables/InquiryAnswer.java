@@ -37,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class InquiryAnswer extends TableImpl<InquiryAnswerRecord> {
 
-    private static final long serialVersionUID = -1281037137;
+    private static final long serialVersionUID = 469055752;
 
     /**
      * The reference instance of <code>samply.inquiry_answer</code>
@@ -65,7 +65,7 @@ public class InquiryAnswer extends TableImpl<InquiryAnswerRecord> {
     /**
      * The column <code>samply.inquiry_answer.sent_at</code>.
      */
-    public final TableField<InquiryAnswerRecord, Timestamp> SENT_AT = createField("sent_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+    public final TableField<InquiryAnswerRecord, Timestamp> SENT_AT = createField("sent_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * The column <code>samply.inquiry_answer.content</code>. What was sent? This may contain different types of data...use json to keep it generic

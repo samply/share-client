@@ -58,6 +58,7 @@ import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.Result;
 import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.utils.Converter;
+import de.samply.share.utils.QueryConverter;
 import de.samply.web.mdrFaces.MdrContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -592,7 +593,16 @@ public class InquiryBean implements Serializable {
     public String reply() {
         try {
             BrokerConnector brokerConnector = new BrokerConnector(BrokerUtil.fetchBrokerById(inquiry.getBrokerId()));
-            brokerConnector.reply(latestInquiryDetails, latestInquiryResult.getSize());
+            if (ldmConnector instanceof LdmConnectorCentraxx) {
+                brokerConnector.reply(latestInquiryDetails, latestInquiryResult.getSize(),ldmConnector);
+            } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+                try {
+                    BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(latestInquiryDetails.getId()).getLocation());
+                    brokerConnector.reply(latestInquiryDetails, queryResult,ldmConnector);
+                } catch (LDMConnectorException e) {
+                    e.printStackTrace();
+                }
+            }
             return "/user/show_inquiry.xhtml?inquiryId=" + inquiry.getId() + "&faces-redirect=true";
         } catch (BrokerConnectorException e) {
             logger.debug("Error trying to send reply.", e);

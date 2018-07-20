@@ -406,7 +406,7 @@ public class CheckInquiryStatusJob implements Job {
                 case RR_TOTAL_COUNT:
                     logger.info("Reporting the amount of matching datasets to the broker.");
                     BrokerConnector brokerConnector = new BrokerConnector(BrokerUtil.fetchBrokerById(brokerId));
-                    brokerConnector.reply(inquiryDetails, inquiryResult.getSize());
+                    brokerConnector.reply(inquiryDetails, inquiryResult.getSize(),ldmConnector);
                     break;
                 case RR_NO_AUTOMATIC_ACTION:
                 default:

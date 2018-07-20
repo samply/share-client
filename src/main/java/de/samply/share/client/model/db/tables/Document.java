@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Document extends TableImpl<DocumentRecord> {
 
-    private static final long serialVersionUID = -1624798045;
+    private static final long serialVersionUID = -1587290095;
 
     /**
      * The reference instance of <code>samply.document</code>
@@ -72,7 +72,7 @@ public class Document extends TableImpl<DocumentRecord> {
     /**
      * The column <code>samply.document.uploaded_at</code>.
      */
-    public final TableField<DocumentRecord, Date> UPLOADED_AT = createField("uploaded_at", org.jooq.impl.SQLDataType.DATE.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_DATE", org.jooq.impl.SQLDataType.DATE)), this, "", new DateConverter());
+    public final TableField<DocumentRecord, Date> UPLOADED_AT = createField("uploaded_at", org.jooq.impl.SQLDataType.DATE.nullable(false).defaultValue(org.jooq.impl.DSL.field("('now'::text)::date", org.jooq.impl.SQLDataType.DATE)), this, "", new DateConverter());
 
     /**
      * The column <code>samply.document.filetype</code>.

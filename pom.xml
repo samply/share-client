@@ -492,6 +492,11 @@
             <artifactId>common-ldmclient.samplystore-biobank</artifactId>
             <version>${common-ldmclient.samplystore.biobank.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.samply</groupId>
+            <artifactId>share-dto</artifactId>
+            <version>4.1.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

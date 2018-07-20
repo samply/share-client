@@ -37,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class InquiryResult extends TableImpl<InquiryResultRecord> {
 
-    private static final long serialVersionUID = 984105546;
+    private static final long serialVersionUID = 1368490385;
 
     /**
      * The reference instance of <code>samply.inquiry_result</code>
@@ -80,7 +80,7 @@ public class InquiryResult extends TableImpl<InquiryResultRecord> {
     /**
      * The column <code>samply.inquiry_result.executed_at</code>.
      */
-    public final TableField<InquiryResultRecord, Timestamp> EXECUTED_AT = createField("executed_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+    public final TableField<InquiryResultRecord, Timestamp> EXECUTED_AT = createField("executed_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * The column <code>samply.inquiry_result.valid_until</code>.
