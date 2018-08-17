@@ -60,6 +60,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jooq.tools.json.JSONObject;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
@@ -283,7 +284,11 @@ public class BrokerConnector {
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
             httpGet.addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
             httpGet.setConfig(requestConfig);
-
+            RequestConfig.Builder requestConfig = RequestConfig.custom();
+            requestConfig.setConnectTimeout(30 * 1000);
+            requestConfig.setConnectionRequestTimeout(60 * 1000);
+            requestConfig.setSocketTimeout(30 * 1000);
+            httpGet.setConfig(requestConfig.build());
             int statusCode;
             String responseString;
             try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {
