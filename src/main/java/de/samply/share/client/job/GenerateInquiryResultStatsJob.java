@@ -164,7 +164,7 @@ public class GenerateInquiryResultStatsJob implements Job {
      */
     private int getAge(de.samply.share.model.common.Patient patient, String mdr_age) {
         MdrIdDatatype mdrIdDatatypeAge = new MdrIdDatatype(mdr_age);
-        String ageString = de.samply.share.client.util.PatientConverterUtil.getFirstValueForKey(patient, mdrIdDatatypeAge);
+        String ageString = PatientConverterUtil.getFirstValueForKey(patient, mdrIdDatatypeAge);
         if (ageString == null) {
             return -1;
         } else {
@@ -191,7 +191,7 @@ public class GenerateInquiryResultStatsJob implements Job {
      */
     private String getGender(de.samply.share.model.common.Patient patient, String mdr_gender) {
         MdrIdDatatype mdrIdDatatypeGender = new MdrIdDatatype(mdr_gender);
-        String gender = de.samply.share.client.util.PatientConverterUtil.getFirstValueForKey(patient, mdrIdDatatypeGender);
+        String gender = PatientConverterUtil.getFirstValueForKey(patient, mdrIdDatatypeGender);
         if (gender == null) {
             return "";
         } else {

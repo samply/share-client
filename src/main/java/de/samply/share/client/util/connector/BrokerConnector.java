@@ -47,8 +47,7 @@ import de.samply.share.common.utils.Constants;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.bbmri.BbmriResult;
 import de.samply.share.model.common.*;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
+
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
