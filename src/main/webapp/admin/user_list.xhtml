@@ -38,151 +38,176 @@
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
                 xmlns:wu="http://share.samply.de/webutils"
 >
-    <ui:param name="adminPage" value="true" />
+    <ui:param name="adminPage" value="true"/>
 
     <ui:define name="title">#{msg.ul_title}</ui:define>
 
     <ui:define name="additional-css">
-        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css" />
+        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"/>
     </ui:define>
 
     <ui:define name="additional-js">
-        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js" />
+        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"/>
     </ui:define>
 
     <ui:define name="optional-import-constants">
-        <o:importConstants type="de.samply.share.client.model.db.enums.EntityType" />
+        <o:importConstants type="de.samply.share.client.model.db.enums.EntityType"/>
     </ui:define>
 
     <ui:define name="main-content">
         <h:form id="usersForm" styleClass="form-inline">
             <table class="table table-hover">
                 <thead>
-                    <tr>
-                        <th>#{msg.common_username}</th>
-                        <th>#{msg.common_email}</th>
-                        <th><i class="fa fa-flask fa-fw" title="#{msg.ul_notifyBiomaterial}"/></th>
-                        <th><i class="fa fa-file-excel-o fa-fw" title="#{msg.ul_notifyClinicalData}"/></th>
-                        <th><i class="fa fa-users fa-fw" title="#{msg.ul_notifyPatients}"/></th>
-                        <th>#{msg.ul_setNewPassword}</th>
-                        <th>#{msg.common_delete}</th>
-                    </tr>
+                <tr>
+                    <th>#{msg.common_username}</th>
+                    <th>#{msg.common_email}</th>
+                    <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
+                    <th><i class="fa fa-flask fa-fw" title="#{msg.ul_notifyBiomaterial}"/></th>
+                    <th><i class="fa fa-file-excel-o fa-fw" title="#{msg.ul_notifyClinicalData}"/></th>
+                    <th><i class="fa fa-users fa-fw" title="#{msg.ul_notifyPatients}"/></th>
+                    </ui:fragment>
+                    <th>#{msg.ul_setNewPassword}</th>
+                    <th>#{msg.common_delete}</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <ui:repeat var="user" value="#{userBean.userList}">
-                        <ui:fragment rendered="#{user.username != 'exporter'}">
-                            <tr class="#{userStatus.odd ? 'background-color: #E0E0E0; margin: 0;' : 'margin: 0;'}" >
-                                <td><h:outputText value="#{user.username}" /></td>
-                                <td><h:outputText value="#{user.email}" /></td>
+                <ui:repeat var="user" value="#{userBean.userList}">
+                    <ui:fragment rendered="#{user.username != 'exporter'}">
+                        <tr class="#{userStatus.odd ? 'background-color: #E0E0E0; margin: 0;' : 'margin: 0;'}">
+                            <td><h:outputText value="#{user.username}"/></td>
+                            <td><h:outputText value="#{user.email}"/></td>
+                            <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
                                 <td>
-                                    <h:selectBooleanCheckbox value="#{userBean.getUserNotifications(user)[EntityType.E_BIOMATERIAL]}" rendered="#{user.username != 'admin'}">
-                                            <f:ajax event="click" listener="#{userBean.toggleUserNotification(user, EntityType.E_BIOMATERIAL)}"/>
+                                    <h:selectBooleanCheckbox
+                                            value="#{userBean.getUserNotifications(user)[EntityType.E_BIOMATERIAL]}"
+                                            rendered="#{user.username != 'admin'}">
+                                        <f:ajax event="click"
+                                                listener="#{userBean.toggleUserNotification(user, EntityType.E_BIOMATERIAL)}"/>
                                     </h:selectBooleanCheckbox>
                                 </td>
                                 <td>
-                                    <h:selectBooleanCheckbox value="#{userBean.getUserNotifications(user)[EntityType.E_CLINICAL_DATA]}" rendered="#{user.username != 'admin'}">
-                                        <f:ajax event="click" listener="#{userBean.toggleUserNotification(user, EntityType.E_CLINICAL_DATA)}"/>
+                                    <h:selectBooleanCheckbox
+                                            value="#{userBean.getUserNotifications(user)[EntityType.E_CLINICAL_DATA]}"
+                                            rendered="#{user.username != 'admin'}">
+                                        <f:ajax event="click"
+                                                listener="#{userBean.toggleUserNotification(user, EntityType.E_CLINICAL_DATA)}"/>
                                     </h:selectBooleanCheckbox>
                                 </td>
                                 <td>
-                                    <h:selectBooleanCheckbox value="#{userBean.getUserNotifications(user)[EntityType.E_PATIENT_FOR_STUDY]}" rendered="#{user.username != 'admin'}">
-                                        <f:ajax event="click" listener="#{userBean.toggleUserNotification(user, EntityType.E_PATIENT_FOR_STUDY)}"/>
+                                    <h:selectBooleanCheckbox
+                                            value="#{userBean.getUserNotifications(user)[EntityType.E_PATIENT_FOR_STUDY]}"
+                                            rendered="#{user.username != 'admin'}">
+                                        <f:ajax event="click"
+                                                listener="#{userBean.toggleUserNotification(user, EntityType.E_PATIENT_FOR_STUDY)}"/>
                                     </h:selectBooleanCheckbox>
                                 </td>
-                                <td>
-                                    <ui:fragment rendered="#{!user.adminPrivilege}">
-                                        <a href="#" onclick="$('#changeUserPassword .modal-footer :input').val('#{user.username}'); $('#changeUserPassword').modal();" class="btn btn-default btn-sm"><span class="fa fa-gear"></span></a>
-                                    </ui:fragment>
-                                </td>
-                                <td>
-                                    <h:commandLink value="" rendered="#{!user.adminPrivilege}"
-                                                   styleClass="btn btn-default btn-sm" action="#{userBean.deleteUser(user)}">
-                                        <f:ajax render="@form" execute="@form"/>
-                                        <span class="fa fa-trash-o"></span>
-                                    </h:commandLink>
-                                </td>
-                            </tr>
-                        </ui:fragment>
-                    </ui:repeat>
+                            </ui:fragment>
+                            <td>
+                                <ui:fragment rendered="#{!user.adminPrivilege}">
+                                    <a href="#"
+                                       onclick="$('#changeUserPassword .modal-footer :input').val('#{user.username}'); $('#changeUserPassword').modal();"
+                                       class="btn btn-default btn-sm"><span class="fa fa-gear"></span></a>
+                                </ui:fragment>
+                            </td>
+                            <td>
+                                <h:commandLink value="" rendered="#{!user.adminPrivilege}"
+                                               styleClass="btn btn-default btn-sm"
+                                               action="#{userBean.deleteUser(user)}">
+                                    <f:ajax render="@form" execute="@form"/>
+                                    <span class="fa fa-trash-o"></span>
+                                </h:commandLink>
+                            </td>
+                        </tr>
+                    </ui:fragment>
+                </ui:repeat>
                 </tbody>
             </table>
         </h:form>
 
-        <hr />
+        <hr/>
 
         <h2>#{msg.ul_createNewUser}</h2>
         <h:form id="newUserForm">
 
-            <o:validateEqual id="equal" components="newUserPassElement:newUserPass newUserPassRepeatElement:newUserPassRepeat" message="#{msg.common_passwordMismatch}" />
+            <o:validateEqual id="equal"
+                             components="newUserPassElement:newUserPass newUserPassRepeatElement:newUserPassRepeat"
+                             message="#{msg.common_passwordMismatch}"/>
 
             <sscl:formEntryElement labelFor="newUserName" labelText="#{msg.common_username}" id="newUserNameElement">
                 <f:facet name="input">
                     <h:inputText styleClass="form-control" value="#{userBean.newUser.username}"
-                                 id="newUserName" size="60" required="true" requiredMessage="#{msg.ul_usernameRequiredMsg}" />
+                                 id="newUserName" size="60" required="true"
+                                 requiredMessage="#{msg.ul_usernameRequiredMsg}"/>
                 </f:facet>
             </sscl:formEntryElement>
 
             <sscl:formEntryElement labelFor="newEmail" labelText="#{msg.common_email}" id="newEmailElement">
                 <f:facet name="input">
                     <h:inputText styleClass="form-control" value="#{userBean.newUser.email}"
-                                 id="newEmail" size="60" />
+                                 id="newEmail" size="60"/>
                 </f:facet>
             </sscl:formEntryElement>
 
             <sscl:formEntryElement labelFor="newUserPass" labelText="#{msg.common_password}" id="newUserPassElement">
                 <f:facet name="input">
                     <h:inputSecret styleClass="form-control" value="#{userBean.password}"
-                                   id="newUserPass" size="40" redisplay="true" required="true" requiredMessage="#{msg.ul_passwordRequiredMsg}" />
+                                   id="newUserPass" size="40" redisplay="true" required="true"
+                                   requiredMessage="#{msg.ul_passwordRequiredMsg}"/>
                 </f:facet>
             </sscl:formEntryElement>
 
-            <sscl:formEntryElement labelFor="newUserPassRepeat" labelText="#{msg.ul_passwordRepeat}" id="newUserPassRepeatElement">
+            <sscl:formEntryElement labelFor="newUserPassRepeat" labelText="#{msg.ul_passwordRepeat}"
+                                   id="newUserPassRepeatElement">
                 <f:facet name="input">
                     <h:inputSecret styleClass="form-control" value="#{userBean.passwordRepeat}"
-                                   id="newUserPassRepeat" size="40" redisplay="true" required="true" requiredMessage="#{msg.ul_passwordRepeatRequiredMsg}" />
+                                   id="newUserPassRepeat" size="40" redisplay="true" required="true"
+                                   requiredMessage="#{msg.ul_passwordRepeatRequiredMsg}"/>
                 </f:facet>
             </sscl:formEntryElement>
 
             <!--Notification Settings-->
+            <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
+                <sscl:formEntryElement labelFor="newUserBiomaterial" labelText="#{msg.ul_notifyBiomaterial}"
+                                       id="newUserBiomaterialElement">
+                    <f:facet name="input">
+                        <h:selectBooleanCheckbox id="newUserBiomaterial"
+                                                 value="#{userBean.newUserNotifications[EntityType.E_BIOMATERIAL]}"
+                                                 styleClass="switch"/>
+                    </f:facet>
+                </sscl:formEntryElement>
 
-            <sscl:formEntryElement labelFor="newUserBiomaterial" labelText="#{msg.ul_notifyBiomaterial}" id="newUserBiomaterialElement">
-                <f:facet name="input">
-                    <h:selectBooleanCheckbox id="newUserBiomaterial"
-                                             value="#{userBean.newUserNotifications[EntityType.E_BIOMATERIAL]}"
-                                             styleClass="switch"/>
-                </f:facet>
-            </sscl:formEntryElement>
+                <sscl:formEntryElement labelFor="newUserClinicalData" labelText="#{msg.ul_notifyClinicalData}"
+                                       id="newUserClinicalDataElement">
+                    <f:facet name="input">
+                        <h:selectBooleanCheckbox id="newUserClinicalData"
+                                                 value="#{userBean.newUserNotifications[EntityType.E_CLINICAL_DATA]}"
+                                                 styleClass="switch"/>
+                    </f:facet>
+                </sscl:formEntryElement>
 
-            <sscl:formEntryElement labelFor="newUserClinicalData" labelText="#{msg.ul_notifyClinicalData}" id="newUserClinicalDataElement">
-                <f:facet name="input">
-                    <h:selectBooleanCheckbox id="newUserClinicalData"
-                                             value="#{userBean.newUserNotifications[EntityType.E_CLINICAL_DATA]}"
-                                             styleClass="switch"/>
-                </f:facet>
-            </sscl:formEntryElement>
-
-            <sscl:formEntryElement labelFor="newUserPatients" labelText="#{msg.ul_notifyPatients}" id="newUserPatientsElement">
-                <f:facet name="input">
-                    <h:selectBooleanCheckbox id="newUserPatients"
-                                             value="#{userBean.newUserNotifications[EntityType.E_PATIENT_FOR_STUDY]}"
-                                             styleClass="switch"/>
-                </f:facet>
-            </sscl:formEntryElement>
-
+                <sscl:formEntryElement labelFor="newUserPatients" labelText="#{msg.ul_notifyPatients}"
+                                       id="newUserPatientsElement">
+                    <f:facet name="input">
+                        <h:selectBooleanCheckbox id="newUserPatients"
+                                                 value="#{userBean.newUserNotifications[EntityType.E_PATIENT_FOR_STUDY]}"
+                                                 styleClass="switch"/>
+                    </f:facet>
+                </sscl:formEntryElement>
+            </ui:fragment>
             <!--Store Button-->
-            <h:panelGroup layout="block" styleClass="form-space" />
+            <h:panelGroup layout="block" styleClass="form-space"/>
 
             <h:panelGroup layout="block" styleClass="form-group">
                 <h:panelGroup layout="block" styleClass="col-sm-offset-2 col-sm-6">
                     <h:commandButton id="newUserCreate" value="#{msg.ul_createBtn}" styleClass="btn btn-default btn-sm"
-                                     action="#{userBean.storeNewUser}" >
+                                     action="#{userBean.storeNewUser}">
                     </h:commandButton>
                 </h:panelGroup>
             </h:panelGroup>
             <h:messages showDetail="true" showSummary="true" id="messages" globalOnly="true"/>
         </h:form>
 
-        <sscl:changeUserPasswordModal />
+        <sscl:changeUserPasswordModal/>
     </ui:define>
 
 

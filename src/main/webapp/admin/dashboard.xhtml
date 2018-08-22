@@ -88,7 +88,7 @@
                 <div class="clearfix visible-sm-block" />
 
                 <!--Uploads-->
-                <sscl:dashboardPanel title="#{msg.dashboard_uploads}"
+                <sscl:dashboardPanel rendered="#{wu:getProjectName() == 'dktk'}" title="#{msg.dashboard_uploads}"
                                      details="#{msg.dashboard_uploadsDetails}"
                                      action="upload_list?faces-redirect=true" iconClass="fa-upload"/>
 

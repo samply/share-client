@@ -29,7 +29,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:cc="http://xmlns.jcp.org/jsf/composite">
+                xmlns:cc="http://xmlns.jcp.org/jsf/composite" xmlns:wu="http://share.samply.de/webutils">
 <cc:interface>
     <cc:attribute name="admin" type="java.lang.Boolean" />
 </cc:interface>
@@ -91,7 +91,7 @@
                 </div>
             </h:outputLink>
 
-            <h:outputLink value="upload_list.xhtml">
+            <h:outputLink rendered="#{wu:getProjectName() == 'dktk'}" value="upload_list.xhtml">
                 <div class="ib-content">
                     <i class="fa fa-upload"></i><div class="text">#{msg.dashboard_uploads}</div>
                 </div>

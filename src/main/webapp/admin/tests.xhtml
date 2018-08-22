@@ -36,80 +36,82 @@
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
                 xmlns:wu="http://share.samply.de/webutils">
-    <ui:param name="adminPage" value="true" />
+    <ui:param name="adminPage" value="true"/>
 
     <ui:define name="title">#{msg.tests_title}</ui:define>
 
     <ui:define name="main-content">
-        <!-- Checks with central mds db -->
-        <fieldset>
-            <legend>#{msg.tests_centralSearch}</legend>
-            <ui:fragment rendered="#{wu:isCentralSearchPathSet()}">
-                <h:form>
-                <sscl:checkPanel checkAction="#{testsBean.performCentralMdsDbCheck}"
-                                 checkResult="#{testsBean.centralMdsDbCheckResult}"
-                                 description="#{msg.tests_checkConnectionDescription}"
-                                 headingText="#{msg.tests_checkConnection}" />
-                </h:form>
+        <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
+            <!-- Checks with central mds db -->
+            <fieldset>
+                <legend>#{msg.tests_centralSearch}</legend>
+                <ui:fragment rendered="#{wu:isCentralSearchPathSet()}">
+                    <h:form>
+                        <sscl:checkPanel checkAction="#{testsBean.performCentralMdsDbCheck}"
+                                         checkResult="#{testsBean.centralMdsDbCheckResult}"
+                                         description="#{msg.tests_checkConnectionDescription}"
+                                         headingText="#{msg.tests_checkConnection}"/>
+                    </h:form>
 
-                <h:form>
-                <sscl:checkPanel checkAction="#{testsBean.performUploadAndDeleteDummyPatientCheck}"
-                                 checkResult="#{testsBean.uploadAndDeleteDummyPatientCheckResult}"
-                                 description="#{msg.tests_uploadAndDeleteDummyPatientDescription}"
-                                 headingText="#{msg.tests_uploadAndDeleteDummyPatient}" />
-                </h:form>
-            </ui:fragment>
-            <ui:fragment rendered="#{not wu:isCentralSearchPathSet()}">
-                    <sscl:bootstrapPanel contextClass="panel-danger" headingText="#{msg.configuration_noCentralSearchPath}">
+                    <h:form>
+                        <sscl:checkPanel checkAction="#{testsBean.performUploadAndDeleteDummyPatientCheck}"
+                                         checkResult="#{testsBean.uploadAndDeleteDummyPatientCheckResult}"
+                                         description="#{msg.tests_uploadAndDeleteDummyPatientDescription}"
+                                         headingText="#{msg.tests_uploadAndDeleteDummyPatient}"/>
+                    </h:form>
+                </ui:fragment>
+                <ui:fragment rendered="#{not wu:isCentralSearchPathSet()}">
+                    <sscl:bootstrapPanel contextClass="panel-danger"
+                                         headingText="#{msg.configuration_noCentralSearchPath}">
                         <f:facet name="bodyContent">
-                            <h:outputText value="#{msg.configuration_noCentralSearchPathDetails}" />
+                            <h:outputText value="#{msg.configuration_noCentralSearchPathDetails}"/>
                         </f:facet>
                     </sscl:bootstrapPanel>
-            </ui:fragment>
-        </fieldset>
+                </ui:fragment>
+            </fieldset>
+            <div class="form-space"/>
 
-        <div class="form-space" />
+            <!-- Checks with ID management -->
+            <fieldset>
+                <legend>#{msg.tests_idManager}</legend>
+                <h:form>
+                    <sscl:checkPanel checkAction="#{testsBean.performIdManagerCheck}"
+                                     checkResult="#{testsBean.idManagerCheckResult}"
+                                     description="#{msg.tests_checkConnectionDescription}"
+                                     headingText="#{msg.tests_checkConnection}"/>
+                </h:form>
 
-        <!-- Checks with ID management -->
-        <fieldset>
-            <legend>#{msg.tests_idManager}</legend>
-            <h:form>
-            <sscl:checkPanel checkAction="#{testsBean.performIdManagerCheck}"
-                             checkResult="#{testsBean.idManagerCheckResult}"
-                             description="#{msg.tests_checkConnectionDescription}"
-                             headingText="#{msg.tests_checkConnection}" />
-            </h:form>
-
-            <h:form>
-            <sscl:checkPanel checkAction="#{testsBean.performRetrieveExportIdCheck}"
-                             checkResult="#{testsBean.retrieveExportIdsCheckResult}"
-                             description="#{msg.tests_retrieveExportIdsDescription}"
-                             headingText="#{msg.tests_retrieveExportIds}">
-                    <f:facet name="additionalContent">
-                        <div style="margin-top:5px;">
-                            <h:outputLabel for="idToCheck" value="#{msg.test_localId}:" />
-                            <h:inputText id="idToCheck" value="#{testsBean.localIdToCheck}" required="true" style="margin-left: 10px;"/>
-                        </div>
-                    </f:facet>
-            </sscl:checkPanel>
-            </h:form>
-        </fieldset>
-
-        <div class="form-space" />
+                <h:form>
+                    <sscl:checkPanel checkAction="#{testsBean.performRetrieveExportIdCheck}"
+                                     checkResult="#{testsBean.retrieveExportIdsCheckResult}"
+                                     description="#{msg.tests_retrieveExportIdsDescription}"
+                                     headingText="#{msg.tests_retrieveExportIds}">
+                        <f:facet name="additionalContent">
+                            <div style="margin-top:5px;">
+                                <h:outputLabel for="idToCheck" value="#{msg.test_localId}:"/>
+                                <h:inputText id="idToCheck" value="#{testsBean.localIdToCheck}" required="true"
+                                             style="margin-left: 10px;"/>
+                            </div>
+                        </f:facet>
+                    </sscl:checkPanel>
+                </h:form>
+            </fieldset>
+        </ui:fragment>
+        <div class="form-space"/>
 
         <!-- Checks with local datamanagement -->
         <fieldset>
             <legend>#{msg.tests_localDatamanagement}</legend>
 
             <h:form>
-            <sscl:checkPanel checkAction="#{testsBean.performLdmCheck}"
-                             checkResult="#{testsBean.ldmCheckResult}"
-                             description="#{msg.tests_checkConnectionDescription}"
-                             headingText="#{msg.tests_checkConnection}" />
+                <sscl:checkPanel checkAction="#{testsBean.performLdmCheck}"
+                                 checkResult="#{testsBean.ldmCheckResult}"
+                                 description="#{msg.tests_checkConnectionDescription}"
+                                 headingText="#{msg.tests_checkConnection}"/>
             </h:form>
         </fieldset>
 
-        <div class="form-space" />
+        <div class="form-space"/>
 
         <!-- Checks with brokers -->
         <fieldset>
@@ -121,24 +123,25 @@
                     </div>
                     <div class="panel-body">
                         <h:form>
-                        <sscl:checkPanel checkAction="#{testsBean.performBrokerCheck(broker.id)}"
-                                         checkResult="#{testsBean.brokerCheckResults[broker.id]}"
-                                         description="#{msg.tests_checkConnectionDescription}"
-                                         headingText="#{msg.tests_checkConnection}" />
+                            <sscl:checkPanel checkAction="#{testsBean.performBrokerCheck(broker.id)}"
+                                             checkResult="#{testsBean.brokerCheckResults[broker.id]}"
+                                             description="#{msg.tests_checkConnectionDescription}"
+                                             headingText="#{msg.tests_checkConnection}"/>
                         </h:form>
 
                         <h:form>
-                        <sscl:checkPanel checkAction="#{testsBean.performRetrieveTestInquiryCheck(broker.id)}"
-                                         checkResult="#{testsBean.retrieveTestInquiryCheckResults[broker.id]}"
-                                         description="#{msg.tests_brokerCheckRetrieveTestInquiryDescription}"
-                                         headingText="#{msg.tests_brokerCheckRetrieveTestInquiry}" />
+                            <sscl:checkPanel checkAction="#{testsBean.performRetrieveTestInquiryCheck(broker.id)}"
+                                             checkResult="#{testsBean.retrieveTestInquiryCheckResults[broker.id]}"
+                                             description="#{msg.tests_brokerCheckRetrieveTestInquiryDescription}"
+                                             headingText="#{msg.tests_brokerCheckRetrieveTestInquiry}"/>
                         </h:form>
 
                         <h:form>
-                        <sscl:checkPanel checkAction="#{testsBean.performRetrieveAndExecuteTestInquiryCheck(broker.id)}"
-                                         checkResult="#{testsBean.retrieveAndExecuteTestInquiryCheckResults[broker.id]}"
-                                         description="#{msg.tests_brokerCheckRetrieveAndExecuteTestInquiryDescription}"
-                                         headingText="#{msg.tests_brokerCheckRetrieveAndExecuteTestInquiry}" />
+                            <sscl:checkPanel
+                                    checkAction="#{testsBean.performRetrieveAndExecuteTestInquiryCheck(broker.id)}"
+                                    checkResult="#{testsBean.retrieveAndExecuteTestInquiryCheckResults[broker.id]}"
+                                    description="#{msg.tests_brokerCheckRetrieveAndExecuteTestInquiryDescription}"
+                                    headingText="#{msg.tests_brokerCheckRetrieveAndExecuteTestInquiry}"/>
                         </h:form>
                     </div>
                 </div>

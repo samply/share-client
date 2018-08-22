@@ -32,6 +32,7 @@ import de.samply.share.client.model.db.enums.AuthSchemeType;
 import de.samply.share.client.model.db.enums.TargetType;
 import de.samply.share.client.model.db.tables.pojos.Credentials;
 import de.samply.share.client.util.db.CredentialsUtil;
+import de.samply.share.common.utils.ProjectInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -195,8 +196,16 @@ public class CredentialsBean implements Serializable {
      *
      * @return array of target types
      */
-    public TargetType[] getTargetTypes() {
-        return TargetType.values();
+    public ArrayList<TargetType> getTargetTypes() {
+        ArrayList<TargetType> targetTypes= new ArrayList<>();
+        targetTypes.add(TargetType.valueOf("TT_HTTP_PROXY"));
+        targetTypes.add(TargetType.valueOf("TT_HTTPS_PROXY"));
+        targetTypes.add(TargetType.valueOf("TT_LDM"));
+        targetTypes.add(TargetType.valueOf("TT_BROKER"));
+        if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("dktk")) {
+            targetTypes.add(TargetType.valueOf("TT_CENTRALSEARCH"));
+        }
+        return targetTypes;
     }
 
     /**

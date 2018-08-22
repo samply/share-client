@@ -3,6 +3,7 @@ package de.samply.share.client.control;
 import de.samply.share.client.job.params.QuartzJob;
 import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.util.db.JobScheduleUtil;
+import de.samply.share.common.utils.ProjectInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.*;
@@ -82,7 +83,13 @@ public class SchedulerBean implements Serializable {
                         if (trigger instanceof CronTrigger) {
                             CronTrigger cronTrigger = ((CronTrigger) trigger);
                             cronExpression = cronTrigger.getCronExpression();
-                            jobList.add(new QuartzJob(jobName, jobGroup, null, nextFireTime, previousFireTime, cronExpression, isPaused(jobKey), jobDetail.getDescription()));
+                            if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("samply") &&( jobKey.getGroup().equals("CentralSearchGroup"))) {
+                                if(!JobScheduleUtil.fetchJobScheduleByJobKey(jobKey.toString()).getPaused()) {
+                                   suspend(jobName,jobGroup);
+                                }
+                            }else {
+                                jobList.add(new QuartzJob(jobName, jobGroup, null, nextFireTime, previousFireTime, cronExpression, isPaused(jobKey), jobDetail.getDescription()));
+                            }
                         }
                     }
                 }

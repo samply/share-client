@@ -38,57 +38,62 @@
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
                 xmlns:wu="http://share.samply.de/webutils"
 >
-    <ui:param name="adminPage" value="true" />
+    <ui:param name="adminPage" value="true"/>
 
     <ui:define name="title">#{msg.bl_title}</ui:define>
 
     <ui:define name="additional-css">
-        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css" />
+        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"/>
     </ui:define>
 
     <ui:define name="additional-js">
-        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js" />
+        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"/>
     </ui:define>
 
     <ui:define name="optional-import-constants">
-        <o:importConstants type="de.samply.share.client.model.db.enums.BrokerStatusType" />
+        <o:importConstants type="de.samply.share.client.model.db.enums.BrokerStatusType"/>
     </ui:define>
 
     <ui:define name="main-content">
         <h:form id="brokerForm">
             <table class="table table-hover">
                 <thead>
-                    <tr>
-                        <th>#{msg.bl_broker}</th>
-                        <th>#{msg.common_email}</th>
-                        <th>#{msg.bl_status}</th>
-                        <th>#{msg.bl_lastCheck}</th>
-                        <th>#{msg.common_delete}</th>
-                    </tr>
+                <tr>
+                    <th>#{msg.bl_broker}</th>
+                    <th>#{msg.common_email}</th>
+                    <th>#{msg.bl_status}</th>
+                    <th>#{msg.bl_lastCheck}</th>
+                    <th>#{msg.common_delete}</th>
+                </tr>
                 </thead>
                 <tbody>
-                <ui:repeat var="broker" value="#{brokerBean.brokerList}" >
+                <ui:repeat var="broker" value="#{brokerBean.brokerList}">
 
                     <tr class="#{(broker.status == BrokerStatusType.BS_OK || broker.status == BrokerStatusType.BS_ACTIVATION_PENDING) ? '' : 'danger'}">
                         <td data-toggle="tooltip" data-placement="top" title="#{broker.address}">
-                            <h:outputText value="#{broker.name}" styleClass="form-control-static" rendered="#{not empty broker.name}" />
-                            <h:outputText value="#{broker.address}" styleClass="form-control-static" rendered="#{empty broker.name}"/>
+                            <h:outputText value="#{broker.name}" styleClass="form-control-static"
+                                          rendered="#{not empty broker.name}"/>
+                            <h:outputText value="#{broker.address}" styleClass="form-control-static"
+                                          rendered="#{empty broker.name}"/>
                         </td>
 
                         <td>
-                            <h:outputText value="#{brokerBean.getCredentials(broker).username}" styleClass="form-control-static" />
+                            <h:outputText value="#{brokerBean.getCredentials(broker).username}"
+                                          styleClass="form-control-static"/>
                         </td>
 
                         <ui:fragment rendered="#{broker.status != BrokerStatusType.BS_ACTIVATION_PENDING}">
-                            <td><h:outputText value="#{msg[broker.status]}" styleClass="form-control-static" /></td>
+                            <td><h:outputText value="#{msg[broker.status]}" styleClass="form-control-static"/></td>
                         </ui:fragment>
                         <ui:fragment rendered="#{broker.status == BrokerStatusType.BS_ACTIVATION_PENDING}">
                             <td>
                                 <div class="input-group input-group-sm">
-                                    <h:inputText styleClass="form-control" binding="#{activationCode}" size="8" />
+                                    <h:inputText styleClass="form-control" binding="#{activationCode}" size="8"/>
                                     <span class="input-group-btn">
-                                                <h:commandButton value="#{msg.bl_completeActivation}" styleClass="btn btn-default btn-sm" >
-                                                    <f:ajax execute="@form" render="@form" listener="#{brokerBean.sendActivationCode(broker, activationCode.value)}" />
+                                                <h:commandButton value="#{msg.bl_completeActivation}"
+                                                                 styleClass="btn btn-default btn-sm">
+                                                    <f:ajax execute="@form" render="@form"
+                                                            listener="#{brokerBean.sendActivationCode(broker, activationCode.value)}"/>
                                                 </h:commandButton>
                                             </span>
                                 </div>
@@ -96,11 +101,12 @@
                         </ui:fragment>
 
                         <td>
-                            <h:outputText value="#{broker.lastChecked}" styleClass="form-control-static" />
+                            <h:outputText value="#{broker.lastChecked}" styleClass="form-control-static"/>
                         </td>
                         <td>
                             <h:commandLink value=""
-                                           styleClass="btn btn-default btn-sm" action="#{brokerBean.deleteBroker(broker)}">
+                                           styleClass="btn btn-default btn-sm"
+                                           action="#{brokerBean.deleteBroker(broker)}">
                                 <span class="fa fa-trash-o"></span>
                             </h:commandLink>
                         </td>
@@ -110,47 +116,56 @@
             </table>
         </h:form>
 
-        <hr />
+        <hr/>
 
         <h2>#{msg.bl_joinNewBroker}</h2>
         <h:form id="newBrokerForm">
-            <sscl:formEntryElement labelFor="newBrokerAddress" labelText="#{msg.bl_newAdress}" id="newBrokerAddressElement">
+            <sscl:formEntryElement labelFor="newBrokerAddress" labelText="#{msg.bl_newAdress}"
+                                   id="newBrokerAddressElement">
                 <f:facet name="input">
                     <h:inputText styleClass="form-control" value="#{brokerBean.newBroker.address}"
-                                 id="newBrokerAddress" size="60" required="true" requiredMessage="#{msg.bl_newAdressRequiredMsg}" />
+                                 id="newBrokerAddress" size="60" required="true"
+                                 requiredMessage="#{msg.bl_newAdressRequiredMsg}"/>
                 </f:facet>
             </sscl:formEntryElement>
 
             <sscl:formEntryElement labelFor="newBrokerEmail" labelText="#{msg.bl_newEmail}" id="newBrokerEmailElement">
                 <f:facet name="input">
                     <h:inputText styleClass="form-control" value="#{brokerBean.newBrokerEmail}"
-                                 id="newBrokerEmail" size="60" required="true" requiredMessage="#{msg.bl_emailRequiredMsg}" />
+                                 id="newBrokerEmail" size="60" required="true"
+                                 requiredMessage="#{msg.bl_emailRequiredMsg}"/>
                 </f:facet>
             </sscl:formEntryElement>
+            <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
+                <sscl:formEntryElement labelFor="newBrokerFullResult" labelText="#{msg.bl_requestFullResults}"
+                                       id="newBrokerFullResultElement">
+                    <f:facet name="input">
+                        <h:selectBooleanCheckbox styleClass="form-control switch"
+                                                 value="#{brokerBean.newBrokerFullResult}"
+                                                 id="newBrokerFullResult"/>
+                    </f:facet>
+                </sscl:formEntryElement>
+            </ui:fragment>
 
-            <sscl:formEntryElement labelFor="newBrokerFullResult" labelText="#{msg.bl_requestFullResults}" id="newBrokerFullResultElement">
-                <f:facet name="input">
-                    <h:selectBooleanCheckbox styleClass="form-control switch" value="#{brokerBean.newBrokerFullResult}"
-                                 id="newBrokerFullResult" />
-                </f:facet>
-            </sscl:formEntryElement>
-
-            <sscl:formEntryElement labelFor="newBrokerReplyRule" labelText="#{msg.ih_autoReply}" id="newBrokerReplyRuleElement">
+            <sscl:formEntryElement labelFor="newBrokerReplyRule" labelText="#{msg.ih_autoReply}"
+                                   id="newBrokerReplyRuleElement">
                 <f:facet name="input">
                     <h:selectOneMenu value="#{brokerBean.newBrokerReplyRule}" styleClass="form-control"
                                      id="newBrokerReplyRule">
-                        <f:selectItems value="#{applicationBean.replyRuleTypes}" var="replyRule" itemValue="#{replyRule}" itemLabel="#{msg[replyRule.literal]}" />
+                        <f:selectItems value="#{applicationBean.replyRuleTypes}" var="replyRule"
+                                       itemValue="#{replyRule}" itemLabel="#{msg[replyRule.literal]}"/>
                     </h:selectOneMenu>
                 </f:facet>
             </sscl:formEntryElement>
 
             <!--Store Button-->
-            <h:panelGroup layout="block" styleClass="form-space" />
+            <h:panelGroup layout="block" styleClass="form-space"/>
 
             <h:panelGroup layout="block" styleClass="form-group">
                 <h:panelGroup layout="block" styleClass="col-sm-offset-2 col-sm-6">
-                    <h:commandButton id="newBrokerJoin" value="#{msg.bl_joinBtn}" styleClass="btn btn-default btn-sm pull-right"
-                                     action="#{brokerBean.join}" />
+                    <h:commandButton id="newBrokerJoin" value="#{msg.bl_joinBtn}"
+                                     styleClass="btn btn-default btn-sm pull-right"
+                                     action="#{brokerBean.join}"/>
                 </h:panelGroup>
             </h:panelGroup>
 
