@@ -176,6 +176,7 @@ public class CollectInquiriesJob implements Job {
                 re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.E_PATIENT_FOR_STUDY);
             } else if (SamplyShareUtils.isNullOrEmpty(reLower)) {
                 logger.debug("No specific entity requested");
+                re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.UNKNOWN);
             } else {
                 logger.warn("Unknown requested entity: " + requestedEntity);
             }

@@ -33,6 +33,7 @@ import de.samply.share.client.model.db.tables.pojos.RequestedEntity;
 import de.samply.share.client.model.db.tables.pojos.User;
 import de.samply.share.client.util.db.RequestedEntityUtil;
 import de.samply.share.client.util.db.UserUtil;
+import de.samply.share.common.utils.ProjectInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
@@ -135,7 +136,11 @@ public class UserBean implements Serializable {
         newUser = new User();
         newUserNotifications = new HashMap<>();
         for (EntityType e : EntityType.values()) {
-            newUserNotifications.put(e, false);
+            if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("samply") && e.getName().equals("UNKNOWN")) {
+                newUserNotifications.put(e, true);
+            }else{
+                newUserNotifications.put(e, false);
+            }
         }
     }
 

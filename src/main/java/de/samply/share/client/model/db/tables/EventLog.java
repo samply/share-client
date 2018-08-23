@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class EventLog extends TableImpl<EventLogRecord> {
 
-    private static final long serialVersionUID = -1376442417;
+    private static final long serialVersionUID = -1491499530;
 
     /**
      * The reference instance of <code>samply.event_log</code>
@@ -87,7 +87,7 @@ public class EventLog extends TableImpl<EventLogRecord> {
     /**
      * The column <code>samply.event_log.event_time</code>. when did the logged event occur?
      */
-    public final TableField<EventLogRecord, Timestamp> EVENT_TIME = createField("event_time", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "when did the logged event occur?");
+    public final TableField<EventLogRecord, Timestamp> EVENT_TIME = createField("event_time", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "when did the logged event occur?");
 
     /**
      * The column <code>samply.event_log.show_in_global</code>.

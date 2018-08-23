@@ -30,7 +30,9 @@ public enum EntityType implements EnumType {
 
     E_CLINICAL_DATA("E_CLINICAL_DATA"),
 
-    E_PATIENT_FOR_STUDY("E_PATIENT_FOR_STUDY");
+    E_PATIENT_FOR_STUDY("E_PATIENT_FOR_STUDY"),
+
+    UNKNOWN("UNKNOWN");
 
     private final String literal;
 

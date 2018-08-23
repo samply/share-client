@@ -26,80 +26,80 @@ public class Sequences {
     /**
      * The sequence <code>samply.broker_id_seq</code>
      */
-    public static final Sequence<Long> BROKER_ID_SEQ = new SequenceImpl<Long>("broker_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> BROKER_ID_SEQ = new SequenceImpl<Integer>("broker_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.contact_id_seq</code>
      */
-    public static final Sequence<Long> CONTACT_ID_SEQ = new SequenceImpl<Long>("contact_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> CONTACT_ID_SEQ = new SequenceImpl<Integer>("contact_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.credentials_id_seq</code>
      */
-    public static final Sequence<Long> CREDENTIALS_ID_SEQ = new SequenceImpl<Long>("credentials_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> CREDENTIALS_ID_SEQ = new SequenceImpl<Integer>("credentials_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.document_id_seq</code>
      */
-    public static final Sequence<Long> DOCUMENT_ID_SEQ = new SequenceImpl<Long>("document_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> DOCUMENT_ID_SEQ = new SequenceImpl<Integer>("document_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.event_log_id_seq</code>
      */
-    public static final Sequence<Long> EVENT_LOG_ID_SEQ = new SequenceImpl<Long>("event_log_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> EVENT_LOG_ID_SEQ = new SequenceImpl<Integer>("event_log_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.inquiry_answer_id_seq</code>
      */
-    public static final Sequence<Long> INQUIRY_ANSWER_ID_SEQ = new SequenceImpl<Long>("inquiry_answer_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> INQUIRY_ANSWER_ID_SEQ = new SequenceImpl<Integer>("inquiry_answer_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.inquiry_details_id_seq</code>
      */
-    public static final Sequence<Long> INQUIRY_DETAILS_ID_SEQ = new SequenceImpl<Long>("inquiry_details_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> INQUIRY_DETAILS_ID_SEQ = new SequenceImpl<Integer>("inquiry_details_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.inquiry_handling_rule_id_seq</code>
      */
-    public static final Sequence<Long> INQUIRY_HANDLING_RULE_ID_SEQ = new SequenceImpl<Long>("inquiry_handling_rule_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> INQUIRY_HANDLING_RULE_ID_SEQ = new SequenceImpl<Integer>("inquiry_handling_rule_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.inquiry_id_seq</code>
      */
-    public static final Sequence<Long> INQUIRY_ID_SEQ = new SequenceImpl<Long>("inquiry_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> INQUIRY_ID_SEQ = new SequenceImpl<Integer>("inquiry_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.inquiry_result_id_seq</code>
      */
-    public static final Sequence<Long> INQUIRY_RESULT_ID_SEQ = new SequenceImpl<Long>("inquiry_result_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> INQUIRY_RESULT_ID_SEQ = new SequenceImpl<Integer>("inquiry_result_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.inquiry_result_stats_id_seq</code>
      */
-    public static final Sequence<Long> INQUIRY_RESULT_STATS_ID_SEQ = new SequenceImpl<Long>("inquiry_result_stats_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> INQUIRY_RESULT_STATS_ID_SEQ = new SequenceImpl<Integer>("inquiry_result_stats_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.job_schedule_id_seq</code>
      */
-    public static final Sequence<Long> JOB_SCHEDULE_ID_SEQ = new SequenceImpl<Long>("job_schedule_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> JOB_SCHEDULE_ID_SEQ = new SequenceImpl<Integer>("job_schedule_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.requested_entity_id_seq</code>
      */
-    public static final Sequence<Long> REQUESTED_ENTITY_ID_SEQ = new SequenceImpl<Long>("requested_entity_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> REQUESTED_ENTITY_ID_SEQ = new SequenceImpl<Integer>("requested_entity_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.token_id_seq</code>
      */
-    public static final Sequence<Long> TOKEN_ID_SEQ = new SequenceImpl<Long>("token_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> TOKEN_ID_SEQ = new SequenceImpl<Integer>("token_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.upload_id_seq</code>
      */
-    public static final Sequence<Long> UPLOAD_ID_SEQ = new SequenceImpl<Long>("upload_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> UPLOAD_ID_SEQ = new SequenceImpl<Integer>("upload_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>samply.user_id_seq</code>
      */
-    public static final Sequence<Long> USER_ID_SEQ = new SequenceImpl<Long>("user_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> USER_ID_SEQ = new SequenceImpl<Integer>("user_id_seq", Samply.SAMPLY, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 }

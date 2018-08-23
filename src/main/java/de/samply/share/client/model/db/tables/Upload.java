@@ -37,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Upload extends TableImpl<UploadRecord> {
 
-    private static final long serialVersionUID = 225134509;
+    private static final long serialVersionUID = -1457488410;
 
     /**
      * The reference instance of <code>samply.upload</code>
@@ -65,7 +65,7 @@ public class Upload extends TableImpl<UploadRecord> {
     /**
      * The column <code>samply.upload.triggered_at</code>.
      */
-    public final TableField<UploadRecord, Timestamp> TRIGGERED_AT = createField("triggered_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+    public final TableField<UploadRecord, Timestamp> TRIGGERED_AT = createField("triggered_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * The column <code>samply.upload.triggered_by</code>. Who triggered the upload? Was it automatically by the scheduler, or did a user do it?
