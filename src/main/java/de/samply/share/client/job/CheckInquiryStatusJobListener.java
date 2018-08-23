@@ -76,7 +76,10 @@ public class CheckInquiryStatusJobListener implements JobListener {
 
     @Override
     public void jobWasExecuted(JobExecutionContext jobExecutionContext, JobExecutionException e) {
-        logger.debug("Job was executed. Context: " + jobExecutionContext + " - exception " + e);
+        logger.debug("Job was executed. Context: " + jobExecutionContext);
+        if (e != null){
+            logger.debug(" - Exception: " + e);
+        }
         CheckInquiryStatusJobResult result;
         Object resultObject = jobExecutionContext.getResult();
         if (resultObject != null) {
