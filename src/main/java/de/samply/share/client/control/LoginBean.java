@@ -227,7 +227,7 @@ public class LoginBean implements Serializable {
                 return requestedPageParameter.replaceFirst(ESCAPED_PARAMETER_SEPARATOR, "?").replaceAll(ESCAPED_PARAMETER_SEPARATOR, "&");
             }
 
-            if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("dktk") || ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("gbn")) {
+            if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("dktk") || ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("samply")) {
                 if (user.getAdminPrivilege() != null && user.getAdminPrivilege()) {
                     return "admin/dashboard?faces-redirect=true";
                 } else {
