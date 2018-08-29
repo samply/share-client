@@ -49,16 +49,16 @@
                             <h3 class="panel-title">
                                 <a role="button" data-toggle="collapse" data-parent="#matches" href="#collapse_#{node.index}" aria-expanded="true" aria-controls="collapse_#{node.index}">
                                     <span class="badge pull-right">#{fn:length(item.container)}</span>
-                                    <ui:fragment rendered="#{gender == 'W' or gender == 'Female'}">
+                                    <ui:fragment rendered="#{gender == 'W' or gender == 'female'}">
                                         <i class="fa fa-lg fa-fw fa-venus" aria-hidden="true" />
                                     </ui:fragment>
-                                    <ui:fragment rendered="#{gender == 'M' or gender == 'Male'}">
+                                    <ui:fragment rendered="#{gender == 'M' or gender == 'male'}">
                                         <i class="fa fa-lg fa-fw fa-mars" aria-hidden="true" />
                                     </ui:fragment>
-                                    <ui:fragment rendered="#{gender == 'S'}">
+                                    <ui:fragment rendered="#{gender == 'S' or gender == 'sex_other/intersexual'}">
                                         <i class="fa fa-lg fa-fw fa-intersex" aria-hidden="true" />
                                     </ui:fragment>
-                                    <ui:fragment rendered="#{gender == 'U'}">
+                                    <ui:fragment rendered="#{gender == 'U' or gender == 'sex_uncharted'}">
 												<span class="fa-stack fa-lg fa-fw">
 												  <i class="fa fa-genderless fa-stack-2x"></i>
 												  <i class="fa fa-question fa-stack-1x"></i>
