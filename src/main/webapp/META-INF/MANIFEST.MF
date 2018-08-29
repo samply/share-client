@@ -4,7 +4,7 @@ Implementation-Version: 3.0.1-SNAPSHOT
 Built-By: deniz
 Specification-Title: Samply Share Client
 Implementation-Vendor-Id: de.samply
-Samply-Project-Context: dktk
+Samply-Project-Context: samply
 Created-By: Apache Maven 3.3.9
 Build-Jdk: 1.8.0_162
 Specification-Version: 3.0.1-SNAPSHOT
