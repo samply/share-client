@@ -172,6 +172,7 @@ public class InquiryBean implements Serializable {
         this.latestInquiryResult = latestInquiryResult;
     }
 
+
     public List<InquiryResult> getInquiryResultsList() {
         return inquiryResultsList;
     }
@@ -391,10 +392,12 @@ public class InquiryBean implements Serializable {
     public void loadResult() {
         logger.debug("loadResult called");
         try {
-            if (latestInquiryResult != null && !latestInquiryResult.getIsError()
-                    && latestInquiryResult.getSize() != null && latestInquiryResult.getSize() > 0) {
-                if (ldmConnector.isResultDone(latestInquiryResult.getLocation(), latestResultStatistics)) {
-                    populateQueryResult();
+            if(!latestInquiryResult.getStatisticsOnly()) {
+                if (latestInquiryResult != null && !latestInquiryResult.getIsError()
+                        && latestInquiryResult.getSize() != null && latestInquiryResult.getSize() > 0) {
+                    if (ldmConnector.isResultDone(latestInquiryResult.getLocation(), latestResultStatistics)) {
+                        populateQueryResult();
+                    }
                 }
             }
         } catch (LDMConnectorException e) {

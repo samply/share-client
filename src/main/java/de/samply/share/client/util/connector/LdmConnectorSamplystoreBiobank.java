@@ -135,7 +135,7 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
             ViewFields viewFields = new ViewFields();
 
             view.setViewFields(viewFields);
-            return ldmClient.postView(view);
+            return ldmClient.postView(view,statisticsOnly);
         } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }

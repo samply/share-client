@@ -260,7 +260,7 @@
         </ui:fragment>
 
         <!--In dktk, show results panel. Check for availability is done in the included facelet-->
-        <ui:fragment rendered="#{wu:getProjectName() == 'samply' or wu:getProjectName() == 'dktk'}">
+        <ui:fragment rendered="#{(wu:getProjectName() == 'samply' or wu:getProjectName() == 'dktk')}">
             <div class="row">
                 <div class="col-xs-12" id="resultDiv">
                     <ui:include src="../WEB-INF/includes/c_inquiry_results.xhtml" />
