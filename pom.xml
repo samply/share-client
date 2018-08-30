@@ -54,8 +54,8 @@
         <database.schema>samply</database.schema>
 
         <!-- DUMMY values to provide IntelliJ from marking errors -->
-        <samply.project.context>DUMMY</samply.project.context>
-        <samply.project.basename>Samply.Share.Client.DUMMY</samply.project.basename>
+        <samply.project.context>dktk</samply.project.context>
+        <samply.project.basename>Samply.Share.Client</samply.project.basename>
 
         <!-- Samply dependencies -->
         <share-common.version>3.1.0</share-common.version>
