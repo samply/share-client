@@ -391,7 +391,7 @@ public class InquiryBean implements Serializable {
     public void loadResult() {
         logger.debug("loadResult called");
         try {
-            if(!latestInquiryResult.getStatisticsOnly()) {
+            if((latestInquiryResult!=null && !latestInquiryResult.getStatisticsOnly())) {
                 if (latestInquiryResult != null && !latestInquiryResult.getIsError()
                         && latestInquiryResult.getSize() != null && latestInquiryResult.getSize() > 0) {
                     if (ldmConnector.isResultDone(latestInquiryResult.getLocation(), latestResultStatistics)) {
