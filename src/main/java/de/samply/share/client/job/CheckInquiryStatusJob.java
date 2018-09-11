@@ -40,9 +40,12 @@ import de.samply.share.client.model.db.enums.UploadStatusType;
 import de.samply.share.client.model.db.tables.pojos.*;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
+import de.samply.share.client.util.connector.LdmConnectorCentraxx;
+import de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
+import de.samply.share.model.bbmri.BbmriResult;
 import de.samply.share.model.common.Error;
 import de.samply.share.model.common.QueryResultStatistic;
 import org.apache.logging.log4j.LogManager;
@@ -406,7 +409,16 @@ public class CheckInquiryStatusJob implements Job {
                 case RR_TOTAL_COUNT:
                     logger.info("Reporting the amount of matching datasets to the broker.");
                     BrokerConnector brokerConnector = new BrokerConnector(BrokerUtil.fetchBrokerById(brokerId));
-                    brokerConnector.reply(inquiryDetails, inquiryResult.getSize(),ldmConnector);
+                    if (ldmConnector instanceof LdmConnectorCentraxx) {
+                        brokerConnector.reply(inquiryDetails, inquiryResult.getSize(),ldmConnector);
+                    } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+                        try {
+                            BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
+                            brokerConnector.reply(inquiryDetails, queryResult,ldmConnector);
+                        } catch (LDMConnectorException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     break;
                 case RR_NO_AUTOMATIC_ACTION:
                 default:
