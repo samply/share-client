@@ -220,7 +220,7 @@ public final class WebUtils {
      */
     public static String getGender(Container container) {
         MdrIdDatatype genderMdrId = new MdrIdDatatype(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_GENDER));
-        MdrIdDatatype genderMdrId2 = new MdrIdDatatype("urn:gba:dataelement:25:1");
+        MdrIdDatatype genderMdrId2 = new MdrIdDatatype("urn:mdr16:dataelement:23:1");
         MdrIdDatatype genderMdrId3 = new MdrIdDatatype("urn:bbmri:dataelement:8:1");
         List<MdrIdDatatype> mdr= new ArrayList<>();
         mdr.add(genderMdrId);
@@ -230,7 +230,8 @@ public final class WebUtils {
         for (Attribute attribute : container.getAttribute()) {
             MdrIdDatatype mdrId = new MdrIdDatatype(attribute.getMdrKey());
            if (mdrId.equalsIgnoreVersion(genderMdrId) || mdrId.equalsIgnoreVersion(genderMdrId2) || mdrId.equalsIgnoreVersion(genderMdrId3)) {
-                return attribute.getValue().getValue();
+
+                return attribute.getValue().getValue().replace("\"", "");
             }
         }        
         // Return unknown if nothing was found
