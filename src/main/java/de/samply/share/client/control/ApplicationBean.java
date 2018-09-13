@@ -20,7 +20,9 @@ import de.samply.share.client.model.common.Bridgehead;
 import de.samply.share.client.model.common.Operator;
 import de.samply.share.client.model.common.Urls;
 import de.samply.share.client.model.db.enums.EventMessageType;
+import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.enums.ReplyRuleType;
+import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
 import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizerImpl;
@@ -151,6 +153,15 @@ public class ApplicationBean implements Serializable {
         ApplicationBean.initLdmConnector();
 
         EventLogUtil.insertEventLogEntry(EventMessageType.E_SYSTEM_STARTUP);
+        checkProcessingInquiries();
+    }
+
+    private void checkProcessingInquiries() {
+        List<InquiryDetails> inquiryDetailsList=InquiryDetailsUtil.getInquiryDetailsByStatus(InquiryStatusType.IS_PROCESSING);
+        for(InquiryDetails inquiryDetails : inquiryDetailsList){
+            inquiryDetails.setStatus(InquiryStatusType.IS_NEW);
+            InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+        }
     }
 
     /**

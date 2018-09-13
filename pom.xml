@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>share-client</artifactId>
-    <version>3.0.4</version>
+    <version>3.0.5-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Samply Share Client</name>
 
@@ -55,7 +55,7 @@
 
         <!-- DUMMY values to provide IntelliJ from marking errors -->
         <samply.project.context>samply</samply.project.context>
-        <samply.project.basename>Samply.Share.Client.DUMMY</samply.project.basename>
+        <samply.project.basename>Samply.Share.Client</samply.project.basename>
 
         <!-- Samply dependencies -->
         <share-common.version>3.1.0</share-common.version>
