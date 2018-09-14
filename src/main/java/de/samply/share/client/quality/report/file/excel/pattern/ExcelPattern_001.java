@@ -40,10 +40,7 @@ import de.samply.share.client.quality.report.file.excel.row.mapper.ExcelRowMappe
 import de.samply.share.client.quality.report.file.excel.sheet.ExcelSheetFactory;
 import de.samply.share.client.quality.report.file.excel.sheet.ExcelSheetFactoryImpl;
 import de.samply.share.client.quality.report.file.excel.sheet.ExplanatoryExcelSheetFactory;
-import de.samply.share.client.quality.report.file.excel.sheet.wrapper.ExcelSheetFreezeFirstRowFactory;
-import de.samply.share.client.quality.report.file.excel.sheet.wrapper.ExcelSheetWithAutoFilterFactory;
-import de.samply.share.client.quality.report.file.excel.sheet.wrapper.ExcelSheetWithAutoSizeColumnFactory;
-import de.samply.share.client.quality.report.file.excel.sheet.wrapper.HighlightMismatchInRed_ExcelSheetFactory_002;
+import de.samply.share.client.quality.report.file.excel.sheet.wrapper.*;
 import de.samply.share.client.quality.report.file.excel.workbook.ExcelWorkbookFactory;
 import de.samply.share.client.quality.report.file.excel.workbook.ExcelWorkbookFactoryImpl_002;
 import de.samply.share.client.quality.report.file.excel.workbook.ExcelWorkbookFactoryParameters_002;
@@ -117,7 +114,8 @@ public class ExcelPattern_001 implements ExcelPattern{
         ExcelSheetFactory excelSheetFactory = new ExcelSheetFactoryImpl(excelRowFactory);
 
         excelSheetFactory = new ExcelSheetWithAutoFilterFactory(excelSheetFactory);
-        excelSheetFactory = new HighlightMismatchInRed_ExcelSheetFactory_002(excelSheetFactory);
+        //excelSheetFactory = new HighlightMismatchInRed_ExcelSheetFactory_002(excelSheetFactory);
+        excelSheetFactory = new HighlightNotMappedInOrange_ExcelSheetFactory_002(excelSheetFactory);
         excelSheetFactory = new ExcelSheetWithAutoSizeColumnFactory(excelSheetFactory);
         excelSheetFactory = new ExcelSheetFreezeFirstRowFactory(excelSheetFactory);
 
