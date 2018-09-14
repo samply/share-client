@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
+  ~ Universitätsklinikum Frankfurt
+  ~
+  ~ Contact: www.mig-frankfurt.de
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
+  ~
+  ~ Additional permission under GNU GPL version 3 section 7:
+  ~
+  ~ If you modify this Program, or any covered work, by linking or combining it
+  ~ with Jersey (https://jersey.java.net) (or a modified version of that
+  ~ library), containing parts covered by the terms of the General Public
+  ~ License, version 2.0, the licensors of this Program grant you additional
+  ~ permission to convey the resulting work.
+  -->
+
+<ui:composition template="/WEB-INF/templates/globalTemplate.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:wu="http://share.samply.de/webutils"
+>
+    <ui:param name="adminPage" value="true" />
+
+    <ui:define name="title">#{msg.qr_title}</ui:define>
+
+    <ui:define name="additional-css">
+        <h:outputStylesheet library="webjars" name="datatables/1.10.16/css/dataTables.bootstrap.min.css"/>
+    </ui:define>
+
+    <ui:define name="additional-js">
+        <h:outputScript library="webjars" name="datatables/1.10.16/js/jquery.dataTables.min.js"/>
+        <h:outputScript library="webjars" name="datatables/1.10.16/js/dataTables.bootstrap.min.js"/>
+        <h:outputScript library="js" name="pages/qualityreport_list.js"/>
+        <h:outputScript library="js" name="date-de.js"/>
+    </ui:define>
+
+    <ui:define name="main-content">
+        <h:form id="quality-report-form" prependId="false">
+            <o:commandScript name="updateQualityReportProgressbar" render="quality-report-progress-bar" execute="quality-report-progress-bar" />
+            <o:commandScript name="updateQualityReportButton" render="quality-report-button"  />
+
+            <o:commandScript name="updateQualityReportConditions" render="quality-report-conditions" />
+            <o:commandScript name="updateQualityReportFileListGroup" render="quality-report-list" execute="quality-report-list" />
+
+            <h:panelGroup layout="block" id="quality-report-conditions">
+                <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
+                    <input type="hidden" id="isQualityReportStatusChanged" value="#{qualityReportController.statusChanged}"  />
+                    <input type="hidden" id="isQualityReportLoading" value="#{qualityReportController.loading}"  />
+                    <input type="hidden" id="isQualityReportRunning" value="#{qualityReportController.taskRunning}"  />
+                </ui:fragment>
+            </h:panelGroup>
+
+
+            <div>
+
+                <h:panelGroup layout="block" styleClass="row" id="quality-report-action">
+                    <h:panelGroup id="quality-report-progress-bar" layout="block" styleClass="col-xs-12" style="#{qualityReportController.taskRunning ? '' : 'display:none;'}">
+
+                        <div>
+                            #{msg.qr_startTime}: #{qualityReportController.chainStatistics.startTime}
+                        </div>
+                        <div>
+                            #{msg.qr_consumedTime}: #{qualityReportController.chainStatistics.timeConsumed}
+                        </div>
+                        <div>
+                            #{msg.qr_remainingTime}: #{qualityReportController.chainStatistics.estimatedTimeToBeCompleted}
+                        </div>
+                        <h:outputText value="&#160;" />
+
+                        <div class="progress">
+                            <div class="progress-bar #{qualityReportController.chainStatistics.accurate ? 'progress-bar-info' : 'progress-bar-warning'} progress-bar-striped active" role="progressbar" aria-valuenow="#{qualityReportController.chainStatistics.percentage}" aria-valuemin="0" aria-valuemax="100" style="width: #{qualityReportController.chainStatistics.percentage}%" >
+                                #{qualityReportController.chainStatistics.percentage}%
+                            </div>
+                        </div>
+
+                        <div>
+                            <ul>
+                                <ui:repeat value="#{qualityReportController.chainStatistics.messages}" var="message">
+                                    <li>#{message}</li>
+                                </ui:repeat>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h:panelGroup layout="block" styleClass="row">
+                                <h:panelGroup layout="block" styleClass="col-lg-2">
+                                    <h:commandLink styleClass="btn btn-md btn-primary btn-block"  id="cancel-quality-report"
+                                                   actionListener="#{qualityReportController.finalizeChain}" >
+                                        <i class="fa fa-stop-circle" aria-hidden="true"></i> #{msg.common_cancel}
+                                    </h:commandLink>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </div>
+
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:panelGroup id="quality-report-button" layout="block" styleClass="row" style="#{qualityReportController.taskRunning ? 'display:none;' : ''}">
+
+                    <h:panelGroup layout="block" styleClass="col-lg-2">
+                        <h:commandLink styleClass="btn btn-md btn-primary btn-block"  id="generate"
+                                       onclick="$(this).button('loading');">
+                            <f:ajax listener="#{qualityReportController.generate}" execute="@this" render="quality-report-action" />
+                            <i class="fa fa-pie-chart" aria-hidden="true" /> #{msg.qr_generation}
+                        </h:commandLink>
+                    </h:panelGroup>
+
+                </h:panelGroup>
+
+            </div>
+
+
+            <h:outputText value="&#160;" style="margin-top: 15px;" />
+
+
+
+            <h:dataTable id="quality-report-list" value="#{qualityReportController.qualityReportFileInfos}" var="qualityReportFileInfo" styleClass="quality-report-table table table-striped" >
+                <h:column>
+                    <f:facet name="header">#{msg.qr_timestamp}</f:facet>
+                    <h:commandLink action="#{qualityReportController.download(qualityReportFileInfo.link, qualityReportFileInfo.filename)}"  >
+                        <h:outputText value="#{qualityReportFileInfo.timestamp}">
+                            <f:convertDateTime type="both" pattern="yyyy-MM-dd HH:mm:ss"  locale="#{qualityReportController.language}" />
+                        </h:outputText>
+                    </h:commandLink>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">#{msg.qr_version}</f:facet>
+                    #{qualityReportFileInfo.version}
+                </h:column>
+            </h:dataTable>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

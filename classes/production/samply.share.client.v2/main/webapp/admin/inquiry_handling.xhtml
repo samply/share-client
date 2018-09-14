@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
+  ~ Universitätsklinikum Frankfurt
+  ~
+  ~ Contact: www.mig-frankfurt.de
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
+  ~
+  ~ Additional permission under GNU GPL version 3 section 7:
+  ~
+  ~ If you modify this Program, or any covered work, by linking or combining it
+  ~ with Jersey (https://jersey.java.net) (or a modified version of that
+  ~ library), containing parts covered by the terms of the General Public
+  ~ License, version 2.0, the licensors of this Program grant you additional
+  ~ permission to convey the resulting work.
+  -->
+
+<ui:composition template="/WEB-INF/templates/globalTemplate.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="adminPage" value="true" />
+
+    <ui:define name="title">#{msg.ih_title}</ui:define>
+
+    <ui:define name="additional-css">
+        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css" />
+    </ui:define>
+
+    <ui:define name="additional-js">
+        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js" />
+    </ui:define>
+
+    <ui:define name="optional-import-constants">
+        <o:importConstants type="de.samply.share.client.model.db.enums.ReplyRuleType" />
+    </ui:define>
+
+    <ui:define name="main-content">
+        <h:form id="inquiryHandlingRuleForm">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>#{msg.bl_broker}</th>
+                    <th>#{msg.bl_requestFullResults}</th>
+                    <th>#{msg.ih_autoReply}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ui:repeat value="#{inquiryHandlingBean.inquiryHandlingRules}" var="rule" >
+                    <ui:param name="broker" value="#{inquiryHandlingBean.getBrokerForRule(rule)}" />
+                    <tr>
+                        <td data-toggle="tooltip" data-placement="top" title="#{broker.address}">
+                            <h:outputText value="#{broker.name}" styleClass="form-control-static" rendered="#{not empty broker.name}" />
+                            <h:outputText value="#{broker.address}" styleClass="form-control-static" rendered="#{empty broker.name}"/>
+                        </td>
+
+                        <td>
+                            <h:selectBooleanCheckbox styleClass="form-control switch" value="#{rule.fullResult}" />
+                        </td>
+
+                        <td>
+                            <h:selectOneMenu value="#{rule.automaticReply}" styleClass="form-control">
+                                <f:selectItems value="#{applicationBean.replyRuleTypes}" var="replyRule" itemValue="#{replyRule}" itemLabel="#{msg[replyRule.literal]}" />
+                            </h:selectOneMenu>
+                        </td>
+                    </tr>
+                </ui:repeat>
+                </tbody>
+            </table>
+            <h:commandButton type="submit" action="#{inquiryHandlingBean.store}" value="#{msg.common_save}" styleClass="btn btn-md btn-success" />
+        </h:form>
+    </ui:define>
+</ui:composition>

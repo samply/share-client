@@ -29,23 +29,27 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Hyperlink;
 
-public class LinkExcelCellElement extends ExcelCellElement<String> {
+public class LinkExcelCellElement<T> extends ExcelCellElement<T> {
 
-    private String title;
+    private String link;
+
 
     protected HyperlinkType getHyperlinkType (){
         return HyperlinkType.URL;
     }
 
-    public LinkExcelCellElement(String link, String title) {
-        super(link);
-        this.title = title;
+    public LinkExcelCellElement(String link, T element) {
+        super(element);
+        this.link = link;
     }
 
     @Override
     protected Cell setCellValue(Cell cell) {
 
         Hyperlink link = createHyperlink(cell);
+
+        String title = convertElementToString();
+
         cell.setHyperlink(link);
         cell.setCellValue(title);
 
@@ -56,10 +60,10 @@ public class LinkExcelCellElement extends ExcelCellElement<String> {
     private Hyperlink createHyperlink(Cell cell){
 
         CreationHelper creationHelper = cell.getSheet().getWorkbook().getCreationHelper();
-        Hyperlink link = creationHelper.createHyperlink(getHyperlinkType());
-        link.setAddress(element);
+        Hyperlink hyperlink = creationHelper.createHyperlink(getHyperlinkType());
+        hyperlink.setAddress(link);
 
-        return link;
+        return hyperlink;
 
     }
 

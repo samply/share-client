@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
+  ~ Universitätsklinikum Frankfurt
+  ~
+  ~ Contact: www.mig-frankfurt.de
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
+  ~
+  ~ Additional permission under GNU GPL version 3 section 7:
+  ~
+  ~ If you modify this Program, or any covered work, by linking or combining it
+  ~ with Jersey (https://jersey.java.net) (or a modified version of that
+  ~ library), containing parts covered by the terms of the General Public
+  ~ License, version 2.0, the licensors of this Program grant you additional
+  ~ permission to convey the resulting work.
+  -->
+
+<ui:composition template="/WEB-INF/templates/globalTemplate.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
+                xmlns:wu="http://share.samply.de/webutils">
+    <ui:param name="adminPage" value="true" />
+
+    <ui:define name="title">#{msg.tests_title}</ui:define>
+
+    <ui:define name="main-content">
+        <!-- Checks with central mds db -->
+        <fieldset>
+            <legend>#{msg.tests_centralSearch}</legend>
+            <ui:fragment rendered="#{wu:isCentralSearchPathSet()}">
+                <h:form>
+                <sscl:checkPanel checkAction="#{testsBean.performCentralMdsDbCheck}"
+                                 checkResult="#{testsBean.centralMdsDbCheckResult}"
+                                 description="#{msg.tests_checkConnectionDescription}"
+                                 headingText="#{msg.tests_checkConnection}" />
+                </h:form>
+
+                <h:form>
+                <sscl:checkPanel checkAction="#{testsBean.performUploadAndDeleteDummyPatientCheck}"
+                                 checkResult="#{testsBean.uploadAndDeleteDummyPatientCheckResult}"
+                                 description="#{msg.tests_uploadAndDeleteDummyPatientDescription}"
+                                 headingText="#{msg.tests_uploadAndDeleteDummyPatient}" />
+                </h:form>
+            </ui:fragment>
+            <ui:fragment rendered="#{not wu:isCentralSearchPathSet()}">
+                    <sscl:bootstrapPanel contextClass="panel-danger" headingText="#{msg.configuration_noCentralSearchPath}">
+                        <f:facet name="bodyContent">
+                            <h:outputText value="#{msg.configuration_noCentralSearchPathDetails}" />
+                        </f:facet>
+                    </sscl:bootstrapPanel>
+            </ui:fragment>
+        </fieldset>
+
+        <div class="form-space" />
+
+        <!-- Checks with ID management -->
+        <fieldset>
+            <legend>#{msg.tests_idManager}</legend>
+            <h:form>
+            <sscl:checkPanel checkAction="#{testsBean.performIdManagerCheck}"
+                             checkResult="#{testsBean.idManagerCheckResult}"
+                             description="#{msg.tests_checkConnectionDescription}"
+                             headingText="#{msg.tests_checkConnection}" />
+            </h:form>
+
+            <h:form>
+            <sscl:checkPanel checkAction="#{testsBean.performRetrieveExportIdCheck}"
+                             checkResult="#{testsBean.retrieveExportIdsCheckResult}"
+                             description="#{msg.tests_retrieveExportIdsDescription}"
+                             headingText="#{msg.tests_retrieveExportIds}">
+                    <f:facet name="additionalContent">
+                        <div style="margin-top:5px;">
+                            <h:outputLabel for="idToCheck" value="#{msg.test_localId}:" />
+                            <h:inputText id="idToCheck" value="#{testsBean.localIdToCheck}" required="true" style="margin-left: 10px;"/>
+                        </div>
+                    </f:facet>
+            </sscl:checkPanel>
+            </h:form>
+        </fieldset>
+
+        <div class="form-space" />
+
+        <!-- Checks with local datamanagement -->
+        <fieldset>
+            <legend>#{msg.tests_localDatamanagement}</legend>
+
+            <h:form>
+            <sscl:checkPanel checkAction="#{testsBean.performLdmCheck}"
+                             checkResult="#{testsBean.ldmCheckResult}"
+                             description="#{msg.tests_checkConnectionDescription}"
+                             headingText="#{msg.tests_checkConnection}" />
+            </h:form>
+        </fieldset>
+
+        <div class="form-space" />
+
+        <!-- Checks with brokers -->
+        <fieldset>
+            <legend>#{msg.tests_broker}</legend>
+            <ui:repeat value="#{brokerBean.brokerList}" var="broker">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">#{broker.address}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <h:form>
+                        <sscl:checkPanel checkAction="#{testsBean.performBrokerCheck(broker.id)}"
+                                         checkResult="#{testsBean.brokerCheckResults[broker.id]}"
+                                         description="#{msg.tests_checkConnectionDescription}"
+                                         headingText="#{msg.tests_checkConnection}" />
+                        </h:form>
+
+                        <h:form>
+                        <sscl:checkPanel checkAction="#{testsBean.performRetrieveTestInquiryCheck(broker.id)}"
+                                         checkResult="#{testsBean.retrieveTestInquiryCheckResults[broker.id]}"
+                                         description="#{msg.tests_brokerCheckRetrieveTestInquiryDescription}"
+                                         headingText="#{msg.tests_brokerCheckRetrieveTestInquiry}" />
+                        </h:form>
+
+                        <h:form>
+                        <sscl:checkPanel checkAction="#{testsBean.performRetrieveAndExecuteTestInquiryCheck(broker.id)}"
+                                         checkResult="#{testsBean.retrieveAndExecuteTestInquiryCheckResults[broker.id]}"
+                                         description="#{msg.tests_brokerCheckRetrieveAndExecuteTestInquiryDescription}"
+                                         headingText="#{msg.tests_brokerCheckRetrieveAndExecuteTestInquiry}" />
+                        </h:form>
+                    </div>
+                </div>
+            </ui:repeat>
+        </fieldset>
+    </ui:define>
+</ui:composition>

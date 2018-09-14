@@ -26,51 +26,20 @@ package de.samply.share.client.quality.report.file.excel.cell.element;/*
 
 import org.apache.poi.ss.usermodel.Cell;
 
-public class MatchExcelCellElement extends ExcelCellElement<Boolean> {
+public class MatchExcelCellElement extends ExcelCellElement<MatchElement> {
 
-    public final static String MATCH = "match";
-    public final static String MISMATCH = "mismatch";
-    public final static String NOT_MAPPED = "not mapped";
-    public final static String NOT_FOUND = "not found";
-
-    private boolean isNotMapped = false;
-    private int numberOfElements = 0;
-
-
-    public MatchExcelCellElement(Boolean element, int numberOfElements) {
+    public MatchExcelCellElement(MatchElement element) {
         super(element);
-        this.numberOfElements = numberOfElements;
     }
 
     @Override
     protected Cell setCellValue(Cell cell) {
 
-        String value = getCellValue(element);
+        String value = convertElementToString();
         cell.setCellValue(value);
 
         return cell;
     }
 
-    private String getCellValue (boolean element){
-
-        String result = null;
-
-        if (isNotMapped){
-            result = NOT_MAPPED;
-        } else if (numberOfElements <= 0){
-            result = NOT_FOUND;
-        } else if (element){
-            result = MATCH;
-        } else{
-            result = MISMATCH;
-        }
-
-        return result;
-
-    }
-
-    public void setNotMapped() {
-        isNotMapped = true;
-    }
 
 }

@@ -103,7 +103,7 @@ public class ExcelRowElements_002 extends ExcelRowElements {
     public void setMdrLink (String link, MdrIdDatatype mdrId){
 
         String title = getLinkTitle(mdrId);
-        LinkExcelCellElement cellElement = new LinkExcelCellElement(link, title);
+        LinkExcelCellElement cellElement = new LinkExcelCellElement<String>(link, title);
         addElement(ELEMENT_ORDER.MDR_LINK, cellElement);
 
     }
@@ -143,19 +143,32 @@ public class ExcelRowElements_002 extends ExcelRowElements {
 
     }
 
-    public void setValid (boolean isValid, int numberOfPatients){
+//    public void setValid (boolean isValid, int numberOfPatients){
+//
+//        MatchExcelCellElement cellElement = new MatchExcelCellElement(isValid, numberOfPatients);
+//        addElement(ELEMENT_ORDER.IS_VALID, cellElement);
+//
+//    }
 
-        MatchExcelCellElement cellElement = new MatchExcelCellElement(isValid, numberOfPatients);
+    public void setValid (boolean isValid, int numberOfPatients){
+        setValid (isValid, numberOfPatients, null);
+    }
+
+    public void setValid (boolean isValid, int numberOfPatients, CellReference cellReference){
+
+        MatchElement matchElement =  new MatchElement(numberOfPatients, isValid);
+        ExcelCellElement cellElement = (cellReference != null) ? new CellReferenceExcelCellElement<MatchElement>(cellReference, matchElement) : new MatchExcelCellElement(matchElement);
         addElement(ELEMENT_ORDER.IS_VALID, cellElement);
 
     }
 
     public void setNotMapped (){
 
-        MatchExcelCellElement cellElement = new MatchExcelCellElement(true, 0);
-        cellElement.setNotMapped();
+        MatchElement matchElement = new MatchElement(0, true);
+        matchElement.setNotMapped();
+        MatchExcelCellElement matchExcelCellElement = new MatchExcelCellElement(matchElement);
 
-        addElement(ELEMENT_ORDER.IS_VALID, cellElement);
+        addElement(ELEMENT_ORDER.IS_VALID, matchExcelCellElement);
 
     }
 
@@ -164,12 +177,12 @@ public class ExcelRowElements_002 extends ExcelRowElements {
         addElement(ELEMENT_ORDER.NUMBER_OF_PATIENTS, cellElement);
     }
 
-    public void setNumberOfPatients (CellReference cellReference, int numberOfPatients){
-
-        CellReferenceExcelCellElement cellElement = new CellReferenceExcelCellElement(cellReference, "" + numberOfPatients);
-        addElement(ELEMENT_ORDER.NUMBER_OF_PATIENTS, cellElement);
-
-    }
+//    public void setNumberOfPatients (CellReference cellReference, int numberOfPatients){
+//
+//        CellReferenceExcelCellElement cellElement = new CellReferenceExcelCellElement(cellReference, "" + numberOfPatients);
+//        addElement(ELEMENT_ORDER.NUMBER_OF_PATIENTS, cellElement);
+//
+//    }
 
     public void setPercentageOutOfPatientsWithDataElement(Double percentageOfPatientsWithDataElement){
 

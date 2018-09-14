@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      			xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      			xmlns:wu="http://share.samply.de/webutils"
+      			xmlns:pass="http://xmlns.jcp.org/jsf/passthrough">
+
+
+	<div class="formContainer col-md-4 col-md-offset-4">
+		<h:form>
+			<div class="form-signin">
+				<div class="pull-right logo">
+                    <h:panelGroup layout="block" rendered="#{wu:getProjectName() == 'osse'}">
+                        <span class="titleBlack">OSSE</span><span class="titleDarkBlue">.Share</span>
+                        <div class="subtitle">client</div>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" rendered="#{wu:getProjectName() == 'dktk'}">
+                        <span class="titleBlack">DKTK</span><span class="titleDarkBlue">.Teiler</span>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" rendered="#{wu:getProjectName() == 'gbn'}">
+                        <span class="titleBlack">DKTK/GBN</span><span class="titleDarkBlue">.Teiler</span>
+                    </h:panelGroup>
+					<h:panelGroup layout="block" rendered="#{wu:getProjectName() != 'dktk' and wu:getProjectName() != 'osse' and wu:getProjectName() != 'gbn'}">
+						<span class="titleBlack">Samply</span><span class="titleDarkBlue">.Share</span>
+                        <div class="subtitle">client</div>
+					</h:panelGroup>
+				</div>
+				<h2 class="form-signin-heading">#{msg.loginPanel_login}</h2>
+
+				<h:inputText type="text" styleClass="form-control" pass:placeholder="#{msg.common_username}" value="#{loginBean.user.username}" pass:autofocus="true" />
+				<h:inputSecret styleClass="form-control" pass:placeholder="#{msg.common_password}" value="#{loginBean.user.passwordHash}" />
+
+				<h:commandButton styleClass="btn btn-md btn-primary btn-block" value="#{msg.loginPanel_doLogin}" type="submit" action="#{loginBean.login}"
+								 pass:data-loading-text="#{msg.pleaseWait}..." onclick="$(this).button('loading');" />
+
+				<div id="version" style="float: right; position: relative; top: -0.3em;" class="pull-right" title="built #{wu:getBuildDate()}">
+					<small>#{wu:getVersionString()}</small><span style="display: none;">#{wu:getBuildDate()}</span></div>
+
+			</div>
+            <h:messages id="messages" showSummary="true" showDetail="true" />
+        </h:form>
+
+	</div>
+</ui:composition>

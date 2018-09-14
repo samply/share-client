@@ -1,0 +1,442 @@
+/*
+ * Copyright (c) 2017 Medical Informatics Group (MIG),
+ * Universitätsklinikum Frankfurt
+ *
+ * Contact: www.mig-frankfurt.de
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see <http://www.gnu.org/licenses>.
+ *
+ * Additional permission under GNU GPL version 3 section 7:
+ *
+ * If you modify this Program, or any covered work, by linking or combining it
+ * with Jersey (https://jersey.java.net) (or a modified version of that
+ * library), containing parts covered by the terms of the General Public
+ * License, version 2.0, the licensors of this Program grant you additional
+ * permission to convey the resulting work.
+ */
+
+/* @import */
+/* 	url(http://fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,700,700italic,900italic,900) */
+/* 	; */
+
+html {
+	height: 100%;
+    min-width: 768px;
+}
+
+body {
+	font-family: 'Lato', sans-serif
+}
+
+.darkBackground {
+	background: #2b2b2b;
+	color: white;
+}
+
+.lightBackground {
+	background-color: #92BEE4;
+	color: #5b5a5a;
+}
+
+.gradientBackground {
+	color: #5b5a5a;
+	background-color: #628599;
+	background: -webkit-linear-gradient(#c6d8e2, #00489c);
+	/* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(#c6d8e2, #00489c);
+	/* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(#c6d8e2, #00489c);
+	/* For Firefox 3.6 to 15 */
+	background: linear-gradient(#c6d8e2, #00489c);
+	/* Standard syntax (must be last) */
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,
+		startColorstr='#c6d8e2', endColorstr='#628599'); /*For IE7-8-9*/
+}
+
+.background {
+	color: #5b5a5a;
+}
+
+.title {
+	font-size: larger;
+	color: white;
+}
+
+.titleBlack {
+	font-size: larger;
+	color: black;
+}
+
+.titleOrange {
+	font-size: larger;
+	color: #ef8660;
+	font-weight: bold;
+}
+
+.titleBlue {
+	font-size: larger;
+	/*color: #C6D8E2;*/
+	color: #cfeeff;
+	font-weight: bold;
+}
+
+.titleDarkBlue {
+	font-size: large;
+	color: #628599;
+}
+
+.subtitle {
+	color: black;
+	text-align: right;
+	font-size: small;
+}
+
+.logo {
+	margin-top: 8px;
+}
+
+.alert ul {
+	list-style: none;
+	padding: 0;
+}
+.alert .fa {
+	display: table-cell;
+}
+.alert div,
+.alert span{
+	padding-left: 5px;
+	display:table-cell;
+}
+
+label {
+	font-weight: normal;
+}
+
+.right-aligned-label {
+	text-align: right;
+	padding-top: 4px;
+	height: 27px
+}
+
+.form-group {
+	padding-bottom: 25px;
+}
+
+.page-header {
+	margin: 40px 0 26px;
+}
+
+.page-wrapper {
+	width: 100%;
+	min-width: 800px;
+	min-height: 100%;
+	position: absolute;
+	background-color: #FAFAFA;
+	padding: 0 70px;
+}
+
+.form-space {
+	margin-bottom: 30px;
+}
+
+.uploadButtons a {
+	margin-right: 20px;
+}
+
+.nav>li>a {
+	color: #fff;
+}
+
+.nav>li>a:hover,
+.nav>li>a:focus,
+.nav>li>a:active {
+	text-decoration: none;
+	/*background-color: transparent !important;*/
+	background-color: #fff;
+	color: #00489c;
+}
+
+hr {
+	border-top: 1px solid #c1c0c0;
+	margin-top: 60px;
+}
+
+.navbar {
+	/*background-color: #68A3E0;*/
+	background-color: #00489c;
+	height: 60px;
+	min-width: 800px;
+	/*-webkit-box-shadow: inset 0px -5px 5px 0px rgba(0, 0, 0, 0.75);*/
+	/*-moz-box-shadow: inset 0px -5px 5px 0px rgba(0, 0, 0, 0.75);*/
+	/*box-shadow: inset 0px -5px 5px 0px rgba(0, 0, 0, 0.75);*/
+}
+
+.content-container {
+	margin-top: 60px;
+}
+
+.disabledCriteriaDiv > .formItem {
+    margin-left: 0;
+}
+
+.groupContent {
+    margin: 17px 0 0 20px; 
+}
+.fa-rotate-45 {
+ /* There is no setting for DXImageTransform to set to 45°...so set it to 90 here */
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.form-space-inner {
+	height: 15px;
+}
+.form-space {
+	height: 20px;
+}
+.inputmask {
+	width: 100px;
+}
+.portmask {
+    width: 100px;
+}
+.clockpicker {
+	width: 100px;
+}
+.secondgroup {
+	width: 140px;
+}
+.input-group-addon {
+  border-left-width: 0;
+  border-right-width: 0;
+}
+.input-group-addon:first-child {
+  border-left-width: 1px;
+}
+.input-group-addon:last-child {
+  border-right-width: 1px;
+}
+#logTable_paginate {
+	margin-bottom: 20px;
+}
+.confirmationRow div {
+	margin-top: 5px;
+}
+
+.viewFieldsTable td {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.viewFieldsTable {
+    margin-top: 5px;
+    margin: 0 auto;
+    background-color: white;
+}
+
+.viewFieldsTable th {
+    padding-top: 5px;
+}
+
+.exportDatepickerLabel, .exportDatepickerConjunction {
+    padding-top: 0.55em;
+}
+
+.exportDatepickerConjunction {
+    text-align: center;
+}
+
+/* for file icons with text in them*/
+.fa-stack-1x { top: .25em; }
+.fa-stack {
+  font-size: .5em;
+  vertical-align: -16%;
+}
+.filetype-text {
+  font-size: .65em;
+  font-weight: 800;
+}
+
+.queryTreeContainer {
+    padding-left: 25px;
+    padding-right: 30px;
+    padding-top: 20px;
+    padding-bottom: 15px;
+    background-color: white;
+    margin-bottom: 30px;
+}
+
+table.overviewTable tr td {
+    vertical-align: middle;
+}
+
+table.overviewTable.dataTable tfoot td {
+    padding: 14px 10px;
+}
+
+td.actionIcons a {
+    margin-right: 5px;
+}
+
+.nav.navbar-nav li.active {
+	background-color: #FAFAFA;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	box-shadow: 11px -1px 4px -4px rgba(0, 0, 0, 0.75);
+	padding-bottom: 10px;
+}
+
+.nav.navbar-nav li.active a {
+    color: black;
+}
+
+.screenHeight {
+    height: calc(100% - 60px);
+    overflow-y: hidden;
+}
+
+.content-left {
+	overflow: auto;
+	height: 100%;
+}
+
+.queryBuilderPageWrapper.page-wrapper {
+    height: 100%;
+}
+
+.queryBuilderPageWrapper.page-wrapper .row.queryBuilderRow {
+    margin-right: 0;
+}
+
+.verticalRadioGroup td {
+    padding: 15px;
+}
+
+.verticalRadioGroup td {
+    padding: 15px;
+}
+
+.verticalRadioGroup td input[type="radio"] {
+    margin-right: 5px;
+}
+
+.dashboard-panel, .welcome-panel {
+	cursor: pointer;
+}
+
+.dashboard-panel:hover, .welcome-panel:hover {
+	background-color: #C2E0EF;
+}
+
+.dashboard-panel-text {
+	font-weight: bold;
+	font-size: 1.3em;
+}
+
+.welcome-panel {
+    color: black;
+}
+
+.welcome-panel-title {
+	font-weight: bold;
+	font-size: 1.3em;
+}
+
+.bootstrap-switch-wrapper-margin-left {
+	margin-left: 10px;
+}
+
+/* The Nav bar on the left side */
+.icon-bar {
+	background-color: #00489c;
+	white-space:nowrap;
+	position: absolute;
+    float: left;
+	top: 60px;
+	left: 0px;
+    z-index: 10;
+}
+
+.icon-bar a i {
+	width: 70px;
+}
+
+.icon-bar a {
+	color: white; /* White text color */
+	width: 70px;
+	display: block; /* Make the links appear below each other instead of side-by-side */
+	text-align: center; /* Center-align text */
+	font-size: 30px; /* Increased font-size */
+    overflow: hidden;
+    z-index: 50;
+}
+
+.icon-bar a:hover {
+	background-color: #03a9f4; /* Add a hover color */
+    overflow: visible;
+}
+
+.icon-bar.text {
+	margin-left: 50px;
+}
+
+.text {
+	display: inline-block;
+}
+
+.ib-content {
+	display: inline-block;
+	padding: 16px 0; /* Add some padding */
+}
+
+.ib-content:hover {
+	width: auto;
+	color: inherit;
+	background-color: inherit;
+	padding-right: 30px;
+    transition: width 0.5s ease; /* Add transition for hover effects */
+    font-weight: bold;
+}
+
+.requested-entity-label {
+	margin-right: 10px;
+}
+
+.collapsiblePanel>.panel-heading {
+	cursor: pointer;
+}
+
+/*In case a button group gets to big on a small screen and is split into two, remove the margins/padding for the case*/
+/*that it is still just one group*/
+@media (min-width: 992px) {
+    .btn-group-split-left {
+        padding-right: 0;
+        margin-top: 0 !important;
+    }
+    .btn-group-split-left>.btn-group>.btn-group>.btn, .btn-group-split-left>.btn-group>.btn-group>.dropdown-toggle {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .btn-group-split-right {
+        padding-left: 0;
+        margin-top: 0 !important;
+    }
+
+    .btn-group-split-right>.btn-group>.btn-group>.btn, .btn-group-split-right>.btn-group>.btn-group>.dropdown-toggle {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+}

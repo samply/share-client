@@ -60,4 +60,8 @@ public abstract class ExcelCellElement<T> {
         this.excelCellStyle = excelCellStyle;
     }
 
+    protected String convertElementToString(){
+        return element.toString();
+    }
+
 }

@@ -1,0 +1,19 @@
+{delpackage NewInquiriesContent}
+{namespace samply.mailing}
+
+/**
+ * Main content for a notification mail about new inquiries.
+ * @param? locale The locale of the mail
+ * @param results links to the results
+ */
+{deltemplate maincontent}
+    {switch $locale}
+        {case 'de', 'de_DE'}
+            {\n}
+            Auf Ihrem Teiler sind neue Suchanfragen eingegangen.{sp} Bitte prüfen Sie diese:
+        {default}
+            You have new inquiries with results on samply share. Please login and check them:
+    {/switch}
+    {\n}{\n}
+    {$results}
+{/deltemplate}

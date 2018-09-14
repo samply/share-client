@@ -1,0 +1,71 @@
+<!--
+  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
+  ~ Universitätsklinikum Frankfurt
+  ~
+  ~ Contact: www.mig-frankfurt.de
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
+  ~
+  ~ Additional permission under GNU GPL version 3 section 7:
+  ~
+  ~ If you modify this Program, or any covered work, by linking or combining it
+  ~ with Jersey (https://jersey.java.net) (or a modified version of that
+  ~ library), containing parts covered by the terms of the General Public
+  ~ License, version 2.0, the licensors of this Program grant you additional
+  ~ permission to convey the resulting work.
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:cc="http://xmlns.jcp.org/jsf/composite">
+
+    <cc:interface>
+        <cc:attribute name="iconClass" required="true" />
+        <cc:attribute name="title" required="true" />
+        <cc:attribute name="details" />
+        <cc:attribute name="action" targets="go-to" required="true" />
+        <cc:attribute name="cssClass" default="col-lg-4 col-md-4 col-sm-6 col-xs-12" required="false" />
+        <cc:facet name="detailsfacet" />
+    </cc:interface>
+
+    <cc:implementation>
+        <div class="#{cc.attrs.cssClass}">
+            <div class="panel panel-default dashboard-panel">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                            <i class="fa #{cc.attrs.iconClass} fa-5x" />
+                        </div>
+                        <h:panelGroup layout="block" styleClass="col-lg-5 col-md-5 col-sm-5 col-xs-5" rendered="#{empty cc.facets.detailsfacet}">
+                            <span style="font-size: 100%;">#{cc.attrs.details}</span>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="col-lg-5 col-md-5 col-sm-5 col-xs-5" rendered="#{not empty cc.facets.detailsfacet}">
+                            <cc:renderFacet name="detailsfacet" />
+                        </h:panelGroup>
+                    </div>
+                    <hr style="margin: 5px;"/>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 dashboard-panel-text">
+                            <ui:fragment>#{cc.attrs.title}</ui:fragment>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="go-to-page" style="display:none;">
+                <h:commandLink id="go-to" />
+            </div>
+        </div>
+    </cc:implementation>
+</ui:composition>
