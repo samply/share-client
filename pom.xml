@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>share-client</artifactId>
-    <version>3.0.8-SNAPSHOT</version>
+    <version>3.0.7-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Samply Share Client</name>
 
