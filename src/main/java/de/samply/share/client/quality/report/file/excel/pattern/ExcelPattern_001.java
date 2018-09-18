@@ -114,8 +114,7 @@ public class ExcelPattern_001 implements ExcelPattern{
         ExcelSheetFactory excelSheetFactory = new ExcelSheetFactoryImpl(excelRowFactory);
 
         excelSheetFactory = new ExcelSheetWithAutoFilterFactory(excelSheetFactory);
-        //excelSheetFactory = new HighlightMismatchInRed_ExcelSheetFactory_002(excelSheetFactory);
-        excelSheetFactory = new HighlightNotMappedInOrange_ExcelSheetFactory_002(excelSheetFactory);
+        excelSheetFactory = new HighlightMismatchInRed_ExcelSheetFactory_002(excelSheetFactory);
         excelSheetFactory = new ExcelSheetWithAutoSizeColumnFactory(excelSheetFactory);
         excelSheetFactory = new ExcelSheetFreezeFirstRowFactory(excelSheetFactory);
 
@@ -133,7 +132,7 @@ public class ExcelPattern_001 implements ExcelPattern{
 
     private ExcelRowMapper_002 createExcelRowMapper (){
 
-        FirstRowCellReferenceFactoryForOneSheet firstRowCellReferenceFactoryForOneSheet = new FirstRowCellReferenceFactoryForOneSheet(ExcelWorkbookFactoryImpl_002.patientLocalIds_sheetTitle);
+        FirstRowCellReferenceFactoryForOneSheet firstRowCellReferenceFactoryForOneSheet = new FirstRowCellReferenceFactoryForOneSheet(ExcelWorkbookFactoryImpl_002.PATIENT_LOCAL_IDS_SHEET_TITLE);
         return new ExcelRowMapper_002( centraXxMapper, dktkIdManager, firstRowCellReferenceFactoryForOneSheet, ignoredElements, excelRowMapperUtils);
 
     }

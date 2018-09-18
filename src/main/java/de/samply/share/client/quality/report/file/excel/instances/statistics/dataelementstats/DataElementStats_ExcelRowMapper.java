@@ -28,6 +28,7 @@ import de.samply.share.client.quality.report.centraxx.CentraXxMapper;
 import de.samply.share.client.quality.report.dktk.DktkId_MdrId_Converter;
 import de.samply.share.client.quality.report.file.excel.row.mapper.ExcelRowMapperException;
 import de.samply.share.client.quality.report.file.excel.row.mapper.ExcelRowMapperUtils;
+import de.samply.share.client.quality.report.results.statistics.GeneralRehearsalStatistics;
 import de.samply.share.client.quality.report.results.statistics.QualityResultsStatistics;
 import de.samply.share.common.utils.MdrIdDatatype;
 
@@ -49,7 +50,7 @@ public class DataElementStats_ExcelRowMapper {
 
     public DataElementStats_ExcelRowElements convert (DataElementStats_ExcelRowParameters excelRowParameters) throws ExcelRowMapperException {
 
-        DataElementStats_ExcelRowElements excelRowElements = new DataElementStats_ExcelRowElements();
+        DataElementStats_ExcelRowElements excelRowElements = new FormattedDataElementStats_ExcelRowElements();
 
 
         QualityResultsStatistics qualityResultsStatistics = excelRowParameters.getQualityResultsStatistics();
@@ -68,6 +69,32 @@ public class DataElementStats_ExcelRowMapper {
         int numberOf_patientsWithAnyMismatchWithMdrId = qualityResultsStatistics.getNumberOf_PatientsWithAnyMismatchWithMdrId(mdrId);
         double percentageOf_patientsWithAnyMismatchWithMdrId_outOf_patientsWithMdrId = qualityResultsStatistics.getPercentageOf_PatientsWithAnyMismatchWithMdrId_outOf_PatientsWithMdrId(mdrId);
         double percentageOf_patientsWithAnyMismatchWithMdrId_outOf_totalPatients = qualityResultsStatistics.getPercentageOf_PatientsWithAnyMismatchWithMdrId_outOf_TotalPatients(mdrId);
+
+
+
+
+        // Generalprobe
+        if (qualityResultsStatistics instanceof GeneralRehearsalStatistics){
+
+            GeneralRehearsalStatistics generalRehearsalStatistics = (GeneralRehearsalStatistics) qualityResultsStatistics;
+
+            String priorization = centraXxMapper.getGeneralRehearsalPriorization(mdrId);
+
+            boolean generalRehearsal_a_containedInQR = generalRehearsalStatistics.getGeneralRehearsal_A_ContainedInQR(mdrId);
+            boolean generalRehearsal_b_lowMismatch = generalRehearsalStatistics.getGeneralRehearsal_B_LowMismatch(mdrId);
+            boolean generalRehearsal_a_and_b = generalRehearsalStatistics.getGeneralRehearsal_A_And_B(mdrId);
+
+
+            excelRowElements.setGeneralRehearsalPriorization(priorization);
+            excelRowElements.setGeneralRehearsal_A_ContainedInQR(generalRehearsal_a_containedInQR);
+            excelRowElements.setGeneralRehearsal_B_LowMismatch(generalRehearsal_b_lowMismatch);
+            excelRowElements.setGeneralRehearsal_A_And_B(generalRehearsal_a_and_b);
+
+        }
+
+
+
+
 
         excelRowElements.setDktkId(dktkId);
         excelRowElements.setMdrDatenElement(mdrDataElement);

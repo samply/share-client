@@ -37,11 +37,13 @@ public class CentraXxMapperImpl implements CentraXxMapper{
 
     private Map<String, String> centraXxDataElements = new HashMap<>();
     private Map<AttributeValueKey, String> centraXxAttributeValues = new HashMap<>();
+    private GeneralRehearsalPriorization generalRehearsalPriorization = new GeneralRehearsalPriorization();
 
     public CentraXxMapperImpl() throws CentraXxMapperException {
 
         loadCentraXxDataelements();
         loadCentraXxValues();
+        loadGeneralRehearsalPriorization();
 
     }
 
@@ -58,18 +60,51 @@ public class CentraXxMapperImpl implements CentraXxMapper{
 
     }
 
+    @Override
+    public String getGeneralRehearsalPriorization(MdrIdDatatype mdrId) {
+        return generalRehearsalPriorization.getPriorization(mdrId);
+    }
+
+
     private void loadCentraXxDataelements() throws CentraXxMapperException {
 
-        File file = getCentraXxDataelementsFile();
-        loadCentraXxDataelements(file);
+        FilenameReader filenameReader = () -> getConfigurationFilename(EnumConfiguration.QUALITY_REPORT_CENTRAXX_DATAELEMENTS_FILE);
+        LineLoader lineLoader = (line) -> loadLineOfCentraXxDataElements(line);
+
+        load (filenameReader, lineLoader);
 
     }
 
-    private void loadCentraXxDataelements(File file) throws CentraXxMapperException {
+    private void loadCentraXxValues() throws CentraXxMapperException {
+
+        FilenameReader filenameReader = () -> getConfigurationFilename(EnumConfiguration.QUALITY_REPORT_CENTRAXX_VALUES_FILE);
+        LineLoader lineLoader = (line) -> loadLineOfCentraXxValues(line);
+
+        load (filenameReader, lineLoader);
+
+    }
+
+    private void loadGeneralRehearsalPriorization() throws CentraXxMapperException {
+
+        FilenameReader filenameReader = () -> getConfigurationFilename(EnumConfiguration.QUALITY_REPORT_GENERAL_REHEARSAL_PRIORITATION_FILE);
+        LineLoader lineLoader = (line) -> loadLineOfRehearsalPriorization(line);
+
+        load (filenameReader, lineLoader);
+
+    }
+
+    private void load (FilenameReader filenameReader, LineLoader loader) throws CentraXxMapperException {
+
+        File file = getFile(filenameReader);
+        load(file, loader);
+
+    }
+
+    private void load (File file, LineLoader lineLoader)throws CentraXxMapperException {
 
         try(BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))){
 
-            loadCentraXxDataelements(bufferedReader);
+            load(bufferedReader, lineLoader);
 
         } catch (IOException e) {
             throw new CentraXxMapperException(e);
@@ -77,14 +112,46 @@ public class CentraXxMapperImpl implements CentraXxMapper{
 
     }
 
-    private void loadCentraXxDataelements(BufferedReader bufferedReader) throws IOException {
+    private void load (BufferedReader bufferedReader, LineLoader lineLoader) throws IOException {
 
         String line = null;
 
         while ((line = bufferedReader.readLine()) != null){
-            loadLineOfCentraXxDataElements(line);
+            lineLoader.load(line);
         }
 
+    }
+
+    private interface FilenameReader{
+        public String getFilename();
+    }
+
+    private interface LineLoader {
+        public void load(String line);
+    }
+
+    private File getFile(FilenameReader filenameReader) throws CentraXxMapperException {
+
+        String filename = filenameReader.getFilename();
+        return getConfigFile(filename);
+
+    }
+
+    private File getConfigFile (String filename) throws CentraXxMapperException {
+
+        try {
+
+            ClassLoader classLoader = getClass().getClassLoader();
+            return new File(classLoader.getResource(filename).toURI());
+
+        } catch (Exception e){
+            throw new CentraXxMapperException(e);
+        }
+
+    }
+
+    private String getConfigurationFilename (EnumConfiguration enumConfigurationFilename){
+        return ConfigurationUtil.getConfigurationElementValue(enumConfigurationFilename);
     }
 
     private void loadLineOfCentraXxDataElements(String line){
@@ -122,68 +189,6 @@ public class CentraXxMapperImpl implements CentraXxMapper{
 
     }
 
-
-    private File getCentraXxDataelementsFile() throws CentraXxMapperException {
-
-        String filename = getCentraXxDataelementsFilename();
-        return getConfigFile(filename);
-
-    }
-
-    private File getConfigFile (String filename) throws CentraXxMapperException {
-
-        try {
-
-            ClassLoader classLoader = getClass().getClassLoader();
-            return new File(classLoader.getResource(filename).toURI());
-
-        } catch (Exception e){
-            throw new CentraXxMapperException(e);
-        }
-
-    }
-
-    private String getCentraXxDataelementsFilename(){
-        return ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_CENTRAXX_DATAELEMENTS_FILE);
-    }
-
-    private void loadCentraXxValues() throws CentraXxMapperException {
-
-        File file = getCentraXxValuesFile();
-        loadCentraXxValues(file);
-
-    }
-
-    private File getCentraXxValuesFile() throws CentraXxMapperException {
-
-        String filename = getCentraXxValuesFilename();
-        return getConfigFile(filename);
-
-    }
-
-
-    private void loadCentraXxValues(File file) throws CentraXxMapperException {
-
-        try(BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))){
-
-            loadCentraXxValues(bufferedReader);
-
-        } catch (IOException e) {
-            throw new CentraXxMapperException(e);
-        }
-
-    }
-
-    private void loadCentraXxValues(BufferedReader bufferedReader) throws IOException {
-
-        String line = null;
-
-        while ((line = bufferedReader.readLine()) != null){
-            loadLineOfCentraXxValues(line);
-        }
-
-    }
-
     private void loadLineOfCentraXxValues(String line) {
 
         String[] split = line.split("\t");
@@ -212,9 +217,20 @@ public class CentraXxMapperImpl implements CentraXxMapper{
         centraXxAttributeValues.put(attributeValueKey, value);
     }
 
-    private String getCentraXxValuesFilename(){
-        return ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_CENTRAXX_VALUES_FILE);
+    private void loadLineOfRehearsalPriorization(String line) {
+
+        String[] split = line.split(";");
+
+        if (split.length >= 2){
+
+            String mdrIdKey = split[0];
+            String priorization = split[1];
+
+            generalRehearsalPriorization.setPriorization(mdrIdKey, priorization);
+
+        }
     }
+
 
 
 }

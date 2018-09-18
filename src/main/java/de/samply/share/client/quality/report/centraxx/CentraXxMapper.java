@@ -30,5 +30,6 @@ public interface CentraXxMapper {
 
     public String getCentraXxAttribute (MdrIdDatatype mdrId);
     public String getCentraXxValue (MdrIdDatatype mdrId, String mdrValue);
+    public String getGeneralRehearsalPriorization (MdrIdDatatype mdrId);
 
 }

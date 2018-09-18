@@ -32,8 +32,10 @@ public class ExcelCellStyleImpl implements ExcelCellStyle {
 
     @Override
     public void addCellStyle(Cell cell) {
-        CellStyle cellStyle = (cell.getCellStyle() != null) ? cell.getCellStyle() : cell.getSheet().getWorkbook().createCellStyle();
+
+        CellStyle cellStyle = cell.getSheet().getWorkbook().createCellStyle();
         cell.setCellStyle(cellStyle);
+
     }
 
 }

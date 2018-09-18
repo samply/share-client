@@ -31,10 +31,10 @@ import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFFontFormatting;
 
-public class HighlightNotMappedInOrange_ExcelSheetFactory_002 extends ExcelSheetWithHighLightFactory {
+public class HighlightNotFoundInBlue_ExcelSheetFactory_002 extends ExcelSheetWithHighLightFactory {
 
 
-    public HighlightNotMappedInOrange_ExcelSheetFactory_002(ExcelSheetFactory excelSheetFactory) {
+    public HighlightNotFoundInBlue_ExcelSheetFactory_002(ExcelSheetFactory excelSheetFactory) {
         super(excelSheetFactory);
     }
 
@@ -48,7 +48,7 @@ public class HighlightNotMappedInOrange_ExcelSheetFactory_002 extends ExcelSheet
         stringBuilder.append('$');
         stringBuilder.append(getColumnToBeHighlighted());
         stringBuilder.append("1=\"");
-        stringBuilder.append(MatchElement.NOT_MAPPED);
+        stringBuilder.append(MatchElement.NOT_FOUND);
         stringBuilder.append('\"');
 
         return stringBuilder.toString();
@@ -69,7 +69,7 @@ public class HighlightNotMappedInOrange_ExcelSheetFactory_002 extends ExcelSheet
     @Override
     protected XSSFFontFormatting setHighlightFontFormatting(XSSFFontFormatting fontFormatting) {
 
-        fontFormatting.setFontColorIndex(IndexedColors.ORANGE.getIndex());
+        fontFormatting.setFontColorIndex(IndexedColors.ROYAL_BLUE.getIndex());
         return fontFormatting;
 
     }

@@ -37,16 +37,16 @@ public class MappingFileReader {
     private String teilerBaseViewColumnsFilename = "";
 
 
-    public List<CxxMdrCxxRepresentation> readCxxMdrCxxRepresentations() {
+    public List<main.java.de.samply.share.client.mapper.CxxMdrCxxRepresentation> readCxxMdrCxxRepresentations() {
         return readFileAndGetResults(cxxMdrCxxRepresentationsFilename, new CxxMdrCxxRepresentationsLineAnalyzer());
     }
 
 
-    public List<CxxMdrRepresentation> readCxxMdrRepresentations (){
+    public List<main.java.de.samply.share.client.mapper.CxxMdrRepresentation> readCxxMdrRepresentations (){
         return readFileAndGetResults(cxxMdrRepresentationsFilename, new CxxMdrRepresentationsLineAnalyzer());
     }
 
-    public List<TeilerBaseViewColumn> readTeilerBaseViewColumns (){
+    public List<main.java.de.samply.share.client.mapper.TeilerBaseViewColumn> readTeilerBaseViewColumns (){
         return readFileAndGetResults(teilerBaseViewColumnsFilename, new TeilerBaseViewColumnsLineAnalyzer());
     }
 
@@ -57,7 +57,7 @@ public class MappingFileReader {
 
     private class CxxMdrCxxRepresentationsLineAnalyzer implements LineAnalyzer {
 
-        private List<CxxMdrCxxRepresentation> cxxMdrCxxRepresentations = new ArrayList<>();
+        private List<main.java.de.samply.share.client.mapper.CxxMdrCxxRepresentation> cxxMdrCxxRepresentations = new ArrayList<>();
         private Integer counter = 1;
 
         @Override
@@ -66,7 +66,7 @@ public class MappingFileReader {
             String[] split = line.split(";");
             if (split != null && split.length >= 3){
 
-                CxxMdrCxxRepresentation cxxMdrCxxRepresentation = new CxxMdrCxxRepresentation();
+                main.java.de.samply.share.client.mapper.CxxMdrCxxRepresentation cxxMdrCxxRepresentation = new main.java.de.samply.share.client.mapper.CxxMdrCxxRepresentation();
 
                 cxxMdrCxxRepresentation.setOid(counter++);
                 cxxMdrCxxRepresentation.setMdrRepresentationOid(getInteger(split[0]));
@@ -79,7 +79,7 @@ public class MappingFileReader {
 
         }
 
-        public List<CxxMdrCxxRepresentation> getResults() {
+        public List<main.java.de.samply.share.client.mapper.CxxMdrCxxRepresentation> getResults() {
             return cxxMdrCxxRepresentations;
         }
 
@@ -98,7 +98,7 @@ public class MappingFileReader {
 
     private class CxxMdrRepresentationsLineAnalyzer implements LineAnalyzer {
 
-        private List<CxxMdrRepresentation> cxxMdrRepresentations = new ArrayList<>();
+        private List<main.java.de.samply.share.client.mapper.CxxMdrRepresentation> cxxMdrRepresentations = new ArrayList<>();
 
         @Override
         public void analyzeLine(String line) {
@@ -106,7 +106,7 @@ public class MappingFileReader {
             String[] split = line.split(";");
             if (split != null & split.length >= 3){
 
-                CxxMdrRepresentation cxxMdrRepresentation = new CxxMdrRepresentation();
+                main.java.de.samply.share.client.mapper.CxxMdrRepresentation cxxMdrRepresentation = new main.java.de.samply.share.client.mapper.CxxMdrRepresentation();
 
                 cxxMdrRepresentation.setOid(getInteger(split[0]));
                 cxxMdrRepresentation.setMdrMappingOid(getInteger(split[1]));
@@ -115,7 +115,7 @@ public class MappingFileReader {
 
         }
 
-        public List<CxxMdrRepresentation> getResults() {
+        public List<main.java.de.samply.share.client.mapper.CxxMdrRepresentation> getResults() {
             return cxxMdrRepresentations;
         }
 
@@ -123,7 +123,7 @@ public class MappingFileReader {
 
     private class TeilerBaseViewColumnsLineAnalyzer implements LineAnalyzer {
 
-        private List<TeilerBaseViewColumn> teilerBaseViewColumns = new ArrayList<>();
+        private List<main.java.de.samply.share.client.mapper.TeilerBaseViewColumn> teilerBaseViewColumns = new ArrayList<>();
 
         @Override
         public void analyzeLine(String line) {
@@ -133,7 +133,7 @@ public class MappingFileReader {
             //TODO
         }
 
-        public List<TeilerBaseViewColumn> getResults() {
+        public List<main.java.de.samply.share.client.mapper.TeilerBaseViewColumn> getResults() {
             return teilerBaseViewColumns;
         }
 

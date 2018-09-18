@@ -65,11 +65,11 @@ public class ExcelWorkbookFactoryImpl_002 implements ExcelWorkbookFactory {
     private DktkId_MdrId_Converter dktkIdManager;
     private MdrIgnoredElements mdrIgnoredElements;
 
-    public final static String allElements_sheetTitle = "all elements";
-    public final static String filteredElements_sheetTitle = "filtered elements";
-    public final static String patientLocalIds_sheetTitle = "patient local ids";
-    public final static String patientDktkIds_sheetTitle = "patient dktk ids";
-    public final static String dataElementStatistics = "data element stats";
+    public final static String ALL_ELEMENTS_SHEET_TITLE = "all elements";
+    public final static String FILTERED_ELEMENTS_SHEET_TITLE = "filtered elements";
+    public final static String PATIENT_LOCAL_IDS_SHEET_TITLE = "patient local ids";
+    public final static String PATIENT_DKTK_IDS_SHEET_TITLE = "patient dktk ids";
+    public final static String DATA_ELEMENT_STATISTICS = "data element stats";
 
     protected static final Logger logger = LogManager.getLogger(ExcelWorkbookFactoryImpl_002.class);
 
@@ -113,12 +113,12 @@ public class ExcelWorkbookFactoryImpl_002 implements ExcelWorkbookFactory {
         logger.info("Adding filtered elements to quality report file");
 
         QualityResultsStatistics filteredQualityResultsStatistics = getQualityResultStatistics(filteredQualityResults);
-        workbook = addSheet(workbook, filteredElements_sheetTitle, filteredQualityResults, asmQualityResults, filteredQualityResultsStatistics);
+        workbook = addSheet(workbook, FILTERED_ELEMENTS_SHEET_TITLE, filteredQualityResults, asmQualityResults, filteredQualityResultsStatistics);
 
         logger.info("Adding all elements to quality report file");
 
         QualityResultsStatistics qualityResultsStatistics = getQualityResultStatistics(qualityResults);
-        workbook = addSheet(workbook, allElements_sheetTitle, sortedQualityResults, asmQualityResults, qualityResultsStatistics);
+        workbook = addSheet(workbook, ALL_ELEMENTS_SHEET_TITLE, sortedQualityResults, asmQualityResults, qualityResultsStatistics);
 
         logger.info("Adding mismatching patient local ids");
         workbook = addPatientLocalIdsSheet(workbook, asmQualityResults);
@@ -128,7 +128,7 @@ public class ExcelWorkbookFactoryImpl_002 implements ExcelWorkbookFactory {
 
 
         logger.info("Adding data element statistics");
-        workbook = addDataElementStatistics(workbook, dataElementStatistics, sortedQualityResults, qualityResultsStatistics);
+        workbook = addDataElementStatistics(workbook, DATA_ELEMENT_STATISTICS, sortedQualityResults, qualityResultsStatistics);
 
         return workbook;
 
@@ -155,14 +155,14 @@ public class ExcelWorkbookFactoryImpl_002 implements ExcelWorkbookFactory {
     private XSSFWorkbook addPatientLocalIdsSheet (XSSFWorkbook workbook, AlphabeticallySortedMismatchedQualityResults qualityResults) throws ExcelWorkbookFactoryException {
 
         ExcelRowContext excelRowContext = patientLocalIdsExcelRowContextFactory.createExcelRowContext(qualityResults);
-        return addSheet(workbook, patientLocalIds_sheetTitle, excelRowContext);
+        return addSheet(workbook, PATIENT_LOCAL_IDS_SHEET_TITLE, excelRowContext);
 
     }
 
     private XSSFWorkbook addPatientDktkIdsSheet (XSSFWorkbook workbook, AlphabeticallySortedMismatchedQualityResults qualityResults) throws ExcelWorkbookFactoryException {
 
         ExcelRowContext excelRowContext = patientDktkIdsExcelRowContextFactory.createExcelRowContext(qualityResults);
-        return addSheet(workbook, patientDktkIds_sheetTitle, excelRowContext);
+        return addSheet(workbook, PATIENT_DKTK_IDS_SHEET_TITLE, excelRowContext);
 
     }
 

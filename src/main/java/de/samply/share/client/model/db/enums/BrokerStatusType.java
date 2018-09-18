@@ -5,12 +5,11 @@ package de.samply.share.client.model.db.enums;
 
 
 import de.samply.share.client.model.db.Samply;
-
-import javax.annotation.Generated;
-
 import org.jooq.Catalog;
 import org.jooq.EnumType;
 import org.jooq.Schema;
+
+import javax.annotation.Generated;
 
 
 /**
