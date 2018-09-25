@@ -279,7 +279,7 @@ public class ReportToMonitoringJob implements Job {
             centraxxMappingDate.setStatus_text("Does not apply");
         } else {
             try {
-                String mappingDate = ((LdmConnectorCentraxx)ldmConnector).getMappingVersion();
+                String mappingDate = ((LdmConnectorCentraxx)ldmConnector).getMappingDate();
                 centraxxMappingDate.setExit_status("0");
                 centraxxMappingDate.setStatus_text(mappingDate);
             } catch (Exception e) {
