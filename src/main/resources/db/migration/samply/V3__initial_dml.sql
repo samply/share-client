@@ -11,8 +11,11 @@ INSERT INTO samply.configuration(name, setting) VALUES ('CENTRAL_MDS_DATABASE_NE
 INSERT INTO samply.configuration(name, setting) VALUES ('CENTRAL_MDS_DATABASE_SHOW_UPLOAD_PATIENTS_WITH_LOCAL_CONSENT', '');
 INSERT INTO samply.configuration(name, setting) VALUES ('DECENTRAL_SEARCH_MAIL_RECEIVER_ADDRESS', '');
 INSERT INTO samply.configuration(name, setting) VALUES ('DECENTRAL_SEARCH_MAIL_SHARE_URL', '');
+
+-- For GBA we need to change this to 'https://mdr.germanbiobanknode.de/v3/api/mdr' and 'http://localhost:8081'
 INSERT INTO samply.configuration(name, setting) VALUES ('MDR_URL', 'https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr');
 INSERT INTO samply.configuration(name, setting) VALUES ('LDM_URL', 'http://localhost:8080/centraxx/');
+
 INSERT INTO samply.configuration(name, setting) VALUES ('ID_MANAGER_URL', 'http://localhost:8180/ID-Manager');
 INSERT INTO samply.configuration(name, setting) VALUES ('ID_MANAGER_NETWORK_ID', 'DKTK');
 INSERT INTO samply.configuration(name, setting) VALUES ('ID_MANAGER_INSTANCE_ID', '');
