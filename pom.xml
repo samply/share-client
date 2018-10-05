@@ -48,9 +48,9 @@
 
     <properties>
         <!-- general properties -->
-        <database.username>samplyweb</database.username>
-        <database.password>samplyweb</database.password>
-        <database.url>jdbc:postgresql://localhost:5432/share_v2</database.url>
+        <database.username>samply</database.username>
+        <database.password>samply</database.password>
+        <database.url>jdbc:postgresql://localhost:5432/samply.connector</database.url>
         <database.schema>samply</database.schema>
 
         <!-- DUMMY values to provide IntelliJ from marking errors -->
