@@ -83,6 +83,7 @@ import java.util.Map;
 
 import static de.samply.share.common.utils.Constants.AUTH_HEADER_VALUE_SAMPLY;
 
+import java.util.Random;
 /**
  * A connector that handles all communication with a searchbroker
  */
@@ -574,7 +575,7 @@ public class BrokerConnector {
     }
 
     /**
-     * Send a reply to the broker.
+     * Send a (disguised) reply to the broker.
      * <p>
      * Currently, the format of the reply is not defined. It might just be an integer...or some xml representation of a result set
      *
@@ -602,8 +603,28 @@ public class BrokerConnector {
                 }
             } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
                 BbmriResult result = (BbmriResult) reply;
-                stats.put("donor",result.getNumberOfDonors());
-                stats.put("sample",result.getNumberOfSamples());
+                //stats.put("donor",result.getNumberOfDonors()); // if no disguise methode is used
+                //stats.put("sample",result.getNumberOfSamples());
+                int originalDonorNumber = result.getNumberOfDonors();
+                int originalSampleNumber = result.getNumberOfSamples();
+                int disguisedNumberOfDonors;
+                int disguisedNumberOfSamples;
+                Random rndmDonors = new Random();
+                Random rndmSamples = new Random();
+                if (originalDonorNumber > 0) {
+                    disguisedNumberOfDonors = 10 * ((originalDonorNumber + rndmDonors.nextInt(4) + 9) / 10); // disguise: add random number (0 to 3) & round up
+                } else {
+                    disguisedNumberOfDonors = 0;
+                }
+
+                if (originalSampleNumber > 0) {
+                    disguisedNumberOfSamples = 10 * ((originalSampleNumber + rndmSamples.nextInt(4) + 9) / 10); // disguise: add random number (0 to 3) & round up
+                } else {
+                    disguisedNumberOfSamples = 0;
+                }
+
+                stats.put("donor", disguisedNumberOfDonors);
+                stats.put("sample", disguisedNumberOfSamples);
                 replyString = stats.toString();
             }
             StringEntity entity = new StringEntity(replyString);
