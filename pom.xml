@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>share-client</artifactId>
-    <version>3.0.6-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>Samply Share Client</name>
+    <name>${project.context}-share-client</name>
 
     <parent>
         <groupId>de.samply</groupId>
@@ -18,48 +18,47 @@
     <profiles>
         <profile>
             <id>samply</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
-                <samply.project.context>samply</samply.project.context>
-                <samply.project.basename>Samply.Share.Client</samply.project.basename>
+                <project.context>samply</project.context>
+                <project.basename>Samply.Share.Client</project.basename>
             </properties>
         </profile>
         <profile>
             <id>osse</id>
             <properties>
-                <samply.project.context>osse</samply.project.context>
-                <samply.project.basename>OSSE.Share</samply.project.basename>
+                <project.context>osse</project.context>
+                <project.basename>OSSE.Share</project.basename>
             </properties>
         </profile>
         <profile>
             <id>dktk</id>
             <properties>
-                <samply.project.context>dktk</samply.project.context>
-                <samply.project.basename>DKTK.Teiler</samply.project.basename>
+                <project.context>dktk</project.context>
+                <project.basename>DKTK.Teiler</project.basename>
             </properties>
         </profile>
         <profile>
             <id>gbn</id>
             <properties>
-                <samply.project.context>gbn</samply.project.context>
-                <samply.project.basename>GBN.Teiler</samply.project.basename>
+                <project.context>gbn</project.context>
+                <project.basename>GBN.Teiler</project.basename>
             </properties>
         </profile>
     </profiles>
 
-    <properties>
-        <!-- general properties -->
-        <database.username>samply</database.username>
-        <database.password>samply</database.password>
-        <database.url>jdbc:postgresql://localhost:5432/samply.connector</database.url>
-        <database.schema>samply</database.schema>
 
-        <!-- DUMMY values to provide IntelliJ from marking errors -->
-        <samply.project.context>samply</samply.project.context>
-        <samply.project.basename>Samply.Share.Client</samply.project.basename>
+    <properties>
+        <!-- Postgres settings -->
+        <database.username>${project.context}</database.username>
+        <database.password>${project.context}</database.password>
+        <database.url>jdbc:postgresql://localhost:5432/${project.context}.connector</database.url>
+        <database.schema>${project.context}</database.schema>
 
         <!-- Samply dependencies -->
         <share-common.version>3.1.0</share-common.version>
-
         <jsf-renderer.version>2.0.0</jsf-renderer.version>
         <common-mailing.version>2.0.0</common-mailing.version>
         <common-http.version>5.0.0</common-http.version>
@@ -76,6 +75,7 @@
         <log4j-api.version>2.8</log4j-api.version>
         <omnifaces.version>1.14.1</omnifaces.version>
         <simple-xml.version>2.7.1</simple-xml.version>
+
         <!-- Jersey 2.x is incompatible with 1.19.4 -->
         <jersey.version>1.19.4</jersey.version>
         <jbcrypt.version>0.4</jbcrypt.version>
@@ -99,7 +99,7 @@
     </properties>
 
     <build>
-        <finalName>${samply.project.basename}-${project.version}</finalName>
+        <finalName>${project.basename}-${project.version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/java</directory>
@@ -135,7 +135,7 @@
                             </goals>
                             <configuration>
                                 <target>
-                                    <copy file="docs/faces-config-${samply.project.context}.xml"
+                                    <copy file="docs/faces-config-${project.context}.xml"
                                           toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml"
                                           overwrite="true"/>
                                 </target>
@@ -237,7 +237,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Samply-Project-Context>${samply.project.context}</Samply-Project-Context>
+                            <Samply-Project-Context>${project.context}</Samply-Project-Context>
                         </manifestEntries>
                     </archive>
                 </configuration>
