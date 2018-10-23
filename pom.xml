@@ -96,6 +96,9 @@
         <datatables.version>1.10.16</datatables.version>
         <twbs-pagination.version>1.4.1</twbs-pagination.version>
         <jqplot.version>1.0.9.d96a669-1</jqplot.version>
+
+        <skipTests>false</skipTests>
+
     </properties>
 
     <build>

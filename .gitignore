@@ -1,4 +1,3 @@
 .idea
 *.iml
-src/test/
 target/
