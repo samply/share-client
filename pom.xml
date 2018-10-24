@@ -7,7 +7,7 @@
     <artifactId>share-client</artifactId>
     <version>4.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>${project.context}-share-client</name>
+    <name>Connector</name>
 
     <parent>
         <groupId>de.samply</groupId>
@@ -16,6 +16,7 @@
     </parent>
 
     <profiles>
+        <!-- ${project.context} also defines the folder where flyway looks for sql files -->
         <profile>
             <id>samply</id>
             <activation>
@@ -23,7 +24,12 @@
             </activation>
             <properties>
                 <project.context>samply</project.context>
-                <project.basename>Samply.Share.Client</project.basename>
+                <project.basename>Samply.Connector</project.basename>
+                <!-- Postgres settings -->
+                <database.username>${project.context}</database.username>
+                <database.password>${project.context}</database.password>
+                <database.url>jdbc:postgresql://localhost:5432/${project.context}.connector</database.url>
+                <database.schema>${project.context}</database.schema>
             </properties>
         </profile>
         <profile>
@@ -31,6 +37,11 @@
             <properties>
                 <project.context>osse</project.context>
                 <project.basename>OSSE.Share</project.basename>
+                <!-- general properties -->
+                <database.username>samplyshare</database.username>
+                <database.password>samplyshare</database.password>
+                <database.url>jdbc:postgresql://localhost:5432/samplyshare</database.url>
+                <database.schema>samply</database.schema>
             </properties>
         </profile>
         <profile>
@@ -38,25 +49,16 @@
             <properties>
                 <project.context>dktk</project.context>
                 <project.basename>DKTK.Teiler</project.basename>
-            </properties>
-        </profile>
-        <profile>
-            <id>gbn</id>
-            <properties>
-                <project.context>gbn</project.context>
-                <project.basename>GBN.Teiler</project.basename>
+                <!-- general properties -->
+                <database.username>samplyshare</database.username>
+                <database.password>samplyshare</database.password>
+                <database.url>jdbc:postgresql://localhost:5432/samplyshare</database.url>
+                <database.schema>samply</database.schema>
             </properties>
         </profile>
     </profiles>
 
-
     <properties>
-        <!-- Postgres settings -->
-        <database.username>${project.context}</database.username>
-        <database.password>${project.context}</database.password>
-        <database.url>jdbc:postgresql://localhost:5432/${project.context}.connector</database.url>
-        <database.schema>${project.context}</database.schema>
-
         <!-- Samply dependencies -->
         <share-common.version>3.1.0</share-common.version>
         <jsf-renderer.version>2.0.0</jsf-renderer.version>
@@ -112,9 +114,6 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>**/db/migration/samply/V5__test_dml.sql</exclude>
-                </excludes>
             </resource>
         </resources>
         <pluginManagement>
@@ -151,13 +150,52 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <!-- JOOQ Plugin - Generate Java Classes from Database -->
+            <!-- Flyway Plugin - Create Database from SQL files - Always place here before JOOQ -->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>${version.flyway}</version>
+                <!-- The Flyway plugin is executed in every generate-sources phase, prior to compilation -->
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <url>${database.url}</url>
+                    <user>${database.username}</user>
+                    <password>${database.password}</password>
+                    <schemas>
+                        <schema>${database.schema}</schema>
+                    </schemas>
+                    <locations>
+                        <location>filesystem:src/main/resources/db/migration/${project.context}</location>
+                    </locations>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Samply-Project-Context>${project.context}</Samply-Project-Context>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <!-- JOOQ Plugin - Generate Java Classes from Database - Always place here after Flyway -->
             <plugin>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-codegen-maven</artifactId>
                 <version>${version.jooq}</version>
+                <!-- The JOOQ code generation plugin is executed in every generate-sources phase, prior to compilation -->
                 <executions>
                     <execution>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -212,37 +250,9 @@
                         </generate>
                         <target>
                             <packageName>de.samply.share.client.model.db</packageName>
-                            <directory>src/main/java</directory>
+                            <directory>target/generated-sources/jooq</directory>
                         </target>
                     </generator>
-                </configuration>
-            </plugin>
-            <!-- Flyway Plugin - Create Database from SQL files -->
-            <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
-                <version>${version.flyway}</version>
-                <configuration>
-                    <url>${database.url}</url>
-                    <user>${database.username}</user>
-                    <password>${database.password}</password>
-                    <schemas>
-                        <schema>${database.schema}</schema>
-                    </schemas>
-                    <locations>
-                        <location>filesystem:src/main/resources/db/migration/samply</location>
-                    </locations>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Samply-Project-Context>${project.context}</Samply-Project-Context>
-                        </manifestEntries>
-                    </archive>
                 </configuration>
             </plugin>
             <plugin>
@@ -258,9 +268,7 @@
         </plugins>
     </build>
 
-
     <dependencies>
-
         <!-- JSF 2 -->
         <dependency>
             <groupId>com.sun.faces</groupId>
