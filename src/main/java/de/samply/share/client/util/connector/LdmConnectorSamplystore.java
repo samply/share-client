@@ -1,40 +1,12 @@
-/*
- * Copyright (c) 2017 Medical Informatics Group (MIG),
- * Universitätsklinikum Frankfurt
- *
- * Contact: www.mig-frankfurt.de
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see <http://www.gnu.org/licenses>.
- *
- * Additional permission under GNU GPL version 3 section 7:
- *
- * If you modify this Program, or any covered work, by linking or combining it
- * with Jersey (https://jersey.java.net) (or a modified version of that
- * library), containing parts covered by the terms of the General Public
- * License, version 2.0, the licensors of this Program grant you additional
- * permission to convey the resulting work.
- */
-
 package de.samply.share.client.util.connector;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
 import de.samply.common.http.HttpConnector;
 import de.samply.common.ldmclient.LdmClientException;
+import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
 import de.samply.common.ldmclient.centraxx.LdmClientCentraxxException;
-import de.samply.common.ldmclient.samplystore.LdmClientSamplystore;
-import de.samply.common.ldmclient.samplystore.LdmClientSamplystoreException;
+import de.samply.common.ldmclient.samplystoreBiobank.LdmClientSamplystoreBiobank;
+import de.samply.common.ldmclient.samplystoreBiobank.LdmClientSamplystoreBiobankException;
 import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.share.client.control.ApplicationBean;
@@ -50,12 +22,11 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.SamplyShareUtils;
-import de.samply.share.model.osse.ObjectFactory;
-import de.samply.share.model.osse.Patient;
-import de.samply.share.model.osse.QueryResult;
+import de.samply.share.model.bbmri.BbmriResult;
 import de.samply.share.model.common.*;
 import de.samply.share.model.common.Error;
-import de.samply.share.model.common.QueryResultStatistic;
+import de.samply.share.model.osse.ObjectFactory;
+import de.samply.share.model.osse.Patient;
 import de.samply.share.utils.QueryConverter;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -81,21 +52,22 @@ import java.util.concurrent.TimeUnit;
 
 import static de.samply.dktk.converter.PatientConverterUtil.convertDate;
 
-/**
- * Implementation of the LdmConnector interface for samply store rest backends
- */
-public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patient> {
+public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult, Patient> {
 
-    private static final Logger logger = LogManager.getLogger(LdmConnectorSamplystore.class);
+    /**
+     * Implementation of the LdmConnector interface for samply store rest backends
+     */
+
+    private static final Logger logger = LogManager.getLogger(de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank.class);
 
     private transient HttpConnector httpConnector;
     private transient MdrClient mdrClient;
-    private LdmClientSamplystore ldmClient;
+    private LdmClientSamplystoreBiobank ldmClient;
     private CloseableHttpClient httpClient;
     private String samplystoreBaseUrl;
     private HttpHost samplystoreHost;
 
-    public LdmConnectorSamplystore() {
+    public LdmConnectorSamplystoreBiobank() {
         try {
             init();
             this.mdrClient = ApplicationBean.getMdrClient();
@@ -104,7 +76,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
         }
     }
 
-    public LdmConnectorSamplystore(boolean useCaching) {
+    public LdmConnectorSamplystoreBiobank(boolean useCaching) {
         try {
             init(useCaching);
             this.mdrClient = ApplicationBean.getMdrClient();
@@ -113,7 +85,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
         }
     }
 
-    public LdmConnectorSamplystore(boolean useCaching, int maxCacheSize) {
+    public LdmConnectorSamplystoreBiobank(boolean useCaching, int maxCacheSize) {
         try {
             init(useCaching, maxCacheSize);
             this.mdrClient = ApplicationBean.getMdrClient();
@@ -128,7 +100,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
             httpConnector = ApplicationBean.getHttpConnector();
             this.samplystoreHost = SamplyShareUtils.getAsHttpHost(samplystoreBaseUrl);
             httpClient = httpConnector.getHttpClient(samplystoreHost);
-            this.ldmClient = new LdmClientSamplystore(httpClient, samplystoreBaseUrl);
+            this.ldmClient = new LdmClientSamplystoreBiobank(httpClient, samplystoreBaseUrl);
         } catch (MalformedURLException | LdmClientException e) {
             throw new LDMConnectorException(e);
         }
@@ -140,7 +112,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
             httpConnector = ApplicationBean.getHttpConnector();
             this.samplystoreHost = SamplyShareUtils.getAsHttpHost(samplystoreBaseUrl);
             httpClient = httpConnector.getHttpClient(samplystoreHost);
-            this.ldmClient = new LdmClientSamplystore(httpClient, samplystoreBaseUrl, useCaching);
+            this.ldmClient = new LdmClientSamplystoreBiobank(httpClient, samplystoreBaseUrl, useCaching);
         } catch (MalformedURLException | LdmClientException e) {
             throw new LDMConnectorException(e);
         }
@@ -152,40 +124,22 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
             httpConnector = ApplicationBean.getHttpConnector();
             this.samplystoreHost = SamplyShareUtils.getAsHttpHost(samplystoreBaseUrl);
             httpClient = httpConnector.getHttpClient(samplystoreHost);
-            this.ldmClient = new LdmClientSamplystore(httpClient, samplystoreBaseUrl, useCaching, maxCacheSize);
+            this.ldmClient = new LdmClientSamplystoreBiobank(httpClient, samplystoreBaseUrl, useCaching, maxCacheSize);
         } catch (MalformedURLException | LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param completeMdsViewFields not yet supported
-     * @param statisticsOnly not yet supported
-     */
     @Override
-    public String postQuery(Query query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException {
+    public String postQuery(de.samply.share.model.common.Query query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException {
         try {
             View view = new View();
             view.setQuery(query);
             // TODO: How to get viewfields for samply store to use?
             ViewFields viewFields = new ViewFields();
 
-            // Add additional viewfields, as defined in the config
-            String additionalViewfields = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.INQUIRY_ADDITIONAL_MDRKEYS);
-            if (includeAdditionalViewfields && !SamplyShareUtils.isNullOrEmpty(additionalViewfields)) {
-                List<String> viewFieldList = Splitter.on(';').splitToList(additionalViewfields);
-                for (String viewField : viewFieldList) {
-                    viewFields.getMdrKey().add(viewField);
-                }
-            }
-
             view.setViewFields(viewFields);
-            if (!SamplyShareUtils.isNullOrEmpty(removeKeysFromView)) {
-                view = QueryConverter.removeAttributesFromView(view, removeKeysFromView);
-            }
-            return ldmClient.postView(view);
+            return ldmClient.postView(view,statisticsOnly);
         } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
@@ -220,7 +174,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
      * {@inheritDoc}
      */
     @Override
-    public QueryResult getResults(String location) throws LDMConnectorException {
+    public BbmriResult getResults(String location) throws LDMConnectorException {
         try {
             return ldmClient.getResult(location);
         } catch (LdmClientException e) {
@@ -232,10 +186,10 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
      * {@inheritDoc}
      */
     @Override
-    public QueryResult getResultsFromPage(String location, int page) throws LDMConnectorException {
+    public BbmriResult getResultsFromPage(String location, int page) throws LDMConnectorException {
         try {
             return ldmClient.getResultPage(location, page);
-        } catch (LdmClientSamplystoreException e) {
+        } catch (LdmClientSamplystoreBiobankException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -259,7 +213,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
     public Object getStatsOrError(String location) throws LDMConnectorException {
         try {
             return ldmClient.getStatsOrError(location);
-        } catch (LdmClientSamplystoreException e) {
+        } catch (LdmClientSamplystoreBiobankException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -271,7 +225,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
     public QueryResultStatistic getQueryResultStatistic(String location) throws LDMConnectorException {
         try {
             return ldmClient.getQueryResultStatistic(location);
-        } catch (LdmClientSamplystoreException e) {
+        } catch (LdmClientSamplystoreBiobankException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -283,7 +237,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
     public Integer getResultCount(String location) throws LDMConnectorException {
         try {
             return ldmClient.getResultCount(location);
-        } catch (LdmClientSamplystoreException e) {
+        } catch (LdmClientSamplystoreBiobankException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -318,39 +272,35 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
         return ldmClient.isResultPageAvailable(location, 0);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean isResultDone(String location, QueryResultStatistic queryResultStatistic) throws LDMConnectorException {
+    public boolean isResultDone(String location, de.samply.share.model.common.QueryResultStatistic qrs) throws LDMConnectorException {
         if (SamplyShareUtils.isNullOrEmpty(location)) {
             throw new LDMConnectorException("Location of query is empty");
         }
-
-        if (queryResultStatistic != null) {
-            if (queryResultStatistic.getTotalSize() == 0) {
+        if (qrs != null) {
+            if (qrs.getTotalSize() == 0) {
                 return true;
             }
-            int lastPageIndex = queryResultStatistic.getNumberOfPages() - 1;
+            int lastPageIndex = qrs.getNumberOfPages() - 1;
             return ldmClient.isResultPageAvailable(location, lastPageIndex);
         } else {
             throw new LDMConnectorException("QueryResultStatistic is null.");
         }
     }
 
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public void writeQueryResultPageToDisk(QueryResult queryResult, int index) throws IOException {
+    public void writeQueryResultPageToDisk(BbmriResult queryResult, int index) throws IOException {
         try {
             File dir = (File) ProjectInfo.INSTANCE.getServletContext().getAttribute(TEMPDIR);
-            File xmlFile = new File(dir + System.getProperty("file.separator") + queryResult.getId() + "_" + index + "_transformed" + XML_SUFFIX);
-            final JAXBContext context = JAXBContext.newInstance(QueryResult.class);
+            File xmlFile = new File(dir + System.getProperty("file.separator") + queryResult.getQueryId() + "_" + index + "_transformed" + XML_SUFFIX);
+            final JAXBContext context = JAXBContext.newInstance(BbmriResult.class);
             final Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            ObjectFactory objectFactory = new ObjectFactory();
-            marshaller.marshal(objectFactory.createQueryResult(queryResult), xmlFile);
+            marshaller.marshal(queryResult, xmlFile);
         } catch (JAXBException e) {
             throw new IOException(e);
         }
@@ -403,42 +353,40 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
      */
     @Override
     public int getPatientCount(boolean dktkFlagged) throws LDMConnectorException, InterruptedException {
-        try {
-            int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
-                    EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
-            int secondsSleep = ConfigurationUtil.getConfigurationTimingsElementValue(
-                    EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_INTERVAL_SECONDS);
-            int retryNr = 0;
+        int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
+                EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
+        int secondsSleep = ConfigurationUtil.getConfigurationTimingsElementValue(
+                EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_INTERVAL_SECONDS);
+        int retryNr = 0;
 
-            View view = createViewForMonitoring(dktkFlagged);
-            String resultLocation = ldmClient.postView(view);
-            do {
-                try {
-                    Integer resultCount = getResultCount(resultLocation);
-                    if (resultCount != null) {
-                        return resultCount;
-                    }
-                } catch (LDMConnectorException e) {
-                    // Catch the exception since it might just mean the result is not ready yet
-                }
-                TimeUnit.SECONDS.sleep(secondsSleep);
-            } while (++retryNr < maxAttempts);
-        } catch (LdmClientSamplystoreException e) {
-            throw new LDMConnectorException(e);
+        View view = createViewForMonitoring();
+        String resultLocation = null;
+        try {
+            resultLocation = ldmClient.postView(view);
+        } catch (LdmClientException e) {
+            e.printStackTrace();
         }
+        do {
+            try {
+                Integer resultCount = getResultCount(resultLocation);
+                if (resultCount != null) {
+                    return resultCount;
+                }
+            } catch (LDMConnectorException e) {
+                // Catch the exception since it might just mean the result is not ready yet
+            }
+            TimeUnit.SECONDS.sleep(secondsSleep);
+        } while (++retryNr < maxAttempts);
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public ReferenceQueryCheckResult getReferenceQueryCheckResult(Query referenceQuery) throws LDMConnectorException {
+    public ReferenceQueryCheckResult getReferenceQueryCheckResult(de.samply.share.model.common.Query referenceQuery) throws LDMConnectorException {
         ReferenceQueryCheckResult result = new ReferenceQueryCheckResult();
         try {
             View referenceView = createReferenceViewForMonitoring(referenceQuery);
             Stopwatch stopwatch = Stopwatch.createStarted();
-            String resultLocation = ldmClient.postView(referenceView);
+            String resultLocation = ldmClient.postView(referenceView, false);
 
             int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
                     EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
@@ -454,13 +402,18 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
                         Error error = (Error) statsOrError;
 
                         switch (error.getErrorCode()) {
-                            case LdmClientSamplystore.ERROR_CODE_UNKNOWN_MDRKEYS:
+                            case LdmClientCentraxx.ERROR_CODE_DATE_PARSING_ERROR:
+                            case LdmClientCentraxx.ERROR_CODE_UNIMPLEMENTED:
+                            case LdmClientCentraxx.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
+                                logger.warn("Could not execute reference query correctly. Error: " + error.getErrorCode() + ": " + error.getDescription());
+                                return result;
+                            case LdmClientCentraxx.ERROR_CODE_UNKNOWN_MDRKEYS:
                             default:
                                 ArrayList<String> unknownKeys = new ArrayList<>();
                                 unknownKeys.addAll(error.getMdrKey());
                                 referenceView = QueryConverter.removeAttributesFromView(referenceView, unknownKeys);
                                 stopwatch.start();
-                                resultLocation = ldmClient.postView(referenceView);
+                                resultLocation = ldmClient.postView(referenceView, false);
                                 break;
                         }
                     } else if (statsOrError.getClass().equals(QueryResultStatistic.class)) {
@@ -479,8 +432,8 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
                     return result;
                 }
             } while (retryNr < maxAttempts);
-        } catch (LdmClientSamplystoreException e) {
-            throw new LDMConnectorException(e);
+        } catch (LdmClientSamplystoreBiobankException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -491,26 +444,12 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
      * @param dktkFlagged when true, only count those with dktk consent. when false, count ALL (not just those without consent)
      * @return the constructed view object that can be posted to centraxx
      */
-    private View createViewForMonitoring(boolean dktkFlagged) throws LDMConnectorException {
+    private View createViewForMonitoring() throws LDMConnectorException {
         MdrIdDatatype mdrKeyDktkConsent =
                 new MdrIdDatatype(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_CONSENT_DKTK));
         View view = new View();
         Query query = new Query();
-        ObjectFactory objectFactory = new ObjectFactory();
         Where where = new Where();
-        And and = new And();
-
-        if (dktkFlagged) {
-            Attribute attr_dktkFlag = new Attribute();
-            attr_dktkFlag.setMdrKey(mdrKeyDktkConsent.getLatestCentraxx());
-            attr_dktkFlag.setValue(objectFactory.createValue("true"));
-
-            Eq equals = new Eq();
-            equals.setAttribute(attr_dktkFlag);
-            and.getAndOrEqOrLike().add(equals);
-            where.getAndOrEqOrLike().add(and);
-        }
-
         query.setWhere(where);
         view.setQuery(query);
         try {
@@ -530,11 +469,11 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
     private View createReferenceViewForMonitoring(Query referenceQuery) throws LDMConnectorException {
         View view = new View();
         view.setQuery(referenceQuery);
-        try {
-            view.setViewFields(MdrUtils.getViewFields(true));
-        } catch (MdrConnectionException | ExecutionException e) {
-            throw new LDMConnectorException(e);
-        }
+//        try {
+//            view.setViewFields(MdrUtils.getViewFields(true));
+//        } catch (MdrConnectionException | ExecutionException e) {
+//            throw new LDMConnectorException(e);
+//        }
         return view;
     }
 
@@ -573,3 +512,4 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
         return null;
     }
 }
+
