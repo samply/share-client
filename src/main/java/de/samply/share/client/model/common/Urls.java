@@ -11,9 +11,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for urls complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="urls">
  *   &lt;complexContent>
@@ -22,13 +22,14 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="shareUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *         &lt;element name="idmanagerUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *         &lt;element name="centraxxUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
+ *         &lt;element name="mdrUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *       &lt;/all>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "urls", namespace = "http://schema.samply.de/common", propOrder = {
@@ -49,6 +50,10 @@ public class Urls {
     @XmlSchemaType(name = "anyURI")
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String centraxxUrl;
+    @XmlElement(namespace = "http://schema.samply.de/common", required = true)
+    @XmlSchemaType(name = "anyURI")
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    protected String mdrUrl;
 
     /**
      * Gets the value of the shareUrl property.
@@ -128,4 +133,25 @@ public class Urls {
         this.centraxxUrl = value;
     }
 
+    /**
+     * Gets the value of the centraxxUrl property.
+     *
+     * @return possible object is
+     * {@link String }
+     */
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    public String getMdrUrl() {
+        return mdrUrl;
+    }
+
+    /**
+     * Sets the value of the centraxxUrl property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    public void setMdrUrl(String value) {
+        this.mdrUrl = value;
+    }
 }

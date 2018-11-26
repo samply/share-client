@@ -54,4 +54,11 @@
                            iconSizeClass="fa-3x"/>
     </h:outputLink>
 
+    <h:outputLink value="#{wu:replaceLocalhost(applicationBean.urls.mdrUrl)}" target="_blank">
+        <sscl:localComponentPanel title="#{msg.index_mdr}"
+                                  checkResult="#{applicationBean.idmAvailability}"
+                                  cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-6"
+                                  iconSizeClass="fa-3x"/>
+    </h:outputLink>
+
 </ui:composition>

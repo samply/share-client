@@ -358,6 +358,11 @@ public class ApplicationBean implements Serializable {
             shareConfigElement.setName(EnumConfiguration.SHARE_URL.name());
             shareConfigElement.setSetting(urls.getShareUrl());
             ConfigurationUtil.insertOrUpdateConfigurationElement(shareConfigElement);
+
+            de.samply.share.client.model.db.tables.pojos.Configuration mdrConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
+            mdrConfigElement.setName(EnumConfiguration.MDR_URL.name());
+            mdrConfigElement.setSetting(urls.getMdrUrl());
+            ConfigurationUtil.insertOrUpdateConfigurationElement(mdrConfigElement);
         }
     }
 
