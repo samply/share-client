@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://schema.samply.de/common"
-           xmlns="http://schema.samply.de/common"
-           elementFormDefault="qualified" version="1.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://schema.samply.de/common" xmlns="http://schema.samply.de/common"
+    elementFormDefault="qualified" version="1.0">
 
-    <xs:element name="urls" type="urls"/>
+    <xs:element name="urls" type="urls" />
 
     <xs:complexType name="urls">
         <xs:all>
-            <xs:element name="shareUrl" type="xs:anyURI"/>
-            <xs:element name="idmanagerUrl" type="xs:anyURI"/>
-            <xs:element name="centraxxUrl" type="xs:anyURI"/>
+            <xs:element name="shareUrl" type="xs:anyURI" />
+            <xs:element name="idmanagerUrl" type="xs:anyURI" />
+            <xs:element name="centraxxUrl" type="xs:anyURI" />
             <xs:element name="mdrUrl" type="xs:anyURI"/>
         </xs:all>
     </xs:complexType>
