@@ -603,7 +603,7 @@ public class BrokerConnector {
             } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
                 BbmriResult result = (BbmriResult) reply;
 
-                stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfDonors()));
+               //stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfDonors()));
                 stats.put("sample", NumberDisguiser.getDisguisedNumber(result.getNumberOfSamples()));
                 replyString = stats.toString();
             }

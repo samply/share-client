@@ -29,9 +29,7 @@ import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizerImpl;
 import de.samply.share.client.quality.report.chainlinks.statistics.manager.ChainStatisticsManager;
 import de.samply.share.client.util.PatientValidator;
 import de.samply.share.client.util.Utils;
-import de.samply.share.client.util.connector.IdManagerConnector;
-import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
+import de.samply.share.client.util.connector.*;
 import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
@@ -62,6 +60,7 @@ import javax.xml.bind.UnmarshalException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -124,7 +123,7 @@ public class ApplicationBean implements Serializable {
         // Load common-config.xml
         loadCommonConfig();
 
-        if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("dktk")) {
+        if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("dktk") || ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("samply")) {
             loadUrls();
             loadOperator();
             loadBridgeheadInfo();
@@ -205,15 +204,30 @@ public class ApplicationBean implements Serializable {
 
     // TODO: other connector implementations
     private static void initLdmConnector() {
+        if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("samply")) {
         if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
-            try {
-                int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
-                ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true, maxCacheSize);
-            } catch (NumberFormatException e) {
-                ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true);
+                try {
+                    int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
+                    ApplicationBean.ldmConnector = new LdmConnectorFHIR(true, maxCacheSize);
+                } catch (NumberFormatException e) {
+                    ApplicationBean.ldmConnector = new LdmConnectorFHIR(true);
+                }
+            } else {
+                ApplicationBean.ldmConnector = new LdmConnectorFHIR(false);
             }
-        } else {
-            ApplicationBean.ldmConnector = new LdmConnectorCentraxx(false);
+        }else if(ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("dktk")){
+            if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
+                try {
+                    int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
+                    ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true, maxCacheSize);
+                } catch (NumberFormatException e) {
+                    ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true);
+                }
+            } else {
+                ApplicationBean.ldmConnector = new LdmConnectorCentraxx(false);
+            }
+        }else if(ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("fhir")){
+
         }
     }
 
@@ -358,11 +372,6 @@ public class ApplicationBean implements Serializable {
             shareConfigElement.setName(EnumConfiguration.SHARE_URL.name());
             shareConfigElement.setSetting(urls.getShareUrl());
             ConfigurationUtil.insertOrUpdateConfigurationElement(shareConfigElement);
-
-            de.samply.share.client.model.db.tables.pojos.Configuration mdrConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
-            mdrConfigElement.setName(EnumConfiguration.MDR_URL.name());
-            mdrConfigElement.setSetting(urls.getMdrUrl());
-            ConfigurationUtil.insertOrUpdateConfigurationElement(mdrConfigElement);
         }
     }
 
