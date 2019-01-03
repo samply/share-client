@@ -1,7 +1,7 @@
-[![Docker Pulls](https://img.shields.io/docker/pulls/martinbreu/samply-connector.svg)](https://hub.docker.com/r/martinbreu/samply-connector/)
-[![CircleCI](https://circleci.com/gh/martinbreu/samply-connector/tree/master.svg?style=svg)](https://circleci.com/gh/martinbreu/samply-connector/tree/master)
+[![Docker Pulls](https://img.shields.io/docker/pulls/akiel/samply.connector.svg)](https://hub.docker.com/r/akiel/samply.connector/)
+[![Image Layers](https://images.microbadger.com/badges/image/akiel/samply.connector.svg)](https://microbadger.com/images/akiel/samply.connector)
 
-# Connector
+# Docker Samply.Connector
 
 A Samply.Connector Docker image based on [tomcat:8.5.32-jre8-alpine][1]. The Samply.Connector is configured alike that one from the windows installer. The Postgres database has to be supplied in another Docker container. The connection settings are given by environment variables which are documented below.
 
@@ -9,12 +9,13 @@ A Samply.Connector Docker image based on [tomcat:8.5.32-jre8-alpine][1]. The Sam
 
 * POSTGRES_HOST - the host name of the Postgres DB
 * POSTGRES_PORT - the port of the Postgres DB, defaults to `5432`
-* POSTGRES_DB - the database name, defaults to `samply`
-* POSTGRES_USER - the database username, defaults to `samply`
-* POSTGRES_PASS - the database password, defaults to `samply`
+* POSTGRES_DB - the database name, defaults to `samplyconnector`
+* POSTGRES_USER - the database username, defaults to `samplyconnector`
+* POSTGRES_PASS - the database password
 * STORE_URL - the URL of the store to connect to
 * MDR_URL - the URL of the mdr to connect to
 * CATALINA_OPTS - JVM options for Tomcat like `-Xmx8g`
+* ENABLE_METRICS - `true` to enable metrics (see below), defaults to `false`
 * OPERATOR_FIRST_NAME - the IT staff which runs the connector
 * OPERATOR_LAST_NAME - the IT staff which runs the connector
 * OPERATOR_EMAIL - the IT staff which runs the connector
