@@ -29,6 +29,7 @@
 package de.samply.share.client.control;
 
 import com.google.common.net.HttpHeaders;
+import de.samply.common.ldmclient.samplystoreFHIR.LdmClientSamplystoreFHIR;
 import de.samply.dktk.converter.EnumValidationHandling;
 import de.samply.dktk.converter.PatientConverter;
 import de.samply.dktk.converter.PatientConverterUtil;
@@ -50,6 +51,7 @@ import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
 import de.samply.share.common.model.uiquerybuilder.QueryItem;
 import de.samply.share.common.utils.MdrIdDatatype;
+import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.QueryTreeUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.bbmri.BbmriResult;
@@ -542,7 +544,7 @@ public class InquiryBean implements Serializable {
                     blacklist);
             // TODO other types
             Workbook workbook = null;
-            if (ldmConnector instanceof LdmConnectorCentraxx) {
+            if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
                 QueryResult queryResult = (QueryResult) ldmConnector.getResults(queryResultLocation);
                 logger.debug("Result completely loaded...write excel file");
                 String executionDateString = WebUtils.getExecutionDate(latestInquiryResult);
@@ -552,7 +554,7 @@ public class InquiryBean implements Serializable {
                         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.ID_MANAGER_INSTANCE_ID),
                         executionDateString
                 );
-            } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+            } else if (ProjectInfo.INSTANCE.getProjectName().equals("samply")) {
                 BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(queryResultLocation);
                 logger.debug("Result completely loaded...write excel file");
                 String executionDateString = WebUtils.getExecutionDate(latestInquiryResult);
@@ -595,12 +597,12 @@ public class InquiryBean implements Serializable {
     public String reply() {
         try {
             BrokerConnector brokerConnector = new BrokerConnector(BrokerUtil.fetchBrokerById(inquiry.getBrokerId()));
-            if (ldmConnector instanceof LdmConnectorCentraxx) {
-                brokerConnector.reply(latestInquiryDetails, latestInquiryResult.getSize(),ldmConnector);
-            } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+            if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
+                brokerConnector.reply(latestInquiryDetails, latestInquiryResult.getSize());
+            } else if (ProjectInfo.INSTANCE.getProjectName().equals("samply")) {
                 try {
                     BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(latestInquiryDetails.getId()).getLocation());
-                    brokerConnector.reply(latestInquiryDetails, queryResult,ldmConnector);
+                    brokerConnector.reply(latestInquiryDetails, queryResult);
                 } catch (LDMConnectorException e) {
                     e.printStackTrace();
                 }

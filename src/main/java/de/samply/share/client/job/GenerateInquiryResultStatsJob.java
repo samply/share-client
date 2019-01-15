@@ -46,6 +46,7 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.InquiryResultStatsUtil;
 import de.samply.share.client.util.db.InquiryResultUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
+import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.model.bbmri.BbmriResult;
 import de.samply.share.model.bbmri.Donor;
 import de.samply.share.model.ccp.Entity;
@@ -120,7 +121,7 @@ public class GenerateInquiryResultStatsJob implements Job {
         GenderDistribution genderDistribution = new GenderDistribution();
 
         // TODO: other types
-        if (ldmConnector instanceof LdmConnectorCentraxx) {
+        if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
             QueryResult ccpQueryResult = (QueryResult) queryResult;
             for (Patient patient : ccpQueryResult.getPatient()) {
                 de.samply.share.model.common.Patient patientCommon = new de.samply.share.model.common.Patient();
@@ -133,7 +134,7 @@ public class GenerateInquiryResultStatsJob implements Job {
                 genderDistribution.increaseCountForGender(getGender(patientCommon,"urn:dktk:dataelement:1:"));
             }
         }
-        if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+        if (ProjectInfo.INSTANCE.getProjectName().equals("samply")) {
             for (de.samply.share.model.osse.Patient donor : ((BbmriResult) queryResult).getDonors()) {
                 de.samply.share.model.common.Patient donorCommon = new de.samply.share.model.common.Patient();
                 try {

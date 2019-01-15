@@ -45,6 +45,7 @@ import de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
+import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.model.bbmri.BbmriResult;
 import de.samply.share.model.common.Error;
 import de.samply.share.model.common.QueryResultStatistic;
@@ -409,12 +410,12 @@ public class CheckInquiryStatusJob implements Job {
                 case RR_TOTAL_COUNT:
                     logger.info("Reporting the amount of matching datasets to the broker.");
                     BrokerConnector brokerConnector = new BrokerConnector(BrokerUtil.fetchBrokerById(brokerId));
-                    if (ldmConnector instanceof LdmConnectorCentraxx) {
-                        brokerConnector.reply(inquiryDetails, inquiryResult.getSize(),ldmConnector);
-                    } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+                    if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
+                        brokerConnector.reply(inquiryDetails, inquiryResult.getSize());
+                    } else if (ProjectInfo.INSTANCE.getProjectName().equals("samply")) {
                         try {
                             BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
-                            brokerConnector.reply(inquiryDetails, queryResult,ldmConnector);
+                            brokerConnector.reply(inquiryDetails, queryResult);
                         } catch (LDMConnectorException e) {
                             e.printStackTrace();
                         }

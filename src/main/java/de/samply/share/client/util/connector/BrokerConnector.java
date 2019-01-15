@@ -44,6 +44,7 @@ import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.*;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
 import de.samply.share.common.utils.Constants;
+import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.bbmri.BbmriResult;
 import de.samply.share.model.common.*;
@@ -581,7 +582,7 @@ public class BrokerConnector {
      * @param inquiryDetails the inquiry details object
      * @param reply          the reply to submit to the broker
      */
-    public void reply(InquiryDetails inquiryDetails, Object reply, LdmConnector ldmConnector) throws BrokerConnectorException {
+    public void reply(InquiryDetails inquiryDetails, Object reply) throws BrokerConnectorException {
         try {
             de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
             int inquirySourceId = inquiry.getSourceId();
@@ -594,13 +595,13 @@ public class BrokerConnector {
 
             String replyString="";
             JSONObject stats= new JSONObject();
-            if (ldmConnector instanceof LdmConnectorCentraxx) {
+            if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
                 if (reply.getClass() == Integer.class) {
                     replyString = Integer.toString((Integer) reply);
                 } else {
                     replyString = reply.toString();
                 }
-            } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+            } else if (ProjectInfo.INSTANCE.getProjectName().equals("samply")) {
                 BbmriResult result = (BbmriResult) reply;
 
                //stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfDonors()));
