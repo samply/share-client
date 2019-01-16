@@ -15,6 +15,7 @@ import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
 import de.samply.share.common.model.uiquerybuilder.QueryItem;
+import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.QueryTreeUtil;
 import de.samply.share.common.utils.QueryValidator;
 import de.samply.share.common.utils.SamplyShareUtils;
@@ -84,7 +85,7 @@ public class ExecuteInquiryJob implements Job {
             }
 
             // to search the aggregated field
-            if (ldmConnector instanceof LdmConnectorCentraxx) {
+            if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
                 inquiryDetails.setCriteriaOriginal(Replace.replaceMDRKey(inquiryDetails.getCriteriaOriginal()));
                 originalQuery = QueryConverter.xmlToQuery(inquiryDetails.getCriteriaOriginal());
                 // TODO remove this "temporary" workaround as soon as possible! This is linked with the age-old issue of different java date formats in some mdr elements!

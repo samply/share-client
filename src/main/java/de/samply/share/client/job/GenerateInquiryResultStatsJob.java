@@ -170,7 +170,7 @@ public class GenerateInquiryResultStatsJob implements Job {
             return -1;
         } else {
             try {
-                if(ldmConnector instanceof LdmConnectorSamplystoreBiobank){
+                if(ProjectInfo.INSTANCE.getProjectName().equals("samply")){
                     ageString = ageString.replace("\"", "");
                     LocalDate birthdate = new LocalDate (Integer.parseInt(ageString.split("\\.")[2]), Integer.parseInt(ageString.split("\\.")[1]), Integer.parseInt(ageString.split("\\.")[0]));
                     LocalDate now = new LocalDate();
