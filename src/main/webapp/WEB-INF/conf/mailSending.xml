@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:mailSending xmlns:p="http://schema.samply.de/config/MailSending"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://schema.samply.de/config/MailSending mailSending.xsd ">
+    <p:host>relay2int1.klinik.uni-wuerzburg.de</p:host>
+    <p:port>25</p:port>
+    <p:protocol>smtp</p:protocol>
+    <p:fromAddress>breu_m@ukw.de</p:fromAddress>
+    <p:fromName>DKTK Suchbroker Testinstanz</p:fromName>
+    <p:templateFolder>/WEB-INF/classes/mailTemplates/</p:templateFolder>
+</p:mailSending>

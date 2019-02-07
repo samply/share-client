@@ -39,6 +39,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static org.omnifaces.util.Faces.getServletContext;
+
 /**
  * A collection of utility methods
  */
@@ -222,7 +224,7 @@ public final class Utils {
      * @return the byte array
      */
     private static byte[] readFileBytes(String filename) throws IOException {
-        File file = FileFinderUtil.findFile(filename, ProjectInfo.INSTANCE.getProjectName());
+        File file = FileFinderUtil.findFile(ProjectInfo.INSTANCE.getProjectName().toLowerCase() + filename, ProjectInfo.INSTANCE.getProjectName().toLowerCase(), System.getProperty("catalina.base") + File.separator + "conf", getServletContext().getRealPath("/WEB-INF"));
         return Files.readAllBytes(file.toPath());
     }
 

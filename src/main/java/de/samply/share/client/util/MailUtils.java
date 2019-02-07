@@ -28,6 +28,7 @@
 
 package de.samply.share.client.util;
 
+import java.io.File;
 import java.util.List;
 
 import de.samply.share.client.messages.Messages;
@@ -141,7 +142,7 @@ public class MailUtils {
         email.setLocale("de");
         email.putParameter("results", generateResultsParameter(shareUrl, inquiryResults));
         String projectName = ProjectInfo.INSTANCE.getProjectName();
-        MailSending mailSending = MailSender.loadMailSendingConfig(projectName);
+        MailSending mailSending = MailSender.loadMailSendingConfig(projectName, System.getProperty("catalina.base") + File.separator + "conf", ProjectInfo.INSTANCE.getServletContext().getRealPath("/WEB-INF"));
 
         EmailBuilder builder = initializeBuilder(mailSending);
         builder.addTemplateFile("NewInquiriesContent.soy", "NewInquiriesContent");
