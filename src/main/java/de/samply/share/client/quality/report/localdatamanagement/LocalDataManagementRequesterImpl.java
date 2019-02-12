@@ -25,18 +25,13 @@ package de.samply.share.client.quality.report.localdatamanagement;/*
 */
 
 
-import de.samply.share.client.control.ApplicationBean;
-import de.samply.share.client.model.EnumConfiguration;
-import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
-import de.samply.share.client.util.db.ConfigurationUtil;
-import de.samply.share.client.util.db.CredentialsUtil;
-import de.samply.share.common.utils.MdrIdDatatype;
-import de.samply.share.common.utils.SamplyShareUtils;
-import de.samply.share.model.common.Error;
-import de.samply.share.model.ccp.QueryResult;
-import de.samply.share.model.common.View;
 import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
+import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.util.connector.LdmConnectorCentraxx;
+import de.samply.share.common.utils.SamplyShareUtils;
+import de.samply.share.model.ccp.QueryResult;
+import de.samply.share.model.common.Error;
+import de.samply.share.model.common.View;
 import de.samply.share.utils.QueryConverter;
 import org.apache.http.*;
 import org.apache.http.client.methods.CloseableHttpResponse;

@@ -35,13 +35,14 @@
                 xmlns:pass="http://xmlns.jcp.org/jsf/passthrough">
 
     <cc:interface>
-        <cc:attribute name="headingText" required="false" />
-        <cc:attribute name="description" required="true" />
-        <cc:attribute name="buttonText" required="false" default="#{msg.tests_check}" />
-        <cc:attribute name="buttonClass" required="false" />
-        <cc:attribute name="checkAction" method-signature="java.lang.String action()" required="true" />
-        <cc:attribute name="checkResult" type="de.samply.share.client.model.check.CheckResult" required="true" />
-        <cc:facet name="additionalContent" required="false" shortDescription="will be added between description and button. Can be used for input fields" />
+        <cc:attribute name="headingText" required="false"/>
+        <cc:attribute name="description" required="true"/>
+        <cc:attribute name="buttonText" required="false" default="#{msg.tests_check}"/>
+        <cc:attribute name="buttonClass" required="false"/>
+        <cc:attribute name="checkAction" method-signature="java.lang.String action()" required="true"/>
+        <cc:attribute name="checkResult" type="de.samply.share.client.model.check.CheckResult" required="true"/>
+        <cc:facet name="additionalContent" required="false"
+                  shortDescription="will be added between description and button. Can be used for input fields"/>
     </cc:interface>
 
     <cc:implementation>
@@ -54,19 +55,20 @@
                 </div>
             </ui:fragment>
 
-            <div class="panel-body" >
+            <div class="panel-body">
                 <div class="description">
-                    <h:outputText value="#{cc.attrs.description}" />
+                    <h:outputText value="#{cc.attrs.description}"/>
 
                     <ui:fragment rendered="#{not empty cc.facets.additionalContent}">
-                        <cc:renderFacet name="additionalContent" />
+                        <cc:renderFacet name="additionalContent"/>
                     </ui:fragment>
 
                     <h:commandButton action="#{cc.attrs.checkAction}"
                                      value="#{cc.attrs.buttonText}"
-                                     styleClass="btn btn-xs btn-primary #{cc.attrs.buttonClass} pull-right" pass:data-loading-text="#{msg.pleaseWait}..."
+                                     styleClass="btn btn-xs btn-primary #{cc.attrs.buttonClass} pull-right"
+                                     pass:data-loading-text="#{msg.pleaseWait}..."
                                      onclick="$(this).button('loading');">
-                        <f:ajax render="@form" execute="@form" />
+                        <f:ajax render="@form" execute="@form"/>
                     </h:commandButton>
                 </div>
 
@@ -75,10 +77,10 @@
                     <div style="margin-top: 5px;">
                         <div class="row">
                             <div class="col-xs-1">
-                                <i class="fa fa-clock-o" />
+                                <i class="fa fa-clock-o"/>
                             </div>
                             <div class="col-xs-11">
-                                <h:outputText value="#{cc.attrs.checkResult.executionDate}" />
+                                <h:outputText value="#{cc.attrs.checkResult.executionDate}"/>
                             </div>
                         </div>
 
@@ -86,11 +88,11 @@
                             <ui:repeat value="#{cc.attrs.checkResult.messages}" var="message">
                                 <div class="col-xs-1">
                                     <ui:fragment rendered="#{not empty message.iconClass}">
-                                        <i class="fa #{message.iconClass}" />
+                                        <i class="fa #{message.iconClass}"/>
                                     </ui:fragment>
                                 </div>
                                 <div class="col-xs-11" style="word-wrap: break-word;">
-                                    <h:outputText value="#{message.entry}" />
+                                    <h:outputText value="#{message.entry}"/>
                                 </div>
                             </ui:repeat>
                         </div>
@@ -98,13 +100,14 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <h:panelGroup rendered="#{empty cc.attrs.checkResult.success}">
-                                    <i class="fa fa-spin fa-spinner fa-3x" />
+                                    <i class="fa fa-spin fa-spinner fa-3x"/>
                                 </h:panelGroup>
-                                <h:panelGroup rendered="#{not empty cc.attrs.checkResult.success and not cc.attrs.checkResult.success}">
+                                <h:panelGroup
+                                        rendered="#{not empty cc.attrs.checkResult.success and not cc.attrs.checkResult.success}">
                                     <i class="fa fa-times fa-3x" style="color: red;"/>
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{cc.attrs.checkResult.success}">
-                                    <i class="fa fa-check fa-3x" style="color: green;" />
+                                    <i class="fa fa-check fa-3x" style="color: green;"/>
                                 </h:panelGroup>
                             </div>
                         </div>

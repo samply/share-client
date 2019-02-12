@@ -29,7 +29,6 @@
 package de.samply.share.client.model.line;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.gson.Gson;
 import de.samply.share.client.messages.Messages;
 import de.samply.share.client.model.EventLogEntityTypes;

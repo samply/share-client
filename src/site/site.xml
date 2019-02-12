@@ -8,11 +8,11 @@
 
     <body>
         <menu name="General information">
-            <item name="Changelog" href="changelog.html" />
+            <item name="Changelog" href="changelog.html"/>
         </menu>
         <menu name="documentation">
-            <item name="Javadoc" href="apidocs/index.html" />
+            <item name="Javadoc" href="apidocs/index.html"/>
         </menu>
-        <menu name="Generated content" ref="reports" />
+        <menu name="Generated content" ref="reports"/>
     </body>
 </project>

@@ -36,7 +36,7 @@
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:wu="http://share.samply.de/webutils"
 >
-    <ui:param name="adminPage" value="true" />
+    <ui:param name="adminPage" value="true"/>
 
     <ui:define name="title">#{msg.qr_title}</ui:define>
 
@@ -53,17 +53,20 @@
 
     <ui:define name="main-content">
         <h:form id="quality-report-form" prependId="false">
-            <o:commandScript name="updateQualityReportProgressbar" render="quality-report-progress-bar" execute="quality-report-progress-bar" />
-            <o:commandScript name="updateQualityReportButton" render="quality-report-button"  />
+            <o:commandScript name="updateQualityReportProgressbar" render="quality-report-progress-bar"
+                             execute="quality-report-progress-bar"/>
+            <o:commandScript name="updateQualityReportButton" render="quality-report-button"/>
 
-            <o:commandScript name="updateQualityReportConditions" render="quality-report-conditions" />
-            <o:commandScript name="updateQualityReportFileListGroup" render="quality-report-list" execute="quality-report-list" />
+            <o:commandScript name="updateQualityReportConditions" render="quality-report-conditions"/>
+            <o:commandScript name="updateQualityReportFileListGroup" render="quality-report-list"
+                             execute="quality-report-list"/>
 
             <h:panelGroup layout="block" id="quality-report-conditions">
                 <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
-                    <input type="hidden" id="isQualityReportStatusChanged" value="#{qualityReportController.statusChanged}"  />
-                    <input type="hidden" id="isQualityReportLoading" value="#{qualityReportController.loading}"  />
-                    <input type="hidden" id="isQualityReportRunning" value="#{qualityReportController.taskRunning}"  />
+                    <input type="hidden" id="isQualityReportStatusChanged"
+                           value="#{qualityReportController.statusChanged}"/>
+                    <input type="hidden" id="isQualityReportLoading" value="#{qualityReportController.loading}"/>
+                    <input type="hidden" id="isQualityReportRunning" value="#{qualityReportController.taskRunning}"/>
                 </ui:fragment>
             </h:panelGroup>
 
@@ -71,7 +74,8 @@
             <div>
 
                 <h:panelGroup layout="block" styleClass="row" id="quality-report-action">
-                    <h:panelGroup id="quality-report-progress-bar" layout="block" styleClass="col-xs-12" style="#{qualityReportController.taskRunning ? '' : 'display:none;'}">
+                    <h:panelGroup id="quality-report-progress-bar" layout="block" styleClass="col-xs-12"
+                                  style="#{qualityReportController.taskRunning ? '' : 'display:none;'}">
 
                         <div>
                             #{msg.qr_startTime}: #{qualityReportController.chainStatistics.startTime}
@@ -80,12 +84,17 @@
                             #{msg.qr_consumedTime}: #{qualityReportController.chainStatistics.timeConsumed}
                         </div>
                         <div>
-                            #{msg.qr_remainingTime}: #{qualityReportController.chainStatistics.estimatedTimeToBeCompleted}
+                            #{msg.qr_remainingTime}:
+                            #{qualityReportController.chainStatistics.estimatedTimeToBeCompleted}
                         </div>
-                        <h:outputText value="&#160;" />
+                        <h:outputText value="&#160;"/>
 
                         <div class="progress">
-                            <div class="progress-bar #{qualityReportController.chainStatistics.accurate ? 'progress-bar-info' : 'progress-bar-warning'} progress-bar-striped active" role="progressbar" aria-valuenow="#{qualityReportController.chainStatistics.percentage}" aria-valuemin="0" aria-valuemax="100" style="width: #{qualityReportController.chainStatistics.percentage}%" >
+                            <div class="progress-bar #{qualityReportController.chainStatistics.accurate ? 'progress-bar-info' : 'progress-bar-warning'} progress-bar-striped active"
+                                 role="progressbar"
+                                 aria-valuenow="#{qualityReportController.chainStatistics.percentage}" aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 style="width: #{qualityReportController.chainStatistics.percentage}%">
                                 #{qualityReportController.chainStatistics.percentage}%
                             </div>
                         </div>
@@ -101,8 +110,9 @@
                         <div>
                             <h:panelGroup layout="block" styleClass="row">
                                 <h:panelGroup layout="block" styleClass="col-lg-2">
-                                    <h:commandLink styleClass="btn btn-md btn-primary btn-block"  id="cancel-quality-report"
-                                                   actionListener="#{qualityReportController.finalizeChain}" >
+                                    <h:commandLink styleClass="btn btn-md btn-primary btn-block"
+                                                   id="cancel-quality-report"
+                                                   actionListener="#{qualityReportController.finalizeChain}">
                                         <i class="fa fa-stop-circle" aria-hidden="true"></i> #{msg.common_cancel}
                                     </h:commandLink>
                                 </h:panelGroup>
@@ -112,13 +122,15 @@
                     </h:panelGroup>
                 </h:panelGroup>
 
-                <h:panelGroup id="quality-report-button" layout="block" styleClass="row" style="#{qualityReportController.taskRunning ? 'display:none;' : ''}">
+                <h:panelGroup id="quality-report-button" layout="block" styleClass="row"
+                              style="#{qualityReportController.taskRunning ? 'display:none;' : ''}">
 
                     <h:panelGroup layout="block" styleClass="col-lg-2">
-                        <h:commandLink styleClass="btn btn-md btn-primary btn-block"  id="generate"
+                        <h:commandLink styleClass="btn btn-md btn-primary btn-block" id="generate"
                                        onclick="$(this).button('loading');">
-                            <f:ajax listener="#{qualityReportController.generate}" execute="@this" render="quality-report-action" />
-                            <i class="fa fa-pie-chart" aria-hidden="true" /> #{msg.qr_generation}
+                            <f:ajax listener="#{qualityReportController.generate}" execute="@this"
+                                    render="quality-report-action"/>
+                            <i class="fa fa-pie-chart" aria-hidden="true"/> #{msg.qr_generation}
                         </h:commandLink>
                     </h:panelGroup>
 
@@ -127,16 +139,18 @@
             </div>
 
 
-            <h:outputText value="&#160;" style="margin-top: 15px;" />
+            <h:outputText value="&#160;" style="margin-top: 15px;"/>
 
 
-
-            <h:dataTable id="quality-report-list" value="#{qualityReportController.qualityReportFileInfos}" var="qualityReportFileInfo" styleClass="quality-report-table table table-striped" >
+            <h:dataTable id="quality-report-list" value="#{qualityReportController.qualityReportFileInfos}"
+                         var="qualityReportFileInfo" styleClass="quality-report-table table table-striped">
                 <h:column>
                     <f:facet name="header">#{msg.qr_timestamp}</f:facet>
-                    <h:commandLink action="#{qualityReportController.download(qualityReportFileInfo.link, qualityReportFileInfo.filename)}"  >
+                    <h:commandLink
+                            action="#{qualityReportController.download(qualityReportFileInfo.link, qualityReportFileInfo.filename)}">
                         <h:outputText value="#{qualityReportFileInfo.timestamp}">
-                            <f:convertDateTime type="both" pattern="yyyy-MM-dd HH:mm:ss"  locale="#{qualityReportController.language}" />
+                            <f:convertDateTime type="both" pattern="yyyy-MM-dd HH:mm:ss"
+                                               locale="#{qualityReportController.language}"/>
                         </h:outputText>
                     </h:commandLink>
                 </h:column>

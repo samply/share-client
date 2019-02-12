@@ -29,13 +29,13 @@
 package de.samply.share.client.job;
 
 import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.job.params.CheckInquiryStatusJobResult;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.enums.UploadStatusType;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
-import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.util.db.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,10 +76,7 @@ public class CheckInquiryStatusJobListener implements JobListener {
 
     @Override
     public void jobWasExecuted(JobExecutionContext jobExecutionContext, JobExecutionException e) {
-        logger.debug("Job was executed. Context: " + jobExecutionContext);
-        if (e != null){
-            logger.debug(" - Exception: " + e);
-        }
+        logger.debug("Job was executed. Context: " + jobExecutionContext + " - exception " + e);
         CheckInquiryStatusJobResult result;
         Object resultObject = jobExecutionContext.getResult();
         if (resultObject != null) {

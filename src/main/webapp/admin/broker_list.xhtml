@@ -83,7 +83,9 @@
                         </td>
 
                         <ui:fragment rendered="#{broker.status != BrokerStatusType.BS_ACTIVATION_PENDING}">
-                            <td><h:outputText value="#{msg[broker.status]}" styleClass="form-control-static"/></td>
+                            <td>
+                                <h:outputText value="#{msg[broker.status]}" styleClass="form-control-static"/>
+                            </td>
                         </ui:fragment>
                         <ui:fragment rendered="#{broker.status == BrokerStatusType.BS_ACTIVATION_PENDING}">
                             <td>

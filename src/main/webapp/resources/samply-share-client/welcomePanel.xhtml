@@ -32,12 +32,12 @@
                 xmlns:cc="http://xmlns.jcp.org/jsf/composite">
 
     <cc:interface>
-        <cc:attribute name="iconClass" required="true" />
-        <cc:attribute name="iconSizeClass" default="fa-5x" />
-        <cc:attribute name="title" required="true" />
-        <cc:attribute name="details" />
-        <cc:attribute name="cssClass" default="col-lg-4 col-md-4 col-sm-6 col-xs-12" required="false" />
-        <cc:facet name="detailsfacet" />
+        <cc:attribute name="iconClass" required="true"/>
+        <cc:attribute name="iconSizeClass" default="fa-5x"/>
+        <cc:attribute name="title" required="true"/>
+        <cc:attribute name="details"/>
+        <cc:attribute name="cssClass" default="col-lg-4 col-md-4 col-sm-6 col-xs-12" required="false"/>
+        <cc:facet name="detailsfacet"/>
     </cc:interface>
 
     <cc:implementation>
@@ -46,9 +46,10 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                            <i class="fa #{cc.attrs.iconClass} #{cc.attrs.iconSizeClass}" />
+                            <i class="fa #{cc.attrs.iconClass} #{cc.attrs.iconSizeClass}"/>
                         </div>
-                        <h:panelGroup layout="block" styleClass="col-lg-8 col-md-8 col-sm-8 col-xs-8" rendered="#{empty cc.facets.detailsfacet}">
+                        <h:panelGroup layout="block" styleClass="col-lg-8 col-md-8 col-sm-8 col-xs-8"
+                                      rendered="#{empty cc.facets.detailsfacet}">
                             <div class="row">
                                 <span class="welcome-panel-title">#{cc.attrs.title}</span>
                             </div>
@@ -56,8 +57,9 @@
                                 <span style="font-size: 100%;">#{cc.attrs.details}</span>
                             </div>
                         </h:panelGroup>
-                        <h:panelGroup layout="block" styleClass="col-lg-8 col-md-8 col-sm-8 col-xs-8" rendered="#{not empty cc.facets.detailsfacet}">
-                            <cc:renderFacet name="detailsfacet" />
+                        <h:panelGroup layout="block" styleClass="col-lg-8 col-md-8 col-sm-8 col-xs-8"
+                                      rendered="#{not empty cc.facets.detailsfacet}">
+                            <cc:renderFacet name="detailsfacet"/>
                         </h:panelGroup>
                     </div>
                 </div>

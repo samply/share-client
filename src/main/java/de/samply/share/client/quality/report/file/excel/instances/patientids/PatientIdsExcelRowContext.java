@@ -24,7 +24,6 @@ package de.samply.share.client.quality.report.file.excel.instances.patientids;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.file.excel.instances.basic.BasicExcelColumnMetaInfo;
 import de.samply.share.client.quality.report.file.excel.instances.basic.BasicExcelRowElements;
@@ -33,8 +32,12 @@ import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowEle
 import de.samply.share.client.quality.report.results.QualityResult;
 import de.samply.share.client.quality.report.results.sorted.AlphabeticallySortedMismatchedQualityResults;
 import de.samply.share.client.util.db.ConfigurationUtil;
+import de.samply.share.common.utils.MdrIdDatatype;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 public abstract class PatientIdsExcelRowContext implements ExcelRowContext {
 

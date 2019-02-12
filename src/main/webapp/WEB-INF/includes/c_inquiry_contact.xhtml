@@ -35,8 +35,10 @@
         <f:facet name="bodyContent">
             <div class="row">
                 <div class="col-xs-4">Name:</div>
-                <div class="col-xs-8">#{inquiryBean.selectedInquiryContact.title} #{inquiryBean.selectedInquiryContact.firstName}
-                    #{inquiryBean.selectedInquiryContact.lastName}</div>
+                <div class="col-xs-8">#{inquiryBean.selectedInquiryContact.title}
+                    #{inquiryBean.selectedInquiryContact.firstName}
+                    #{inquiryBean.selectedInquiryContact.lastName}
+                </div>
             </div>
             <div class="row">
                 <div class="col-xs-4">#{msg.si_phone}:</div>
@@ -46,8 +48,8 @@
                 <div class="col-xs-4">Email:</div>
                 <div class="col-xs-8">
                     <h:outputLink value="mailto:#{inquiryBean.selectedInquiryContact.email}">
-                        <f:param name="subject" value="#{msg.si_subject}" />
-                        <h:outputText value="#{inquiryBean.selectedInquiryContact.email}" />
+                        <f:param name="subject" value="#{msg.si_subject}"/>
+                        <h:outputText value="#{inquiryBean.selectedInquiryContact.email}"/>
                     </h:outputLink>
                 </div>
             </div>

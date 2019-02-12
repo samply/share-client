@@ -25,13 +25,11 @@ package de.samply.share.client.quality.report.faces;/*
 */
 
 import de.samply.share.client.model.EnumConfiguration;
-import de.samply.share.client.quality.report.file.id.filename.QualityReportFilenameFormat;
 import de.samply.share.client.quality.report.file.id.path.IdPathManager;
 import de.samply.share.client.quality.report.file.manager.QualityReportMetadataFileManager;
 import de.samply.share.client.quality.report.file.metadata.QualityReportMetadata;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import org.apache.commons.io.FilenameUtils;
-
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

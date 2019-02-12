@@ -34,7 +34,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobKey;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**

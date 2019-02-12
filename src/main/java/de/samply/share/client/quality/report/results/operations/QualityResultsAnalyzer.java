@@ -24,14 +24,14 @@ package de.samply.share.client.quality.report.results.operations;/*
 * permission to convey the resulting work.
 */
 
+import de.samply.share.client.quality.report.results.QualityResult;
+import de.samply.share.client.quality.report.results.QualityResults;
+import de.samply.share.client.quality.report.results.QualityResultsImpl;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.model.ccp.Attribute;
 import de.samply.share.model.ccp.Container;
 import de.samply.share.model.ccp.Patient;
 import de.samply.share.model.ccp.QueryResult;
-import de.samply.share.client.quality.report.results.QualityResult;
-import de.samply.share.client.quality.report.results.QualityResults;
-import de.samply.share.client.quality.report.results.QualityResultsImpl;
 
 import java.util.List;
 import java.util.Set;

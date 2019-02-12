@@ -25,13 +25,13 @@ package de.samply.share.client.quality.report.chainlinks.instances.result;/*
 */
 
 
-import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.client.quality.report.chainlinks.ChainLinkException;
 import de.samply.share.client.quality.report.chainlinks.ChainLinkItem;
 import de.samply.share.client.quality.report.chainlinks.LdmChainLink;
 import de.samply.share.client.quality.report.localdatamanagement.LocalDataManagementRequester;
 import de.samply.share.client.quality.report.localdatamanagement.LocalDataManagementRequesterException;
 import de.samply.share.client.quality.report.localdatamanagement.LocalDataManagementResponse;
+import de.samply.share.model.ccp.QueryResult;
 
 
 public class GetResults_ChainLink<I extends ChainLinkItem & ResultContext> extends LdmChainLink<I> {

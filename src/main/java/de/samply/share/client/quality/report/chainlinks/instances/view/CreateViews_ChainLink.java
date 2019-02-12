@@ -24,12 +24,12 @@ package de.samply.share.client.quality.report.chainlinks.instances.view;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.model.common.View;
 import de.samply.share.client.quality.report.chainlinks.ChainLink;
 import de.samply.share.client.quality.report.chainlinks.ChainLinkException;
 import de.samply.share.client.quality.report.chainlinks.ChainLinkItem;
 import de.samply.share.client.quality.report.model.Model;
 import de.samply.share.client.quality.report.views.ViewsCreator;
+import de.samply.share.model.common.View;
 
 import java.util.List;
 

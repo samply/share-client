@@ -32,11 +32,12 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:wu="http://share.samply.de/webutils"
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client">
-    <sscl:bootstrapPanel headingAsTitle="true" headingText="#{msg.si_events}" collapsible="true" collapsibleStartExpanded="false">
+    <sscl:bootstrapPanel headingAsTitle="true" headingText="#{msg.si_events}" collapsible="true"
+                         collapsibleStartExpanded="false">
         <f:facet name="bodyContent">
             <ul class="list-group">
                 <ui:repeat value="#{inquiryBean.inquiryEvents}" var="entry">
-                    <ui:param name="entryMessage" value="#{wu:formatInquiryLogEntry(entry)}" />
+                    <ui:param name="entryMessage" value="#{wu:formatInquiryLogEntry(entry)}"/>
                     <ui:fragment rendered="#{not empty entryMessage}">
                         <li class="list-group-item">
                             <h:outputText value="#{entryMessage}" escape="false"/>

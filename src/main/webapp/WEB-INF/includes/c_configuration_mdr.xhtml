@@ -39,19 +39,25 @@
 
         <sscl:formEntryElement labelFor="mdrURL" labelText="#{msg.configuration_mdrUrl}" dbTooltip="true">
             <f:facet name="input">
-                <h:inputText id="mdrURL" size="50" value="#{configurationBean.configurationMap[EnumConfiguration.MDR_URL]}" styleClass="form-control" pass:disabled="disabled"/>
+                <h:inputText id="mdrURL" size="50"
+                             value="#{configurationBean.configurationMap[EnumConfiguration.MDR_URL]}"
+                             styleClass="form-control" pass:disabled="disabled"/>
             </f:facet>
         </sscl:formEntryElement>
 
         <sscl:formEntryElement labelFor="mdsk" labelText="#{msg.configuration_mdrMdskGroup}" dbTooltip="true">
             <f:facet name="input">
-                <h:inputText id="mdsk" size="50" value="#{configurationBean.configurationMap[EnumConfiguration.MDR_GRP_MDSK]}" styleClass="form-control" pass:disabled="disabled"/>
+                <h:inputText id="mdsk" size="50"
+                             value="#{configurationBean.configurationMap[EnumConfiguration.MDR_GRP_MDSK]}"
+                             styleClass="form-control" pass:disabled="disabled"/>
             </f:facet>
         </sscl:formEntryElement>
 
         <sscl:formEntryElement labelFor="mdsb" labelText="#{msg.configuration_mdrMdsbGroup}" dbTooltip="true">
             <f:facet name="input">
-                <h:inputText id="mdsb" size="50" value="#{configurationBean.configurationMap[EnumConfiguration.MDR_GRP_MDSB]}" styleClass="form-control" pass:disabled="disabled"/>
+                <h:inputText id="mdsb" size="50"
+                             value="#{configurationBean.configurationMap[EnumConfiguration.MDR_GRP_MDSB]}"
+                             styleClass="form-control" pass:disabled="disabled"/>
             </f:facet>
         </sscl:formEntryElement>
     </fieldset>

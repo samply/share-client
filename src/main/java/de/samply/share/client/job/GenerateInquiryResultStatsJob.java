@@ -29,7 +29,6 @@
 package de.samply.share.client.job;
 
 import com.google.gson.Gson;
-import de.samply.common.ldmclient.samplystoreBiobank.LdmClientSamplystoreBiobank;
 import de.samply.dktk.converter.PatientConverterUtil;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.job.params.GenerateInquiryResultStatsJobParams;
@@ -46,10 +45,7 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.InquiryResultStatsUtil;
 import de.samply.share.client.util.db.InquiryResultUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
-import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.model.bbmri.BbmriResult;
-import de.samply.share.model.bbmri.Donor;
-import de.samply.share.model.ccp.Entity;
 import de.samply.share.model.ccp.Patient;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.utils.Converter;
@@ -121,7 +117,7 @@ public class GenerateInquiryResultStatsJob implements Job {
         GenderDistribution genderDistribution = new GenderDistribution();
 
         // TODO: other types
-        if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
+        if (ldmConnector instanceof LdmConnectorCentraxx) {
             QueryResult ccpQueryResult = (QueryResult) queryResult;
             for (Patient patient : ccpQueryResult.getPatient()) {
                 de.samply.share.model.common.Patient patientCommon = new de.samply.share.model.common.Patient();
@@ -134,7 +130,7 @@ public class GenerateInquiryResultStatsJob implements Job {
                 genderDistribution.increaseCountForGender(getGender(patientCommon,"urn:dktk:dataelement:1:"));
             }
         }
-        if (ProjectInfo.INSTANCE.getProjectName().equals("samply")) {
+        if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
             for (de.samply.share.model.osse.Patient donor : ((BbmriResult) queryResult).getDonors()) {
                 de.samply.share.model.common.Patient donorCommon = new de.samply.share.model.common.Patient();
                 try {
@@ -170,7 +166,7 @@ public class GenerateInquiryResultStatsJob implements Job {
             return -1;
         } else {
             try {
-                if(ProjectInfo.INSTANCE.getProjectName().equals("samply")){
+                if(ldmConnector instanceof LdmConnectorSamplystoreBiobank){
                     ageString = ageString.replace("\"", "");
                     LocalDate birthdate = new LocalDate (Integer.parseInt(ageString.split("\\.")[2]), Integer.parseInt(ageString.split("\\.")[1]), Integer.parseInt(ageString.split("\\.")[0]));
                     LocalDate now = new LocalDate();

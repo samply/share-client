@@ -24,9 +24,9 @@ package de.samply.share.client.quality.report.localdatamanagement;/*
 * permission to convey the resulting work.
 */
 
+import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.View;
-import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
 
 public interface LocalDataManagementRequester {
 

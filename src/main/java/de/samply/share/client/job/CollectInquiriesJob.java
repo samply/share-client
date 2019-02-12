@@ -3,7 +3,10 @@ package de.samply.share.client.job;
 import de.samply.share.client.model.EnumInquiryPresent;
 import de.samply.share.client.model.db.enums.EntityType;
 import de.samply.share.client.model.db.enums.EventMessageType;
-import de.samply.share.client.model.db.tables.pojos.*;
+import de.samply.share.client.model.db.tables.pojos.Broker;
+import de.samply.share.client.model.db.tables.pojos.Credentials;
+import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
+import de.samply.share.client.model.db.tables.pojos.RequestedEntity;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.*;
@@ -12,16 +15,20 @@ import de.samply.share.model.common.Inquiry;
 import de.samply.share.utils.QueryConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.quartz.*;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBException;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import static de.samply.share.client.model.EnumInquiryPresent.IP_DIFFERENT_REVISION;
-import static de.samply.share.client.model.EnumInquiryPresent.IP_SAME_REVISION;
-import static de.samply.share.client.model.EnumInquiryPresent.IP_UNAVAILABLE;
+import static de.samply.share.client.model.EnumInquiryPresent.*;
 import static de.samply.share.client.model.db.enums.InquiryStatusType.IS_NEW;
 
 /**
@@ -68,7 +75,6 @@ public class CollectInquiriesJob implements Job {
     /**
      * Load and persist inquiries for a given searchbroker.
      *
-     * @param broker               the broker
      * @param inquiryIdAndRevision the inquiry id and revision
      * @return true, if successful
      */

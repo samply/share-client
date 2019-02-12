@@ -39,7 +39,6 @@ import de.samply.share.common.utils.ProjectInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 
 import static de.samply.common.http.HttpConnector.*;

@@ -6,22 +6,22 @@
                 xmlns:wu="http://share.samply.de/webutils">
 
     <cc:interface>
-        <cc:attribute name="label" required="true" />
-        <cc:attribute name="lowerBound" required="true" />
-        <cc:attribute name="upperBound" required="true" />
+        <cc:attribute name="label" required="true"/>
+        <cc:attribute name="lowerBound" required="true"/>
+        <cc:attribute name="upperBound" required="true"/>
     </cc:interface>
-    
+
     <cc:implementation>
         <div class="row">
             <div class="col-md-2 col-md-offset-2">
-                <h:outputLabel styleClass="exportDatepickerLabel" value="#{cc.attrs.label}" for="lowerBound" />
+                <h:outputLabel styleClass="exportDatepickerLabel" value="#{cc.attrs.label}" for="lowerBound"/>
             </div>
             <div class="col-md-2">
                 <div class="input-group datepicker">
                     <h:inputText id="lowerBound" styleClass="form-control" value="#{cc.attrs.lowerBound}">
                         <!-- time zone set to server timezone, so there is no problem with conversion -->
-                        <f:convertDateTime timeZone="#{wu:getServerTimeZone()}" 
-                                           pattern="#{view.locale eq 'de' ? 'dd.MM.yyyy' : 'yyyy/MM/dd'}" />
+                        <f:convertDateTime timeZone="#{wu:getServerTimeZone()}"
+                                           pattern="#{view.locale eq 'de' ? 'dd.MM.yyyy' : 'yyyy/MM/dd'}"/>
                     </h:inputText>
                     <span class="input-group-addon">
                         <span class="fa fa-calendar"></span>
@@ -32,8 +32,8 @@
             <div class="col-md-2">
                 <div class="input-group datepicker">
                     <h:inputText id="upperBound" styleClass="form-control" value="#{cc.attrs.upperBound}">
-                        <f:convertDateTime timeZone="#{wu:getServerTimeZone()}" 
-                                           pattern="#{view.locale eq 'de' ? 'dd.MM.yyyy' : 'yyyy/MM/dd'}" />
+                        <f:convertDateTime timeZone="#{wu:getServerTimeZone()}"
+                                           pattern="#{view.locale eq 'de' ? 'dd.MM.yyyy' : 'yyyy/MM/dd'}"/>
                     </h:inputText>
                     <span class="input-group-addon">
                         <span class="fa fa-calendar"></span>

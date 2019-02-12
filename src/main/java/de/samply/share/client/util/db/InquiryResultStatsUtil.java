@@ -35,7 +35,6 @@ import de.samply.share.client.model.db.tables.records.InquiryResultStatsRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 
 import java.util.List;
 

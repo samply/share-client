@@ -38,13 +38,17 @@
 
         <sscl:formEntryElement labelFor="httpProxy" labelText="#{msg.configuration_httpProxy}" xmlTooltip="true">
             <f:facet name="input">
-                <h:inputText id="httpProxy" size="50" value="#{configurationBean.configurationMap[EnumConfiguration.HTTP_PROXY]}" styleClass="form-control" pass:disabled="disabled"/>
+                <h:inputText id="httpProxy" size="50"
+                             value="#{configurationBean.configurationMap[EnumConfiguration.HTTP_PROXY]}"
+                             styleClass="form-control" pass:disabled="disabled"/>
             </f:facet>
         </sscl:formEntryElement>
 
         <sscl:formEntryElement labelFor="httpsProxy" labelText="#{msg.configuration_httpsProxy}" xmlTooltip="true">
             <f:facet name="input">
-                <h:inputText id="httpsProxy" size="50" value="#{configurationBean.configurationMap[EnumConfiguration.HTTPS_PROXY]}" styleClass="form-control" pass:disabled="disabled"/>
+                <h:inputText id="httpsProxy" size="50"
+                             value="#{configurationBean.configurationMap[EnumConfiguration.HTTPS_PROXY]}"
+                             styleClass="form-control" pass:disabled="disabled"/>
             </f:facet>
         </sscl:formEntryElement>
     </fieldset>

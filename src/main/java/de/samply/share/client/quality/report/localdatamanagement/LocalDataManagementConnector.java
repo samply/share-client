@@ -36,7 +36,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 public class LocalDataManagementConnector {
 

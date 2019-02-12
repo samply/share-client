@@ -5,17 +5,17 @@
 
     <cc:interface>
         <cc:attribute name="modalId" required="true"
-                             shortDescription="Can be used to show the modal"/>
-        <cc:attribute name="title" required="true" />
-        <cc:facet name="content" required="true" />
-        <cc:facet name="buttons" required="true" />
+                      shortDescription="Can be used to show the modal"/>
+        <cc:attribute name="title" required="true"/>
+        <cc:facet name="content" required="true"/>
+        <cc:facet name="buttons" required="true"/>
     </cc:interface>
 
 
-    
     <cc:implementation>
         <div>
-            <div class="modal fade" id="#{cc.attrs.modalId}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal fade" id="#{cc.attrs.modalId}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
                 <script>
                     function show#{cc.attrs.modalId}() {
                         $("##{cc.attrs.modalId}").modal({
@@ -31,12 +31,13 @@
                         </div>
                         <div class="modal-body">
                             <div class="container-fluid">
-                                <cc:renderFacet name="content" />
+                                <cc:renderFacet name="content"/>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">#{msg.common_cancel}</button>
-                            <cc:renderFacet name="buttons" />
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">#{msg.common_cancel}
+                            </button>
+                            <cc:renderFacet name="buttons"/>
                         </div>
                     </div>
                 </div>

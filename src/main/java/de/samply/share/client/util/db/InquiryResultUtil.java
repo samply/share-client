@@ -38,7 +38,6 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 

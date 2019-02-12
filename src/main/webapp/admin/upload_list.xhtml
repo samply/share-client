@@ -37,33 +37,34 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
                 xmlns:pass="http://xmlns.jcp.org/jsf/passthrough">
-    <ui:param name="adminPage" value="true" />
+    <ui:param name="adminPage" value="true"/>
 
     <ui:define name="title">#{msg.ull_title}</ui:define>
 
     <ui:define name="additional-css">
         <h:outputStylesheet library="webjars" name="datatables/1.10.16/css/dataTables.bootstrap.min.css"/>
-        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css" />
+        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"/>
     </ui:define>
 
     <ui:define name="additional-js">
         <h:outputScript library="webjars" name="datatables/1.10.16/js/jquery.dataTables.min.js"/>
         <h:outputScript library="webjars" name="datatables/1.10.16/js/dataTables.bootstrap.min.js"/>
-        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js" />
+        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"/>
         <h:outputScript library="js" name="pages/upload_list.js"/>
         <h:outputScript library="js" name="date-de.js"/>
     </ui:define>
 
     <ui:define name="main-content">
         <h:form prependId="false">
-            <o:commandScript name="updateButtonBar" render="upload-button-bar" execute="upload-button-bar" oncomplete="bootstrapSwitchOn()" />
+            <o:commandScript name="updateButtonBar" render="upload-button-bar" execute="upload-button-bar"
+                             oncomplete="bootstrapSwitchOn()"/>
             <div class="row" style="margin-bottom: 20px;">
                 <ui:fragment rendered="#{wu:isCentralSearchPathSet()}">
                     <h:panelGroup layout="block" styleClass="col-xs-12" id="upload-button-bar">
                         <ui:fragment rendered="#{not uploadBean.uploadRunning}">
                             <fieldset>
                                 <legend>
-                                    <h:outputText value="#{msg.ull_manualUpload}" />
+                                    <h:outputText value="#{msg.ull_manualUpload}"/>
                                 </legend>
                                 <h:selectBooleanCheckbox value="#{uploadBean.dryrun}"
                                                          id="dryrunSwitch"
@@ -93,7 +94,7 @@
                                                          pass:data-label-width="100"
                                                          pass:data-label-text="#{msg.su_dktk}"
                                                          pass:data-on-text="#{msg.common_yes}"
-                                                         pass:data-off-text="#{msg.common_no}" />
+                                                         pass:data-off-text="#{msg.common_no}"/>
 
                                 <!--action="#{uploadBean.spawnNewUpload(dryrun.value, ignoreTimestamps.value, dktkFlagged.value)}"-->
                                 <h:commandLink styleClass="btn btn-md btn-default"
@@ -103,50 +104,53 @@
                             </fieldset>
                         </ui:fragment>
                         <ui:fragment rendered="#{uploadBean.uploadRunning}">
-                            <div class="btn-group btn-group-justified" role="group" >
+                            <div class="btn-group btn-group-justified" role="group">
                                 <div class="btn-group" role="group">
-                                    <h:commandLink styleClass="btn btn-md btn-default" value="#{msg.ull_cancelUpload}" action="#{uploadBean.cancelUploadJobs}"/>
+                                    <h:commandLink styleClass="btn btn-md btn-default" value="#{msg.ull_cancelUpload}"
+                                                   action="#{uploadBean.cancelUploadJobs}"/>
                                 </div>
                             </div>
                         </ui:fragment>
                     </h:panelGroup>
                 </ui:fragment>
                 <ui:fragment rendered="#{not wu:isCentralSearchPathSet()}">
-                    <sscl:bootstrapPanel contextClass="panel-danger" headingText="#{msg.configuration_noCentralSearchPath}">
+                    <sscl:bootstrapPanel contextClass="panel-danger"
+                                         headingText="#{msg.configuration_noCentralSearchPath}">
                         <f:facet name="bodyContent">
-                            <h:outputText value="#{msg.configuration_noCentralSearchPathDetails}" />
+                            <h:outputText value="#{msg.configuration_noCentralSearchPathDetails}"/>
                         </f:facet>
                     </sscl:bootstrapPanel>
                 </ui:fragment>
             </div>
             <table id="upload-table" class="table table-hover">
                 <thead>
-                    <tr>
-                        <th>#{msg.ull_id}</th>
-                        <th>#{msg.ull_triggeredAt}</th>
-                        <th>#{msg.ull_triggeredBy}</th>
-                        <th>#{msg.ull_status}</th>
-                    </tr>
+                <tr>
+                    <th>#{msg.ull_id}</th>
+                    <th>#{msg.ull_triggeredAt}</th>
+                    <th>#{msg.ull_triggeredBy}</th>
+                    <th>#{msg.ull_status}</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <ui:repeat var="upload" value="#{uploadBean.uploads}">
-                        <tr>
-                            <td>
-                                <h:link outcome="show_upload" value="#{upload.id}">
-                                    <f:param name="uploadId" value="#{upload.id}" />
-                                </h:link>
-                            </td>
-                            <td>
-                                <h:outputText value="#{wu:convertTime(upload.triggeredAt)}" styleClass="form-control-static"/>
-                            </td>
-                            <td>
-                                <h:outputText value="#{upload.triggeredBy}" styleClass="form-control-static"/>
-                            </td>
-                            <td>
-                                <h:outputText value="#{upload.status}" styleClass="form-control-static"/>
-                            </td>
-                        </tr>
-                    </ui:repeat>
+                <ui:repeat var="upload" value="#{uploadBean.uploads}">
+                    <tr>
+                        <td>
+                            <h:link outcome="show_upload" value="#{upload.id}">
+                                <f:param name="uploadId" value="#{upload.id}"/>
+                            </h:link>
+                        </td>
+                        <td>
+                            <h:outputText value="#{wu:convertTime(upload.triggeredAt)}"
+                                          styleClass="form-control-static"/>
+                        </td>
+                        <td>
+                            <h:outputText value="#{upload.triggeredBy}" styleClass="form-control-static"/>
+                        </td>
+                        <td>
+                            <h:outputText value="#{upload.status}" styleClass="form-control-static"/>
+                        </td>
+                    </tr>
+                </ui:repeat>
                 </tbody>
             </table>
             <h:messages showDetail="true" showSummary="true" id="messages" globalOnly="true"/>

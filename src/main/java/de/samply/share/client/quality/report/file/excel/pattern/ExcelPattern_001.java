@@ -40,7 +40,10 @@ import de.samply.share.client.quality.report.file.excel.row.mapper.ExcelRowMappe
 import de.samply.share.client.quality.report.file.excel.sheet.ExcelSheetFactory;
 import de.samply.share.client.quality.report.file.excel.sheet.ExcelSheetFactoryImpl;
 import de.samply.share.client.quality.report.file.excel.sheet.ExplanatoryExcelSheetFactory;
-import de.samply.share.client.quality.report.file.excel.sheet.wrapper.*;
+import de.samply.share.client.quality.report.file.excel.sheet.wrapper.ExcelSheetFreezeFirstRowFactory;
+import de.samply.share.client.quality.report.file.excel.sheet.wrapper.ExcelSheetWithAutoFilterFactory;
+import de.samply.share.client.quality.report.file.excel.sheet.wrapper.ExcelSheetWithAutoSizeColumnFactory;
+import de.samply.share.client.quality.report.file.excel.sheet.wrapper.HighlightMismatchInRed_ExcelSheetFactory_002;
 import de.samply.share.client.quality.report.file.excel.workbook.ExcelWorkbookFactory;
 import de.samply.share.client.quality.report.file.excel.workbook.ExcelWorkbookFactoryImpl_002;
 import de.samply.share.client.quality.report.file.excel.workbook.ExcelWorkbookFactoryParameters_002;
@@ -132,7 +135,7 @@ public class ExcelPattern_001 implements ExcelPattern{
 
     private ExcelRowMapper_002 createExcelRowMapper (){
 
-        FirstRowCellReferenceFactoryForOneSheet firstRowCellReferenceFactoryForOneSheet = new FirstRowCellReferenceFactoryForOneSheet(ExcelWorkbookFactoryImpl_002.PATIENT_LOCAL_IDS_SHEET_TITLE);
+        FirstRowCellReferenceFactoryForOneSheet firstRowCellReferenceFactoryForOneSheet = new FirstRowCellReferenceFactoryForOneSheet(ExcelWorkbookFactoryImpl_002.patientLocalIds_sheetTitle);
         return new ExcelRowMapper_002( centraXxMapper, dktkIdManager, firstRowCellReferenceFactoryForOneSheet, ignoredElements, excelRowMapperUtils);
 
     }

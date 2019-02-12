@@ -28,80 +28,81 @@
   -->
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
-      xmlns:wu="http://share.samply.de/webutils"
-      xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+                xmlns:wu="http://share.samply.de/webutils"
+                xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
 >
 
-<head>
-    <link rel="stylesheet" type="text/css" href="src/main/webapp/resources/css/samply-share.css"/>
-</head>
-<cc:interface>
-    <cc:attribute name="activePage" type="java.lang.String"/>
-</cc:interface>
+    <head>
+        <link rel="stylesheet" type="text/css" href="src/main/webapp/resources/css/samply-share.css"/>
+    </head>
+    <cc:interface>
+        <cc:attribute name="activePage" type="java.lang.String"/>
+    </cc:interface>
 
-<cc:implementation>
-    <h:form>
-        <nav class="navbar navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse"
-                            data-target=".navbar-collapse">
-                        <span class="icon-bar"/> <span class="icon-bar"/> <span
-                            class="icon-bar"/>
-                    </button>
-                    <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
-                        <a class="navbar-brand dktk" href="dashboard.xhtml?faces-redirect=true">
-                            <span class="title">DKTK</span>
-                            <span class="titleBlue">.Teiler</span>
-                        </a>
-                    </ui:fragment>
-                    <ui:fragment rendered="#{wu:getProjectName() == 'gbn'}">
-                        <a class="navbar-brand" href="#"><span class="title">DKTK/GBN</span><span
-                                class="titleBlue">.Teiler</span></a>
-                    </ui:fragment>
-                    <ui:fragment rendered="#{wu:getProjectName() == 'osse'}">
-                        <a class="navbar-brand" href="#"><span class="title">OSSE</span><span
-                                class="titleBlue">.Share</span></a>
-                    </ui:fragment>
-                    <ui:fragment
-                            rendered="#{wu:getProjectName() != 'osse' and wu:getProjectName() != 'dktk' and wu:getProjectName() != 'gbn'}">
-                        <a class="navbar-brand" href="#"><span class="title">Samply</span><span
-                                class="titleBlue">.Share</span></a>
-                    </ui:fragment>
+    <cc:implementation>
+        <h:form>
+            <nav class="navbar navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse"
+                                data-target=".navbar-collapse">
+                            <span class="icon-bar"/> <span class="icon-bar"/> <span
+                                class="icon-bar"/>
+                        </button>
+                        <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
+                            <a class="navbar-brand dktk" href="dashboard.xhtml?faces-redirect=true">
+                                <span class="title">DKTK</span>
+                                <span class="titleBlue">.Teiler</span>
+                            </a>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{wu:getProjectName() == 'gbn'}">
+                            <a class="navbar-brand" href="#"><span class="title">DKTK/GBN</span><span
+                                    class="titleBlue">.Teiler</span></a>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{wu:getProjectName() == 'osse'}">
+                            <a class="navbar-brand" href="#"><span class="title">OSSE</span><span
+                                    class="titleBlue">.Share</span></a>
+                        </ui:fragment>
+                        <ui:fragment
+                                rendered="#{wu:getProjectName() != 'osse' and wu:getProjectName() != 'dktk' and wu:getProjectName() != 'gbn'}">
+                            <a class="navbar-brand" href="#"><span class="title">Samply</span><span
+                                    class="titleBlue">.Share</span></a>
+                        </ui:fragment>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown"><a href="#" class="dropdown-toggle"
+                                                    data-toggle="dropdown">#{loginBean.user.username}
+                                <b class="caret"></b>
+                            </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#" onclick="$('#changePasswordModal').modal();"><i
+                                            class="fa fa-gear"/> #{msg.common_changePassword}</a></li>
+                                    <ui:fragment
+                                            rendered="#{loginBean.user.username != 'admin' and wu:getProjectName() != 'osse'}">
+                                        <li><a href="#" onclick="$('#changeEmail').modal();"><i
+                                                class="fa fa-envelope"/> #{msg.common_changeEmail}</a></li>
+                                    </ui:fragment>
+                                    <li class="divider"></li>
+                                    <li class="logoutElement">
+                                        <h:commandLink action="#{loginBean.logout}"><i
+                                                class="fa fa-sign-out"/> #{msg.common_logout}
+                                        </h:commandLink>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--/.nav-collapse -->
                 </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown"><a href="#" class="dropdown-toggle"
-                                                data-toggle="dropdown">#{loginBean.user.username}
-                            <b class="caret"></b>
-                        </a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#" onclick="$('#changePasswordModal').modal();"><i
-                                        class="fa fa-gear"/> #{msg.common_changePassword}</a></li>
-                                <ui:fragment
-                                        rendered="#{loginBean.user.username != 'admin' and wu:getProjectName() != 'osse'}">
-                                    <li><a href="#" onclick="$('#changeEmail').modal();"><i
-                                            class="fa fa-envelope"/> #{msg.common_changeEmail}</a></li>
-                                </ui:fragment>
-                                <li class="divider"></li>
-                                <li class="logoutElement">
-                                    <h:commandLink action="#{loginBean.logout}"><i
-                                            class="fa fa-sign-out"/> #{msg.common_logout}</h:commandLink>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-                <!--/.nav-collapse -->
-            </div>
-        </nav>
-    </h:form>
+            </nav>
+        </h:form>
 
-    <sscl:changePasswordModal/>
-    <sscl:changeEmailModal/>
-</cc:implementation>
+        <sscl:changePasswordModal/>
+        <sscl:changeEmailModal/>
+    </cc:implementation>
 
 </ui:composition>

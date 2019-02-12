@@ -38,13 +38,14 @@
     <fieldset class="configurationGroup">
         <legend class="scheduler-border">#{msg.configuration_centralSearch}</legend>
 
-        <sscl:formEntryElement labelFor="centralMdsDbBaseUrl" labelText="#{msg.configuration_centralSearchBaseUrl}" dbTooltip="true">
+        <sscl:formEntryElement labelFor="centralMdsDbBaseUrl" labelText="#{msg.configuration_centralSearchBaseUrl}"
+                               dbTooltip="true">
             <f:facet name="input">
                 <h:inputText id="centralMdsDbBaseUrl"
                              size="50"
                              value="#{configurationBean.configurationMap[EnumConfiguration.CENTRAL_MDS_DATABASE_BASE_URL]}"
                              styleClass="form-control"
-                             pass:disabled="disabled" >
+                             pass:disabled="disabled">
                 </h:inputText>
             </f:facet>
         </sscl:formEntryElement>
@@ -59,15 +60,19 @@
                 </h:inputText>
             </f:facet>
         </sscl:formEntryElement>
-        
+
         <sscl:formEntryElement labelText="#{msg.configuration_manageCredentials}" labelFor="credentialsLink1">
             <f:facet name="input">
-                <h:outputLink value="credentials_list.xhtml" id="credentialsLink1">#{msg.configuration_manageCredentialsLink}</h:outputLink>
+                <h:outputLink value="credentials_list.xhtml" id="credentialsLink1">
+                    #{msg.configuration_manageCredentialsLink}
+                </h:outputLink>
             </f:facet>
         </sscl:formEntryElement>
 
-        <ui:fragment rendered="#{configurationBean.configurationMap[EnumConfiguration.CENTRAL_MDS_DATABASE_SHOW_UPLOAD_PATIENTS_WITH_LOCAL_CONSENT] == 'true'}">
-            <sscl:formEntryElement labelFor="uploadPatientsWithLocalConsent" labelText="#{msg.configuration_uploadPatientsWithLocalConsent}">
+        <ui:fragment
+                rendered="#{configurationBean.configurationMap[EnumConfiguration.CENTRAL_MDS_DATABASE_SHOW_UPLOAD_PATIENTS_WITH_LOCAL_CONSENT] == 'true'}">
+            <sscl:formEntryElement labelFor="uploadPatientsWithLocalConsent"
+                                   labelText="#{msg.configuration_uploadPatientsWithLocalConsent}">
                 <f:facet name="input">
                     <h:selectBooleanCheckbox id="uploadPatientsWithLocalConsent"
                                              value="#{configurationBean.configurationMap[EnumConfiguration.CENTRAL_MDS_DATABASE_UPLOAD_PATIENTS_WITH_LOCAL_CONSENT]}"

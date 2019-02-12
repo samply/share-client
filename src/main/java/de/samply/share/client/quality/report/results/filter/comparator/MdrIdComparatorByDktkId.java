@@ -24,8 +24,8 @@ package de.samply.share.client.quality.report.results.filter.comparator;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.dktk.DktkId_MdrId_Converter;
+import de.samply.share.common.utils.MdrIdDatatype;
 
 
 public class MdrIdComparatorByDktkId extends MdrIdComparator<DktkIdType> {

@@ -36,8 +36,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
 
-import java.sql.SQLException;
-
 /**
  * Helper Class for CRUD operations with contact objects
  */

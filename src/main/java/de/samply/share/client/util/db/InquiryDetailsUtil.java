@@ -12,7 +12,6 @@ import org.jooq.DSLContext;
 import org.jooq.DatePart;
 import org.jooq.impl.DSL;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**

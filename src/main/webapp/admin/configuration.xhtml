@@ -37,7 +37,7 @@
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
                 xmlns:wu="http://share.samply.de/webutils"
 >
-    <ui:param name="adminPage" value="true" />
+    <ui:param name="adminPage" value="true"/>
 
     <ui:define name="title">#{msg.configuration_title}</ui:define>
 
@@ -49,20 +49,20 @@
     </ui:define>
 
     <ui:define name="additional-css">
-        <h:outputStylesheet library="webjars" name="jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css" />
-        <h:outputStylesheet library="webjars" name="clockpicker/0.0.7/dist/bootstrap-clockpicker.min.css" />
-        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css" />
+        <h:outputStylesheet library="webjars" name="jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css"/>
+        <h:outputStylesheet library="webjars" name="clockpicker/0.0.7/dist/bootstrap-clockpicker.min.css"/>
+        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"/>
     </ui:define>
 
     <ui:define name="additional-js">
-        <h:outputScript library="webjars" name="jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js" />
-        <h:outputScript library="webjars" name="clockpicker/0.0.7/dist/bootstrap-clockpicker.min.js" />
-        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js" />
+        <h:outputScript library="webjars" name="jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"/>
+        <h:outputScript library="webjars" name="clockpicker/0.0.7/dist/bootstrap-clockpicker.min.js"/>
+        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"/>
     </ui:define>
 
     <ui:define name="optional-import-constants">
-        <o:importConstants type="de.samply.share.client.model.EnumConfiguration" />
-        <o:importConstants type="de.samply.share.client.model.EnumConfigurationTimings" />
+        <o:importConstants type="de.samply.share.client.model.EnumConfiguration"/>
+        <o:importConstants type="de.samply.share.client.model.EnumConfigurationTimings"/>
     </ui:define>
 
     <ui:define name="main-content">
@@ -70,42 +70,42 @@
         <h:form id="configurationForm" prependId="false">
 
             <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
-                <ui:include src="../WEB-INF/includes/c_configuration_centralMdsDb.xhtml" />
-                <div class="form-space" />
+                <ui:include src="../WEB-INF/includes/c_configuration_centralMdsDb.xhtml"/>
+                <div class="form-space"/>
             </ui:fragment>
 
-            <ui:include src="../WEB-INF/includes/c_configuration_mdr.xhtml" />
+            <ui:include src="../WEB-INF/includes/c_configuration_mdr.xhtml"/>
 
-            <div class="form-space" />
+            <div class="form-space"/>
 
-            <ui:include src="../WEB-INF/includes/c_configuration_interfaces.xhtml" />
+            <ui:include src="../WEB-INF/includes/c_configuration_interfaces.xhtml"/>
 
-            <div class="form-space" />
+            <div class="form-space"/>
 
-            <ui:include src="../WEB-INF/includes/c_configuration_monitoring.xhtml" />
+            <ui:include src="../WEB-INF/includes/c_configuration_monitoring.xhtml"/>
 
-            <div class="form-space" />
+            <div class="form-space"/>
 
-            <ui:include src="../WEB-INF/includes/c_configuration_proxy.xhtml" />
+            <ui:include src="../WEB-INF/includes/c_configuration_proxy.xhtml"/>
 
-            <div class="form-space" />
+            <div class="form-space"/>
 
-            <ui:include src="../WEB-INF/includes/c_configuration_misc.xhtml" />
+            <ui:include src="../WEB-INF/includes/c_configuration_misc.xhtml"/>
 
-            <div class="form-space" />
+            <div class="form-space"/>
 
-            <ui:include src="../WEB-INF/includes/c_configuration_timings.xhtml" />
+            <ui:include src="../WEB-INF/includes/c_configuration_timings.xhtml"/>
 
             <!-- Buttons -->
-            <div class="form-space" />
-            <hr />
-            <h:messages id="messages" showSummary="true" showDetail="true" globalOnly="true" />
+            <div class="form-space"/>
+            <hr/>
+            <h:messages id="messages" showSummary="true" showDetail="true" globalOnly="true"/>
 
-            <div class="row" style="margin-bottom: 50px;" >
+            <div class="row" style="margin-bottom: 50px;">
                 <div class="col-sm-12">
                     <h:commandButton styleClass="btn btn-md btn-primary pull-right" value="#{msg.common_save}"
                                      action="#{configurationBean.storeConfiguration}">
-                        <f:ajax execute="@form" render="@form messages" onevent="bootstrapSwitchOn" />
+                        <f:ajax execute="@form" render="@form messages" onevent="bootstrapSwitchOn"/>
                     </h:commandButton>
                 </div>
             </div>
@@ -113,7 +113,7 @@
 
         <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
             <!--Put this outside the actual form because it contains a form itself-->
-            <sscl:confirmUploadWithLocalConsentModal />
+            <sscl:confirmUploadWithLocalConsentModal/>
         </ui:fragment>
     </ui:define>
 

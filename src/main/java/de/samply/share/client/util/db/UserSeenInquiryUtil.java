@@ -29,15 +29,13 @@
 package de.samply.share.client.util.db;
 
 import de.samply.share.client.model.db.Tables;
-import de.samply.share.client.model.db.tables.pojos.UserSeenInquiry;
 import de.samply.share.client.model.db.tables.daos.UserSeenInquiryDao;
 import de.samply.share.client.model.db.tables.pojos.Inquiry;
 import de.samply.share.client.model.db.tables.pojos.User;
+import de.samply.share.client.model.db.tables.pojos.UserSeenInquiry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
-
-import java.sql.SQLException;
 
 /**
  * Helper Class for CRUD operations with user seen inquiry relations

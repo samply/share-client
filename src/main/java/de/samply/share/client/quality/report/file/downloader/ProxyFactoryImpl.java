@@ -24,17 +24,7 @@ package de.samply.share.client.quality.report.file.downloader;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.common.http.HttpConnector;
-import de.samply.share.client.control.ApplicationBean;
-import org.apache.http.HttpHost;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.SocketAddress;
-import java.net.URL;
 
 public class ProxyFactoryImpl implements ProxyFactory {
 

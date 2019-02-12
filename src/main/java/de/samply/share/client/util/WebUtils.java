@@ -27,14 +27,6 @@
  */
 package de.samply.share.client.util;
 
-import java.net.URI;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-
 import com.google.common.base.Joiner;
 import com.google.gson.*;
 import de.samply.share.client.messages.Messages;
@@ -57,6 +49,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * The Class WebUtils offers methods to be used directly from xhtml via the corresponding taglib (webutils.taglib.xml)

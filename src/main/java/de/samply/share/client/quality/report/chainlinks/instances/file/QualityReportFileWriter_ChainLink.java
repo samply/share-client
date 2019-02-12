@@ -29,8 +29,8 @@ import de.samply.share.client.quality.report.chainlinks.ChainLink;
 import de.samply.share.client.quality.report.chainlinks.ChainLinkException;
 import de.samply.share.client.quality.report.chainlinks.ChainLinkItem;
 import de.samply.share.client.quality.report.chainlinks.instances.validator.ValidatorContext;
-import de.samply.share.client.quality.report.file.manager.QualityReportFileManagerException;
 import de.samply.share.client.quality.report.file.manager.QualityReportFileManager;
+import de.samply.share.client.quality.report.file.manager.QualityReportFileManagerException;
 import de.samply.share.client.quality.report.results.QualityResults;
 
 public class QualityReportFileWriter_ChainLink<I extends ChainLinkItem & FileContext & ValidatorContext> extends ChainLink<I> {

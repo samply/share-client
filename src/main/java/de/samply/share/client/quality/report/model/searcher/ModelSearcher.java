@@ -25,9 +25,9 @@ package de.samply.share.client.quality.report.model.searcher;/*
 */
 
 import de.samply.common.mdrclient.domain.Validations;
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.MdrIdAndValidations;
 import de.samply.share.client.quality.report.model.Model;
+import de.samply.share.common.utils.MdrIdDatatype;
 
 import java.util.HashMap;
 import java.util.List;

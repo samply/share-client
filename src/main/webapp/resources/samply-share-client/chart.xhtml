@@ -36,22 +36,26 @@
 
     <cc:interface>
         <cc:attribute name="chart" type="de.samply.share.model.Chart"
-                             required="true" />
+                      required="true"/>
         <cc:attribute name="index" required="true"
-                             type="java.lang.Integer"/>
+                      type="java.lang.Integer"/>
     </cc:interface>
 
     <cc:implementation>
-        <h:outputStylesheet library="webjars" name="/jqplot/1.0.9.d96a669/jquery.jqplot.min.css" />
-        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/jquery.jqplot.min.js" target="head" />
-        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.pieRenderer.js" target="head" />
-        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.categoryAxisRenderer.js" target="head" />
-        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.pointLabels.js" target="head" />
+        <h:outputStylesheet library="webjars" name="/jqplot/1.0.9.d96a669/jquery.jqplot.min.css"/>
+        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/jquery.jqplot.min.js" target="head"/>
+        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.pieRenderer.js" target="head"/>
+        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.categoryAxisRenderer.js"
+                        target="head"/>
+        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.pointLabels.js" target="head"/>
         <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.barRenderer.js" target="head"/>
-        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasTextRenderer.js" target="head"/>
-        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasAxisLabelRenderer.js" target="head"/>
-        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasAxisTickRenderer.js" target="head"/>
-        <h:outputScript name="js/charts.js" target="head" />
+        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasTextRenderer.js"
+                        target="head"/>
+        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasAxisLabelRenderer.js"
+                        target="head"/>
+        <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasAxisTickRenderer.js"
+                        target="head"/>
+        <h:outputScript name="js/charts.js" target="head"/>
 
         <ui:fragment rendered="#{cc.attrs.chart ne null}">
             <div class="panel panel-default">
@@ -59,14 +63,15 @@
                     <h3 class="panel-title">
                         <div style="float:right;">
                             <h:commandLink action="#{chartDefinitionBean.editChartDefinition(cc.attrs.index)}">
-                                <i class="fa fa-edit" />
+                                <i class="fa fa-edit"/>
                             </h:commandLink>
                             <h:outputLink value="#"
                                           onclick="showDeleteChartModal#{cc.attrs.index}();return false;">
-                                <i class="fa fa-trash" />    
+                                <i class="fa fa-trash"/>
                             </h:outputLink>
                         </div>
-                        <h:outputText value="#{MdrDataElementBean.getLabelText(cc.attrs.chart.chartDefinition.viewField1)}"/>
+                        <h:outputText
+                                value="#{MdrDataElementBean.getLabelText(cc.attrs.chart.chartDefinition.viewField1)}"/>
                     </h3>
                 </div>
                 <div class="panel-body">
@@ -76,36 +81,37 @@
                             makePieChart("chartDiv#{cc.attrs.index}", #{cc.attrs.chart.getXAsJsonArray()}, #{cc.attrs.chart.getYAsJsonArray()});
                         </h:outputScript>
                         <h:outputScript rendered="#{cc.attrs.chart.chartDefinition.type eq ChartType.HISTOGRAM}">
-                            makeBarChart("chartDiv#{cc.attrs.index}", #{cc.attrs.chart.getXAsJsonArray()}, #{cc.attrs.chart.getYAsJsonArray()}, 
-                            "#{MdrDataElementBean.getLabelText(cc.attrs.chart.chartDefinition.viewField1)}", "#{msg.charts_nofOccurences}");
+                            makeBarChart("chartDiv#{cc.attrs.index}", #{cc.attrs.chart.getXAsJsonArray()}, #{cc.attrs.chart.getYAsJsonArray()},
+                                    "#{MdrDataElementBean.getLabelText(cc.attrs.chart.chartDefinition.viewField1)}", "#{msg.charts_nofOccurences}");
                         </h:outputScript>
                     </ui:fragment>
                     <ui:fragment rendered="#{not cc.attrs.chart.dataAvailable}">
                         <div style="text-align: center; vertical-align: middle">
-                            <h:outputText value="#{msg.charts_noChart}" />
+                            <h:outputText value="#{msg.charts_noChart}"/>
                         </div>
                     </ui:fragment>
                 </div>
             </div>
-                
+
             <sscl:modal title="#{msg.charts_deleteChartModalTitle}"
-                      modalId="DeleteChartModal#{cc.attrs.index}">
+                        modalId="DeleteChartModal#{cc.attrs.index}">
                 <f:facet name="content">
                     <div class="row">
                         <div class="col-lg-12">
                             <h:outputFormat value="#{msg.charts_deleteChartText}">
-                                <f:param value="#{MdrDataElementBean.getLabelText(cc.attrs.chart.chartDefinition.viewField1)}" />
+                                <f:param
+                                        value="#{MdrDataElementBean.getLabelText(cc.attrs.chart.chartDefinition.viewField1)}"/>
                             </h:outputFormat>
                         </div>
                     </div>
                 </f:facet>
                 <f:facet name="buttons">
-                    <h:commandButton class="btn btn-success" 
+                    <h:commandButton class="btn btn-success"
                                      action="#{chartQueryGroupController.deleteChart(cc.attrs.index)}"
-                                     value="#{msg.charts_deleteChart}" />
+                                     value="#{msg.charts_deleteChart}"/>
                 </f:facet>
             </sscl:modal>
-                
+
         </ui:fragment>
     </cc:implementation>
 </ui:composition>

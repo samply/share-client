@@ -28,10 +28,10 @@ package de.samply.share.client.control;
 
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.chain.Chain;
-import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
 import de.samply.share.client.quality.report.chain.factory.ChainFactory;
 import de.samply.share.client.quality.report.chain.factory.ChainFactoryException;
 import de.samply.share.client.quality.report.chain.factory.QualityReportChainFactory_002;
+import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
 import de.samply.share.client.quality.report.chainlinks.statistics.chain.ChainStatistics;
 import de.samply.share.client.quality.report.chainlinks.statistics.manager.ChainStatisticsManager;
 import de.samply.share.client.quality.report.faces.QualityReportFileInfo;
@@ -44,7 +44,6 @@ import de.samply.share.client.quality.report.file.id.path.IdPathManager_002;
 import de.samply.share.client.quality.report.file.manager.QualityReportMetadataFileManager;
 import de.samply.share.client.quality.report.file.manager.QualityReportMetadataFileManagerImpl;
 import de.samply.share.client.quality.report.file.metadata.txtcolumn.MetadataTxtColumnManager_002;
-
 import de.samply.share.client.util.db.ConfigurationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -40,10 +40,10 @@
     <sscl:bootstrapPanel collapsible="true" collapsibleStartExpanded="false" id="documentsPanel">
         <f:facet name="headerContent">
             <div class="panel-heading">
-                <h:form  id="documentsHeader" prependId="false">
+                <h:form id="documentsHeader" prependId="false">
                     <h3 class="panel-title">#{msg.si_documents} <span class="badge" style="background-color: #989898;">#{fn:length(inquiryBean.documents)}</span>
-                        <button type="button" class="close collapseToggle" aria-label="Close" >
-                            <i class="fa fa-chevron-right" />
+                        <button type="button" class="close collapseToggle" aria-label="Close">
+                            <i class="fa fa-chevron-right"/>
                         </button>
                     </h3>
                 </h:form>
@@ -51,46 +51,51 @@
         </f:facet>
 
         <f:facet name="bodyContent">
-            <h:form prependId="false" id="documentListForm" styleClass="documentListForm" >
+            <h:form prependId="false" id="documentListForm" styleClass="documentListForm">
                 <div class="row" style="font-weight: bold; text-align: left; margin-bottom: 5px;">
                     <div class="col-xs-8">
-                        <h:outputText value="#{msg.si_document}" />
+                        <h:outputText value="#{msg.si_document}"/>
                     </div>
                     <div class="col-xs-4">
                         <div class="row" style="float: right; margin-right:0;">
-                            <h:outputText value="#{msg.si_actions}" />
+                            <h:outputText value="#{msg.si_actions}"/>
                         </div>
                     </div>
                 </div>
                 <ui:fragment rendered="#{empty inquiryBean.documents}">
                     <div class="row">
                         <div class="col-xs-12">
-                            <h:outputText value="#{msg.si_noDocuments}" />
+                            <h:outputText value="#{msg.si_noDocuments}"/>
                         </div>
                     </div>
                 </ui:fragment>
                 <ui:repeat var="document" value="#{inquiryBean.documents}" varStatus="status">
-                    <ui:param name="readOnly" value="#{document.userId != loginBean.user.id}" />
+                    <ui:param name="readOnly" value="#{document.userId != loginBean.user.id}"/>
 
-                    <div class="row" style="#{status.odd ? 'background-color: #F3F3F3; margin: 0 0 2px 0;' : 'margin: 0 0 2px 0;'}" >
+                    <div class="row"
+                         style="#{status.odd ? 'background-color: #F3F3F3; margin: 0 0 2px 0;' : 'margin: 0 0 2px 0;'}">
                         <div class="col-xs-8" style="padding-left: 0;">
-                            <h:commandLink value="#{document.filename}" id="dl_document" type="submit" action="#{inquiryBean.exportDocument(document.id)}" />
+                            <h:commandLink value="#{document.filename}" id="dl_document" type="submit"
+                                           action="#{inquiryBean.exportDocument(document.id)}"/>
                         </div>
                         <div class="col-xs-4">
                             <div class="row" style="float: right;">
                                 <div class="idDiv" style="display: none;">
-                                    <h:inputHidden value="#{document.id}" />
+                                    <h:inputHidden value="#{document.id}"/>
                                 </div>
-                                <h:commandLink value="" class="deleteDocument hasConfirmPopover btn btn-default btn-xs" title="#{msg.common_delete}" rendered="#{!readOnly}">
+                                <h:commandLink value="" class="deleteDocument hasConfirmPopover btn btn-default btn-xs"
+                                               title="#{msg.common_delete}" rendered="#{!readOnly}">
                                     <i class="fa fa-fw fa-trash-o"></i>
-                                    <f:ajax />
+                                    <f:ajax/>
                                 </h:commandLink>
-                                <o:commandScript name="deleteDocument" render="@form :documentsPanel:documentListForm :documentsPanel:documentsHeader"
-                                                 execute="@form" actionListener="#{inquiryBean.deleteDocument()}" />
-                                <h:commandLink value="" class="infoDocument hasPopover btn btn-default btn-xs" title="Zusätzliche Infos" style="margin-left: 2px;"
+                                <o:commandScript name="deleteDocument"
+                                                 render="@form :documentsPanel:documentListForm :documentsPanel:documentsHeader"
+                                                 execute="@form" actionListener="#{inquiryBean.deleteDocument()}"/>
+                                <h:commandLink value="" class="infoDocument hasPopover btn btn-default btn-xs"
+                                               title="Zusätzliche Infos" style="margin-left: 2px;"
                                                pass:data-content="#{msg.si_uploadedAt} #{wu:dateToGermanFormatString(document.uploadedAt)} von #{wu:getUsernameById(document.userId)}">
                                     <i class="fa fa-fw fa-info-circle"></i>
-                                    <f:ajax />
+                                    <f:ajax/>
                                 </h:commandLink>
                             </div>
                         </div>
@@ -100,12 +105,17 @@
 
             <hr style="margin: 10px 0;"/>
 
-            <h:form role="form" enctype="multipart/form-data" prependId="false" id="documentBoxForm" styleClass="documentBoxForm">
+            <h:form role="form" enctype="multipart/form-data" prependId="false" id="documentBoxForm"
+                    styleClass="documentBoxForm">
                 <label class="control-label">#{msg.common_selectFile}</label>
-                <h:inputFile id="documentUpload" styleClass="documentUploadFileInput" value="#{inquiryBean.newDocument}" style="width:100%" required="true" pass:data-show-caption="true" pass:data-show-preview="false" />
-                <h:message id="document_message" for="documentUpload" style="color:red" />
+                <h:inputFile id="documentUpload" styleClass="documentUploadFileInput" value="#{inquiryBean.newDocument}"
+                             style="width:100%" required="true" pass:data-show-caption="true"
+                             pass:data-show-preview="false"/>
+                <h:message id="document_message" for="documentUpload" style="color:red"/>
                 <h:commandButton type="button" class="uploadTheFile" style="display:none;">
-                    <f:ajax listener="#{inquiryBean.handleDocumentUpload}" render="document_message :documentsPanel:documentListForm :documentsPanel:documentsHeader" execute="@form" />
+                    <f:ajax listener="#{inquiryBean.handleDocumentUpload}"
+                            render="document_message :documentsPanel:documentListForm :documentsPanel:documentsHeader"
+                            execute="@form"/>
                 </h:commandButton>
             </h:form>
 

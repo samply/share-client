@@ -25,8 +25,6 @@ package de.samply.share.client.quality.report.file.excel.sheet;/*
 */
 
 import de.samply.share.client.model.EnumConfiguration;
-import de.samply.share.client.quality.report.file.downloader.FileDownloaderException;
-import de.samply.share.client.quality.report.file.downloader.ExplanatoryExcelFileDownloader;
 import de.samply.share.client.quality.report.file.excel.row.context.ExcelRowContext;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import org.apache.logging.log4j.LogManager;

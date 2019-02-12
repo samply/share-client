@@ -24,8 +24,8 @@ package de.samply.share.client.quality.report.file.excel.row.context;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.results.QualityResult;
+import de.samply.share.common.utils.MdrIdDatatype;
 
 public class ExcelRowParameters_002 {
 

@@ -32,15 +32,16 @@
                 xmlns:cc="http://xmlns.jcp.org/jsf/composite">
 
     <cc:interface>
-        <cc:attribute name="contextClass" default="panel-default" />
-        <cc:attribute name="collapsible" type="java.lang.Boolean" default="false" shortDescription="adds a chevron icon to collapse the panel body"/>
-        <cc:attribute name="collapsibleStartExpanded" type="java.lang.Boolean" default="true" />
-        <cc:attribute name="headingAsTitle" type="java.lang.Boolean" default="false" />
-        <cc:attribute name="headingText" required="false" />
-        <cc:attribute name="bodyAdditionalStyle" required="false" />
-        <cc:facet name="headerContent" />
+        <cc:attribute name="contextClass" default="panel-default"/>
+        <cc:attribute name="collapsible" type="java.lang.Boolean" default="false"
+                      shortDescription="adds a chevron icon to collapse the panel body"/>
+        <cc:attribute name="collapsibleStartExpanded" type="java.lang.Boolean" default="true"/>
+        <cc:attribute name="headingAsTitle" type="java.lang.Boolean" default="false"/>
+        <cc:attribute name="headingText" required="false"/>
+        <cc:attribute name="bodyAdditionalStyle" required="false"/>
+        <cc:facet name="headerContent"/>
         <cc:facet name="bodyContent" required="true"/>
-        <cc:facet name="footerContent" />
+        <cc:facet name="footerContent"/>
     </cc:interface>
 
     <cc:implementation>
@@ -51,12 +52,12 @@
                         <h3 class="panel-title">
                             <h:outputText value="#{cc.attrs.headingText}"/>
                             <ui:fragment rendered="#{cc.attrs.collapsible}">
-                                <button type="button" class="close collapseToggle" aria-label="Close" >
+                                <button type="button" class="close collapseToggle" aria-label="Close">
                                     <h:panelGroup rendered="#{cc.attrs.collapsibleStartExpanded}">
-                                        <i class="fa fa-chevron-down" />
+                                        <i class="fa fa-chevron-down"/>
                                     </h:panelGroup>
                                     <h:panelGroup rendered="#{not cc.attrs.collapsibleStartExpanded}">
-                                        <i class="fa fa-chevron-right" />
+                                        <i class="fa fa-chevron-right"/>
                                     </h:panelGroup>
                                 </button>
                             </ui:fragment>
@@ -69,16 +70,17 @@
             </ui:fragment>
 
             <ui:fragment rendered="#{not empty cc.facets.headerContent}">
-                <cc:renderFacet name="headerContent" />
+                <cc:renderFacet name="headerContent"/>
             </ui:fragment>
 
-            <div class="panel-body #{cc.attrs.collapsible ? 'collapse ' : ''} #{cc.attrs.collapsibleStartExpanded ? 'in' : ''}" style="#{cc.attrs.bodyAdditionalStyle}" >
-                <cc:renderFacet name="bodyContent" />
+            <div class="panel-body #{cc.attrs.collapsible ? 'collapse ' : ''} #{cc.attrs.collapsibleStartExpanded ? 'in' : ''}"
+                 style="#{cc.attrs.bodyAdditionalStyle}">
+                <cc:renderFacet name="bodyContent"/>
             </div>
 
             <ui:fragment rendered="#{not empty cc.facets.footerContent}">
                 <div class="panel-footer">
-                    <cc:renderFacet name="footerContent" />
+                    <cc:renderFacet name="footerContent"/>
                 </div>
             </ui:fragment>
         </div>

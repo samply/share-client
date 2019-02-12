@@ -36,13 +36,14 @@
     <fieldset class="configurationGroup">
         <legend class="scheduler-border">#{msg.configurationTimings}</legend>
 
-        <sscl:formEntryElement labelFor="checkInquiryStatusInitialDelay" labelText="#{msg.configurationTimings_checkInquiryStatusInitialDelay}"
-                                labelClasses="col-sm-6 col-md-4" inputClasses="col-sm-6 col-md-8">
+        <sscl:formEntryElement labelFor="checkInquiryStatusInitialDelay"
+                               labelText="#{msg.configurationTimings_checkInquiryStatusInitialDelay}"
+                               labelClasses="col-sm-6 col-md-4" inputClasses="col-sm-6 col-md-8">
             <f:facet name="input">
                 <div class="input-group">
                     <h:inputText id="checkInquiryStatusInitialDelay" styleClass="form-control"
                                  value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_INITIAL_DELAY_SECONDS]}">
-                        <f:validator validatorId="positiveIntegerValidator" />
+                        <f:validator validatorId="positiveIntegerValidator"/>
                     </h:inputText>
                     <div class="input-group-addon">
                         #{msg.configuration_seconds}
@@ -51,13 +52,14 @@
             </f:facet>
         </sscl:formEntryElement>
 
-        <sscl:formEntryElement labelFor="checkInquiryStatsInterval" labelText="#{msg.configurationTimings_checkInquiryStatusStatsRetryInterval}"
+        <sscl:formEntryElement labelFor="checkInquiryStatsInterval"
+                               labelText="#{msg.configurationTimings_checkInquiryStatusStatsRetryInterval}"
                                labelClasses="col-sm-6 col-md-4" inputClasses="col-sm-6 col-md-8">
             <f:facet name="input">
                 <div class="input-group">
                     <h:inputText id="checkInquiryStatsInterval" styleClass="form-control"
                                  value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_STATS_RETRY_INTERVAL_SECONDS]}">
-                        <f:validator validatorId="positiveIntegerValidator" />
+                        <f:validator validatorId="positiveIntegerValidator"/>
                     </h:inputText>
                     <div class="input-group-addon">
                         #{msg.configuration_seconds}
@@ -66,23 +68,25 @@
             </f:facet>
         </sscl:formEntryElement>
 
-        <sscl:formEntryElement labelFor="checkInquiryStatsAttempts" labelText="#{msg.configurationTimings_checkInquiryStatusStatsRetryAttempts}"
+        <sscl:formEntryElement labelFor="checkInquiryStatsAttempts"
+                               labelText="#{msg.configurationTimings_checkInquiryStatusStatsRetryAttempts}"
                                labelClasses="col-sm-6 col-md-4" inputClasses="col-sm-6 col-md-8">
             <f:facet name="input">
-                    <h:inputText id="checkInquiryStatsAttempts" styleClass="form-control"
-                                 value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_STATS_RETRY_ATTEMPTS]}">
-                        <f:validator validatorId="positiveIntegerValidator" />
-                    </h:inputText>
+                <h:inputText id="checkInquiryStatsAttempts" styleClass="form-control"
+                             value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_STATS_RETRY_ATTEMPTS]}">
+                    <f:validator validatorId="positiveIntegerValidator"/>
+                </h:inputText>
             </f:facet>
         </sscl:formEntryElement>
 
-        <sscl:formEntryElement labelFor="checkInquiryResultsInterval" labelText="#{msg.configurationTimings_checkInquiryStatusResultsRetryInterval}"
+        <sscl:formEntryElement labelFor="checkInquiryResultsInterval"
+                               labelText="#{msg.configurationTimings_checkInquiryStatusResultsRetryInterval}"
                                labelClasses="col-sm-6 col-md-4" inputClasses="col-sm-6 col-md-8">
             <f:facet name="input">
                 <div class="input-group">
                     <h:inputText id="checkInquiryResultsInterval" styleClass="form-control"
                                  value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_INTERVAL_SECONDS]}">
-                        <f:validator validatorId="positiveIntegerValidator" />
+                        <f:validator validatorId="positiveIntegerValidator"/>
                     </h:inputText>
                     <div class="input-group-addon">
                         #{msg.configuration_seconds}
@@ -91,12 +95,14 @@
             </f:facet>
         </sscl:formEntryElement>
 
-        <sscl:formEntryElement labelFor="checkInquiryResultsAttempts" labelText="#{msg.configurationTimings_checkInquiryStatusResultsRetryAttempts}"
+        <sscl:formEntryElement labelFor="checkInquiryResultsAttempts"
+                               labelText="#{msg.configurationTimings_checkInquiryStatusResultsRetryAttempts}"
                                labelClasses="col-sm-6 col-md-4" inputClasses="col-sm-6 col-md-8">
             <f:facet name="input">
-                <h:inputText id="checkInquiryResultsAttempts" styleClass="form-control" converterMessage="Please enter digits only."
+                <h:inputText id="checkInquiryResultsAttempts" styleClass="form-control"
+                             converterMessage="Please enter digits only."
                              value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS]}">
-                    <f:validator validatorId="positiveIntegerValidator" />
+                    <f:validator validatorId="positiveIntegerValidator"/>
                 </h:inputText>
             </f:facet>
         </sscl:formEntryElement>
@@ -105,9 +111,10 @@
                                labelClasses="col-sm-6 col-md-4" inputClasses="col-sm-6 col-md-8">
             <f:facet name="input">
                 <div class="input-group">
-                    <h:inputText id="archiveInquiriesAfter" styleClass="form-control" converterMessage="Please enter digits only."
+                    <h:inputText id="archiveInquiriesAfter" styleClass="form-control"
+                                 converterMessage="Please enter digits only."
                                  value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_MOVE_INQUIRIES_TO_ARCHIVE_AFTER_DAYS]}">
-                        <f:validator validatorId="positiveIntegerValidator" />
+                        <f:validator validatorId="positiveIntegerValidator"/>
                     </h:inputText>
                     <div class="input-group-addon">
                         #{msg.configuration_days}

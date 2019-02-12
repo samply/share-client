@@ -37,8 +37,8 @@ import de.samply.share.client.quality.report.file.csvline.manager.QualityResultC
 import de.samply.share.client.quality.report.file.excel.workbook.ExcelWorkbookFactoryException;
 import de.samply.share.client.quality.report.file.id.path.IdPathManager_002;
 import de.samply.share.client.quality.report.file.manager.CsvQualityReportFileManager;
-import de.samply.share.client.quality.report.file.manager.QualityReportFileManagerException;
 import de.samply.share.client.quality.report.file.manager.QualityReportFileManager;
+import de.samply.share.client.quality.report.file.manager.QualityReportFileManagerException;
 import de.samply.share.client.quality.report.model.mdr.MdrConnectionFactory;
 import de.samply.share.client.quality.report.model.mdr.MdrConnectionFactoryException;
 import de.samply.share.client.quality.report.results.QualityResults;

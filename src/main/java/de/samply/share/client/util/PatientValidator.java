@@ -28,26 +28,20 @@
 
 package de.samply.share.client.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import javax.xml.bind.JAXBElement;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.common.mdrclient.MdrInvalidResponseException;
 import de.samply.common.mdrclient.domain.PermissibleValue;
 import de.samply.common.mdrclient.domain.Validations;
-import de.samply.share.model.ccp.Attribute;
-import de.samply.share.model.ccp.Case;
-import de.samply.share.model.ccp.ObjectFactory;
-import de.samply.share.model.ccp.Patient;
-import de.samply.share.model.ccp.Sample;
+import de.samply.share.model.ccp.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.xml.bind.JAXBElement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Check if the attributes in a patient dataset are valid according to the mdr entry

@@ -8,7 +8,7 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
 <f:metadata>
-    <f:viewAction action="#{applicationBean.updateLocalComponentInfo}" />
+    <f:viewAction action="#{applicationBean.updateLocalComponentInfo}"/>
 </f:metadata>
 
 <h:head>
@@ -29,44 +29,44 @@
     </o:conditionalComment>
     <h:outputScript library="webjars" name="jquery/3.3.1-1/jquery.min.js"/>
     <h:outputScript library="webjars" name="bootstrap/3.3.7-1/js/bootstrap.min.js"/>
-    <h:outputScript name="js/samply-share.js" />
+    <h:outputScript name="js/samply-share.js"/>
 
 </h:head>
 <h:body>
-        <div class="container content-container theme-showcase">
+    <div class="container content-container theme-showcase">
 
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <ui:include src="WEB-INF/includes/c_index_welcome.xhtml" />
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <ui:include src="WEB-INF/includes/c_index_welcome.xhtml"/>
+            </div>
+        </div>
+
+        <h:form>
+            <div class="panel panel-primary">
+                <div class="panel-heading" style="font-size: 1.5em; font-weight: bold;">
+                    Lokale Komponenten
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <ui:include src="WEB-INF/includes/c_index_localComponents.xhtml"/>
+                    </div>
                 </div>
             </div>
+        </h:form>
 
-            <h:form>
-                <div class="panel panel-primary">
-                    <div class="panel-heading" style="font-size: 1.5em; font-weight: bold;">
-                        Lokale Komponenten
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <ui:include src="WEB-INF/includes/c_index_localComponents.xhtml" />
-                        </div>
-                    </div>
+        <h:form>
+            <div class="panel panel-primary">
+                <div class="panel-heading" style="font-size: 1.5em; font-weight: bold;">
+                    Zentrale Dienste
                 </div>
-            </h:form>
-
-            <h:form>
-                <div class="panel panel-primary">
-                    <div class="panel-heading" style="font-size: 1.5em; font-weight: bold;">
-                        Zentrale Dienste
-                    </div>
-                    <div class="panel-body">
+                <div class="panel-body">
                     <div class="row">
-                        <ui:include src="WEB-INF/includes/c_index_centralComponents.xhtml" />
-                    </div>
+                        <ui:include src="WEB-INF/includes/c_index_centralComponents.xhtml"/>
                     </div>
                 </div>
-            </h:form>
+            </div>
+        </h:form>
 
-        </div>
+    </div>
 </h:body>
 </html>

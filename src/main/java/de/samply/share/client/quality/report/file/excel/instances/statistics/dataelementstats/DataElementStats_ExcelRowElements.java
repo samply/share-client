@@ -43,11 +43,7 @@ public class DataElementStats_ExcelRowElements extends ExcelRowElements {
         PERCENTAGE_OF_PATIENTS_WITH_MATCH_ONLY_FOR_DATA_ELEMENT_OUT_OF_TOTAL_PATIENTS ("% of patients - total"),
         NUMBER_OF_PATIENTS_WITH_ANY_MISMATCH_FOR_DATA_ELEMENT ("Number of patients with any mismatch"),
         PERCENTAGE_OF_PATIENTS_WITH_ANY_MISMATCH_FOR_DATA_ELEMENT_OUT_OF_PATIENTS_WITH_DATA_ELEMENT ("% of patients with entry for this element"),
-        PERCENTAGE_OF_PATIENTS_WITH_ANY_MISMATCH_FOR_DATA_ELEMENT_OUT_OF_TOTAL_PATIENTS ("% of patients - total"),
-        GENERAL_REHEARSAL_PRIORIZATION("Priorisierung für GP"),
-        GENERAL_REHEARSAL_A_CONTAINED_IN_QR ("a) im QB enthalten [ja/nein]"),
-        GENERAL_REHEARSAL_B_LOW_MISMATCH ("b) im QB mismatch <10% zur MDR-Vorgabe [ja/nein]"),
-        GENERAL_REHEARSAL_A_AND_B ("a,b  ist \"ja\" [ja/nein]");
+        PERCENTAGE_OF_PATIENTS_WITH_ANY_MISMATCH_FOR_DATA_ELEMENT_OUT_OF_TOTAL_PATIENTS ("% of patients - total");
 
 
         private final String title;
@@ -177,34 +173,5 @@ public class DataElementStats_ExcelRowElements extends ExcelRowElements {
         addElement(ELEMENT_ORDER.PERCENTAGE_OF_PATIENTS_WITH_ANY_MISMATCH_FOR_DATA_ELEMENT_OUT_OF_TOTAL_PATIENTS, excelCellElement);
 
     }
-
-    public void setGeneralRehearsalPriorization(String priorization){
-
-        StringExcelCellElement cellElement = new StringExcelCellElement(priorization);
-        addElement(ELEMENT_ORDER.GENERAL_REHEARSAL_PRIORIZATION, cellElement);
-
-    }
-
-    public void setGeneralRehearsal_A_ContainedInQR (boolean value){
-
-        NaturalLanguageBooleanExcelCellElement excelCellElement = new NaturalLanguageBooleanExcelCellElement(value);
-        addElement(ELEMENT_ORDER.GENERAL_REHEARSAL_A_CONTAINED_IN_QR, excelCellElement);
-
-    }
-
-    public void setGeneralRehearsal_B_LowMismatch (boolean value){
-
-        NaturalLanguageBooleanExcelCellElement excelCellElement = new NaturalLanguageBooleanExcelCellElement(value);
-        addElement(ELEMENT_ORDER.GENERAL_REHEARSAL_B_LOW_MISMATCH, excelCellElement);
-
-    }
-
-    public void setGeneralRehearsal_A_And_B (boolean value){
-
-        NaturalLanguageBooleanExcelCellElement excelCellElement = new NaturalLanguageBooleanExcelCellElement(value);
-        addElement(ELEMENT_ORDER.GENERAL_REHEARSAL_A_AND_B, excelCellElement);
-
-    }
-
 
 }

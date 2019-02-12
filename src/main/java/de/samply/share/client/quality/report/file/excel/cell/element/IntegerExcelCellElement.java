@@ -40,5 +40,4 @@ public class IntegerExcelCellElement extends ExcelCellElement<Integer> {
 
     }
 
-
 }

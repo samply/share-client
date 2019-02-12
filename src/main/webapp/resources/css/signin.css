@@ -1,56 +1,56 @@
 .formContainer {
-	margin-top: 100px;
-	padding-bottom: 30px;
-	background: #fcfcfc;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-	-webkit-box-shadow: 0 18px 6px -8px #1a1a1a, 0 0 2px #0d0d0d;
-	-moz-box-shadow: 0 18px 6px -8px #1a1a1a, 0 0 2px #0d0d0d;
-	box-shadow: 0 18px 6px -8px #1a1a1a, 0 0 2px #0d0d0d;
+    margin-top: 100px;
+    padding-bottom: 30px;
+    background: #fcfcfc;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 18px 6px -8px #1a1a1a, 0 0 2px #0d0d0d;
+    -moz-box-shadow: 0 18px 6px -8px #1a1a1a, 0 0 2px #0d0d0d;
+    box-shadow: 0 18px 6px -8px #1a1a1a, 0 0 2px #0d0d0d;
 }
 
 .form-signin {
-	max-width: 330px;
-	padding: 15px;
-	margin: 0 auto;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
 }
 
 .form-signin-heading {
-	color: #2B2B2B;
-	margin-bottom: 30px;
+    color: #2B2B2B;
+    margin-bottom: 30px;
 }
 
-.form-signin ,.form-signin .checkbox {
-	margin-bottom: 10px;
+.form-signin, .form-signin .checkbox {
+    margin-bottom: 10px;
 }
 
 .form-signin .checkbox {
-	font-weight: normal;
+    font-weight: normal;
 }
 
 .form-signin .form-control {
-	position: relative;
-	font-size: 16px;
-	height: auto;
-	padding: 10px;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .form-signin .form-control:focus {
-	z-index: 2;
+    z-index: 2;
 }
 
 .form-signin input[type="text"] {
-	margin-bottom: 3px;
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
+    margin-bottom: 3px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .form-signin input[type="password"] {
-	margin-bottom: 10px;
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }

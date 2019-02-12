@@ -24,10 +24,10 @@ package de.samply.share.client.quality.report.chainlinks.instances.view;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.model.common.View;
 import de.samply.share.client.quality.report.chainlinks.ChainLink;
 import de.samply.share.client.quality.report.chainlinks.ChainLinkItem;
 import de.samply.share.client.quality.report.chainlinks.connector.ChainLinkConnector;
+import de.samply.share.model.common.View;
 
 
 public class CreateViews_To_PostView_Connector<I extends ChainLinkItem & ViewsContext & ViewContext> extends ChainLinkConnector {

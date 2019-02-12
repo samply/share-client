@@ -38,7 +38,7 @@
     <ui:define name="title">#{msg.dashboard_title}</ui:define>
 
     <ui:define name="optional-import-constants">
-        <o:importConstants type="de.samply.share.client.model.EnumInquiryStatus" />
+        <o:importConstants type="de.samply.share.client.model.EnumInquiryStatus"/>
     </ui:define>
 
     <ui:define name="main-content">
@@ -52,9 +52,10 @@
                 <!--Inquiries erroneous-->
                 <sscl:dashboardPanel title="#{msg.dashboard_inquiriesError}"
                                      details="#{wu:getInquiryCount('INQUIRY_ERROR')} #{msg.dashboard_inquiriesErrorDetails}"
-                                     action="inquiries_erroneous?faces-redirect=true" iconClass="fa-exclamation-triangle"/>
+                                     action="inquiries_erroneous?faces-redirect=true"
+                                     iconClass="fa-exclamation-triangle"/>
 
-                <div class="clearfix visible-sm-block" />
+                <div class="clearfix visible-sm-block"/>
 
                 <!--Inquiries Archive-->
                 <sscl:dashboardPanel title="#{msg.dashboard_inquiriesArchive}"
@@ -66,13 +67,13 @@
 
                 <!--&lt;!&ndash;Scheduled Tasks&ndash;&gt;-->
                 <!--<sscl:dashboardPanel title="#{msg.dashboard_schedule}"-->
-                                     <!--details="#{msg.dashboard_scheduleDetails}"-->
-                                     <!--action="schedule_list?faces-redirect=true" iconClass="fa-tasks"/>-->
+                <!--details="#{msg.dashboard_scheduleDetails}"-->
+                <!--action="schedule_list?faces-redirect=true" iconClass="fa-tasks"/>-->
 
                 <!--&lt;!&ndash;Event Log&ndash;&gt;-->
                 <!--<sscl:dashboardPanel title="#{msg.dashboard_eventLog}"-->
-                                     <!--details="#{msg.dashboard_eventLogDetails}"-->
-                                     <!--action="event_log?faces-redirect=true" iconClass="fa-terminal"/>-->
+                <!--details="#{msg.dashboard_eventLogDetails}"-->
+                <!--action="event_log?faces-redirect=true" iconClass="fa-terminal"/>-->
             </div>
         </h:form>
     </ui:define>

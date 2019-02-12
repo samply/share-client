@@ -28,8 +28,8 @@
 
 package de.samply.share.client.model.graphData;
 
-import java.util.TreeMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class GenderDistribution {
     private Map<String, Integer> data;

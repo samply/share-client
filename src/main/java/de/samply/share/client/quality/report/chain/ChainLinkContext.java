@@ -24,8 +24,6 @@ package de.samply.share.client.quality.report.chain;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.model.ccp.QueryResult;
-import de.samply.share.model.common.View;
 import de.samply.share.client.quality.report.chainlinks.ChainLinkItem;
 import de.samply.share.client.quality.report.chainlinks.instances.file.FileContext;
 import de.samply.share.client.quality.report.chainlinks.instances.ignoredelements.QualityResultsContext;
@@ -36,6 +34,8 @@ import de.samply.share.client.quality.report.chainlinks.instances.view.ViewConte
 import de.samply.share.client.quality.report.chainlinks.instances.view.ViewsContext;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.client.quality.report.results.QualityResultsImpl;
+import de.samply.share.model.ccp.QueryResult;
+import de.samply.share.model.common.View;
 
 import java.util.List;
 

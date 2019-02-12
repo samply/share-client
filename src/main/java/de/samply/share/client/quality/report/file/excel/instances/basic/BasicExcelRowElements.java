@@ -29,7 +29,6 @@ import de.samply.share.client.quality.report.file.excel.cell.element.LinkExcelCe
 import de.samply.share.client.quality.report.file.excel.cell.element.StringExcelCellElement;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
 
-
 import java.util.List;
 
 

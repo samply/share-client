@@ -1,10 +1,10 @@
 package de.samply.share.client.model;
 
-import java.util.List;
-
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+
+import java.util.List;
 
 /**
  * A collection of inquiry ids and revisions as read from a searchbroker

@@ -24,8 +24,8 @@ package de.samply.share.client.quality.report.views;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.model.common.View;
 import de.samply.share.client.quality.report.model.Model;
+import de.samply.share.model.common.View;
 
 import java.util.List;
 

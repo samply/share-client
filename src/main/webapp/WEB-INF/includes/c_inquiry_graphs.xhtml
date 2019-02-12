@@ -33,13 +33,15 @@
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client">
 
     <h:outputStylesheet library="webjars" name="jqplot/1.0.9.d96a669/jquery.jqplot.min.css"/>
-    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/jquery.jqplot.min.js" target="head" />
+    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/jquery.jqplot.min.js" target="head"/>
 
-    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.logAxisRenderer.js" target="head" />
-    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasAxisLabelRenderer.js" target="head" />
-    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasTextRenderer.js" target="head" />
-    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasAxisTickRenderer.js" target="head" />
-    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.categoryAxisRenderer.js" target="head" />
+    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.logAxisRenderer.js" target="head"/>
+    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasAxisLabelRenderer.js"
+                    target="head"/>
+    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasTextRenderer.js" target="head"/>
+    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasAxisTickRenderer.js"
+                    target="head"/>
+    <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.categoryAxisRenderer.js" target="head"/>
     <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.barRenderer.js" target="head"/>
     <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.pointLabels.js" target="head"/>
     <h:outputScript library="webjars" name="jqplot/1.0.9.d96a669/plugins/jqplot.highlighter.js" target="head"/>
@@ -50,7 +52,8 @@
               value="#{inquiryBean.getResultCountByIdGroupedByGender()}"/>
 
     <h:form>
-        <sscl:bootstrapPanel headingAsTitle="true" headingText="#{msg.si_graphs}" contextClass="panel-default" collapsible="true" collapsibleStartExpanded="true">
+        <sscl:bootstrapPanel headingAsTitle="true" headingText="#{msg.si_graphs}" contextClass="panel-default"
+                             collapsible="true" collapsibleStartExpanded="true">
             <f:facet name="bodyContent">
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs12">

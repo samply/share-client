@@ -24,13 +24,13 @@ package de.samply.share.client.quality.report.file.manager;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.file.csvline.manager.QualityResultCsvLineManager;
 import de.samply.share.client.quality.report.file.csvline.manager.QualityResultCsvLineManagerException;
 import de.samply.share.client.quality.report.file.id.path.IdPathManagerImpl;
 import de.samply.share.client.quality.report.results.QualityResult;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.client.quality.report.results.QualityResultsImpl;
+import de.samply.share.common.utils.MdrIdDatatype;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

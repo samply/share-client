@@ -50,7 +50,6 @@ import de.samply.share.client.quality.report.model.searcher.ModelSearcher;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.client.util.db.ConfigurationUtil;
 
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;

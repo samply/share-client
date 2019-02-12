@@ -35,20 +35,20 @@
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <ui:param name="adminPage" value="true" />
+    <ui:param name="adminPage" value="true"/>
 
     <ui:define name="title">#{msg.ih_title}</ui:define>
 
     <ui:define name="additional-css">
-        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css" />
+        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"/>
     </ui:define>
 
     <ui:define name="additional-js">
-        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js" />
+        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"/>
     </ui:define>
 
     <ui:define name="optional-import-constants">
-        <o:importConstants type="de.samply.share.client.model.db.enums.ReplyRuleType" />
+        <o:importConstants type="de.samply.share.client.model.db.enums.ReplyRuleType"/>
     </ui:define>
 
     <ui:define name="main-content">
@@ -62,28 +62,32 @@
                 </tr>
                 </thead>
                 <tbody>
-                <ui:repeat value="#{inquiryHandlingBean.inquiryHandlingRules}" var="rule" >
-                    <ui:param name="broker" value="#{inquiryHandlingBean.getBrokerForRule(rule)}" />
+                <ui:repeat value="#{inquiryHandlingBean.inquiryHandlingRules}" var="rule">
+                    <ui:param name="broker" value="#{inquiryHandlingBean.getBrokerForRule(rule)}"/>
                     <tr>
                         <td data-toggle="tooltip" data-placement="top" title="#{broker.address}">
-                            <h:outputText value="#{broker.name}" styleClass="form-control-static" rendered="#{not empty broker.name}" />
-                            <h:outputText value="#{broker.address}" styleClass="form-control-static" rendered="#{empty broker.name}"/>
+                            <h:outputText value="#{broker.name}" styleClass="form-control-static"
+                                          rendered="#{not empty broker.name}"/>
+                            <h:outputText value="#{broker.address}" styleClass="form-control-static"
+                                          rendered="#{empty broker.name}"/>
                         </td>
 
                         <td>
-                            <h:selectBooleanCheckbox styleClass="form-control switch" value="#{rule.fullResult}" />
+                            <h:selectBooleanCheckbox styleClass="form-control switch" value="#{rule.fullResult}"/>
                         </td>
 
                         <td>
                             <h:selectOneMenu value="#{rule.automaticReply}" styleClass="form-control">
-                                <f:selectItems value="#{applicationBean.replyRuleTypes}" var="replyRule" itemValue="#{replyRule}" itemLabel="#{msg[replyRule.literal]}" />
+                                <f:selectItems value="#{applicationBean.replyRuleTypes}" var="replyRule"
+                                               itemValue="#{replyRule}" itemLabel="#{msg[replyRule.literal]}"/>
                             </h:selectOneMenu>
                         </td>
                     </tr>
                 </ui:repeat>
                 </tbody>
             </table>
-            <h:commandButton type="submit" action="#{inquiryHandlingBean.store}" value="#{msg.common_save}" styleClass="btn btn-md btn-success" />
+            <h:commandButton type="submit" action="#{inquiryHandlingBean.store}" value="#{msg.common_save}"
+                             styleClass="btn btn-md btn-success"/>
         </h:form>
     </ui:define>
 </ui:composition>

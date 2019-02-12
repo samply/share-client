@@ -40,7 +40,9 @@
 
         <sscl:formEntryElement labelFor="ldmUrl" labelText="#{msg.configuration_ldmUrl}" xmlTooltip="true">
             <f:facet name="input">
-                <h:inputText id="ldmUrl" size="50" value="#{configurationBean.configurationMap[EnumConfiguration.LDM_URL]}" styleClass="form-control" pass:disabled="disabled"/>
+                <h:inputText id="ldmUrl" size="50"
+                             value="#{configurationBean.configurationMap[EnumConfiguration.LDM_URL]}"
+                             styleClass="form-control" pass:disabled="disabled"/>
             </f:facet>
         </sscl:formEntryElement>
 
@@ -54,16 +56,20 @@
 
         <sscl:formEntryElement labelFor="ldmCachingMaxSize" labelText="#{msg.configuration_ldmCachingMaxSize}">
             <f:facet name="input">
-                <h:inputText id="ldmCachingMaxSize" value="#{configurationBean.configurationMap[EnumConfiguration.LDM_CACHING_MAX_SIZE]}"
-                style="text-align: right" validatorMessage="#{msg.configuration_ldmCachingMaxSizeValidationError}">
-                    <f:validateLongRange minimum="1" maximum="5000" />
+                <h:inputText id="ldmCachingMaxSize"
+                             value="#{configurationBean.configurationMap[EnumConfiguration.LDM_CACHING_MAX_SIZE]}"
+                             style="text-align: right"
+                             validatorMessage="#{msg.configuration_ldmCachingMaxSizeValidationError}">
+                    <f:validateLongRange minimum="1" maximum="5000"/>
                 </h:inputText>
             </f:facet>
         </sscl:formEntryElement>
 
         <sscl:formEntryElement labelFor="idmUrl" labelText="#{msg.configuration_idManagerUrl}" xmlTooltip="true">
             <f:facet name="input">
-                <h:inputText id="idmUrl" size="50" value="#{configurationBean.configurationMap[EnumConfiguration.ID_MANAGER_URL]}" styleClass="form-control" pass:disabled="disabled"/>
+                <h:inputText id="idmUrl" size="50"
+                             value="#{configurationBean.configurationMap[EnumConfiguration.ID_MANAGER_URL]}"
+                             styleClass="form-control" pass:disabled="disabled"/>
             </f:facet>
         </sscl:formEntryElement>
     </fieldset>

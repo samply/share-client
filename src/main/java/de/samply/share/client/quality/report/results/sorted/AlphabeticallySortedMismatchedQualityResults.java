@@ -24,9 +24,9 @@ package de.samply.share.client.quality.report.results.sorted;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.results.QualityResult;
 import de.samply.share.client.quality.report.results.QualityResults;
+import de.samply.share.common.utils.MdrIdDatatype;
 
 import java.util.ArrayList;
 import java.util.Collections;

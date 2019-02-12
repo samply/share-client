@@ -33,40 +33,41 @@
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
                 xmlns:wu="http://share.samply.de/webutils">
 
-    <sscl:bootstrapPanel contextClass="panel-info" collapsible="false" headingAsTitle="true" headingText="#{msg.su_details}">
+    <sscl:bootstrapPanel contextClass="panel-info" collapsible="false" headingAsTitle="true"
+                         headingText="#{msg.su_details}">
 
         <f:facet name="bodyContent">
             <!--Triggered At-->
             <div class="row">
                 <div class="col-xs-6">
-                    <h:outputText value="#{msg.ull_triggeredAt}:" />
+                    <h:outputText value="#{msg.ull_triggeredAt}:"/>
                 </div>
                 <div class="col-xs-6">
-                    <h:outputText value="#{wu:convertTimestamp(uploadBean.selectedUpload.triggeredAt)}" />
+                    <h:outputText value="#{wu:convertTimestamp(uploadBean.selectedUpload.triggeredAt)}"/>
                 </div>
             </div>
 
             <!--Triggered By-->
             <div class="row">
                 <div class="col-xs-6">
-                    <h:outputText value="#{msg.ull_triggeredBy}:" />
+                    <h:outputText value="#{msg.ull_triggeredBy}:"/>
                 </div>
                 <div class="col-xs-6">
-                    <h:outputText value="#{uploadBean.selectedUpload.triggeredBy}" />
+                    <h:outputText value="#{uploadBean.selectedUpload.triggeredBy}"/>
                 </div>
             </div>
 
             <!--DKTK Flagged?-->
             <div class="row">
                 <div class="col-xs-6">
-                    <h:outputText value="#{msg.su_dktk}:" />
+                    <h:outputText value="#{msg.su_dktk}:"/>
                 </div>
                 <div class="col-xs-6">
                     <ui:fragment rendered="#{uploadBean.selectedUpload.dktkFlagged}">
-                        <i class="fa fa-check text-success" />
+                        <i class="fa fa-check text-success"/>
                     </ui:fragment>
                     <ui:fragment rendered="#{!uploadBean.selectedUpload.dktkFlagged}">
-                        <i class="fa fa-close text-danger" />
+                        <i class="fa fa-close text-danger"/>
                     </ui:fragment>
                 </div>
             </div>
@@ -74,14 +75,14 @@
             <!--Dryrun?-->
             <div class="row">
                 <div class="col-xs-6">
-                    <h:outputText value="#{msg.su_dryrun}:" />
+                    <h:outputText value="#{msg.su_dryrun}:"/>
                 </div>
                 <div class="col-xs-6">
                     <ui:fragment rendered="#{uploadBean.selectedUpload.isDryrun}">
-                        <i class="fa fa-check text-success" />
+                        <i class="fa fa-check text-success"/>
                     </ui:fragment>
                     <ui:fragment rendered="#{!uploadBean.selectedUpload.isDryrun}">
-                        <i class="fa fa-close text-danger" />
+                        <i class="fa fa-close text-danger"/>
                     </ui:fragment>
                 </div>
             </div>
@@ -89,14 +90,14 @@
             <!--Ignore Timestamps?-->
             <div class="row">
                 <div class="col-xs-6">
-                    <h:outputText value="#{msg.su_fullUpload}:" />
+                    <h:outputText value="#{msg.su_fullUpload}:"/>
                 </div>
                 <div class="col-xs-6">
                     <ui:fragment rendered="#{uploadBean.selectedUpload.isFullUpload}">
-                        <i class="fa fa-check text-success" />
+                        <i class="fa fa-check text-success"/>
                     </ui:fragment>
                     <ui:fragment rendered="#{!uploadBean.selectedUpload.isFullUpload}">
-                        <i class="fa fa-close text-danger" />
+                        <i class="fa fa-close text-danger"/>
                     </ui:fragment>
                 </div>
             </div>
@@ -104,20 +105,20 @@
             <!--Successful uploads-->
             <div class="row">
                 <div class="col-xs-6">
-                    <h:outputText value="#{msg.su_successfulUploads}:" />
+                    <h:outputText value="#{msg.su_successfulUploads}:"/>
                 </div>
                 <div class="col-xs-6">
-                    <h:outputText value="#{uploadBean.selectedUpload.successCount}" />
+                    <h:outputText value="#{uploadBean.selectedUpload.successCount}"/>
                 </div>
             </div>
 
             <!--Failed uploads-->
             <div class="row">
                 <div class="col-xs-6">
-                    <h:outputText value="#{msg.su_failedUploads}:" />
+                    <h:outputText value="#{msg.su_failedUploads}:"/>
                 </div>
                 <div class="col-xs-6">
-                    <h:outputText value="#{uploadBean.selectedUpload.failureCount}" />
+                    <h:outputText value="#{uploadBean.selectedUpload.failureCount}"/>
                 </div>
             </div>
 

@@ -33,18 +33,18 @@
                 xmlns:cc="http://xmlns.jcp.org/jsf/composite">
 
     <cc:interface>
-        <cc:attribute name="job" type="de.samply.share.client.job.params.QuartzJob" required="true" />
+        <cc:attribute name="job" type="de.samply.share.client.job.params.QuartzJob" required="true"/>
     </cc:interface>
 
     <cc:implementation>
         <h4>#{cc.attrs.job.jobName}</h4>
         <!--<div class="row">-->
-            <!--<div class="col-xs-4">-->
-                <!--#{msg.jl_jobGroup}-->
-            <!--</div>-->
-            <!--<div class="col-xs-8">-->
-                <!--#{cc.attrs.job.jobGroup}-->
-            <!--</div>-->
+        <!--<div class="col-xs-4">-->
+        <!--#{msg.jl_jobGroup}-->
+        <!--</div>-->
+        <!--<div class="col-xs-8">-->
+        <!--#{cc.attrs.job.jobGroup}-->
+        <!--</div>-->
         <!--</div>-->
         <div class="row">
             <div class="col-xs-4">
@@ -59,7 +59,7 @@
                 #{msg.jl_cronExpression}
             </div>
             <div class="col-xs-8">
-                <h:inputText value="#{cc.attrs.job.cronExpression}" />
+                <h:inputText value="#{cc.attrs.job.cronExpression}"/>
             </div>
         </div>
         <div class="row">
@@ -85,13 +85,17 @@
                 #{msg.jl_actions}
             </div>
             <div class="col-xs-8" id="jobButtons">
-                <h:commandLink action="#{schedulerBean.rescheduleJob(cc.attrs.job)}" value="#{msg.jl_rescheduleJobs}" styleClass="btn btn-default btn-xs"/>
-                <h:commandLink action="#{schedulerBean.fireNow(cc.attrs.job.jobName, cc.attrs.job.jobGroup)}" value="#{msg.jl_fireNow}" styleClass="btn btn-default btn-xs"/>
+                <h:commandLink action="#{schedulerBean.rescheduleJob(cc.attrs.job)}" value="#{msg.jl_rescheduleJobs}"
+                               styleClass="btn btn-default btn-xs"/>
+                <h:commandLink action="#{schedulerBean.fireNow(cc.attrs.job.jobName, cc.attrs.job.jobGroup)}"
+                               value="#{msg.jl_fireNow}" styleClass="btn btn-default btn-xs"/>
                 <ui:fragment rendered="#{not cc.attrs.job.paused}">
-                    <h:commandLink action="#{schedulerBean.suspend(cc.attrs.job.jobName, cc.attrs.job.jobGroup)}" value="#{msg.jl_suspend}" styleClass="btn btn-default btn-xs" />
+                    <h:commandLink action="#{schedulerBean.suspend(cc.attrs.job.jobName, cc.attrs.job.jobGroup)}"
+                                   value="#{msg.jl_suspend}" styleClass="btn btn-default btn-xs"/>
                 </ui:fragment>
                 <ui:fragment rendered="#{cc.attrs.job.paused}">
-                    <h:commandLink action="#{schedulerBean.resume(cc.attrs.job.jobName, cc.attrs.job.jobGroup)}" value="#{msg.jl_resume}" styleClass="btn btn-default btn-xs" />
+                    <h:commandLink action="#{schedulerBean.resume(cc.attrs.job.jobName, cc.attrs.job.jobGroup)}"
+                                   value="#{msg.jl_resume}" styleClass="btn btn-default btn-xs"/>
                 </ui:fragment>
             </div>
         </div>

@@ -24,15 +24,15 @@ package de.samply.share.client.quality.report.file.excel.row.context;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.client.quality.report.file.excel.row.mapper.ExcelRowMapperException;
-import de.samply.share.client.quality.report.results.statistics.QualityResultsStatistics;
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements_002;
+import de.samply.share.client.quality.report.file.excel.row.mapper.ExcelRowMapperException;
 import de.samply.share.client.quality.report.file.excel.row.mapper.ExcelRowMapper_002;
 import de.samply.share.client.quality.report.results.QualityResult;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.client.quality.report.results.sorted.AlphabeticallySortedMismatchedQualityResults;
+import de.samply.share.client.quality.report.results.statistics.QualityResultsStatistics;
+import de.samply.share.common.utils.MdrIdDatatype;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

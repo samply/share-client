@@ -38,70 +38,70 @@
       xmlns:ssc="http://xmlns.jcp.org/jsf/composite/samply-share-common"
       xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client">
 
-    <h:head>
-        <title>
-            <h:outputText value="#{applicationBean.getDisplayName()} - "/>
-            <ui:insert name="title">
-                    <h:outputText value="??? MISSING PAGE TITLE ???" />
-            </ui:insert>
-        </title>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+<h:head>
+    <title>
+        <h:outputText value="#{applicationBean.getDisplayName()} - "/>
+        <ui:insert name="title">
+            <h:outputText value="??? MISSING PAGE TITLE ???"/>
+        </ui:insert>
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-        <h:outputStylesheet library="webjars" name="bootstrap/3.3.7-1/css/bootstrap.min-jsf.css" />
-        <h:outputStylesheet library="webjars" name="bootstrap/3.3.7-1/css/bootstrap-theme.min-jsf.css" />
-        <h:outputStylesheet library="webjars" name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
-        <h:outputStylesheet name="webjars/lato/0.3.0/css/lato.min.css"/>
-        <h:outputStylesheet name="css/samply-share.css" />
+    <h:outputStylesheet library="webjars" name="bootstrap/3.3.7-1/css/bootstrap.min-jsf.css"/>
+    <h:outputStylesheet library="webjars" name="bootstrap/3.3.7-1/css/bootstrap-theme.min-jsf.css"/>
+    <h:outputStylesheet library="webjars" name="font-awesome/4.7.0/css/font-awesome.min-jsf.css"/>
+    <h:outputStylesheet name="webjars/lato/0.3.0/css/lato.min.css"/>
+    <h:outputStylesheet name="css/samply-share.css"/>
 
-        <ui:insert name="additional-css" />
+    <ui:insert name="additional-css"/>
 
-        <h:outputScript target="body">
-            maxInitValues(#{session.lastAccessedTime}, #{session.maxInactiveInterval} - 30, '#{msg.session_timeout_one}',
-            '#{msg.session_timeout_two}', '#{msg.session_timeout_two_min}', '#{msg.session_timeout_one_under}');
-        </h:outputScript>
+    <h:outputScript target="body">
+        maxInitValues(#{session.lastAccessedTime}, #{session.maxInactiveInterval} -30, '#{msg.session_timeout_one}',
+                '#{msg.session_timeout_two}', '#{msg.session_timeout_two_min}', '#{msg.session_timeout_one_under}');
+    </h:outputScript>
 
-        <h:outputScript library="webjars" name="jquery/3.3.1-1/jquery.min.js" />
-        <h:outputScript library="webjars" name="jquery-ui/1.12.1/jquery-ui.min.js" />
-        <h:outputScript library="webjars" name="bootstrap/3.3.7-1/js/bootstrap.min.js" />
-        <h:outputScript name="js/samply-share.js" />
+    <h:outputScript library="webjars" name="jquery/3.3.1-1/jquery.min.js"/>
+    <h:outputScript library="webjars" name="jquery-ui/1.12.1/jquery-ui.min.js"/>
+    <h:outputScript library="webjars" name="bootstrap/3.3.7-1/js/bootstrap.min.js"/>
+    <h:outputScript name="js/samply-share.js"/>
 
-        <o:conditionalComment if="lt IE 9">
-            <h:outputScript library="webjars" name="html5shiv/3.7.3/html5shiv.min.js" />
-            <h:outputScript library="webjars" name="respond/1.4.2/dest/respond.min.js" />
-        </o:conditionalComment>
+    <o:conditionalComment if="lt IE 9">
+        <h:outputScript library="webjars" name="html5shiv/3.7.3/html5shiv.min.js"/>
+        <h:outputScript library="webjars" name="respond/1.4.2/dest/respond.min.js"/>
+    </o:conditionalComment>
 
-        <ui:insert name="additional-js" />
-        <ui:insert name="optional-import-constants" />
+    <ui:insert name="additional-js"/>
+    <ui:insert name="optional-import-constants"/>
 
-    </h:head>
-    <h:body class="background">
-        <f:view>
-            <ui:insert name="metadata" />
+</h:head>
+<h:body class="background">
+    <f:view>
+        <ui:insert name="metadata"/>
 
-            <div class="page-wrapper #{pageWrapperAdditionalClass}">
-                <sscl:menu activePage="#{view.viewId}" />
-                <ui:fragment rendered="#{adminPage and not fn:containsIgnoreCase(view.viewId, 'dashboard')}" >
-                    <sscl:sideNav admin="true" />
-                </ui:fragment>
-                <ui:fragment rendered="#{not adminPage and not fn:containsIgnoreCase(view.viewId, 'dashboard')}" >
-                    <sscl:sideNav admin="false" />
-                </ui:fragment>
+        <div class="page-wrapper #{pageWrapperAdditionalClass}">
+            <sscl:menu activePage="#{view.viewId}"/>
+            <ui:fragment rendered="#{adminPage and not fn:containsIgnoreCase(view.viewId, 'dashboard')}">
+                <sscl:sideNav admin="true"/>
+            </ui:fragment>
+            <ui:fragment rendered="#{not adminPage and not fn:containsIgnoreCase(view.viewId, 'dashboard')}">
+                <sscl:sideNav admin="false"/>
+            </ui:fragment>
 
-                <div class="container content-container theme-showcase">
-                    <div class="page-header">
-                        <h1>
-                            <ui:insert name="title" />
-                        </h1>
-                        <ui:insert name="subtitle" />
-                    </div>
-
-                    <ui:insert name="main-content" />
+            <div class="container content-container theme-showcase">
+                <div class="page-header">
+                    <h1>
+                        <ui:insert name="title"/>
+                    </h1>
+                    <ui:insert name="subtitle"/>
                 </div>
-            </div>
 
-            <ssc:sessionTimeoutModal />
-        </f:view>
-    </h:body>
+                <ui:insert name="main-content"/>
+            </div>
+        </div>
+
+        <ssc:sessionTimeoutModal/>
+    </f:view>
+</h:body>
 </html>

@@ -31,8 +31,8 @@ package de.samply.share.client.util.connector;
 import com.google.gson.Gson;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
-import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.Inquiries;
+import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.db.enums.BrokerStatusType;
 import de.samply.share.client.model.db.enums.EventMessageType;
@@ -44,11 +44,9 @@ import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.*;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
 import de.samply.share.common.utils.Constants;
-import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.bbmri.BbmriResult;
 import de.samply.share.model.common.*;
-
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -582,7 +580,7 @@ public class BrokerConnector {
      * @param inquiryDetails the inquiry details object
      * @param reply          the reply to submit to the broker
      */
-    public void reply(InquiryDetails inquiryDetails, Object reply) throws BrokerConnectorException {
+    public void reply(InquiryDetails inquiryDetails, Object reply, LdmConnector ldmConnector) throws BrokerConnectorException {
         try {
             de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
             int inquirySourceId = inquiry.getSourceId();
@@ -595,16 +593,16 @@ public class BrokerConnector {
 
             String replyString="";
             JSONObject stats= new JSONObject();
-            if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
+            if (ldmConnector instanceof LdmConnectorCentraxx) {
                 if (reply.getClass() == Integer.class) {
                     replyString = Integer.toString((Integer) reply);
                 } else {
                     replyString = reply.toString();
                 }
-            } else if (ProjectInfo.INSTANCE.getProjectName().equals("samply")) {
+            } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
                 BbmriResult result = (BbmriResult) reply;
 
-               //stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfDonors()));
+                stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfDonors()));
                 stats.put("sample", NumberDisguiser.getDisguisedNumber(result.getNumberOfSamples()));
                 replyString = stats.toString();
             }

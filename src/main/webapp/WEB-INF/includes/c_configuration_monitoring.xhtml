@@ -36,12 +36,12 @@
 
     <fieldset class="configurationGroup">
         <legend class="scheduler-border">#{msg.configuration_monitoring}</legend>
-        
+
         <sscl:formEntryElement labelText="#{msg.configuration_sendTotalCount}" labelFor="sendTotalCount">
             <f:facet name="input">
                 <h:selectBooleanCheckbox id="sendTotalCount"
                                          styleClass="form-control switch"
-                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_TOTAL]}" />
+                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_TOTAL]}"/>
             </f:facet>
         </sscl:formEntryElement>
 
@@ -49,31 +49,34 @@
             <f:facet name="input">
                 <h:selectBooleanCheckbox id="sendDktkCount"
                                          styleClass="form-control switch"
-                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_DKTKFLAG]}" />
+                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_DKTKFLAG]}"/>
             </f:facet>
         </sscl:formEntryElement>
 
-        <sscl:formEntryElement labelText="#{msg.configuration_sendReferenceQueryCount}" labelFor="sendReferenceQueryCount">
+        <sscl:formEntryElement labelText="#{msg.configuration_sendReferenceQueryCount}"
+                               labelFor="sendReferenceQueryCount">
             <f:facet name="input">
                 <h:selectBooleanCheckbox id="sendReferenceQueryCount"
                                          styleClass="form-control switch"
-                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_REFERENCEQUERY]}" />
+                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_REFERENCEQUERY]}"/>
             </f:facet>
         </sscl:formEntryElement>
 
-        <sscl:formEntryElement labelText="#{msg.configuration_sendReferenceQueryTime}" labelFor="sendReferenceQueryTime">
+        <sscl:formEntryElement labelText="#{msg.configuration_sendReferenceQueryTime}"
+                               labelFor="sendReferenceQueryTime">
             <f:facet name="input">
                 <h:selectBooleanCheckbox id="sendReferenceQueryTime"
                                          styleClass="form-control switch"
-                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_TIME_REFERENCEQUERY]}" />
+                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_TIME_REFERENCEQUERY]}"/>
             </f:facet>
         </sscl:formEntryElement>
 
-        <sscl:formEntryElement labelText="#{msg.configuration_sendCentraxxMappingVersion}" labelFor="sendCentraxxMappingVersion">
+        <sscl:formEntryElement labelText="#{msg.configuration_sendCentraxxMappingVersion}"
+                               labelFor="sendCentraxxMappingVersion">
             <f:facet name="input">
                 <h:selectBooleanCheckbox id="sendCentraxxMappingVersion"
                                          styleClass="form-control switch"
-                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_CENTRAXX_MAPPING_INFORMATION]}" />
+                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_CENTRAXX_MAPPING_INFORMATION]}"/>
             </f:facet>
         </sscl:formEntryElement>
 

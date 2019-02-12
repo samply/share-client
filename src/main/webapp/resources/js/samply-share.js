@@ -1,29 +1,31 @@
-$(document).ready(function() {
+$(document).ready(function () {
     bootstrapSwitchOn();
 
-	$('#matches').on('hide.bs.collapse', function(e) {
-	    $(e.target)
-    		.prev().css({'font-size' : '14px',
-    					'font-weight' : 'normal'
-    			})
-	    	.parent()
-	        .find(".expandIcon:first")
-	        .removeClass('fa-rotate-45');
-	});
-	
-	$('#matches').on('show.bs.collapse', function(e) {
-	    $(e.target)
-    	.prev().css({'font-size' : '18px',
-					'font-weight' : 'bold'
-			})
-    	.parent()
-        .find(".expandIcon:first")
-    	.addClass('fa-rotate-45');
-	});
+    $('#matches').on('hide.bs.collapse', function (e) {
+        $(e.target)
+            .prev().css({
+            'font-size': '14px',
+            'font-weight': 'normal'
+        })
+            .parent()
+            .find(".expandIcon:first")
+            .removeClass('fa-rotate-45');
+    });
 
-    $(".collapsiblePanel").on("click", ".panel-heading", function() {
+    $('#matches').on('show.bs.collapse', function (e) {
+        $(e.target)
+            .prev().css({
+            'font-size': '18px',
+            'font-weight': 'bold'
+        })
+            .parent()
+            .find(".expandIcon:first")
+            .addClass('fa-rotate-45');
+    });
+
+    $(".collapsiblePanel").on("click", ".panel-heading", function () {
         $(this).parents('.panel').find('.collapse').collapse('toggle');
-	});
+    });
 
 
     $('.collapsiblePanel').on({
@@ -35,22 +37,22 @@ $(document).ready(function() {
         }
     });
 
-	if ($('.clockpicker')[0]) {
-	    $('.clockpicker').clockpicker({
-	        donetext: 'Done'
-	    });
-	}
-	if ($('.inputmask')[0]) {
-	    $('.inputmask').inputmask({
-	      mask: '9?999'
-	    });
-	}
-    $('.dashboard-panel').click(function(event) {
+    if ($('.clockpicker')[0]) {
+        $('.clockpicker').clockpicker({
+            donetext: 'Done'
+        });
+    }
+    if ($('.inputmask')[0]) {
+        $('.inputmask').inputmask({
+            mask: '9?999'
+        });
+    }
+    $('.dashboard-panel').click(function (event) {
         event.stopPropagation();
         $(this).siblings('.go-to-page').children('a').trigger("click");
     });
 
-	$('.hasTooltip').tooltip();
+    $('.hasTooltip').tooltip();
 
     $('.inquiry-table').on({
         mouseenter: function () {
@@ -64,7 +66,7 @@ $(document).ready(function() {
         }
     }, ".requested-entity-label-abbr");
 
-    $(".inquiry-table").on("click", "tr a", function() {
+    $(".inquiry-table").on("click", "tr a", function () {
         $('#pleaseWait').modal('show');
     });
 });

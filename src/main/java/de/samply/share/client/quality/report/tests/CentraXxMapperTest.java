@@ -25,10 +25,10 @@ package de.samply.share.client.quality.report.tests;/*
 */
 
 
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.centraxx.CentraXxMapper;
 import de.samply.share.client.quality.report.centraxx.CentraXxMapperException;
 import de.samply.share.client.quality.report.centraxx.CentraXxMapperImpl;
+import de.samply.share.common.utils.MdrIdDatatype;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

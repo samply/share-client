@@ -29,8 +29,8 @@
 package de.samply.share.client.rest;
 
 import com.google.gson.Gson;
-import de.samply.share.client.model.line.EventLogLine;
 import de.samply.share.client.model.db.tables.pojos.EventLog;
+import de.samply.share.client.model.line.EventLogLine;
 import de.samply.share.client.util.db.EventLogUtil;
 
 import javax.ws.rs.GET;

@@ -1,1 +1,8 @@
-ALTER TYPE samply.entity_type add VALUE 'UNKNOWN';
+ALTER
+TYPE
+samply
+.
+entity_type
+add
+VALUE
+'UNKNOWN';

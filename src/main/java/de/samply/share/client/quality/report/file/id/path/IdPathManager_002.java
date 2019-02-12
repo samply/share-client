@@ -26,7 +26,6 @@ package de.samply.share.client.quality.report.file.id.path;/*
 
 import de.samply.share.client.quality.report.file.csvline.manager.QualityResultCsvLineManager_002;
 import de.samply.share.client.quality.report.file.excel.pattern.ExcelPattern_002;
-
 import de.samply.share.client.quality.report.file.metadata.txtcolumn.MetadataTxtColumnManager_002;
 
 public class IdPathManager_002 extends IdPathManagerImpl<QualityResultCsvLineManager_002, ExcelPattern_002, MetadataTxtColumnManager_002> {

@@ -24,8 +24,6 @@ package de.samply.share.client.quality.report.file.downloader;/*
 * permission to convey the resulting work.
 */
 
-import java.net.Proxy;
-
 public interface FileDownloader {
 
     public void download() throws FileDownloaderException;

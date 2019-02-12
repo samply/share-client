@@ -70,7 +70,7 @@ public class ExcelRowMapper_002 {
         String cxxDatenElement = centraXxMapper.getCentraXxAttribute(mdrId);
         String cxxAttributeValue = isValid ? centraXxMapper.getCentraXxValue(mdrId, mdrAttributeValue) : excelRowParameters.getValue();
         String dktkId = dktkIdManager.getDktkId(mdrId);
-        CellReference cellReference = createCellReference(excelRowParameters);
+        CellReference numberOfPatientsCellReference = createNumberOfPatientsCellReference(excelRowParameters);
         Double percentageOutOfPatientWithDataElement = excelRowParameters.getPercentageOutOfPatientWithDataElement();
         Double percentageOutOfTotalPatients = excelRowParameters.getPercentageOutOfTotalPatients();
 
@@ -78,7 +78,7 @@ public class ExcelRowMapper_002 {
         if (ignoredElements.isIgnored(mdrId)){
             rowElements.setNotMapped();
         }else{
-            rowElements.setValid(isValid, numberOfPatients, cellReference);
+            rowElements.setValid(isValid, numberOfPatients);
         }
 
         rowElements.setMdrAttributeValue(mdrAttributeValue);
@@ -90,13 +90,18 @@ public class ExcelRowMapper_002 {
         rowElements.setDktkId(dktkId);
         rowElements.setPercentageOutOfPatientsWithDataElement(percentageOutOfPatientWithDataElement);
         rowElements.setPercentageOutOfTotalPatients(percentageOutOfTotalPatients);
-        rowElements.setNumberOfPatients(numberOfPatients);
+
+        if (numberOfPatientsCellReference != null){
+            rowElements.setNumberOfPatients(numberOfPatientsCellReference, numberOfPatients);
+        } else{
+            rowElements.setNumberOfPatients(numberOfPatients);
+        }
 
 
         return rowElements;
     }
     
-    private CellReference createCellReference(ExcelRowParameters_002 excelRowParameters){
+    private CellReference createNumberOfPatientsCellReference (ExcelRowParameters_002 excelRowParameters){
 
         Integer mismatchOrdinal = excelRowParameters.getMismatchOrdinal();
         boolean isValid = excelRowParameters.getQualityResult().isValid();

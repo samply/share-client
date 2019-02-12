@@ -37,9 +37,10 @@ import java.security.spec.X509EncodedKeySpec;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static org.omnifaces.util.Faces.getServletContext;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.UUID;
 
 /**
  * A collection of utility methods
@@ -224,7 +225,7 @@ public final class Utils {
      * @return the byte array
      */
     private static byte[] readFileBytes(String filename) throws IOException {
-        File file = FileFinderUtil.findFile(ProjectInfo.INSTANCE.getProjectName().toLowerCase() + filename, ProjectInfo.INSTANCE.getProjectName().toLowerCase(), System.getProperty("catalina.base") + File.separator + "conf", getServletContext().getRealPath("/WEB-INF"));
+        File file = FileFinderUtil.findFile(filename, ProjectInfo.INSTANCE.getProjectName());
         return Files.readAllBytes(file.toPath());
     }
 

@@ -32,12 +32,12 @@
                 xmlns:cc="http://xmlns.jcp.org/jsf/composite">
 
     <cc:interface>
-        <cc:attribute name="iconClass" required="true" />
-        <cc:attribute name="title" required="true" />
-        <cc:attribute name="details" />
-        <cc:attribute name="action" targets="go-to" required="true" />
-        <cc:attribute name="cssClass" default="col-lg-4 col-md-4 col-sm-6 col-xs-12" required="false" />
-        <cc:facet name="detailsfacet" />
+        <cc:attribute name="iconClass" required="true"/>
+        <cc:attribute name="title" required="true"/>
+        <cc:attribute name="details"/>
+        <cc:attribute name="action" targets="go-to" required="true"/>
+        <cc:attribute name="cssClass" default="col-lg-4 col-md-4 col-sm-6 col-xs-12" required="false"/>
+        <cc:facet name="detailsfacet"/>
     </cc:interface>
 
     <cc:implementation>
@@ -46,13 +46,15 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                            <i class="fa #{cc.attrs.iconClass} fa-5x" />
+                            <i class="fa #{cc.attrs.iconClass} fa-5x"/>
                         </div>
-                        <h:panelGroup layout="block" styleClass="col-lg-5 col-md-5 col-sm-5 col-xs-5" rendered="#{empty cc.facets.detailsfacet}">
+                        <h:panelGroup layout="block" styleClass="col-lg-5 col-md-5 col-sm-5 col-xs-5"
+                                      rendered="#{empty cc.facets.detailsfacet}">
                             <span style="font-size: 100%;">#{cc.attrs.details}</span>
                         </h:panelGroup>
-                        <h:panelGroup layout="block" styleClass="col-lg-5 col-md-5 col-sm-5 col-xs-5" rendered="#{not empty cc.facets.detailsfacet}">
-                            <cc:renderFacet name="detailsfacet" />
+                        <h:panelGroup layout="block" styleClass="col-lg-5 col-md-5 col-sm-5 col-xs-5"
+                                      rendered="#{not empty cc.facets.detailsfacet}">
+                            <cc:renderFacet name="detailsfacet"/>
                         </h:panelGroup>
                     </div>
                     <hr style="margin: 5px;"/>
@@ -64,7 +66,7 @@
                 </div>
             </div>
             <div class="go-to-page" style="display:none;">
-                <h:commandLink id="go-to" />
+                <h:commandLink id="go-to"/>
             </div>
         </div>
     </cc:implementation>

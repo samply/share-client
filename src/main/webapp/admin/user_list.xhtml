@@ -62,9 +62,9 @@
                     <th>#{msg.common_username}</th>
                     <th>#{msg.common_email}</th>
                     <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
-                    <th><i class="fa fa-flask fa-fw" title="#{msg.ul_notifyBiomaterial}"/></th>
-                    <th><i class="fa fa-file-excel-o fa-fw" title="#{msg.ul_notifyClinicalData}"/></th>
-                    <th><i class="fa fa-users fa-fw" title="#{msg.ul_notifyPatients}"/></th>
+                        <th><i class="fa fa-flask fa-fw" title="#{msg.ul_notifyBiomaterial}"/></th>
+                        <th><i class="fa fa-file-excel-o fa-fw" title="#{msg.ul_notifyClinicalData}"/></th>
+                        <th><i class="fa fa-users fa-fw" title="#{msg.ul_notifyPatients}"/></th>
                     </ui:fragment>
                     <th>#{msg.ul_setNewPassword}</th>
                     <th>#{msg.common_delete}</th>
@@ -74,8 +74,12 @@
                 <ui:repeat var="user" value="#{userBean.userList}">
                     <ui:fragment rendered="#{user.username != 'exporter'}">
                         <tr class="#{userStatus.odd ? 'background-color: #E0E0E0; margin: 0;' : 'margin: 0;'}">
-                            <td><h:outputText value="#{user.username}"/></td>
-                            <td><h:outputText value="#{user.email}"/></td>
+                            <td>
+                                <h:outputText value="#{user.username}"/>
+                            </td>
+                            <td>
+                                <h:outputText value="#{user.email}"/>
+                            </td>
                             <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
                                 <td>
                                     <h:selectBooleanCheckbox

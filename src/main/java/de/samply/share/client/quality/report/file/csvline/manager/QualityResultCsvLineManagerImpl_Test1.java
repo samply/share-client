@@ -30,12 +30,12 @@ import de.samply.common.mdrclient.MdrInvalidResponseException;
 import de.samply.common.mdrclient.domain.Definition;
 import de.samply.common.mdrclient.domain.Record;
 import de.samply.common.mdrclient.domain.Validations;
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.file.csvline.PatientDataCsvLinePattern_Test1;
 import de.samply.share.client.quality.report.model.Model;
 import de.samply.share.client.quality.report.model.searcher.ModelSearcher;
 import de.samply.share.client.quality.report.results.QualityResult;
 import de.samply.share.client.quality.report.results.QualityResults;
+import de.samply.share.common.utils.MdrIdDatatype;
 
 import java.util.ArrayList;
 import java.util.HashMap;

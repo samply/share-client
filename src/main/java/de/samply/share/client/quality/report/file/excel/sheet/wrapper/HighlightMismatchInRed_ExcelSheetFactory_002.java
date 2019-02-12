@@ -24,7 +24,7 @@ package de.samply.share.client.quality.report.file.excel.sheet.wrapper;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.client.quality.report.file.excel.cell.element.MatchElement;
+import de.samply.share.client.quality.report.file.excel.cell.element.MatchExcelCellElement;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements_002;
 import de.samply.share.client.quality.report.file.excel.sheet.ExcelSheetFactory;
 import org.apache.poi.hssf.util.CellReference;
@@ -48,7 +48,7 @@ public class HighlightMismatchInRed_ExcelSheetFactory_002 extends ExcelSheetWith
         stringBuilder.append('$');
         stringBuilder.append(getColumnToBeHighlighted());
         stringBuilder.append("1=\"");
-        stringBuilder.append(MatchElement.MISMATCH);
+        stringBuilder.append(MatchExcelCellElement.MISMATCH);
         stringBuilder.append('\"');
 
         return stringBuilder.toString();

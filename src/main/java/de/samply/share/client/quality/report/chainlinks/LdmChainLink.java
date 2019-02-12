@@ -24,9 +24,9 @@ package de.samply.share.client.quality.report.chainlinks;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.model.common.Error;
 import de.samply.share.client.quality.report.localdatamanagement.LocalDataManagementRequester;
 import de.samply.share.client.quality.report.localdatamanagement.LocalDataManagementResponse;
+import de.samply.share.model.common.Error;
 
 public abstract class LdmChainLink<I extends ChainLinkItem> extends ChainLink<I> {
 

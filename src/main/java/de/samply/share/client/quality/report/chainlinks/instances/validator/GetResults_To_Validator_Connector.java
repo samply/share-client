@@ -24,13 +24,13 @@ package de.samply.share.client.quality.report.chainlinks.instances.validator;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.client.quality.report.chainlinks.ChainLink;
 import de.samply.share.client.quality.report.chainlinks.ChainLinkItem;
 import de.samply.share.client.quality.report.chainlinks.connector.ChainLinkConnectorFunnel;
 import de.samply.share.client.quality.report.chainlinks.instances.result.ResultContext;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.client.quality.report.results.operations.QualityResultsAnalyzer;
+import de.samply.share.model.ccp.QueryResult;
 
 public class GetResults_To_Validator_Connector<I extends ChainLinkItem & ValidatorContext> extends ChainLinkConnectorFunnel {
 

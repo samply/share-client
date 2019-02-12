@@ -26,11 +26,10 @@ package de.samply.share.client.quality.report.chain.factory;/*
 
 
 import de.samply.share.client.quality.report.MdrIgnoredElements;
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.chain.Chain;
-import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
-import de.samply.share.client.quality.report.chain.QualityReportChain;
 import de.samply.share.client.quality.report.chain.ChainParameters;
+import de.samply.share.client.quality.report.chain.QualityReportChain;
+import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
 import de.samply.share.client.quality.report.chainlinks.statistics.factory.ChainLinkStatisticsFactory;
 import de.samply.share.client.quality.report.chainlinks.timer.factory.ChainLinkTimerFactory;
 import de.samply.share.client.quality.report.file.manager.CsvQualityReportFileManager;
@@ -43,8 +42,6 @@ import de.samply.share.client.quality.report.model.reader.ModelReaderException;
 import de.samply.share.client.quality.report.results.operations.QualityResultsAnalyzer;
 import de.samply.share.client.quality.report.results.operations.QualityResultsValidator;
 import de.samply.share.client.quality.report.views.ViewsCreator;
-
-import java.util.List;
 
 
 public class QualityReportChainFactory implements ChainFactory {

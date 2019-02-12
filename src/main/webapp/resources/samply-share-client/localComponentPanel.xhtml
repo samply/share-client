@@ -32,10 +32,10 @@
                 xmlns:cc="http://xmlns.jcp.org/jsf/composite">
 
     <cc:interface>
-        <cc:attribute name="iconSizeClass" default="fa-5x" />
-        <cc:attribute name="title" required="true" />
-        <cc:attribute name="checkResult" type="de.samply.share.client.model.check.ConnectCheckResult" />
-        <cc:attribute name="cssClass" default="col-lg-4 col-md-4 col-sm-6 col-xs-12" required="false" />
+        <cc:attribute name="iconSizeClass" default="fa-5x"/>
+        <cc:attribute name="title" required="true"/>
+        <cc:attribute name="checkResult" type="de.samply.share.client.model.check.ConnectCheckResult"/>
+        <cc:attribute name="cssClass" default="col-lg-4 col-md-4 col-sm-6 col-xs-12" required="false"/>
     </cc:interface>
 
     <cc:implementation>
@@ -48,7 +48,7 @@
                                 <i class="fa fa-check #{cc.attrs.iconSizeClass}" style="color: green;"/>
                             </ui:fragment>
                             <ui:fragment rendered="#{not cc.attrs.checkResult.reachable}">
-                                <i class="fa fa-close #{cc.attrs.iconSizeClass}" style="color: red;" />
+                                <i class="fa fa-close #{cc.attrs.iconSizeClass}" style="color: red;"/>
                             </ui:fragment>
                         </div>
                         <h:panelGroup layout="block" styleClass="col-lg-8 col-md-8 col-sm-8 col-xs-8">

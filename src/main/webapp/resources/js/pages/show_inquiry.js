@@ -67,13 +67,14 @@ function unblockElement(selector) {
         $(selector).unblock();
     }
 }
-$(document).ready(function() {
+
+$(document).ready(function () {
     if ($('#chartData')[0]) {
         $.jqplot.config.enablePlugins = true;
         var ageData = $('#chartData .age').html();
         var ageDataJson = $.parseJSON(ageData);
-        var ageKeys = ["0...9", "10...19", "20...29", "30...39", "40...49", "50...59" ,"60...69", "70...79", "80...89", "90...99", "100+", "unbekannt"];
-        var ageValues = [0, 0 , 0, 0, 0, 0 , 0, 0, 0, 0 , 0, 0];
+        var ageKeys = ["0...9", "10...19", "20...29", "30...39", "40...49", "50...59", "60...69", "70...79", "80...89", "90...99", "100+", "unbekannt"];
+        var ageValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 
         var genderData = $('#chartData .gender').html();
@@ -81,82 +82,82 @@ $(document).ready(function() {
         var genderKeys = [];
         var genderValues = [];
 
-        $.each(ageDataJson.data, function(key, value) {
+        $.each(ageDataJson.data, function (key, value) {
             var keyInt = parseInt(key);
             if (keyInt == -1) {
                 ageValues[11] = ageValues[11] + value;
             } else if (keyInt >= 100) {
                 ageValues[10] = ageValues[10] + value;
             } else {
-                var index = (keyInt/10>>0);
+                var index = (keyInt / 10 >> 0);
                 ageValues[index] = ageValues[index] + value;
             }
         });
 
-        var plot1 = $.jqplot('chart-age', [ ageValues ], {
-            title : 'Alter bei Erstdiagnose',
-            animate : !$.jqplot.use_excanvas,
-            seriesDefaults : {
-                renderer : $.jqplot.BarRenderer,
-                pointLabels : {
-                    show : true,
-                    edgeTolerance : -20
+        var plot1 = $.jqplot('chart-age', [ageValues], {
+            title: 'Alter bei Erstdiagnose',
+            animate: !$.jqplot.use_excanvas,
+            seriesDefaults: {
+                renderer: $.jqplot.BarRenderer,
+                pointLabels: {
+                    show: true,
+                    edgeTolerance: -20
                 }
             },
-            axesDefaults : {
-                labelRenderer : $.jqplot.CanvasAxisLabelRenderer,
+            axesDefaults: {
+                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                 tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                 min: 0
             },
-            axes : {
-                xaxis : {
-                    label : "Alter in Jahren",
-                    renderer : $.jqplot.CategoryAxisRenderer,
+            axes: {
+                xaxis: {
+                    label: "Alter in Jahren",
+                    renderer: $.jqplot.CategoryAxisRenderer,
                     ticks: ageKeys,
                     tickOptions: {
                         angle: -30,
                         formatString: '%d'
                     }
                 },
-                yaxis : {
-                    label : "Ergebnisse"
+                yaxis: {
+                    label: "Ergebnisse"
                 }
             },
-            highlighter : {
-                show : false
+            highlighter: {
+                show: false
             }
         });
 
-        $.each(genderDataJson.data, function(key, value) {
+        $.each(genderDataJson.data, function (key, value) {
             genderKeys.push(key);
             genderValues.push(value);
         });
 
-        var plot2 = $.jqplot('chart-gender', [ genderValues ], {
-            title : 'Geschlecht',
-            animate : !$.jqplot.use_excanvas,
-            seriesDefaults : {
-                renderer : $.jqplot.BarRenderer,
-                pointLabels : {
-                    show : true,
-                    edgeTolerance : -20
+        var plot2 = $.jqplot('chart-gender', [genderValues], {
+            title: 'Geschlecht',
+            animate: !$.jqplot.use_excanvas,
+            seriesDefaults: {
+                renderer: $.jqplot.BarRenderer,
+                pointLabels: {
+                    show: true,
+                    edgeTolerance: -20
                 }
             },
-            axesDefaults : {
-                labelRenderer : $.jqplot.CanvasAxisLabelRenderer
+            axesDefaults: {
+                labelRenderer: $.jqplot.CanvasAxisLabelRenderer
             },
-            axes : {
-                xaxis : {
-                    label : "Geschlecht",
-                    renderer : $.jqplot.CategoryAxisRenderer,
-                    ticks : genderKeys
+            axes: {
+                xaxis: {
+                    label: "Geschlecht",
+                    renderer: $.jqplot.CategoryAxisRenderer,
+                    ticks: genderKeys
                 },
-                yaxis : {
-                    label : "Ergebnisse"
+                yaxis: {
+                    label: "Ergebnisse"
                 }
             },
-            highlighter : {
-                show : false
+            highlighter: {
+                show: false
             }
         });
     }

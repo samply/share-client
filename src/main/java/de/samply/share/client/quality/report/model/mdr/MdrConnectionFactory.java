@@ -31,7 +31,6 @@ import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.properties.PropertyUtils;
 import de.samply.share.client.util.db.ConfigurationUtil;
 
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 

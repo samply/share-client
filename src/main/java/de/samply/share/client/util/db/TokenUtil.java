@@ -33,8 +33,6 @@ import de.samply.share.client.model.db.tables.pojos.Token;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.SQLException;
-
 /**
  * Helper Class for CRUD operations with token objects
  */

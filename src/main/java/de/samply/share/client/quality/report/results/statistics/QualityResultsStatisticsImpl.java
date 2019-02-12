@@ -26,13 +26,13 @@ package de.samply.share.client.quality.report.results.statistics;/*
 
 import de.samply.share.client.quality.report.MdrIgnoredElements;
 import de.samply.share.client.quality.report.results.QualityResult;
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.results.QualityResults;
+import de.samply.share.common.utils.MdrIdDatatype;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class QualityResultsStatisticsImpl implements QualityResultsStatistics, GeneralRehearsalStatistics {
+public class QualityResultsStatisticsImpl implements QualityResultsStatistics {
 
     private QualityResults qualityResults;
     private MdrIgnoredElements mdrIgnoredElements;
@@ -41,7 +41,6 @@ public class QualityResultsStatisticsImpl implements QualityResultsStatistics, G
     private ORConditionsEvaluator orConditionsEvaluator = new ORConditionsEvaluator();
 
     private Integer totalNumberOfPatients;
-
 
 
     public QualityResultsStatisticsImpl(QualityResults qualityResults, MdrIgnoredElements mdrIgnoredElements) {
@@ -448,20 +447,6 @@ public class QualityResultsStatisticsImpl implements QualityResultsStatistics, G
 
     }
 
-    @Override
-    public boolean getGeneralRehearsal_A_ContainedInQR(MdrIdDatatype mdrId) {
-        return getNumberOf_PatientsWithMdrId(mdrId) > 0;
-    }
-
-    @Override
-    public boolean getGeneralRehearsal_B_LowMismatch(MdrIdDatatype mdrId) {
-        return getPercentageOf_PatientsWithAnyMismatchWithMdrId_outOf_PatientsWithMdrId(mdrId) < 10.0d;
-    }
-
-    @Override
-    public boolean getGeneralRehearsal_A_And_B(MdrIdDatatype mdrId) {
-        return getGeneralRehearsal_A_ContainedInQR(mdrId) && getGeneralRehearsal_B_LowMismatch(mdrId);
-    }
 
 
 }

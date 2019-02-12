@@ -50,7 +50,10 @@
         <job>
             <name>UploadToCentralMdsDbJobDktkFlag</name>
             <group>CentralSearchGroup</group>
-            <description>This Job prepares and/or performs an upload to the central mds database, depending on the status. It performs an incremental upload of those patients that gave their explicit consent to be included in the DKTK.</description>
+            <description>This Job prepares and/or performs an upload to the central mds database, depending on the
+                status. It performs an incremental upload of those patients that gave their explicit consent to be
+                included in the DKTK.
+            </description>
             <job-class>de.samply.share.client.job.UploadToCentralMdsDbJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -77,7 +80,10 @@
         <job>
             <name>UploadToCentralMdsDbJobNoDktkFlag</name>
             <group>CentralSearchGroup</group>
-            <description>This Job prepares and/or performs an upload to the central mds database, depending on the status. It performs an upload of those patients, that have not explicitly given their consent to be included in DKTK, but can be uploaded due to another given consent.</description>
+            <description>This Job prepares and/or performs an upload to the central mds database, depending on the
+                status. It performs an upload of those patients, that have not explicitly given their consent to be
+                included in DKTK, but can be uploaded due to another given consent.
+            </description>
             <job-class>de.samply.share.client.job.UploadToCentralMdsDbJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -104,7 +110,9 @@
         <job>
             <name>CheckLocalComponentsJob</name>
             <group>MaintenanceGroup</group>
-            <description>This job checks the other local components (id manager, local datamanagement) for their version and status</description>
+            <description>This job checks the other local components (id manager, local datamanagement) for their version
+                and status
+            </description>
             <job-class>de.samply.share.client.job.CheckLocalComponentsJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -121,7 +129,9 @@
         <job>
             <name>DbCleanupJob</name>
             <group>MaintenanceGroup</group>
-            <description>Do some housekeeping in the database (e.g. mark inquiries as archived after a certain amount of time)</description>
+            <description>Do some housekeeping in the database (e.g. mark inquiries as archived after a certain amount of
+                time)
+            </description>
             <job-class>de.samply.share.client.job.DbCleanupJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -138,7 +148,9 @@
         <job>
             <name>ReportToMonitoringJob</name>
             <group>MaintenanceGroup</group>
-            <description>This job performs tests to determine values for an amount of patient data available or how long it takes to execute an inquiry</description>
+            <description>This job performs tests to determine values for an amount of patient data available or how long
+                it takes to execute an inquiry
+            </description>
             <job-class>de.samply.share.client.job.ReportToMonitoringJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -177,7 +189,9 @@
         <job>
             <name>ExecuteInquiryJob</name>
             <group>InquiryGroup</group>
-            <description>This Job posts an inquiry to the local datamanagement, stores the location and spawns a CheckInquiryStatusJob</description>
+            <description>This Job posts an inquiry to the local datamanagement, stores the location and spawns a
+                CheckInquiryStatusJob
+            </description>
             <job-class>de.samply.share.client.job.ExecuteInquiryJob</job-class>
             <durability>true</durability>
             <recover>false</recover>

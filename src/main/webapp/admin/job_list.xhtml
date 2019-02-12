@@ -35,7 +35,7 @@
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
 >
-    <ui:param name="adminPage" value="true" />
+    <ui:param name="adminPage" value="true"/>
 
     <ui:define name="title">#{msg.jl_title}</ui:define>
 
@@ -44,10 +44,10 @@
 
     <ui:define name="main-content">
         <p>
-            <h:outputText value="#{msg.jl_info}" escape="false" />
+            <h:outputText value="#{msg.jl_info}" escape="false"/>
         </p>
         <h:form id="cronJobForm" prependId="false">
-            <sscl:jobsListGroup jobList="#{schedulerBean.jobList}" />
+            <sscl:jobsListGroup jobList="#{schedulerBean.jobList}"/>
         </h:form>
     </ui:define>
 </ui:composition>

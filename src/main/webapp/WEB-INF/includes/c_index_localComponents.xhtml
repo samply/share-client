@@ -36,22 +36,22 @@
     <h:outputLink value="login.xhtml" target="_blank">
         <sscl:localComponentPanel title="#{msg.index_teiler}"
                                   checkResult="#{applicationBean.shareAvailability}"
-                                 cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-6"
-                                 iconSizeClass="fa-3x"/>
+                                  cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-6"
+                                  iconSizeClass="fa-3x"/>
     </h:outputLink>
 
     <h:outputLink value="#{wu:replaceLocalhost(applicationBean.urls.centraxxUrl)}" target="_blank">
         <sscl:localComponentPanel title="#{msg.index_ldm}"
-                           checkResult="#{applicationBean.ldmAvailability}"
-                           cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-6"
-                           iconSizeClass="fa-3x"/>
+                                  checkResult="#{applicationBean.ldmAvailability}"
+                                  cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-6"
+                                  iconSizeClass="fa-3x"/>
     </h:outputLink>
 
     <h:outputLink value="#{wu:replaceLocalhost(applicationBean.urls.idmanagerUrl)}" target="_blank">
         <sscl:localComponentPanel title="#{msg.index_idmanager}"
                                   checkResult="#{applicationBean.idmAvailability}"
-                           cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-6"
-                           iconSizeClass="fa-3x"/>
+                                  cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-6"
+                                  iconSizeClass="fa-3x"/>
     </h:outputLink>
 
     <h:outputLink value="#{wu:replaceLocalhost(applicationBean.urls.mdrUrl)}" target="_blank">

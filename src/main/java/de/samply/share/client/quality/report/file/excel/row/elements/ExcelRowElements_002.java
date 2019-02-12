@@ -24,10 +24,10 @@ package de.samply.share.client.quality.report.file.excel.row.elements;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.file.excel.cell.element.*;
 import de.samply.share.client.quality.report.file.excel.cell.reference.CellReference;
 import de.samply.share.client.quality.report.file.excel.cell.reference.CellReferenceExcelCellElement;
+import de.samply.share.common.utils.MdrIdDatatype;
 
 public class ExcelRowElements_002 extends ExcelRowElements {
 
@@ -103,7 +103,7 @@ public class ExcelRowElements_002 extends ExcelRowElements {
     public void setMdrLink (String link, MdrIdDatatype mdrId){
 
         String title = getLinkTitle(mdrId);
-        LinkExcelCellElement cellElement = new LinkExcelCellElement<String>(link, title);
+        LinkExcelCellElement cellElement = new LinkExcelCellElement(link, title);
         addElement(ELEMENT_ORDER.MDR_LINK, cellElement);
 
     }
@@ -143,32 +143,19 @@ public class ExcelRowElements_002 extends ExcelRowElements {
 
     }
 
-//    public void setValid (boolean isValid, int numberOfPatients){
-//
-//        MatchExcelCellElement cellElement = new MatchExcelCellElement(isValid, numberOfPatients);
-//        addElement(ELEMENT_ORDER.IS_VALID, cellElement);
-//
-//    }
-
     public void setValid (boolean isValid, int numberOfPatients){
-        setValid (isValid, numberOfPatients, null);
-    }
 
-    public void setValid (boolean isValid, int numberOfPatients, CellReference cellReference){
-
-        MatchElement matchElement =  new MatchElement(numberOfPatients, isValid);
-        ExcelCellElement cellElement = (cellReference != null) ? new CellReferenceExcelCellElement<MatchElement>(cellReference, matchElement) : new MatchExcelCellElement(matchElement);
+        MatchExcelCellElement cellElement = new MatchExcelCellElement(isValid, numberOfPatients);
         addElement(ELEMENT_ORDER.IS_VALID, cellElement);
 
     }
 
     public void setNotMapped (){
 
-        MatchElement matchElement = new MatchElement(0, true);
-        matchElement.setNotMapped();
-        MatchExcelCellElement matchExcelCellElement = new MatchExcelCellElement(matchElement);
+        MatchExcelCellElement cellElement = new MatchExcelCellElement(true, 0);
+        cellElement.setNotMapped();
 
-        addElement(ELEMENT_ORDER.IS_VALID, matchExcelCellElement);
+        addElement(ELEMENT_ORDER.IS_VALID, cellElement);
 
     }
 
@@ -177,12 +164,12 @@ public class ExcelRowElements_002 extends ExcelRowElements {
         addElement(ELEMENT_ORDER.NUMBER_OF_PATIENTS, cellElement);
     }
 
-//    public void setNumberOfPatients (CellReference cellReference, int numberOfPatients){
-//
-//        CellReferenceExcelCellElement cellElement = new CellReferenceExcelCellElement(cellReference, "" + numberOfPatients);
-//        addElement(ELEMENT_ORDER.NUMBER_OF_PATIENTS, cellElement);
-//
-//    }
+    public void setNumberOfPatients (CellReference cellReference, int numberOfPatients){
+
+        CellReferenceExcelCellElement cellElement = new CellReferenceExcelCellElement(cellReference, "" + numberOfPatients);
+        addElement(ELEMENT_ORDER.NUMBER_OF_PATIENTS, cellElement);
+
+    }
 
     public void setPercentageOutOfPatientsWithDataElement(Double percentageOfPatientsWithDataElement){
 

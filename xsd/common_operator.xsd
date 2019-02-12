@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://schema.samply.de/common" xmlns="http://schema.samply.de/common"
-    elementFormDefault="qualified" version="1.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://schema.samply.de/common"
+           xmlns="http://schema.samply.de/common"
+           elementFormDefault="qualified" version="1.0">
 
-    <xs:element name="operator" type="operator" />
+    <xs:element name="operator" type="operator"/>
 
     <xs:complexType name="operator">
         <xs:all>
-            <xs:element name="firstName" type="xs:token" minOccurs="0" />
-            <xs:element name="lastName" type="xs:token" minOccurs="0" />
-            <xs:element name="email" type="xs:token" minOccurs="0" />
-            <xs:element name="phone" type="xs:token" minOccurs="0" />
+            <xs:element name="firstName" type="xs:token" minOccurs="0"/>
+            <xs:element name="lastName" type="xs:token" minOccurs="0"/>
+            <xs:element name="email" type="xs:token" minOccurs="0"/>
+            <xs:element name="phone" type="xs:token" minOccurs="0"/>
         </xs:all>
     </xs:complexType>
 </xs:schema>

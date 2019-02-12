@@ -25,9 +25,9 @@ package de.samply.share.client.quality.report.results.filter;/*
 */
 
 import de.samply.common.mdrclient.domain.Validations;
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.model.searcher.ModelSearcher;
 import de.samply.share.client.quality.report.results.QualityResults;
+import de.samply.share.common.utils.MdrIdDatatype;
 
 public abstract class QualityResultsValidValueByTypeFilter extends QualityResultsValidValueFilter {
 

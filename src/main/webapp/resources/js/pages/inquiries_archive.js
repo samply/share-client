@@ -29,44 +29,45 @@
 /**
  * Created by michael on 06.03.17.
  */
-$(document).ready(function() {
+$(document).ready(function () {
     var userId = $('#userIdDiv').text();
 
     if ($('#archived-inquiries-table').length) {
-        var archivedInquiriesTable = $('#archived-inquiries-table').DataTable( {
+        var archivedInquiriesTable = $('#archived-inquiries-table').DataTable({
             "ajax": {
                 "url": "../rest/inquiries/archived",
                 "type": "GET",
-                "beforeSend": function(request) {
+                "beforeSend": function (request) {
                     request.setRequestHeader('userid', parseInt(userId));
                 }
             },
             "columns": [
-                { "data": "name",
+                {
+                    "data": "name",
                     "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                         if (!oData.seen) {
-                            $(nTd).html("<a href='show_inquiry.xhtml?inquiryId="+ oData.id +"&faces-redirect=true' style='font-weight: bold;'>"+oData.name+"</a> <i class='fa fa-info-circle fa-fw' title='Source: "+ oData.brokerName +"'></i>");
+                            $(nTd).html("<a href='show_inquiry.xhtml?inquiryId=" + oData.id + "&faces-redirect=true' style='font-weight: bold;'>" + oData.name + "</a> <i class='fa fa-info-circle fa-fw' title='Source: " + oData.brokerName + "'></i>");
                         } else {
-                            $(nTd).html("<a href='show_inquiry.xhtml?inquiryId="+ oData.id +"&faces-redirect=true'>"+oData.name+"</a> <i class='fa fa-info-circle fa-fw' title='Source: "+ oData.brokerName +"'></i>");
+                            $(nTd).html("<a href='show_inquiry.xhtml?inquiryId=" + oData.id + "&faces-redirect=true'>" + oData.name + "</a> <i class='fa fa-info-circle fa-fw' title='Source: " + oData.brokerName + "'></i>");
                         }
                     }
                 },
-                { "data": "searchFor" },
-                { "data": "receivedAt" },
-                { "data": "archivedAt" }
+                {"data": "searchFor"},
+                {"data": "receivedAt"},
+                {"data": "archivedAt"}
             ],
             language: {
                 url: "javax.faces.resource/i18n/datatables_de_DE.json"
             },
             "columnDefs": [
-                { type: 'de_datetime', targets: [2, 3] }
+                {type: 'de_datetime', targets: [2, 3]}
             ],
             "pageLength": 25,
-            "order": [[ 3, "desc" ]]
-        } );
+            "order": [[3, "desc"]]
+        });
 
-        setInterval( function () {
-            archivedInquiriesTable.ajax.reload( null, false ); // user paging is not reset on reload
-        }, 5000 );
+        setInterval(function () {
+            archivedInquiriesTable.ajax.reload(null, false); // user paging is not reset on reload
+        }, 5000);
     }
 });

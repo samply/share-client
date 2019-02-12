@@ -32,40 +32,43 @@
                 xmlns:cc="http://xmlns.jcp.org/jsf/composite">
 
     <cc:interface>
-        <cc:attribute name="labelFor" required="true" />
-        <cc:attribute name="labelText" required="true" />
-        <cc:attribute name="dbTooltip" required="false" default="false" type="java.lang.Boolean" />
-        <cc:attribute name="xmlTooltip" required="false" default="false" type="java.lang.Boolean" />
-        <cc:attribute name="labelClasses" required="false" default="col-sm-4 col-md-3" />
-        <cc:attribute name="inputClasses" required="false" default="col-sm-8 col-md-9" />
-        <cc:facet name="input" required="true" />
+        <cc:attribute name="labelFor" required="true"/>
+        <cc:attribute name="labelText" required="true"/>
+        <cc:attribute name="dbTooltip" required="false" default="false" type="java.lang.Boolean"/>
+        <cc:attribute name="xmlTooltip" required="false" default="false" type="java.lang.Boolean"/>
+        <cc:attribute name="labelClasses" required="false" default="col-sm-4 col-md-3"/>
+        <cc:attribute name="inputClasses" required="false" default="col-sm-8 col-md-9"/>
+        <cc:facet name="input" required="true"/>
     </cc:interface>
 
     <cc:implementation>
         <ui:fragment rendered="#{cc.attrs.dbTooltip}">
             <div class="form-group hasTooltip" title="#{msg.configuration_disabledDbTooltip}">
-                <h:outputLabel for="#{cc.attrs.labelFor}" value="#{cc.attrs.labelText}" styleClass="#{cc.attrs.labelClasses} right-aligned-label no-padding-right" />
+                <h:outputLabel for="#{cc.attrs.labelFor}" value="#{cc.attrs.labelText}"
+                               styleClass="#{cc.attrs.labelClasses} right-aligned-label no-padding-right"/>
                 <div class="#{cc.attrs.inputClasses}">
-                    <cc:renderFacet name="input" />
+                    <cc:renderFacet name="input"/>
                 </div>
             </div>
         </ui:fragment>
 
         <ui:fragment rendered="#{cc.attrs.xmlTooltip}">
             <div class="form-group hasTooltip" title="#{msg.configuration_disabledXmlTooltip}">
-                <h:outputLabel for="#{cc.attrs.labelFor}" value="#{cc.attrs.labelText}" styleClass="#{cc.attrs.labelClasses} right-aligned-label no-padding-right" />
+                <h:outputLabel for="#{cc.attrs.labelFor}" value="#{cc.attrs.labelText}"
+                               styleClass="#{cc.attrs.labelClasses} right-aligned-label no-padding-right"/>
                 <div class="#{cc.attrs.inputClasses}">
-                    <cc:renderFacet name="input" />
+                    <cc:renderFacet name="input"/>
                 </div>
             </div>
         </ui:fragment>
 
         <ui:fragment rendered="#{not cc.attrs.dbTooltip and not cc.attrs.xmlTooltip}">
             <div class="form-group">
-                <h:outputLabel for="#{cc.attrs.labelFor}" value="#{cc.attrs.labelText}" styleClass="#{cc.attrs.labelClasses} right-aligned-label no-padding-right" />
+                <h:outputLabel for="#{cc.attrs.labelFor}" value="#{cc.attrs.labelText}"
+                               styleClass="#{cc.attrs.labelClasses} right-aligned-label no-padding-right"/>
                 <div class="#{cc.attrs.inputClasses}">
-                    <cc:renderFacet name="input" />
-                    <h:message for="#{cc.attrs.labelFor}" />
+                    <cc:renderFacet name="input"/>
+                    <h:message for="#{cc.attrs.labelFor}"/>
                 </div>
             </div>
         </ui:fragment>

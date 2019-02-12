@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:mailSending xmlns:p="http://schema.samply.de/config/MailSending"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://schema.samply.de/config/MailSending mailSending.xsd ">
+    <p:host>{mail-host}</p:host>
+    <p:port>{mail-port}</p:port>
+    <p:protocol>{mail-protocol}</p:protocol>
+    <p:fromAddress>{mail-from-address}</p:fromAddress>
+    <p:fromName>{mail-from-name}</p:fromName>
+    <p:templateFolder>/WEB-INF/classes/mailTemplates/</p:templateFolder>
+</p:mailSending>
