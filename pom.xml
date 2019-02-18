@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>share-client</artifactId>
-    <version>3.0.7</version>
+    <version>4.0.2-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <parent>
@@ -49,9 +49,9 @@
                 <project.context>dktk</project.context>
                 <project.basename>DKTK.Teiler</project.basename>
                 <!-- general properties -->
-                <database.username>samplyshare</database.username>
-                <database.password>samplyshare</database.password>
-                <database.url>jdbc:postgresql://localhost:5432/samplyshare</database.url>
+                <database.username>samplyweb</database.username>
+                <database.password>samplyweb</database.password>
+                <database.url>jdbc:postgresql://localhost:5432/share_v2</database.url>
                 <database.schema>samply</database.schema>
             </properties>
         </profile>
@@ -59,14 +59,17 @@
 
     <properties>
         <!-- Samply dependencies -->
+        <version.samply.common.config>3.0.3-SNAPSHOT</version.samply.common.config>
         <share-common.version>3.1.0</share-common.version>
         <jsf-renderer.version>2.0.0</jsf-renderer.version>
-        <common-mailing.version>2.0.0</common-mailing.version>
+        <common-mailing.version>2.1.3-SNAPSHOT</common-mailing.version>
         <common-http.version>5.0.0</common-http.version>
         <common-ldmclient.centraxx.version>4.0.1</common-ldmclient.centraxx.version>
         <common-ldmclient.samplystore.version>4.0.1</common-ldmclient.samplystore.version>
-        <common-ldmclient.samplystore.biobank.version>1.1.0</common-ldmclient.samplystore.biobank.version>
-        <converter.dktk.patient.version>1.1.3</converter.dktk.patient.version>
+        <common-ldmclient.samplystore.biobank.version>1.1.1</common-ldmclient.samplystore.biobank.version>
+        <common-ldmclient.samplystore.fhir.version>1.0.0-SNAPSHOT</common-ldmclient.samplystore.fhir.version>
+        <converter.dktk.patient.version>1.1.3
+        </converter.dktk.patient.version> <!-- TODO: Replace release 1.1.6-SNAPSHOT -->
 
         <!-- general dependencies -->
         <version.flyway>4.2.0</version.flyway>
@@ -277,6 +280,16 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>de.samply</groupId>
+            <artifactId>common-config</artifactId>
+            <version>${version.samply.common.config}</version>
+        </dependency>
         <!-- JSF 2 -->
         <dependency>
             <groupId>com.sun.faces</groupId>
@@ -513,9 +526,26 @@
         </dependency>
         <dependency>
             <groupId>de.samply</groupId>
+            <artifactId>samply.common.ldmclient.fhir</artifactId>
+            <version>${common-ldmclient.samplystore.fhir.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.samply</groupId>
             <artifactId>share-dto</artifactId>
             <version>4.1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>samply-maven-oss-releases</id>
+            <name>Samply Maven Builds</name>
+            <url>https://maven.samply.de/nexus/content/repositories/oss-releases</url>
+        </repository>
+        <repository>
+            <id>samply-maven-oss-snapshots</id>
+            <name>Samply Maven Builds</name>
+            <url>https://maven.samply.de/nexus/content/repositories/oss-snapshots</url>
+        </repository>
+    </repositories>
 
 </project>

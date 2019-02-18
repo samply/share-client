@@ -31,6 +31,7 @@ package de.samply.share.client.control;
 import de.samply.share.client.model.db.enums.EntityType;
 import de.samply.share.client.model.db.tables.pojos.RequestedEntity;
 import de.samply.share.client.model.db.tables.pojos.User;
+import de.samply.share.client.util.connector.StoreConnector;
 import de.samply.share.client.util.db.RequestedEntityUtil;
 import de.samply.share.client.util.db.UserUtil;
 import de.samply.share.common.utils.ProjectInfo;
@@ -152,15 +153,6 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * Update the user information in the database
-     *
-     * @param user the user to update
-     */
-    public void updateUser(User user) {
-        UserUtil.updateUser(user);
-    }
-
-    /**
      * Delete a user from the database and refresh the user list
      *
      * @param user the user to delete
@@ -168,6 +160,7 @@ public class UserBean implements Serializable {
     public void deleteUser(User user) {
         UserUtil.deleteUser(user);
         refreshUserList();
+        StoreConnector.deavtivateUser(user.getUsername());
     }
 
     /**
@@ -183,6 +176,7 @@ public class UserBean implements Serializable {
                     .detail("ul_userCreated")
                     .add();
 
+            StoreConnector.storeNewUser(newUser.getUsername(), password);
             setNotificationsForNewUser();
             newUser = new User();
             refreshUserList();
@@ -243,11 +237,11 @@ public class UserBean implements Serializable {
             if (newPass.equals(newPassRepeat)) {
                 userToCheck.setPasswordHash(BCrypt.hashpw(newPass, BCrypt.gensalt()));
                 UserUtil.updateUser(userToCheck);
+                StoreConnector.changeUserPassword(userToCheck.getUsername(), password, newPass);
                 logger.info("Password changed for user ", userToCheck.getId());
                 Messages.create("common_passwordChanged")
                         .detail("common_passwordChanged")
                         .add();
-
             } else {
                 logger.info("Password mismatch");
                 Messages.create("common_passwordMismatch")

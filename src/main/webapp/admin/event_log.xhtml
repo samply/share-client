@@ -31,32 +31,39 @@
 <ui:composition template="/WEB-INF/templates/globalTemplate.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
-    <ui:param name="adminPage" value="true"/>
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:param name="adminPage" value="true" />
 
     <ui:define name="title">#{msg.el_title}</ui:define>
 
     <ui:define name="additional-css">
-        <h:outputStylesheet library="webjars" name="datatables/1.10.16/css/dataTables.bootstrap.min.css"/>
+        <h:outputStylesheet library="webjars" name="datatables/1.10.16/css/dataTables.bootstrap.min.css" />
     </ui:define>
 
     <ui:define name="additional-js">
-        <h:outputScript library="webjars" name="datatables/1.10.16/js/jquery.dataTables.min.js"/>
-        <h:outputScript library="webjars" name="datatables/1.10.16/js/dataTables.bootstrap.min.js"/>
-        <h:outputScript library="js" name="pages/event_log.js"/>
-        <h:outputScript library="js" name="date-de.js"/>
+        <h:outputScript library="webjars" name="datatables/1.10.16/js/jquery.dataTables.min.js" />
+        <h:outputScript library="webjars" name="datatables/1.10.16/js/dataTables.bootstrap.min.js" />
+        <h:outputScript library="js" name="pages/event_log.js" />
+        <h:outputScript library="js" name="date-de.js" />
     </ui:define>
 
     <ui:define name="main-content">
         <h:form prependId="false">
             <table id="logTable" class="table" width="100%">
                 <thead>
-                <tr>
-                    <th class="col-xs-4 col-md-3">#{msg.el_timestamp}</th>
-                    <th class="col-xs-8 col-md-9">#{msg.el_message}</th>
-                </tr>
+                    <tr>
+                        <th class="col-xs-4 col-md-3">#{msg.el_timestamp}</th>
+                        <th class="col-xs-8 col-md-9">#{msg.el_message}</th>
+                    </tr>
                 </thead>
             </table>
+        </h:form>
+        <h:form id="form">
+            <div id="logTableDiv" style="display: none;">
+                <h:outputText id="txt_count" value="#{inquiryHandlingBean.getLog()}"/>
+            </div>
+            <p:poll interval="3" listener="#{inquiryHandlingBean.getLog()}" update="txt_count"/>
         </h:form>
     </ui:define>
 </ui:composition>

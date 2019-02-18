@@ -38,7 +38,6 @@ import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.tables.pojos.*;
-import de.samply.share.client.rest.InquiriesDatasource;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.WebUtils;
 import de.samply.share.client.util.connector.BrokerConnector;
@@ -276,7 +275,7 @@ public class InquiryBean implements Serializable {
             UserSeenInquiryUtil.setUserSeenInquiry(loginBean.getUser(), inquiry);
             latestOriginalCriteriaTree = populateCriteriaTree(latestInquiryDetails.getCriteriaOriginal());
             List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
-            requestedEntitiesLabelString = InquiriesDatasource.getLabelsFor(requestedEntities);
+            requestedEntitiesLabelString = InquiryHandlingBean.getLabelsFor(requestedEntities);
             selectedInquiryContact = ContactUtil.fetchContactById(latestInquiryDetails.getContactId());
             inquiryEvents = EventLogUtil.fetchEventLogForInquiryById(inquiry.getId());
             loadDocuments();

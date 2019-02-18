@@ -26,49 +26,43 @@
  * permission to convey the resulting work.
  */
 
-/**
- * Created by michael on 06.03.17.
- */
-$(document).ready(function () {
-    if ($('#erroneous-inquiries-table').length) {
-        var userId = $('#userIdDiv').text();
 
-        var erroneousInquiriesTable = $('#erroneous-inquiries-table').DataTable({
-            "ajax": {
-                "url": "../rest/inquiries/erroneous",
-                "type": "GET",
-                "beforeSend": function (request) {
-                    request.setRequestHeader('userid', parseInt(userId));
-                }
+$(document).ready(function() {
+    if ($('#erroneous-inquiries-table').length) {
+
+        var erroneousInquiriesTable = $('#erroneous-inquiries-table').DataTable( {
+            "ajax": function (data, callback, settings) {
+                callback(
+                    JSON.parse($('#erroneousInquiriesDiv').text())
+                );
             },
             "columns": [
-                {
-                    "data": "name",
+                { "data": "name",
                     "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                         if (!oData.seen) {
-                            $(nTd).html("<a href='show_inquiry.xhtml?inquiryId=" + oData.id + "&faces-redirect=true' style='font-weight: bold;'>" + oData.name + "</a> <i class='fa fa-info-circle fa-fw' title='Source: " + oData.brokerName + "'></i>");
+                            $(nTd).html("<a href='show_inquiry.xhtml?inquiryId="+ oData.id +"&faces-redirect=true' style='font-weight: bold;'>"+oData.name+"</a> <i class='fa fa-info-circle fa-fw' title='Source: "+ oData.brokerName +"'></i>");
                         } else {
-                            $(nTd).html("<a href='show_inquiry.xhtml?inquiryId=" + oData.id + "&faces-redirect=true'>" + oData.name + "</a> <i class='fa fa-info-circle fa-fw' title='Source: " + oData.brokerName + "'></i>");
+                            $(nTd).html("<a href='show_inquiry.xhtml?inquiryId="+ oData.id +"&faces-redirect=true'>"+oData.name+"</a> <i class='fa fa-info-circle fa-fw' title='Source: "+ oData.brokerName +"'></i>");
                         }
                     }
                 },
-                {"data": "searchFor"},
-                {"data": "receivedAt"},
-                {"data": "errorCode"},
-                {"data": "asOf"}
+                { "data": "searchFor" },
+                { "data": "receivedAt" },
+                { "data": "errorCode" },
+                { "data": "asOf" }
             ],
             language: {
                 url: "javax.faces.resource/i18n/datatables_de_DE.json"
             },
             "columnDefs": [
-                {type: 'de_datetime', targets: [2, 4]}
+                { type: 'de_datetime', targets: [2, 4] }
             ],
             "pageLength": 25,
-            "order": [[2, "desc"]]
-        });
+            "order": [[ 2, "desc" ]]
+        } );
 
-        setInterval(function () {
-            erroneousInquiriesTable.ajax.reload(null, false); // user paging is not reset on reload
-        }, 5000);
+        setInterval( function () {
+            erroneousInquiriesTable.ajax.reload( null, false ); // user paging is not reset on reload
+        }, 4000);
     }
 });

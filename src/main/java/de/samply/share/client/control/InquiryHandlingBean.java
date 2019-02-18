@@ -28,27 +28,240 @@
 
 package de.samply.share.client.control;
 
-import de.samply.share.client.model.db.tables.pojos.Broker;
-import de.samply.share.client.model.db.tables.pojos.InquiryHandlingRule;
-import de.samply.share.client.util.db.BrokerUtil;
-import de.samply.share.client.util.db.InquiryHandlingRuleUtil;
+import com.google.gson.Gson;
+import de.samply.share.client.messages.Messages;
+import de.samply.share.client.model.db.enums.InquiryStatusType;
+import de.samply.share.client.model.db.tables.pojos.*;
+import de.samply.share.client.model.line.EventLogLine;
+import de.samply.share.client.model.line.InquiryLine;
+import de.samply.share.client.util.db.*;
+import de.samply.share.common.utils.SamplyShareUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * ViewScoped backing bean, used to manage inquiry handling rules
  */
 @ManagedBean(name = "inquiryHandlingBean")
-@ViewScoped
+@SessionScoped
 public class InquiryHandlingBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(InquiryHandlingBean.class);
+
+    private List<InquiryLine> activeInquiryList;
+    private List<InquiryLine> erroneousInquiryList;
+    private List<InquiryLine> archivedInquiryList;
+
+
+    public String getActiveInquiries(Integer userId) {
+        loadActiveInquiryList(userId);
+        return getInquiries(activeInquiryList);
+    }
+
+
+    public String getErroneousInquiries(Integer userId) {
+        loadErroneousInquiryList(userId);
+        return getInquiries(erroneousInquiryList);
+    }
+
+
+    public String getArchivedInquiries(Integer userId) {
+        loadArchivedInquiryList(userId);
+        return getInquiries(archivedInquiryList);
+    }
+
+    public String getLog() {
+        return getInquiries(loadEventLogList());
+    }
+
+    private String getInquiries(Object object) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Gson gson = new Gson();
+        String json = gson.toJson(object);
+        stringBuilder.append("{\"data\": ");
+        stringBuilder.append(json);
+        stringBuilder.append("}");
+        return stringBuilder.toString();
+    }
+
+
+    /**
+     * Load content of the active inquiries table from the database.
+     */
+    private void loadActiveInquiryList(int userId) {
+        List<Inquiry> inquiryList =
+                InquiryUtil.fetchInquiriesOrderByReceivedAt(
+                        InquiryStatusType.IS_NEW, InquiryStatusType.IS_PROCESSING, InquiryStatusType.IS_READY);
+        activeInquiryList = populateInquiryLines(userId, inquiryList);
+    }
+
+    /**
+     * Load content of the erroneous inquiries table from the database.
+     */
+    private void loadErroneousInquiryList(int userId) {
+        List<Inquiry> inquiryList =
+                InquiryUtil.fetchInquiriesOrderByReceivedAt(
+                        InquiryStatusType.IS_LDM_ERROR, InquiryStatusType.IS_ABANDONED);
+        erroneousInquiryList = populateInquiryLines(userId, inquiryList);
+    }
+
+    /**
+     * Load content of the archived inquiries table from the database.
+     */
+    private void loadArchivedInquiryList(int userId) {
+        List<Inquiry> inquiryList =
+                InquiryUtil.fetchInquiriesOrderByReceivedAt(InquiryStatusType.IS_ARCHIVED);
+        archivedInquiryList = populateInquiryLines(userId, inquiryList);
+    }
+
+    /**
+     * Populate inquiry lines.
+     *
+     * @param inquiries the inquiries
+     */
+    private List<InquiryLine> populateInquiryLines(Integer userId, List<Inquiry> inquiries) {
+        List<InquiryLine> targetList = new ArrayList<>();
+        InquiryLine inquiryLine;
+
+        for (Inquiry inquiry : inquiries) {
+            // First, load related entries
+            InquiryDetails inquiryDetails =
+                    InquiryDetailsUtil.fetchInquiryDetailsById(inquiry.getLatestDetailsId());
+            List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
+
+            boolean seen = false;
+            if (userId != null) {
+                seen = UserSeenInquiryUtil.hasUserSeenInquiryByIds(userId, inquiry.getId());
+            }
+
+            inquiryLine = new InquiryLine();
+            inquiryLine.setId(inquiry.getId());
+            inquiryLine.setSeen(seen);
+
+            if (SamplyShareUtils.isNullOrEmpty(inquiry.getLabel())) {
+                inquiryLine.setName(Messages.getString("inqs_noLabel"));
+            } else {
+                inquiryLine.setName(inquiry.getLabel());
+            }
+
+            inquiryLine.setSearchFor(getAbbreviatedLabelsFor(requestedEntities));
+
+            inquiryLine.setReceivedAt(
+                    SamplyShareUtils.convertSqlTimestampToString(
+                            inquiryDetails.getReceivedAt(), "dd.MM.yyyy HH:mm"));
+
+            if (inquiry.getArchivedAt() != null) {
+                inquiryLine.setArchivedAt(
+                        SamplyShareUtils.convertSqlTimestampToString(
+                                inquiry.getArchivedAt(), "dd.MM.yyyy HH:mm"));
+            } else {
+                inquiryLine.setArchivedAt(null);
+            }
+
+            try {
+                InquiryResult inquiryResult =
+                        InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId());
+                if (inquiryResult == null) {
+                    inquiryLine.setFound(Messages.getString("inqs_noResults"));
+                    inquiryLine.setAsOf("-");
+                } else {
+                    if (inquiryResult.getIsError()) {
+                        inquiryLine.setFound("Error");
+                        inquiryLine.setErrorCode(
+                                SamplyShareUtils.isNullOrEmpty(inquiryResult.getErrorCode())
+                                        ? " "
+                                        : inquiryResult.getErrorCode());
+                    } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_READY) {
+                        inquiryLine.setFound(inquiryResult.getSize().toString());
+                        inquiryLine.setErrorCode("");
+                    } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_PROCESSING) {
+                        try {
+                            inquiryLine.setFound(inquiryResult.getSize().toString());
+                        } catch (Exception e) {
+                            inquiryLine.setFound(Messages.getString("inqs_processing"));
+                        }
+                        inquiryLine.setErrorCode(Messages.getString(""));
+                    } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_ABANDONED) {
+                        inquiryLine.setFound("");
+                        inquiryLine.setErrorCode(Messages.getString("inqs_abandoned"));
+                    }
+                    inquiryLine.setAsOf(
+                            SamplyShareUtils.convertSqlTimestampToString(
+                                    inquiryResult.getExecutedAt(), "dd.MM.yyyy HH:mm"));
+                }
+
+            } catch (Exception e) {
+                logger.warn("Exception caught while trying to populate inquiry lines", e);
+                inquiryLine.setAsOf("");
+                inquiryLine.setFound("Error");
+                inquiryLine.setErrorCode("");
+            }
+
+            String brokerName;
+            try {
+                Broker broker = BrokerUtil.fetchBrokerById(inquiry.getBrokerId());
+                brokerName = broker.getName();
+                if (SamplyShareUtils.isNullOrEmpty(brokerName)) {
+                    brokerName = broker.getAddress();
+                }
+            } catch (Exception e) {
+                brokerName = "unknown";
+            }
+            inquiryLine.setBrokerName(brokerName);
+            targetList.add(inquiryLine);
+        }
+        return targetList;
+    }
+
+    public static String getLabelsFor(List<RequestedEntity> requestedEntities) {
+        if (SamplyShareUtils.isNullOrEmpty(requestedEntities)) {
+            return "";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (RequestedEntity re : requestedEntities) {
+            stringBuilder.append("<span class='requested-entity-label label label-default title='");
+            stringBuilder.append(Messages.getString(re.getName().getLiteral()));
+            stringBuilder.append("'>");
+            stringBuilder.append(Messages.getString(re.getName().getLiteral()));
+            stringBuilder.append("</span>");
+        }
+        return stringBuilder.toString();
+    }
+
+    private static String getAbbreviatedLabelsFor(List<RequestedEntity> requestedEntities) {
+        if (SamplyShareUtils.isNullOrEmpty(requestedEntities)) {
+            return "";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (RequestedEntity re : requestedEntities) {
+            stringBuilder.append(
+                    "<span class='requested-entity-label requested-entity-label-abbr label label-default' title='");
+            stringBuilder.append(Messages.getString(re.getName().getLiteral()));
+            stringBuilder.append("'>");
+            stringBuilder.append(Messages.getString(re.getName().getLiteral() + "_ABBR"));
+            stringBuilder.append("</span>");
+        }
+        return stringBuilder.toString();
+    }
+
+    private List<EventLogLine> loadEventLogList() {
+        List<EventLogLine> eventLogLines = new ArrayList<>();
+        List<EventLog> eventLogs = EventLogUtil.fetchEventLogGlobal();
+        for (EventLog el : eventLogs) {
+            eventLogLines.add(new EventLogLine(el));
+        }
+        return eventLogLines;
+    }
+
+
+
 
     private List<Broker> brokers;
     private List<InquiryHandlingRule> inquiryHandlingRules;
@@ -98,4 +311,8 @@ public class InquiryHandlingBean implements Serializable {
     public void store() {
         InquiryHandlingRuleUtil.updateInquiryHandlingRules(inquiryHandlingRules);
     }
+
 }
+
+
+

@@ -27,11 +27,7 @@ public class Migration {
     private static void upgradeSamply(DataSource dataSource) throws FlywayException {
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
-        if(ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
-            flyway.setLocations("db/migration/dktk");
-        }else if(ProjectInfo.INSTANCE.getProjectName().equals("samply")){
-            flyway.setLocations("db/migration/samply");
-        }
+        flyway.setLocations("db/migration/" + ProjectInfo.INSTANCE.getProjectName());
         flyway.setSchemas("samply");
         flyway.migrate();
     }

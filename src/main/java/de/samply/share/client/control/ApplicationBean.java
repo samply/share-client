@@ -205,7 +205,7 @@ public class ApplicationBean implements Serializable {
     }
 
     // TODO: other connector implementations
-    private static void initLdmConnector() {
+    public static void initLdmConnector() {
         if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("samply")) {
         if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
                 try {

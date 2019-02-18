@@ -29,26 +29,30 @@
 /**
  * Created by michael on 06.03.17.
  */
-$(document).ready(function () {
+$(document).ready(function() {
     if ($('#logTable').length) {
-        var logtable = $('#logTable').DataTable({
-            "ajax": "../rest/log",
+        var logtable = $('#logTable').DataTable( {
+            "ajax": function (data, callback, settings) {
+                callback(
+                    JSON.parse($('#logTableDiv').text())
+                );
+            },
             "columns": [
-                {"data": "eventTime"},
-                {"data": "message"}
+                { "data": "eventTime" },
+                { "data": "message" }
             ],
             language: {
                 url: "../javax.faces.resource/i18n/datatables_de_DE.json"
             },
             "columnDefs": [
-                {type: 'de_datetime', targets: 0}
+                { type: 'de_datetime', targets: 0 }
             ],
-            "order": [[0, "desc"]],
+            "order": [[ 0, "desc" ]],
             "pageLength": 50
-        });
+        } );
 
-        setInterval(function () {
-            logtable.ajax.reload(null, false); // user paging is not reset on reload
-        }, 2000);
+        setInterval( function () {
+            logtable.ajax.reload( null, false ); // user paging is not reset on reload
+        }, 4000);
     }
 });
