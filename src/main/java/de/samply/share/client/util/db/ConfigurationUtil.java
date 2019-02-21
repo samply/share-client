@@ -39,7 +39,10 @@ import de.samply.share.common.utils.ProjectInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static de.samply.common.http.HttpConnector.*;
 
@@ -200,6 +203,27 @@ public class ConfigurationUtil {
         Configuration configuration = getConfigurationElement(configurationElement);
         return (configuration == null) ? "" : configuration.getSetting();
     }
+
+    public static List<String> getConfigurationElementValueList(EnumConfiguration configurationElement) {
+
+        Configuration configuration = getConfigurationElement(configurationElement);
+
+        List<String> results = null;
+
+        if (configuration != null){
+
+            String setting = configuration.getSetting();
+            String[] split = setting.split(";");
+            results = Arrays.asList(split);
+
+        } else{
+            results = new ArrayList<>();
+        }
+
+        return results;
+        
+    }
+
 
     /**
      * Get the int value of a configuration timing element

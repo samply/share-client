@@ -1,0 +1,1 @@
+INSERT INTO samply.configuration(name, setting, visible) values('EXPORT_MDR_BLACKLIST', 'urn:dktk:dataelement:43:*;urn:dktk:dataelement:45:*;urn:dktk:dataelement:46:*;urn:dktk:dataelement:54:*', false);

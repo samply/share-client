@@ -43,8 +43,6 @@ import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.WebUtils;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
-import de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
@@ -526,6 +524,18 @@ public class InquiryBean implements Serializable {
         return parentNode;
     }
 
+    private List<MdrIdDatatype> getExportMdrBlackList(){
+
+        List<String> configurationElementValueList = ConfigurationUtil.getConfigurationElementValueList(EnumConfiguration.EXPORT_MDR_BLACKLIST);
+
+        List<MdrIdDatatype> mdrIdDatatypeList = new ArrayList<>();
+        for (String sMdrId : configurationElementValueList){
+            mdrIdDatatypeList.add(new MdrIdDatatype(sMdrId));
+        }
+
+        return mdrIdDatatypeList;
+    }
+
     /**
      * Generate an Excel Workbook for the inquiry result and send it to the client
      */
@@ -533,8 +543,8 @@ public class InquiryBean implements Serializable {
         logger.debug("Generate Export File");
 
         // Add a list of mdr items that will not be included in the export.
-        List<MdrIdDatatype> blacklist = new ArrayList<>();
-        blacklist.add(new MdrIdDatatype("urn:dktk:dataelement:54:*"));
+        List<MdrIdDatatype> blacklist = getExportMdrBlackList();
+
         try {
             String queryResultLocation = latestInquiryResult.getLocation();
             PatientConverter patientConverter = new PatientConverter(MdrContext.getMdrContext().getMdrClient(),
