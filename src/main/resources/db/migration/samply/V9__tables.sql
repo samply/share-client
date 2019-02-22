@@ -1,1 +1,0 @@
-INSERT INTO samply.configuration(name, setting, visible) values('QUALITY_REPORT_GENERAL_REHEARSAL_PRIORITATION_FILE', 'general_rehearsal_priorization.csv', false);
