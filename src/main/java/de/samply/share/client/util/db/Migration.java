@@ -1,5 +1,6 @@
 package de.samply.share.client.util.db;
 
+import de.samply.share.common.utils.ProjectInfo;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 
@@ -26,7 +27,11 @@ public class Migration {
     private static void upgradeSamply(DataSource dataSource) throws FlywayException {
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
-        flyway.setLocations("db/migration/samply");
+        if(ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
+            flyway.setLocations("db/migration/dktk");
+        }else if(ProjectInfo.INSTANCE.getProjectName().equals("samply")){
+            flyway.setLocations("db/migration/samply");
+        }
         flyway.setSchemas("samply");
         flyway.migrate();
     }
