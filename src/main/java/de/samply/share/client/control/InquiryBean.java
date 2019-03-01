@@ -74,10 +74,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.servlet.http.Part;
 import javax.xml.bind.JAXBException;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -583,16 +580,32 @@ public class InquiryBean implements Serializable {
             } finally {
                 bos.close();
             }
-            String filename;
-            if (!(inquiry.getLabel().equals(""))) {
-                Faces.sendFile(bos.toByteArray(), inquiry.getLabel() + ".xlsx", true);
-            } else {
-                Faces.sendFile(bos.toByteArray(), "Export" + ".xlsx", true);
-            }
+            String filename = !(inquiry.getLabel().equals("")) ? inquiry.getLabel() + ".xlsx" : "Export.xlsx";
+
+            Faces.sendFile(bos.toByteArray(), filename, true);
+            createTemporaryFile(bos, "lastExport.xlsx");
 
         } catch (Exception e) {
             logger.error("Exception caught while trying to export data", e);
         }
+    }
+
+    private void createTemporaryFile (ByteArrayOutputStream byteArrayOutputStream, String filename){
+
+        try {
+
+            String path = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_DIRECTORY);
+            filename = path + File.separator +filename;
+            FileOutputStream fileOutputStream = new FileOutputStream(filename);
+            byteArrayOutputStream.writeTo(fileOutputStream);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     /**
