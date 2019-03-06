@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>share-client</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.0.2-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <parent>
@@ -18,6 +18,9 @@
         <!-- ${project.context} also defines the folder where flyway looks for sql files -->
         <profile>
             <id>samply</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <project.context>samply</project.context>
                 <project.basename>Samply.Connector</project.basename>
@@ -42,6 +45,7 @@
         </profile>
         <profile>
             <id>dktk</id>
+
             <properties>
                 <project.context>dktk</project.context>
                 <project.basename>DKTK.Teiler</project.basename>
@@ -61,11 +65,11 @@
         <jsf-renderer.version>2.0.0</jsf-renderer.version>
         <common-mailing.version>2.1.3-SNAPSHOT</common-mailing.version>
         <common-http.version>5.0.0</common-http.version>
-        <common-ldmclient.centraxx.version>4.0.2-SNAPSHOT</common-ldmclient.centraxx.version>
+        <common-ldmclient.centraxx.version>4.0.1</common-ldmclient.centraxx.version>
         <common-ldmclient.samplystore.version>4.0.1</common-ldmclient.samplystore.version>
         <common-ldmclient.samplystore.biobank.version>1.1.1</common-ldmclient.samplystore.biobank.version>
         <common-ldmclient.samplystore.fhir.version>1.0.0-SNAPSHOT</common-ldmclient.samplystore.fhir.version>
-        <converter.dktk.patient.version>1.1.6</converter.dktk.patient.version> <!-- TODO: Replace release -->
+        <converter.dktk.patient.version>1.1.6-SNAPSHOT</converter.dktk.patient.version> <!-- TODO: Replace release -->
 
         <!-- general dependencies -->
         <version.flyway>4.2.0</version.flyway>
@@ -526,5 +530,17 @@
             <version>4.1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>samply-maven-oss-releases</id>
+            <name>Samply Maven Builds</name>
+            <url>https://maven.samply.de/nexus/content/repositories/oss-releases</url>
+        </repository>
+        <repository>
+            <id>samply-maven-oss-snapshots</id>
+            <name>Samply Maven Builds</name>
+            <url>https://maven.samply.de/nexus/content/repositories/oss-snapshots</url>
+        </repository>
+    </repositories>
 
 </project>
