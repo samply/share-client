@@ -160,7 +160,7 @@ public class UserBean implements Serializable {
     public void deleteUser(User user) {
         UserUtil.deleteUser(user);
         refreshUserList();
-        StoreConnector.deavtivateUser(user.getUsername());
+        StoreConnector.deactivateUser(user.getUsername());
     }
 
     /**

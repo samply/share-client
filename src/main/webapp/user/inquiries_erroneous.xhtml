@@ -32,7 +32,6 @@
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
 >
     <ui:define name="title">#{msg.inqs_inquiriesErroneousTitle}</ui:define>
 
@@ -63,12 +62,12 @@
             <h:messages showDetail="true" showSummary="true" id="messages" globalOnly="true"/>
         </h:form>
 
-        <h:form id="form">
-            <div id="erroneousInquiriesDiv" style="display: none;">
-                <h:outputText id="txt_count" value="#{inquiryHandlingBean.getErroneousInquiries(user.id)}"/>
-            </div>
-            <p:poll interval="3" listener="#{inquiryHandlingBean.getErroneousInquiries(user.id)}" update="txt_count"/>
-        </h:form>
+        <div id="userIdDiv" style="display: none;">
+            <h:outputText value="#{user.id}"/>
+        </div>
+        <div id="base64CredentialsDiv" style="display: none;">
+            <h:outputText value="#{credentialsBean.getBase64Credentials()}"/>
+        </div>
 
     </ui:define>
 </ui:composition>

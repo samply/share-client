@@ -31,8 +31,7 @@
 <ui:composition template="/WEB-INF/templates/globalTemplate.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <ui:param name="adminPage" value="true" />
 
     <ui:define name="title">#{msg.el_title}</ui:define>
@@ -60,10 +59,11 @@
             </table>
         </h:form>
         <h:form id="form">
-            <div id="logTableDiv" style="display: none;">
-                <h:outputText id="txt_count" value="#{inquiryHandlingBean.getLog()}"/>
+
+            <div id="base64CredentialsDiv" style="display: none;">
+                <h:outputText value="#{credentialsBean.getBase64Credentials()}"/>
             </div>
-            <p:poll interval="3" listener="#{inquiryHandlingBean.getLog()}" update="txt_count"/>
+
         </h:form>
     </ui:define>
 </ui:composition>

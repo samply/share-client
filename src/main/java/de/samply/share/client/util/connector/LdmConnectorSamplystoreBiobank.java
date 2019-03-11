@@ -108,7 +108,7 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
         try {
             this.samplystoreBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
             httpConnector = ApplicationBean.getHttpConnector();
-            httpConnector.addCustomHeader("Authorization", "Basic " + StoreConnector.getBase64Credentials(StoreConnector.lastUsername, StoreConnector.lastPassword));
+            httpConnector.addCustomHeader("Authorization", "Basic " + StoreConnector.getBase64Credentials(StoreConnector.authorizedUsername, StoreConnector.authorizedPassword));
             this.samplystoreHost = SamplyShareUtils.getAsHttpHost(samplystoreBaseUrl);
             httpClient = httpConnector.getHttpClient(samplystoreHost);
             this.ldmClient = new LdmClientSamplystoreBiobank(httpClient, samplystoreBaseUrl, useCaching, maxCacheSize);

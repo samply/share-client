@@ -30,12 +30,17 @@
  * Created by michael on 06.03.17.
  */
 $(document).ready(function() {
+
+    var base64Credentials = $('#base64CredentialsDiv').text();
+
     if ($('#logTable').length) {
         var logtable = $('#logTable').DataTable( {
-            "ajax": function (data, callback, settings) {
-                callback(
-                    JSON.parse($('#logTableDiv').text())
-                );
+            "ajax": {
+                "url": "../rest/inquiries/log",
+                "type": "GET",
+                "beforeSend": function (request) {
+                    request.setRequestHeader('Authorization', 'Basic' + base64Credentials.toString());
+                }
             },
             "columns": [
                 { "data": "eventTime" },

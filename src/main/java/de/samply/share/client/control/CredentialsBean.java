@@ -31,6 +31,7 @@ package de.samply.share.client.control;
 import de.samply.share.client.model.db.enums.AuthSchemeType;
 import de.samply.share.client.model.db.enums.TargetType;
 import de.samply.share.client.model.db.tables.pojos.Credentials;
+import de.samply.share.client.util.connector.StoreConnector;
 import de.samply.share.client.util.db.CredentialsUtil;
 import de.samply.share.common.utils.ProjectInfo;
 import org.apache.logging.log4j.LogManager;
@@ -65,6 +66,10 @@ public class CredentialsBean implements Serializable {
     private String newDomain;
     private AuthSchemeType newAuthSchemeType;
     private TargetType newTargetType;
+
+    public String getBase64Credentials() {
+        return StoreConnector.getBase64Credentials(StoreConnector.authorizedUsername, StoreConnector.authorizedPassword);
+    }
 
     public List<Credentials> getCredentialsList() {
         return credentialsList;

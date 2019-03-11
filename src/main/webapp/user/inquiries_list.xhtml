@@ -33,8 +33,7 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:ssc="http://xmlns.jcp.org/jsf/composite/samply-share-common"
-                xmlns:p="http://primefaces.org/ui"
->
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
     <ui:define name="title">#{msg.inqs_inquiriesActiveTitle}</ui:define>
 
     <ui:define name="additional-css">
@@ -64,12 +63,12 @@
             <h:messages showDetail="true" showSummary="true" id="messages" globalOnly="true"/>
         </h:form>
 
-        <h:form id="form">
-            <div id="activeInquiriesDiv" style="display: none;">
-                <h:outputText id="txt_count" value="#{inquiryHandlingBean.getActiveInquiries(user.id)}"/>
-            </div>
-            <p:poll interval="3" listener="#{inquiryHandlingBean.getActiveInquiries(user.id)}" update="txt_count"/>
-        </h:form>
+        <div id="userIdDiv" style="display: none;">
+            <h:outputText value="#{user.id}"/>
+        </div>
+        <div id="base64CredentialsDiv" style="display: none;">
+            <h:outputText value="#{credentialsBean.getBase64Credentials()}"/>
+        </div>
 
         <ssc:pleaseWaitModal />
     </ui:define>

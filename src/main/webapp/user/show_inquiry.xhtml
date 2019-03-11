@@ -38,7 +38,10 @@
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
                 xmlns:wu="http://share.samply.de/webutils"
                 xmlns:pass="http://xmlns.jcp.org/jsf/passthrough"
+
+
 >
+
     <ui:define name="title">
         <h:outputText value="#{inquiryBean.inquiry.label} " rendered="#{not empty inquiryBean.inquiry.label}"/>
         <h:outputText value="#{msg.inqs_noLabel} " rendered="#{empty inquiryBean.inquiry.label}"/>

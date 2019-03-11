@@ -31,12 +31,18 @@
  */
 $(document).ready(function() {
 
+    var userId = $('#userIdDiv').text();
+    var base64Credentials = $('#base64CredentialsDiv').text();
+
     if ($('#archived-inquiries-table').length) {
         var archivedInquiriesTable = $('#archived-inquiries-table').DataTable( {
-            "ajax": function (data, callback, settings) {
-                callback(
-                    JSON.parse($('#archivedInquiriesDiv').text())
-                );
+            "ajax": {
+                "url": "../rest/inquiries/archived",
+                "type": "GET",
+                "beforeSend": function (request) {
+                    request.setRequestHeader('userid', parseInt(userId));
+                    request.setRequestHeader('Authorization', 'Basic' + base64Credentials.toString());
+                }
             },
             "columns": [
                 { "data": "name",

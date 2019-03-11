@@ -30,11 +30,17 @@
 $(document).ready(function() {
     if ($('#erroneous-inquiries-table').length) {
 
+        var userId = $('#userIdDiv').text();
+        var base64Credentials = $('#base64CredentialsDiv').text();
+
         var erroneousInquiriesTable = $('#erroneous-inquiries-table').DataTable( {
-            "ajax": function (data, callback, settings) {
-                callback(
-                    JSON.parse($('#erroneousInquiriesDiv').text())
-                );
+            "ajax": {
+                "url": "../rest/inquiries/erroneous",
+                "type": "GET",
+                "beforeSend": function (request) {
+                    request.setRequestHeader('userid', parseInt(userId));
+                    request.setRequestHeader('Authorization', 'Basic' + base64Credentials.toString());
+                }
             },
             "columns": [
                 { "data": "name",

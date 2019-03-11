@@ -24,8 +24,8 @@ public class StoreConnector {
 
   private static String storeUrl =
           ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL);
-  public static String lastUsername = "";
-  public static String lastPassword = "";
+    public static String authorizedUsername = "";
+    public static String authorizedPassword = "";
 
     private static final Logger logger = LogManager.getLogger(StoreConnector.class);
 
@@ -51,22 +51,22 @@ public class StoreConnector {
      * @param password used to create basic auth key or new user
      */
     public static void login(String username, String password) {
-        if (updateCredentials(
+        if (initAuthorizedCredentials(
                 username, password)) {
             return; // Exit: authorized and internally updated, User already exists in Store
         }
 
-        if (updateCredentials(
-                lastUsername,
-                lastPassword)) { // first log in after restart, last User already exists in Store
+        if (initAuthorizedCredentials(
+                authorizedUsername, authorizedPassword
+        )) { // first log in after restart, last User already exists in Store
             storeNewUser(username, password);
-            updateCredentials(username, password);
+            initAuthorizedCredentials(username, password);
             return; // Exit: new User created, authorized and internally updated
         }
 
         // User and last User are not authorized, try fallback. This should only happen at first
         // connection to new Store
-        if (updateCredentials(DEFAULT_USERNAME, DEFAULT_PASSWORD)) {
+        if (initAuthorizedCredentials(DEFAULT_USERNAME, DEFAULT_PASSWORD)) {
             if (username.equalsIgnoreCase(DEFAULT_USERNAME)) {
                 if (!password.equalsIgnoreCase(DEFAULT_PASSWORD)) {
                     changeUserPassword(DEFAULT_USERNAME, DEFAULT_PASSWORD, password);
@@ -74,14 +74,14 @@ public class StoreConnector {
                 } //if username and password default, first return was reached before
             }//if username different:
             storeNewUser(username, password);
-            deavtivateUser(DEFAULT_USERNAME);
-            updateCredentials(username, password); //if Store<4.2.7, lastUsername stays local_admin
+            deactivateUser(DEFAULT_USERNAME);
+            initAuthorizedCredentials(username, password); //if Store<4.2.7, authorizedUsername stays local_admin
             return;
         }
 
         // No Credentials authorized, abort.
         logger.error("Users: " +
-                DEFAULT_USERNAME + ", " + username + " and " + lastUsername + " could not authorize at " + storeUrl + " | Store version 4.2.6 or up? Try to login with a previously used User, edit or delete Store db manually");
+                DEFAULT_USERNAME + ", " + username + " and " + authorizedUsername + " could not authorize at " + storeUrl + " | Store version 4.2.6 or up? Try to login with a previously used User, edit or delete Store db manually");
     }
 
     /**
@@ -92,13 +92,13 @@ public class StoreConnector {
      * @param password used to create basic auth key
      * @return
      */
-    private static boolean updateCredentials(String username, String password) {
+    private static boolean initAuthorizedCredentials(String username, String password) {
         boolean authorizedToStore =
                 getResponse(new HttpGet(storeUrl + "/" + TEST_AUTH), username, password)
                         != Response.Status.UNAUTHORIZED.getStatusCode();
         if (authorizedToStore) { //Update internal credentials only if connection to Store established
-            lastUsername = username;
-            lastPassword = password;
+            authorizedUsername = username;
+            authorizedPassword = password;
             ApplicationBean.initLdmConnector(); // Update Auth Header in LdmClient
         }
         return authorizedToStore;
@@ -142,27 +142,26 @@ public class StoreConnector {
         }
     }
 
-  public static int deavtivateUser(String username) {
-    return saveOrUpdateUser(username, "", NOT_ACTIVATED, "");
+    public static void deactivateUser(String username) {
+        saveOrUpdateUser(username, "", NOT_ACTIVATED, "");
   }
 
-  public static int storeNewUser(String username, String password) {
-    return saveOrUpdateUser(username, password, ACTIVATED, password);
+    public static void storeNewUser(String username, String password) {
+        saveOrUpdateUser(username, password, ACTIVATED, password);
   }
 
-  public static int changeUserPassword(String username, String password, String newPassword) {
-      int responseCode = saveOrUpdateUser(username, password, ACTIVATED, newPassword);
-      updateCredentials(username, newPassword);
-      return responseCode;
+    public static void changeUserPassword(String username, String password, String newPassword) {
+        saveOrUpdateUser(username, password, ACTIVATED, newPassword);
+        initAuthorizedCredentials(username, newPassword);
   }
 
-  private static int saveOrUpdateUser(
+    private static void saveOrUpdateUser(
           String username, String password, String activated, String newPassword) {
     HttpPost httpPost = new HttpPost(storeUrl + "/" + SAVE_OR_UPDATE_USER);
     httpPost.setHeader("Username", username);
     httpPost.setHeader("Password", password);
     httpPost.setHeader("NewPassword", newPassword);
     httpPost.setHeader("Activated", activated);
-    return getResponse(httpPost, lastUsername, lastPassword);
+        getResponse(httpPost, authorizedUsername, authorizedPassword);
   }
 }
