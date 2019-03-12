@@ -67,6 +67,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A connector that handles all communication with the ID Manager
@@ -83,17 +84,64 @@ public class IdManagerConnector {
     private URL idManagerUrl;
     private RequestConfig requestConfig;
 
+    private final static int DEFAULT_SOCKET_TIMEOUT = 10000;
+    private final static int DEFAULT_CONNECT_TIMEOUT = 10000;
+    private final static int DEFAULT_CONNECTION_REQUEST_TIMEOUT = 10000;
+    private int maxNumberOfConnectionAttempts = 10;
+    private int timeToWaitInSecondsBetweenConnectionAttempts = 60;
+
     public IdManagerConnector() {
+
         try {
+
             idManagerUrl = SamplyShareUtils.stringToURL(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.ID_MANAGER_URL));
             httpConnector = ApplicationBean.getHttpConnector();
-            requestConfig = RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).setConnectionRequestTimeout(10000).build();
+
+            int socketTimout = getSocketTimeout();
+            int connectTimeout = getConnectTimeout();
+            int connectionRequestTimeout = getConnectionRequestTimeout();
+            maxNumberOfConnectionAttempts = getMaxNumberOfConnectionAttempts();
+            timeToWaitInSecondsBetweenConnectionAttempts = getTimeToWaitInSecondsBetweenConnectionAttempts();
+
+            requestConfig = RequestConfig.custom().setSocketTimeout(socketTimout).setConnectTimeout(connectTimeout).setConnectionRequestTimeout(connectionRequestTimeout).build();
             httpHost = SamplyShareUtils.getAsHttpHost(idManagerUrl);
             httpClient = httpConnector.getHttpClient(httpHost);
+
         } catch (MalformedURLException e) {
             logger.error("Could not initialize IdManagerConnector");
             throw new RuntimeException(e);
         }
+
+    }
+
+    private int getSocketTimeout(){
+        return getConfigValue(EnumConfiguration.ID_CONNECTOR_SOCKET_TIMEOUT, DEFAULT_SOCKET_TIMEOUT);
+    }
+
+    private int getConnectTimeout(){
+        return getConfigValue(EnumConfiguration.ID_CONNECTOR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT);
+    }
+
+    private int getConnectionRequestTimeout(){
+        return getConfigValue(EnumConfiguration.ID_CONNECTOR_CONNECTION_REQUEST_TIMEOUT, DEFAULT_CONNECTION_REQUEST_TIMEOUT);
+    }
+
+    private int getMaxNumberOfConnectionAttempts(){
+        return getConfigValue(EnumConfiguration.ID_CONNECTOR_MAX_NUMBER_OF_CONNECTION_ATTEMPTS, maxNumberOfConnectionAttempts);
+    }
+
+    private int getTimeToWaitInSecondsBetweenConnectionAttempts(){
+        return getConfigValue(EnumConfiguration.ID_CONNECTOR_TIME_TO_WAIT_IN_SECONDS_BETWEEN_CONNECTION_ATTEMPTS, timeToWaitInSecondsBetweenConnectionAttempts);
+    }
+
+    private int getConfigValue(EnumConfiguration enumConfiguration, int defaultConfiguration){
+
+        try{
+            return Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(enumConfiguration));
+        }catch (Exception e){
+            return defaultConfiguration;
+        }
+
     }
 
     /**
@@ -103,9 +151,9 @@ public class IdManagerConnector {
      * @return a map with local ids and their export ids
      */
     public HashMap<String, String> getExportIds(HashMap<String, IdObject> idObjectMap) throws IdManagerConnectorException {
-        HashMap<String, String> idMap = new HashMap<>();
+
         LinkedList<IdObject> idList = new LinkedList<>();
-        Gson gson = new Gson();
+
 
         idList.addAll(idObjectMap.values());
 
@@ -113,42 +161,100 @@ public class IdManagerConnector {
             throw new IdManagerConnectorException("id list is empty");
         }
 
-        try {
-            HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(idManagerUrl.getPath()) + EXPORT_ID_PATH);
-            httpPost.setConfig(requestConfig);
-            httpPost.setHeader("Accept", MediaType.APPLICATION_JSON);
-            httpPost.setHeader("Content-type", MediaType.APPLICATION_JSON);
-
-            httpPost.setEntity(new StringEntity(gson.toJson(idList), ContentType.APPLICATION_JSON));
-            CloseableHttpResponse response = httpClient.execute(httpHost, httpPost);
-
-            int statusCode = response.getStatusLine().getStatusCode();
-            HttpEntity entity = response.getEntity();
-
-            if (statusCode >= 400) {
-                throw new IdManagerConnectorException("Got an error from ID Management: " + response.getStatusLine());
-            }
-
-            String json_string = EntityUtils.toString(entity, Consts.UTF_8);
-            logger.debug(json_string);
-            JSONArray jsonArray = new JSONArray(json_string);
-            List<String> exportIds = new ArrayList<>();
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                exportIds.add(jsonArray.getString(i));
-            }
-
-            Iterator<Map.Entry<String, IdObject>> localIdIterator = idObjectMap.entrySet().iterator();
-
-            for (String thisExportId : exportIds) {
-                Map.Entry<String, IdObject> next = localIdIterator.next();
-                idMap.put(next.getKey(), thisExportId);
-            }
-            return idMap;
-        } catch (IOException | JSONException e) {
-            throw new IdManagerConnectorException(e);
-        }
+        return getExportIdsWithMaxNumberOfConnectionAttempts(idList, idObjectMap);
     }
+
+    private HashMap<String, String> getExportIdsWithMaxNumberOfConnectionAttempts(LinkedList<IdObject> idList, HashMap<String, IdObject> idObjectMap) throws IdManagerConnectorException {
+        return getExportIds(idList, idObjectMap, 0);
+    }
+
+    private HashMap<String, String> getExportIds (LinkedList<IdObject> idList, HashMap<String, IdObject> idObjectMap, int numberOfConnectionAttempt) throws IdManagerConnectorException {
+
+        try {
+
+            return getExportIds (idList, idObjectMap);
+
+        } catch (IdManagerConnectorException e) {
+
+            if (numberOfConnectionAttempt < maxNumberOfConnectionAttempts){
+
+                e.printStackTrace();
+                sleepBetweenConnectionAttempts();
+                logger.debug("Getting export ids: Attempt "+ numberOfConnectionAttempt);
+                return getExportIds(idList, idObjectMap, numberOfConnectionAttempt++);
+
+            }else{
+                throw e;
+            }
+
+        }
+
+    }
+
+    private void sleepBetweenConnectionAttempts(){
+
+        try {
+            TimeUnit.SECONDS.sleep(timeToWaitInSecondsBetweenConnectionAttempts);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private HashMap<String, String> getExportIds (LinkedList<IdObject> idList, HashMap<String, IdObject> idObjectMap) throws IdManagerConnectorException {
+
+            try {
+                return getExportIds_WithoutExceptionManagement(idList, idObjectMap);
+            }  catch (IOException e) {
+                throw new IdManagerConnectorException(e);
+            } catch (JSONException e) {
+                throw new IdManagerConnectorException(e);
+            }
+
+    }
+
+
+    private HashMap<String, String> getExportIds_WithoutExceptionManagement (LinkedList<IdObject> idList, HashMap<String, IdObject> idObjectMap) throws IdManagerConnectorException, IOException, JSONException {
+
+        HashMap<String, String> idMap = new HashMap<>();
+
+        HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(idManagerUrl.getPath()) + EXPORT_ID_PATH);
+        httpPost.setConfig(requestConfig);
+        httpPost.setHeader("Accept", MediaType.APPLICATION_JSON);
+        httpPost.setHeader("Content-type", MediaType.APPLICATION_JSON);
+
+
+
+        httpPost.setEntity(new StringEntity((new Gson()).toJson(idList), ContentType.APPLICATION_JSON));
+        CloseableHttpResponse response = httpClient.execute(httpHost, httpPost);
+
+        int statusCode = response.getStatusLine().getStatusCode();
+        HttpEntity entity = response.getEntity();
+
+        if (statusCode >= 400) {
+            throw new IdManagerConnectorException("Got an error from ID Management: " + response.getStatusLine());
+        }
+
+        String json_string = EntityUtils.toString(entity, Consts.UTF_8);
+        logger.debug(json_string);
+        JSONArray jsonArray = new JSONArray(json_string);
+        List<String> exportIds = new ArrayList<>();
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            exportIds.add(jsonArray.getString(i));
+        }
+
+        Iterator<Map.Entry<String, IdObject>> localIdIterator = idObjectMap.entrySet().iterator();
+
+        for (String thisExportId : exportIds) {
+            Map.Entry<String, IdObject> next = localIdIterator.next();
+            idMap.put(next.getKey(), thisExportId);
+        }
+
+        return idMap;
+
+    }
+
 
     /**
      * Get version information

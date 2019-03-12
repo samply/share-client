@@ -1,2 +1,2 @@
 INSERT INTO samply.configuration(name, setting, visible) values('QUALITY_REPORT_GENERAL_REHEARSAL_PRIORITATION_FILE', 'general_rehearsal_priorization.csv', false);
-INSERT INTO samply.configuration(name, setting, visible) values('EXPORT_MDR_BLACKLIST', 'urn:dktk:dataelement:43:*;urn:dktk:dataelement:45:*;urn:dktk:dataelement:46:*;urn:dktk:dataelement:54:*', false);
+INSERT INTO samply.configuration(name, setting, visible) values('EXPORT_MDR_BLACKLIST', 'urn:dktk:dataelement:43:*;urn:dktk:dataelement:45:*;urn:dktk:dataelement:46:*;urn:dktk:dataelement:54:*;urn:dktk:dataelement:84:*;urn:dktk:dataelement:47:*;urn:dktk:dataelement:41:*;urn:dktk:dataelement:71:* ', false);

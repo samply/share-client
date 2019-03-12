@@ -144,7 +144,7 @@ public class UploadUtil {
                         UploadStatusType.US_NEW,
                         UploadStatusType.US_QUERY_POSTED,
                         UploadStatusType.US_QUERY_READY,
-                        UploadStatusType.US_UPLOADING))
+                        UploadStatusType.US_UPLOADING)).orderBy(de.samply.share.client.model.db.tables.Upload.UPLOAD.TRIGGERED_BY.desc()).limit(1)
                 .fetchOneInto(Upload.class);
     }
 }
