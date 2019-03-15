@@ -68,7 +68,7 @@
         <common-ldmclient.samplystore.version>4.0.1</common-ldmclient.samplystore.version>
         <common-ldmclient.samplystore.biobank.version>1.1.1</common-ldmclient.samplystore.biobank.version>
         <common-ldmclient.samplystore.fhir.version>1.0.0-SNAPSHOT</common-ldmclient.samplystore.fhir.version>
-        <converter.dktk.patient.version>1.1.6-SNAPSHOT</converter.dktk.patient.version> <!-- TODO: Replace release -->
+        <converter.dktk.patient.version>1.1.6</converter.dktk.patient.version> <!-- TODO: Replace release -->
 
         <!-- general dependencies -->
         <version.flyway>4.2.0</version.flyway>
@@ -528,18 +528,7 @@
             <artifactId>share-dto</artifactId>
             <version>4.1.1-SNAPSHOT</version>
         </dependency>
+
     </dependencies>
-    <repositories>
-        <repository>
-            <id>samply-maven-oss-releases</id>
-            <name>Samply Maven Builds</name>
-            <url>https://maven.samply.de/nexus/content/repositories/oss-releases</url>
-        </repository>
-        <repository>
-            <id>samply-maven-oss-snapshots</id>
-            <name>Samply Maven Builds</name>
-            <url>https://maven.samply.de/nexus/content/repositories/oss-snapshots</url>
-        </repository>
-    </repositories>
 
 </project>
