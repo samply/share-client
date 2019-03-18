@@ -6,8 +6,8 @@ urn:adt:dataelement:103:1	PAT_DATEOFDEATH
 urn:adt:dataelement:104:1	PAT_TUMOURDEATH
 urn:adt:dataelement:105:1	DEATH_ICDCODE
 urn:adt:dataelement:106:1	DEATH_ICDTEXT
-urn:dktk:dataelement:108:b2146df914b	NOT_MAPPED
-urn:dktk:dataelement:109:2018-04-17 14:10:15	NOT_MAPPED
+urn:dktk:dataelement:108:bug/ver-88	NOT_MAPPED
+urn:dktk:dataelement:109:2019-03-04 13:47:57	NOT_MAPPED
 urn:adt:dataelement:109:1	DIAG_DIAGNOSISCODE
 urn:adt:dataelement:110:2	SYSADV_GRADE
 urn:dktk:dataelement:18:2	TNM_VERSION
