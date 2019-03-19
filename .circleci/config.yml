@@ -14,7 +14,7 @@ jobs:
     steps:
       - checkout
 
-      - run: mvn -B package
+      - run: mvn -B install -Psamply
 
       - setup_remote_docker
       - run: docker build -t martinbreu/samply-connector:latest .

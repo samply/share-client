@@ -2,8 +2,8 @@
 <Context path="/">
     <Resource name="jdbc/postgres" auth="Container"
               type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
-              url="jdbc:postgresql://localhost:5432/samply.connector"
-              username="samply" password="samply" maxTotal="100" maxIdle="30"
+              url="${database.url}"
+              username="${database.username}" password="${database.password}" maxTotal="100" maxIdle="30"
               maxWaitMillis="30000" removeAbandonedOnBorrow="true" removeAbandonedOnMaintenance="true" removeAbandonedTimeout="120" logAbandoned="true"
               testOnBorrow="true" validationQuery="select 1"/>
 </Context>
