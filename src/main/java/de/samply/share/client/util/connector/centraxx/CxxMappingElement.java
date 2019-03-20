@@ -34,7 +34,7 @@ import java.util.Set;
 public class CxxMappingElement {
 
     private MdrIdDatatype mdrId;
-    private String cxxName;
+    private String mdrName;
     private String teilerBaseViewColumn;
     private Map<String, Set<String>> mdrValue_cxxValue_Map = new HashMap<>();
 
@@ -46,12 +46,12 @@ public class CxxMappingElement {
         this.mdrId = mdrIdDatatype;
     }
 
-    public String getCxxName() {
-        return cxxName;
+    public String getMdrName() {
+        return mdrName;
     }
 
-    public void setCxxName(String cxxName) {
-        this.cxxName = cxxName;
+    public void setMdrName(String mdrName) {
+        this.mdrName = mdrName;
     }
 
     public String getTeilerBaseViewColumn() {

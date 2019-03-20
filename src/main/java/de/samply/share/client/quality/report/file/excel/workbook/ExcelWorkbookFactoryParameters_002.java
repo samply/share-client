@@ -24,7 +24,7 @@ package de.samply.share.client.quality.report.file.excel.workbook;/*
  * permission to convey the resulting work.
  */
 
-import de.samply.share.client.quality.report.MdrIgnoredElements;
+import de.samply.share.client.quality.report.MdrMappedElements;
 import de.samply.share.client.quality.report.dktk.DktkId_MdrId_Converter;
 import de.samply.share.client.quality.report.file.excel.instances.patientids.PatientDktkIdsExcelRowContextFactory;
 import de.samply.share.client.quality.report.file.excel.instances.patientids.PatientLocalIdsExcelRowContextFactory;
@@ -42,7 +42,7 @@ public class ExcelWorkbookFactoryParameters_002 {
     private DktkId_MdrId_Converter dktkIdManager;
     private PatientLocalIdsExcelRowContextFactory patientLocalIdsExcelRowContextFactory;
     private PatientDktkIdsExcelRowContextFactory patientDktkIdsExcelRowContextFactory;
-    private MdrIgnoredElements mdrIgnoredElements;
+    private MdrMappedElements mdrMappedElements;
     private ExcelRowContextFactory_002 excelRowContextFactory;
     private DataElementStats_ExcelRowContextFactory dataElementStats_excelRowContextFactory;
 
@@ -95,14 +95,6 @@ public class ExcelWorkbookFactoryParameters_002 {
         this.patientDktkIdsExcelRowContextFactory = patientDktkIdsExcelRowContextFactory;
     }
 
-    public MdrIgnoredElements getMdrIgnoredElements() {
-        return mdrIgnoredElements;
-    }
-
-    public void setMdrIgnoredElements(MdrIgnoredElements mdrIgnoredElements) {
-        this.mdrIgnoredElements = mdrIgnoredElements;
-    }
-
     public ExcelRowContextFactory_002 getExcelRowContextFactory() {
         return excelRowContextFactory;
     }
@@ -117,6 +109,14 @@ public class ExcelWorkbookFactoryParameters_002 {
 
     public void setDataElementStats_excelRowContextFactory(DataElementStats_ExcelRowContextFactory dataElementStats_excelRowContextFactory) {
         this.dataElementStats_excelRowContextFactory = dataElementStats_excelRowContextFactory;
+    }
+
+    public MdrMappedElements getMdrMappedElements() {
+        return mdrMappedElements;
+    }
+
+    public void setMdrMappedElements(MdrMappedElements mdrMappedElements) {
+        this.mdrMappedElements = mdrMappedElements;
     }
 
 }

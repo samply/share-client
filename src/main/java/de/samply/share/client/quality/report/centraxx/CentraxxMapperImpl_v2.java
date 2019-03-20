@@ -50,7 +50,7 @@ public class CentraxxMapperImpl_v2 implements CentraxxMapper {
     public String getCentraXxAttribute(MdrIdDatatype mdrId) {
 
         CxxMappingElement cxxMappingElement = mdrMappedElements.getCxxMappingElement(mdrId);
-        return (cxxMappingElement != null) ? cxxMappingElement.getCxxName() : null;
+        return (cxxMappingElement != null) ? cxxMappingElement.getTeilerBaseViewColumn() : null;
 
     }
 

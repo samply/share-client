@@ -26,6 +26,7 @@ package de.samply.share.client.quality.report.file.excel.workbook;/*
 
 
 import de.samply.share.client.quality.report.MdrIgnoredElements;
+import de.samply.share.client.quality.report.MdrMappedElements;
 import de.samply.share.client.quality.report.dktk.DktkId_MdrId_Converter;
 import de.samply.share.client.quality.report.file.excel.instances.patientids.PatientDktkIdsExcelRowContextFactory;
 import de.samply.share.client.quality.report.file.excel.instances.patientids.PatientLocalIdsExcelRowContextFactory;
@@ -63,7 +64,7 @@ public class ExcelWorkbookFactoryImpl_002 implements ExcelWorkbookFactory {
     private ExplanatoryExcelSheetFactory explanatoryExcelSheetFactory;
     private ModelSearcher modelSearcher;
     private DktkId_MdrId_Converter dktkIdManager;
-    private MdrIgnoredElements mdrIgnoredElements;
+    private MdrMappedElements mdrMappedElements;
 
     public final static String allElements_sheetTitle = "all elements";
     public final static String filteredElements_sheetTitle = "filtered elements";
@@ -89,7 +90,7 @@ public class ExcelWorkbookFactoryImpl_002 implements ExcelWorkbookFactory {
         this.excelRowContextFactory = parameters.getExcelRowContextFactory();
         this.dataElementStats_excelRowContextFactory = parameters.getDataElementStats_excelRowContextFactory();
 
-        this.mdrIgnoredElements = parameters.getMdrIgnoredElements();
+        this.mdrMappedElements = parameters.getMdrMappedElements();
 
     }
 
@@ -135,7 +136,7 @@ public class ExcelWorkbookFactoryImpl_002 implements ExcelWorkbookFactory {
     }
 
     private QualityResultsStatistics getQualityResultStatistics (QualityResults qualityResults){
-        return new QualityResultsStatisticsImpl(qualityResults, mdrIgnoredElements);
+        return new QualityResultsStatisticsImpl(qualityResults, mdrMappedElements);
     }
 
     private XSSFWorkbook addSheet (XSSFWorkbook workbook, String sheetTitle, QualityResults qualityResults) throws ExcelWorkbookFactoryException {

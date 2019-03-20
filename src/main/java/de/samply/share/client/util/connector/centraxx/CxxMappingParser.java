@@ -76,7 +76,7 @@ public class CxxMappingParser {
         String teilerBaseViewColumn = getStringOfJsonObject(jsonObject, CxxConstants.TEILER_BASE_VIEW_COLUMN);
         MdrIdDatatype mdrId = getMdrId(jsonObject);
 
-        cxxMappingElement.setCxxName(cxxName);
+        cxxMappingElement.setMdrName(cxxName);
         cxxMappingElement.setTeilerBaseViewColumn(teilerBaseViewColumn);
         cxxMappingElement.setMdrId(mdrId);
 

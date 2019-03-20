@@ -28,7 +28,6 @@ import de.samply.common.http.HttpConnector;
 import de.samply.common.mdrclient.MdrClient;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
-import de.samply.share.client.quality.report.MdrIgnoredElements;
 import de.samply.share.client.quality.report.centraxx.CentraxxMapperException;
 import de.samply.share.client.quality.report.centraxx.CentraxxMapperImpl;
 import de.samply.share.client.quality.report.dktk.DktkId_MdrId_Converter;
@@ -78,7 +77,7 @@ public class ExcelTest {
         IdPathManager_002 idPathManager = new IdPathManager_002();
         qualityFileManager = new CsvQualityReportFileManager(new QualityResultCsvLineManager_002(), idPathManager);
 
-        ExcelPattern excelPattern = new ExcelPattern_002(model, mdrClient, new CentraxxMapperImpl(), dktkIdManager, new MdrIgnoredElements());
+        ExcelPattern excelPattern = new ExcelPattern_002(model, mdrClient, new CentraxxMapperImpl(), dktkIdManager, null);
         excelQualityFileManager = new ExcelQualityReportFileManager(excelPattern, idPathManager);
 
     }

@@ -169,7 +169,7 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
 
     private void setExcelQualityReportFileManager(Model model, MdrClient mdrClient, CentraxxMapper centraXxMapper, DktkId_MdrId_Converter dktkIdManager){
 
-        ExcelPattern excelPattern = new ExcelPattern_002(model, mdrClient, centraXxMapper, dktkIdManager, ignoredElements);
+        ExcelPattern excelPattern = new ExcelPattern_002(model, mdrClient, centraXxMapper, dktkIdManager, mdrMappedElements);
         ExcelQualityReportFileManager excelQualityReportFileManager = new ExcelQualityReportFileManager(excelPattern, idPathManager);
         setExcelQualityReportFileManager(excelQualityReportFileManager);
 

@@ -109,7 +109,7 @@ public class FromToViewsCreator implements ViewsCreator{
     }
 
     private boolean isSameMdrId(MdrIdDatatype m1, MdrIdDatatype m2){
-        return m1 != null && m2!= null && m1.getId().equals(m2.getId()) && m1.getNamespace().equals(m2.getNamespace()) && m1.getDatatype().equals(m2.getDatatype());
+        return m1 != null && m2!= null && m1.getMajor().equalsIgnoreCase(m2.getMajor());
     }
 
 
