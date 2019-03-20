@@ -31,7 +31,7 @@ import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.common.mdrclient.MdrInvalidResponseException;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
-import de.samply.share.client.quality.report.centraxx.CentraXxMapperException;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapperException;
 import de.samply.share.client.quality.report.chain.factory.ChainFactoryException;
 import de.samply.share.client.quality.report.file.csvline.manager.QualityResultCsvLineManager_002;
 import de.samply.share.client.quality.report.file.excel.workbook.ExcelWorkbookFactoryException;
@@ -61,7 +61,7 @@ public class ValidatorTest {
     private QualityResultsValidator qualityResultsValidator;
 
 
-    public ValidatorTest() throws CentraXxMapperException, MdrConnectionFactoryException, ChainFactoryException {
+    public ValidatorTest() throws CentraxxMapperException, MdrConnectionFactoryException, ChainFactoryException {
 
         IdPathManager_002 idPathManager = new IdPathManager_002();
         qualityFileManager = new CsvQualityReportFileManager(new QualityResultCsvLineManager_002(), idPathManager);

@@ -27,14 +27,15 @@ package de.samply.share.client.quality.report.views.fromto;/*
 
 
 import de.samply.share.client.model.EnumConfiguration;
-import de.samply.share.client.quality.report.MdrIdAndValidations;
 import de.samply.share.client.quality.report.MdrIgnoredElements;
+import de.samply.share.client.quality.report.MdrMappedElements;
+import de.samply.share.common.utils.MdrIdDatatype;
+import de.samply.share.model.common.*;
+import de.samply.share.client.quality.report.MdrIdAndValidations;
 import de.samply.share.client.quality.report.model.Model;
 import de.samply.share.client.quality.report.views.ViewsCreator;
 import de.samply.share.client.quality.report.views.fromto.scheduler.ViewFromToScheduler;
 import de.samply.share.client.util.db.ConfigurationUtil;
-import de.samply.share.common.utils.MdrIdDatatype;
-import de.samply.share.model.common.*;
 
 import javax.xml.bind.JAXBElement;
 import java.io.Serializable;
@@ -48,6 +49,7 @@ public class FromToViewsCreator implements ViewsCreator{
     private ViewFromToScheduler viewFromToScheduler;
     private ObjectFactory objectFactory = new ObjectFactory();
     private MdrIgnoredElements ignoredElements;
+    private MdrMappedElements mdrMappedElements;
 
     public FromToViewsCreator(ViewFromToScheduler viewFromToScheduler) {
         this.viewFromToScheduler = viewFromToScheduler;
@@ -85,7 +87,7 @@ public class FromToViewsCreator implements ViewsCreator{
 
         for (MdrIdAndValidations mdrIdAndValidations : model.getMdrIdAndValidations()) {
 
-            if (!isIgnoredElement(mdrIdAndValidations.getMdrId())) {
+            if (!isIgnoredElement(mdrIdAndValidations.getMdrId()) && isMappedElement(mdrIdAndValidations.getMdrId())) {
 
                 String mdrKey = getMdrKey(mdrIdAndValidations.getMdrId());
                 viewFields.getMdrKey().add(mdrKey);
@@ -98,8 +100,12 @@ public class FromToViewsCreator implements ViewsCreator{
 
     }
 
+    private boolean isMappedElement (MdrIdDatatype mdrId){
+        return (mdrMappedElements != null) ? mdrMappedElements.isMapped(mdrId) : true;
+    }
+
     private boolean isIgnoredElement (MdrIdDatatype mdrId){
-        return ignoredElements.isIgnored(mdrId);
+        return (ignoredElements != null) ? ignoredElements.isIgnored(mdrId) : false;
     }
 
     private boolean isSameMdrId(MdrIdDatatype m1, MdrIdDatatype m2){
@@ -187,4 +193,9 @@ public class FromToViewsCreator implements ViewsCreator{
     public void setIgnoredElements(MdrIgnoredElements ignoredElements) {
         this.ignoredElements = ignoredElements;
     }
+
+    public void setMdrMappedElements(MdrMappedElements mdrMappedElements) {
+        this.mdrMappedElements = mdrMappedElements;
+    }
+
 }

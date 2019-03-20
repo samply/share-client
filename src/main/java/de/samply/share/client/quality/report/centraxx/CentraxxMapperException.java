@@ -24,17 +24,17 @@ package de.samply.share.client.quality.report.centraxx;/*
 * permission to convey the resulting work.
 */
 
-public class CentraXxMapperException extends Exception {
+public class CentraxxMapperException extends Exception {
 
-    public CentraXxMapperException(String message) {
+    public CentraxxMapperException(String message) {
         super(message);
     }
 
-    public CentraXxMapperException(String message, Throwable cause) {
+    public CentraxxMapperException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public CentraXxMapperException(Throwable cause) {
+    public CentraxxMapperException(Throwable cause) {
         super(cause);
     }
 

@@ -34,9 +34,10 @@ import de.samply.common.mdrclient.MdrInvalidResponseException;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.MdrIgnoredElements;
-import de.samply.share.client.quality.report.centraxx.CentraXxMapper;
-import de.samply.share.client.quality.report.centraxx.CentraXxMapperException;
-import de.samply.share.client.quality.report.centraxx.CentraXxMapperImpl;
+import de.samply.share.client.quality.report.MdrMappedElements;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapperException;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapper;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapperImpl_v2;
 import de.samply.share.client.quality.report.chain.Chain;
 import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
 import de.samply.share.client.quality.report.chainlinks.statistics.factory.ChainLinkStatisticsFactory;
@@ -69,6 +70,7 @@ import de.samply.share.client.quality.report.views.ViewsCreator;
 import de.samply.share.client.quality.report.views.fromto.FromToViewsCreator;
 import de.samply.share.client.quality.report.views.fromto.scheduler.ViewFromToScheduler;
 import de.samply.share.client.quality.report.views.fromto.scheduler.ViewFromToSchedulerFactory;
+import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.QueryValidator;
@@ -79,7 +81,7 @@ import java.util.concurrent.ExecutionException;
 public class QualityReportChainFactory_002 extends QualityReportChainFactory {
 
     private ViewFromToSchedulerFactory viewFromToSchedulerFactory = new ViewFromToSchedulerFactory();
-    private CentraXxMapper centraXxMapper;
+    private CentraxxMapper centraXxMapper;
     private IdPathManager_002 idPathManager;
 
 
@@ -89,6 +91,7 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
 
 
         MdrIgnoredElements ignoredElements = getIgnoredDataelements();
+        MdrMappedElements mdrMappedElements = createMdrMappedElements();
         ModelReader modelReader = new QualityReportModelReaderImpl();
         MdrConnectionFactory mdrConnectionFactory = createMdrConnectionFactory();
         MDRValidator dthValidator = createMDRValidator(mdrConnectionFactory);
@@ -111,11 +114,13 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
         ViewFromToScheduler viewFromToScheduler = viewFromToSchedulerFactory.createViewFromToScheduler();
         ViewsCreator viewsCreator = new FromToViewsCreator(viewFromToScheduler);
         ((FromToViewsCreator)viewsCreator).setIgnoredElements(ignoredElements);
+        ((FromToViewsCreator)viewsCreator).setMdrMappedElements(mdrMappedElements);
 
-        this.centraXxMapper = createCentraXxMapper();
+        this.centraXxMapper = createCentraXxMapper(mdrMappedElements);
 
 
         setIgnoredElements(ignoredElements);
+        setMdrMappedElements(mdrMappedElements);
         setMaxAttempts();
         setModelReader(modelReader);
         setQualityResultsValidator(qualityResultsValidator);
@@ -129,6 +134,13 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
         setChainLinkStatisticsFactory(chainLinkStatisticsFactory);
         setChainFinalizer(chainFinalizer);
 
+
+    }
+
+    private MdrMappedElements createMdrMappedElements (){
+
+        LdmConnector ldmConnector = ApplicationBean.getLdmConnector();
+        return new MdrMappedElements(ldmConnector);
 
     }
 
@@ -155,7 +167,7 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
         return super.create(fileId, model);
     }
 
-    private void setExcelQualityReportFileManager(Model model, MdrClient mdrClient, CentraXxMapper centraXxMapper, DktkId_MdrId_Converter dktkIdManager){
+    private void setExcelQualityReportFileManager(Model model, MdrClient mdrClient, CentraxxMapper centraXxMapper, DktkId_MdrId_Converter dktkIdManager){
 
         ExcelPattern excelPattern = new ExcelPattern_002(model, mdrClient, centraXxMapper, dktkIdManager, ignoredElements);
         ExcelQualityReportFileManager excelQualityReportFileManager = new ExcelQualityReportFileManager(excelPattern, idPathManager);
@@ -163,10 +175,10 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
 
     }
 
-    private CentraXxMapper createCentraXxMapper () throws ChainFactoryException {
+    private CentraxxMapper createCentraXxMapper (MdrMappedElements mdrMappedElements) throws ChainFactoryException {
         try {
-            return new CentraXxMapperImpl();
-        } catch (CentraXxMapperException e) {
+            return new CentraxxMapperImpl_v2(mdrMappedElements);
+        } catch (CentraxxMapperException e) {
             throw new ChainFactoryException(e);
         }
     }

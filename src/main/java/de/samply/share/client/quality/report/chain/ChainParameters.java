@@ -25,6 +25,7 @@ package de.samply.share.client.quality.report.chain;/*
 */
 
 import de.samply.share.client.quality.report.MdrIgnoredElements;
+import de.samply.share.client.quality.report.MdrMappedElements;
 import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
 import de.samply.share.client.quality.report.chainlinks.statistics.factory.ChainLinkStatisticsFactory;
 import de.samply.share.client.quality.report.chainlinks.timer.factory.ChainLinkTimerFactory;
@@ -51,6 +52,7 @@ public class ChainParameters {
     private QualityResultsValidator qualityResultsValidator;
     private QualityResultsAnalyzer qualityResultsAnalyzer;
     private MdrIgnoredElements ignoredElements;
+    private MdrMappedElements mdrMappedElements;
     private QualityReportMetadataFileManager qualityReportMetadataFileManager;
     private ChainLinkStatisticsFactory chainLinkStatisticsFactory;
     private ChainFinalizer chainFinalizer;
@@ -166,6 +168,14 @@ public class ChainParameters {
 
     public void setChainFinalizer(ChainFinalizer chainFinalizer) {
         this.chainFinalizer = chainFinalizer;
+    }
+
+    public MdrMappedElements getMdrMappedElements() {
+        return mdrMappedElements;
+    }
+
+    public void setMdrMappedElements(MdrMappedElements mdrMappedElements) {
+        this.mdrMappedElements = mdrMappedElements;
     }
 
 }

@@ -24,7 +24,7 @@ package de.samply.share.client.quality.report.file.excel.instances.statistics.ta
  * permission to convey the resulting work.
  */
 
-import de.samply.share.client.quality.report.centraxx.CentraXxMapper;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapper;
 import de.samply.share.client.quality.report.dktk.DktkId_MdrId_Converter;
 import de.samply.share.client.quality.report.file.excel.row.mapper.ExcelRowMapperUtils;
 import de.samply.share.client.quality.report.results.QualityResults;
@@ -36,7 +36,7 @@ public class Table2_ExcelRowContextFactory {
     private Table2_ExcelRowMapper excelRowMapper;
 
 
-    public Table2_ExcelRowContextFactory(ExcelRowMapperUtils excelRowMapperUtils, DktkId_MdrId_Converter dktkIdManager, CentraXxMapper centraXxMapper) {
+    public Table2_ExcelRowContextFactory(ExcelRowMapperUtils excelRowMapperUtils, DktkId_MdrId_Converter dktkIdManager, CentraxxMapper centraXxMapper) {
 
         this.excelRowMapper = new Table2_ExcelRowMapper(dktkIdManager, excelRowMapperUtils, centraXxMapper);
 

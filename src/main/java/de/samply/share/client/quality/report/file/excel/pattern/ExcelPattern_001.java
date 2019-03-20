@@ -26,7 +26,7 @@ package de.samply.share.client.quality.report.file.excel.pattern;/*
 
 import de.samply.common.mdrclient.MdrClient;
 import de.samply.share.client.quality.report.MdrIgnoredElements;
-import de.samply.share.client.quality.report.centraxx.CentraXxMapper;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapper;
 import de.samply.share.client.quality.report.dktk.DktkId_MdrId_Converter;
 import de.samply.share.client.quality.report.file.excel.cell.reference.FirstRowCellReferenceFactoryForOneSheet;
 import de.samply.share.client.quality.report.file.excel.instances.patientids.PatientDktkIdsExcelRowContextFactory;
@@ -54,13 +54,13 @@ public class ExcelPattern_001 implements ExcelPattern{
 
     private Model model;
     private MdrClient mdrClient;
-    private CentraXxMapper centraXxMapper;
+    private CentraxxMapper centraXxMapper;
     private DktkId_MdrId_Converter dktkIdManager;
     private MdrIgnoredElements ignoredElements;
     private ExcelRowMapperUtils excelRowMapperUtils;
 
 
-    public ExcelPattern_001(Model model, MdrClient mdrClient, CentraXxMapper centraXxMapper, DktkId_MdrId_Converter dktkIdManager, MdrIgnoredElements ignoredElements) {
+    public ExcelPattern_001(Model model, MdrClient mdrClient, CentraxxMapper centraXxMapper, DktkId_MdrId_Converter dktkIdManager, MdrIgnoredElements ignoredElements) {
 
         this.model = model;
         this.mdrClient = mdrClient;

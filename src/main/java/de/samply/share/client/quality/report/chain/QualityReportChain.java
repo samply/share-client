@@ -26,6 +26,7 @@ package de.samply.share.client.quality.report.chain;/*
 
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.MdrIgnoredElements;
+import de.samply.share.client.quality.report.MdrMappedElements;
 import de.samply.share.client.quality.report.chain.factory.QualityReportChainException;
 import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
 import de.samply.share.client.quality.report.chainlinks.ChainLink;
@@ -91,6 +92,7 @@ public class QualityReportChain implements Chain {
         QualityResultsValidator qualityResultsValidator = chainParameters.getQualityResultsValidator();
         QualityResultsAnalyzer qualityResultsAnalyzer = chainParameters.getQualityResultsAnalyzer();
         MdrIgnoredElements ignoredElements = chainParameters.getIgnoredElements();
+        MdrMappedElements mdrMappedElements = chainParameters.getMdrMappedElements();
         QualityReportMetadataFileManager qualityReportMetadataFileManager = chainParameters.getQualityReportMetadataFileManager();
         chainLinkStatisticsFactory = chainParameters.getChainLinkStatisticsFactory();
         ChainFinalizer chainFinalizer = chainParameters.getChainFinalizer();

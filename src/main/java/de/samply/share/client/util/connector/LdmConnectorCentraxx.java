@@ -45,8 +45,11 @@ import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
+import de.samply.share.client.quality.report.MdrMappedElements;
 import de.samply.share.client.util.MdrUtils;
 import de.samply.share.client.util.Utils;
+import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
+import de.samply.share.client.util.connector.centraxx.CxxMappingParser;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.CredentialsUtil;
@@ -99,6 +102,8 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     private CloseableHttpClient httpClient;
     private String centraxxBaseUrl;
     private HttpHost centraxxHost;
+    private CxxMappingParser cxxMappingParser = new CxxMappingParser();
+    private MdrMappedElements mdrMappedElements;
 
     public LdmConnectorCentraxx() {
         try {
@@ -184,9 +189,11 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
             if (includeAdditionalViewfields && !SamplyShareUtils.isNullOrEmpty(additionalViewfields)) {
                 List<String> viewFieldList = Splitter.on(';').splitToList(additionalViewfields);
                 for (String viewField : viewFieldList) {
-                    viewFields.getMdrKey().add(viewField);
+                        viewFields.getMdrKey().add(viewField);
                 }
             }
+
+            viewFields = filterNotExistentMdrIdsInViewFields(viewFields);
 
             view.setViewFields(viewFields);
             if (!SamplyShareUtils.isNullOrEmpty(removeKeysFromView)) {
@@ -196,6 +203,34 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
         } catch (MdrConnectionException | ExecutionException | LdmClientException e) {
             throw new LDMConnectorException(e);
         }
+    }
+
+    private ViewFields filterNotExistentMdrIdsInViewFields (ViewFields viewFields){
+
+        if (viewFields != null){
+
+            List<String> mdrKeyList = viewFields.getMdrKey();
+            if (mdrKeyList != null){
+
+                MdrMappedElements mdrMappedElements = getMdrMappedElements();
+
+                List<String> filteredMdrKeyList = new ArrayList<>();
+                filteredMdrKeyList.addAll(mdrKeyList);
+
+                for (String mdrId : filteredMdrKeyList){
+                    if (!mdrMappedElements.isMapped(mdrId)){
+                        mdrKeyList.remove(mdrId);
+                    }
+                }
+
+
+            }
+
+
+        }
+
+        return viewFields;
+
     }
 
     /**
@@ -614,6 +649,44 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
             logger.warn("Exception caught while trying to get centraxx mapping date", e);
             return "undefined";
         }
+    }
+
+    public List<CxxMappingElement> getMapping (){
+
+        HttpGet httpGet = new HttpGet(centraxxBaseUrl + "rest/teiler/mapping");
+        httpGet.addHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
+
+        return getMapping(httpGet);
+
+    }
+
+    private MdrMappedElements getMdrMappedElements(){
+
+        if (mdrMappedElements == null){
+            mdrMappedElements = new MdrMappedElements(this);
+        }
+
+        return mdrMappedElements;
+
+    }
+
+    private List<CxxMappingElement> getMapping (HttpGet httpGet){
+
+        try (CloseableHttpResponse response = httpClient.execute(centraxxHost, httpGet)) {
+
+            HttpEntity entity = response.getEntity();
+            String  cxxMapping = EntityUtils.toString(entity, "UTF-8");
+            EntityUtils.consume(entity);
+
+            return cxxMappingParser.parse(cxxMapping);
+
+        } catch (Exception e) {
+
+            logger.warn("Exception caught while trying to get centraxx mapping", e);
+            return new ArrayList<>();
+
+        }
+
     }
 
     /**

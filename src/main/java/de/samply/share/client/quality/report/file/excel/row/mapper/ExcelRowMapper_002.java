@@ -25,7 +25,7 @@ package de.samply.share.client.quality.report.file.excel.row.mapper;/*
 */
 
 import de.samply.share.client.quality.report.MdrIgnoredElements;
-import de.samply.share.client.quality.report.centraxx.CentraXxMapper;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapper;
 import de.samply.share.client.quality.report.dktk.DktkId_MdrId_Converter;
 import de.samply.share.client.quality.report.file.excel.cell.reference.CellReference;
 import de.samply.share.client.quality.report.file.excel.cell.reference.FirstRowCellReferenceFactoryForOneSheet;
@@ -40,12 +40,12 @@ public class ExcelRowMapper_002 {
 
 
     private ExcelRowMapperUtils excelRowMapperUtils;
-    private CentraXxMapper centraXxMapper;
+    private CentraxxMapper centraXxMapper;
     private DktkId_MdrId_Converter dktkIdManager;
     private FirstRowCellReferenceFactoryForOneSheet cellReferenceFactory;
     private MdrIgnoredElements ignoredElements;
 
-    public ExcelRowMapper_002( CentraXxMapper centraXxMapper, DktkId_MdrId_Converter dktkIdManager, FirstRowCellReferenceFactoryForOneSheet cellReferenceFactory, MdrIgnoredElements ignoredElements, ExcelRowMapperUtils excelRowMapperUtils) {
+    public ExcelRowMapper_002(CentraxxMapper centraXxMapper, DktkId_MdrId_Converter dktkIdManager, FirstRowCellReferenceFactoryForOneSheet cellReferenceFactory, MdrIgnoredElements ignoredElements, ExcelRowMapperUtils excelRowMapperUtils) {
 
 
         this.excelRowMapperUtils = excelRowMapperUtils;

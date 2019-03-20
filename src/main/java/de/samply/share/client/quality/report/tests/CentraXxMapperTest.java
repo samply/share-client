@@ -25,10 +25,10 @@ package de.samply.share.client.quality.report.tests;/*
 */
 
 
-import de.samply.share.client.quality.report.centraxx.CentraXxMapper;
-import de.samply.share.client.quality.report.centraxx.CentraXxMapperException;
-import de.samply.share.client.quality.report.centraxx.CentraXxMapperImpl;
 import de.samply.share.common.utils.MdrIdDatatype;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapper;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapperException;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapperImpl;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,9 +37,9 @@ import javax.ws.rs.Path;
 public class CentraXxMapperTest {
 
     @GET
-    public String myTest() throws CentraXxMapperException {
+    public String myTest() throws CentraxxMapperException {
 
-        CentraXxMapper centraXxMapper = new CentraXxMapperImpl();
+        CentraxxMapper centraXxMapper = new CentraxxMapperImpl();
 
         String centraXxAttribute = centraXxMapper.getCentraXxAttribute(new MdrIdDatatype("urn:dktk:dataelement:33:2"));
         String centraXxValue = centraXxMapper.getCentraXxValue(new MdrIdDatatype("urn:dktk:dataelement:77:1"), "nicht erfasst");

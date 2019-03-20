@@ -29,8 +29,8 @@ import de.samply.common.mdrclient.MdrClient;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.MdrIgnoredElements;
-import de.samply.share.client.quality.report.centraxx.CentraXxMapperException;
-import de.samply.share.client.quality.report.centraxx.CentraXxMapperImpl;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapperException;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapperImpl;
 import de.samply.share.client.quality.report.dktk.DktkId_MdrId_Converter;
 import de.samply.share.client.quality.report.dktk.DktkId_MdrId_ConverterImpl;
 import de.samply.share.client.quality.report.file.csvline.manager.QualityResultCsvLineManager_002;
@@ -66,7 +66,7 @@ public class ExcelTest {
 
 
 
-    public ExcelTest() throws CentraXxMapperException {
+    public ExcelTest() throws CentraxxMapperException {
 
         Model model = getModel();
 
@@ -78,7 +78,7 @@ public class ExcelTest {
         IdPathManager_002 idPathManager = new IdPathManager_002();
         qualityFileManager = new CsvQualityReportFileManager(new QualityResultCsvLineManager_002(), idPathManager);
 
-        ExcelPattern excelPattern = new ExcelPattern_002(model, mdrClient, new CentraXxMapperImpl(), dktkIdManager, new MdrIgnoredElements());
+        ExcelPattern excelPattern = new ExcelPattern_002(model, mdrClient, new CentraxxMapperImpl(), dktkIdManager, new MdrIgnoredElements());
         excelQualityFileManager = new ExcelQualityReportFileManager(excelPattern, idPathManager);
 
     }
