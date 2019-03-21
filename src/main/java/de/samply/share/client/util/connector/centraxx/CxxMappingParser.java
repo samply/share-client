@@ -29,15 +29,28 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.samply.share.common.utils.MdrIdDatatype;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CxxMappingParser {
 
-
+    private static final Logger logger = LogManager.getLogger(CxxMappingParser.class);
 
     public List<CxxMappingElement> parse(String httpEntity){
+
+        try{
+            return parse_WithoutExceptionManagement(httpEntity);
+        } catch (Exception e){
+            logger.info(e);
+            return new ArrayList<>();
+        }
+
+    }
+
+    public List<CxxMappingElement> parse_WithoutExceptionManagement (String httpEntity){
 
         JsonParser jsonParser = new JsonParser();
         JsonArray jsonArray = jsonParser.parse(httpEntity).getAsJsonArray();
@@ -45,6 +58,7 @@ public class CxxMappingParser {
         return parse (jsonArray);
 
     }
+
 
     private List<CxxMappingElement> parse (JsonArray jsonArray){
 
@@ -87,6 +101,7 @@ public class CxxMappingParser {
         return cxxMappingElement;
 
     }
+
 
     private CxxMappingElement addMdrRepresentations (CxxMappingElement cxxMappingElement, JsonObject jsonObject){
 
@@ -140,7 +155,6 @@ public class CxxMappingParser {
         return mdrId;
 
     }
-
 
     private String getStringOfJsonObject (JsonObject jsonObject, String jsonObjectName){
 
