@@ -42,11 +42,15 @@ public class ChainStatisticsImpl implements ChainStatistics {
     private List<ChainLinkStatisticsConsumer> chainLinkStatisticsConsumerList = new ArrayList<>();
     private long startNanoTime;
     private Date startDate;
+    private Double globalPercentage;
+    private Double minimumPercentageToBeConsidered;
 
 
     {
         startNanoTime = System.nanoTime();
         startDate = new Date();
+        globalPercentage = 0.0;
+        minimumPercentageToBeConsidered = getMinimumPercentageToBeConsidered();
 
     }
 
@@ -65,9 +69,37 @@ public class ChainStatisticsImpl implements ChainStatistics {
         long elapsedTime = System.nanoTime() - startNanoTime;
         long estimatedNanoTimeToBeCompleted = getEstimatedNanoTimeToBeCompleted();
 
-        Double percentage = 100.0 * elapsedTime / (elapsedTime + estimatedNanoTimeToBeCompleted);
+        double percentage = 100.0 * elapsedTime / (elapsedTime + estimatedNanoTimeToBeCompleted);
+        double maxPercentageToBeShown = getMaxPercentageToBeShown();
 
-        return percentage.intValue();
+        if (globalPercentage < percentage){
+            globalPercentage = percentage;
+        }
+        if (maxPercentageToBeShown > minimumPercentageToBeConsidered && globalPercentage > maxPercentageToBeShown){
+            globalPercentage = maxPercentageToBeShown;
+        }
+
+        return globalPercentage.intValue();
+
+    }
+
+    private double getMinimumPercentageToBeConsidered(){
+        return  5.0 + Math.random() * (10.0 - 5.0);
+    }
+
+    private double getMaxPercentageToBeShown(){
+
+        int numberOfConsumers = chainLinkStatisticsConsumerList.size();
+        int numberOfFinalizedConsumers = 0;
+
+        for (ChainLinkStatisticsConsumer chainLinkStatisticsConsumer : chainLinkStatisticsConsumerList){
+            if (chainLinkStatisticsConsumer.isFinalized()){
+                numberOfFinalizedConsumers ++;
+            }
+        }
+
+        return (numberOfConsumers > 0) ? ((double) (((double) numberOfFinalizedConsumers) / ((double) numberOfConsumers))) : 0;
+
 
     }
 
