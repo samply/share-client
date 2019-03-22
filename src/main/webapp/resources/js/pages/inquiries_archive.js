@@ -54,9 +54,9 @@ $(document).ready(function() {
                         }
                     }
                 },
-                { "data": "searchFor" },
-                { "data": "receivedAt" },
-                { "data": "archivedAt" }
+                { "data": "searchFor", "defaultContent": "", "defaultContent": "" },
+                { "data": "receivedAt", "defaultContent": "", "defaultContent": "" },
+                { "data": "archivedAt", "defaultContent": "", "defaultContent": "" }
             ],
             language: {
                 url: "javax.faces.resource/i18n/datatables_de_DE.json"

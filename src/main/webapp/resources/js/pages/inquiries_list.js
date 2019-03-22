@@ -51,10 +51,10 @@ $(document).ready(function() {
                         }
                     }
                 },
-                { "data": "searchFor" },
-                { "data": "receivedAt" },
-                { "data": "found" },
-                { "data": "asOf" }
+                { "data": "searchFor", "defaultContent": "" },
+                { "data": "receivedAt", "defaultContent": "" },
+                { "data": "found", "defaultContent": "" },
+                { "data": "asOf", "defaultContent": "" }
             ],
             language: {
                 url: "javax.faces.resource/i18n/datatables_de_DE.json"
