@@ -339,7 +339,7 @@ public class InquiryBean implements Serializable {
         JobKey jobKey = JobKey.jobKey(ExecuteInquiryJobParams.JOBNAME, "job::" + jobGroup);
         TriggerKey triggerKey = TriggerKey.triggerKey(ExecuteInquiryJobParams.JOBNAME, "trigger::" + jobGroup);
 
-        latestInquiryDetails.setStatus(InquiryStatusType.IS_PROCESSING);
+        Utils.setStatus(latestInquiryDetails, InquiryStatusType.IS_PROCESSING);
         InquiryDetailsUtil.updateInquiryDetails(latestInquiryDetails);
 
         JobDetail inquiryExecutionJob = JobBuilder.newJob(ExecuteInquiryJob.class)

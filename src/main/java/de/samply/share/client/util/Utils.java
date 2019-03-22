@@ -6,7 +6,9 @@ import de.samply.config.util.FileFinderUtil;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.db.enums.AuthSchemeType;
+import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.tables.pojos.Credentials;
+import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.CredentialsUtil;
 import de.samply.share.common.utils.ProjectInfo;
@@ -359,4 +361,12 @@ public final class Utils {
         }
         return null;
     }
+
+    public static void setStatus (InquiryDetails inquiryDetails, InquiryStatusType inquiryStatusType){
+
+        inquiryDetails.setStatus(inquiryStatusType);
+        logger.debug ("Change in Inquiry Status ("+inquiryDetails.getInquiryId()+" ): " + inquiryDetails.getStatus());
+
+    }
+
 }

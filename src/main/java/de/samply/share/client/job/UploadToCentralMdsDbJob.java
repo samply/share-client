@@ -460,7 +460,7 @@ public class UploadToCentralMdsDbJob implements Job {
             InquiryDetails inquiryDetails = new InquiryDetails();
             inquiryDetails.setInquiryId(inquiryId);
             inquiryDetails.setRevision(1);
-            inquiryDetails.setStatus(IS_NEW);
+            Utils.setStatus(inquiryDetails, IS_NEW);
 
             int inquiryDetailsId = InquiryDetailsUtil.insertInquiryDetails(inquiryDetails);
             // Reload with id and received_at timestamp

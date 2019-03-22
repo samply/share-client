@@ -36,6 +36,7 @@ import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.enums.UploadStatusType;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
+import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.db.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,7 +56,7 @@ public class CheckInquiryStatusJobListener implements JobListener {
 
     private String name;
 
-    CheckInquiryStatusJobListener(String name) {
+    public CheckInquiryStatusJobListener(String name) {
         this.name = name;
     }
 
@@ -76,7 +77,10 @@ public class CheckInquiryStatusJobListener implements JobListener {
 
     @Override
     public void jobWasExecuted(JobExecutionContext jobExecutionContext, JobExecutionException e) {
-        logger.debug("Job was executed. Context: " + jobExecutionContext + " - exception " + e);
+        logger.debug("Job was executed. Context: " + jobExecutionContext);
+        if (e != null){
+            logger.debug(" - Exception: " + e);
+        }
         CheckInquiryStatusJobResult result;
         Object resultObject = jobExecutionContext.getResult();
         if (resultObject != null) {
@@ -90,7 +94,7 @@ public class CheckInquiryStatusJobListener implements JobListener {
             result = new CheckInquiryStatusJobResult(false, false);
         }
 
-        if (result.isRescheduled()) {
+        if (result != null && result.isRescheduled()) {
             logger.trace("Job is rescheduled. Don't set anything to abandoned...");
             return;
         } else {
@@ -114,7 +118,7 @@ public class CheckInquiryStatusJobListener implements JobListener {
         // If the status of the inquiry is still "processing" when the check-job is done, set the status to abandoned
         if (inquiryDetails.getStatus() == InquiryStatusType.IS_PROCESSING && ! willFireAgain(key)) {
             logger.info("Setting status to ABANDONED for inquiry details with id " + inquiryDetails.getId());
-            inquiryDetails.setStatus(InquiryStatusType.IS_ABANDONED);
+            Utils.setStatus(inquiryDetails, InquiryStatusType.IS_ABANDONED);
             InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
             EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_STATUS_CHECK_ABANDONED, inquiryDetails.getInquiryId());
             // If it was an upload, also set this status to abandoned
@@ -129,6 +133,7 @@ public class CheckInquiryStatusJobListener implements JobListener {
         }
 
     }
+
 
     /**
      * Check if the trigger for this job will fire again
