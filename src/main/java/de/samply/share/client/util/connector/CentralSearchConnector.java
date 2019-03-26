@@ -94,6 +94,7 @@ public class CentralSearchConnector {
 
     /** The path where the statistics of the last upload can be retrieved (central mds db) */
     private static final String PATH_UPLOAD_STATS = "uploadStats";
+    private static final String DEFAULT_LAST_UPDATE_DATE = "Wed, 16 Nov 1994 08:12:31 CET";
 
     private static final String PATH_PATIENTS = "pats";
 
@@ -224,7 +225,7 @@ public class CentralSearchConnector {
             }
             DateRestriction dateRestriction = new DateRestriction();
             try {
-                dateRestriction.setLastUpload(SamplyShareUtils.convertDateStringToString(uploadStats.getLastUploadTimestamp(), DATE_FORMAT_HTTP_HEADER, DATE_FORMAT_TARGET));
+                dateRestriction.setLastUpload(SamplyShareUtils.convertDateStringToString(getLastUploadTimestamp(uploadStats), DATE_FORMAT_HTTP_HEADER, DATE_FORMAT_TARGET));
                 dateRestriction.setServerTime(SamplyShareUtils.convertDateStringToString(dateHeader, DATE_FORMAT_HTTP_HEADER, DATE_FORMAT_TARGET));
             } catch (ParseException e) {
                 throw new CentralSearchConnectorException("Parse Exception while trying to set date restriction.", e);
@@ -236,6 +237,17 @@ public class CentralSearchConnector {
         } else {
             throw new CentralSearchConnectorException("Unexpected status code received while trying to get date restrictions: " + statusCode);
         }
+    }
+
+    private String getLastUploadTimestamp (UploadStats uploadStats){
+
+        String lastUploadTimestamp = null;
+        if (uploadStats != null){
+            lastUploadTimestamp = uploadStats.getLastUploadTimestamp();
+        }
+
+        return (lastUploadTimestamp != null) ? lastUploadTimestamp : DEFAULT_LAST_UPDATE_DATE ;
+
     }
 
     /**
