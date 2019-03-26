@@ -5,5 +5,7 @@ INSERT INTO samply.configuration(name, setting, visible) values('ID_CONNECTOR_CO
 INSERT INTO samply.configuration(name, setting, visible) values('ID_CONNECTOR_CONNECTION_REQUEST_TIMEOUT', '180000', false);
 INSERT INTO samply.configuration(name, setting, visible) values('ID_CONNECTOR_MAX_NUMBER_OF_CONNECTION_ATTEMPTS', '10', false);
 INSERT INTO samply.configuration(name, setting, visible) values('ID_CONNECTOR_TIME_TO_WAIT_IN_SECONDS_BETWEEN_CONNECTION_ATTEMPTS', '60', false);
+INSERT INTO samply.configuration(name, setting, visible) values('QUALITY_REPORT_TIMEOUT_IN_MINUTES', '1440', false);
 
 UPDATE samply.configuration SET setting='' WHERE name='QUALITY_REPORT_IGNORED_DATAELEMENTS';
+UPDATE samply.job_schedule SET cron_expression='0 0/1 * 1/1 * ? *'  WHERE job_key='DecentralSearchGroup.CollectInquiriesJob';

@@ -34,4 +34,10 @@ public interface ChainLinkFinalizer {
 
     public void finalizeAll();
 
+    public void addChainLinkFinalizerListener (ChainLinkFinalizerListener chainLinkFinalizerListener);
+
+    public boolean isTimeoutReachedInAnyChainLinkFinalizerListener();
+
+    public void setAtLeastOneTimeoutReached();
+
 }

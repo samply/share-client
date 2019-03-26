@@ -243,10 +243,10 @@ public class QualityReportChain implements Chain {
 
     }
 
-    @Override
-    public void finalizeChain(){
-        firstChainLink.finalizeChainLink();
-    }
+//    @Override
+//    public void finalizeChain(){
+//        firstChainLink.finalizeChainLink();
+//    }
 
     @Override
     public ChainStatistics getChainStatistics() {

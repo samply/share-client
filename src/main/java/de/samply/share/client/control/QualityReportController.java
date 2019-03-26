@@ -28,10 +28,10 @@ package de.samply.share.client.control;
 
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.chain.Chain;
+import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
 import de.samply.share.client.quality.report.chain.factory.ChainFactory;
 import de.samply.share.client.quality.report.chain.factory.ChainFactoryException;
 import de.samply.share.client.quality.report.chain.factory.QualityReportChainFactory_002;
-import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
 import de.samply.share.client.quality.report.chainlinks.statistics.chain.ChainStatistics;
 import de.samply.share.client.quality.report.chainlinks.statistics.manager.ChainStatisticsManager;
 import de.samply.share.client.quality.report.faces.QualityReportFileInfo;
@@ -44,6 +44,8 @@ import de.samply.share.client.quality.report.file.id.path.IdPathManager_002;
 import de.samply.share.client.quality.report.file.manager.QualityReportMetadataFileManager;
 import de.samply.share.client.quality.report.file.manager.QualityReportMetadataFileManagerImpl;
 import de.samply.share.client.quality.report.file.metadata.txtcolumn.MetadataTxtColumnManager_002;
+
+import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -101,8 +103,27 @@ public class QualityReportController implements Serializable {
         chainStatisticsManager.setChainStatistics(chain.getChainStatistics());
 
         chain.run();
+        addTimeout();
 
         isLoading = false;
+
+    }
+
+    private void addTimeout(){
+
+        Long timeout = getTimoutInMilliseconds();
+        if (timeout != null){
+            chainFinalizer.addTimeout(timeout);
+        }
+
+    }
+
+    private Long getTimoutInMilliseconds(){
+
+        String sTimeoutInMinutes = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_TIMEOUT_IN_MINUTES);
+        Long timeoutInMinutes = Utils.getAsLong(sTimeoutInMinutes);
+        return (timeoutInMinutes != null) ? timeoutInMinutes * 60L * 1000L : null;
+
     }
 
     public boolean isTaskRunning(){
@@ -173,6 +194,10 @@ public class QualityReportController implements Serializable {
 
     public String getLanguage(){
         return ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_LANGUAGE_CODE);
+    }
+
+    public boolean isTimeoutReached(){
+        return chainFinalizer.isTimeoutReached();
     }
 
 

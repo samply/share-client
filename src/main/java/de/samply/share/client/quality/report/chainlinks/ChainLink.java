@@ -74,15 +74,7 @@ public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
 
         }
 
-        logErrors();
-        isFinalized = true;
-        finalizeStatistics();
-
-        if (chainLinkConnector != null){
-            chainLinkConnector.setPreviousChainLinkFinalized();
-        }
-
-        logEndChainLink();
+        finalizeChainLink();
 
     }
 
@@ -316,14 +308,15 @@ public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
         return deque.pollFirst();
     }
 
-    public void finalizeChainLink(){
+    public synchronized void finalizeChainLink(){
 
         if (!isFinalized) {
 
+
             isFinalized = true;
 
-            if (chainLinkConnector != null) {
-                chainLinkConnector.finalizeNextChainLink();
+            if (chainLinkConnector != null){
+                chainLinkConnector.setPreviousChainLinkFinalized();
             }
 
             if (chainLinkFinalizer != null) {
@@ -332,6 +325,10 @@ public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
 
             finalizeStatistics();
             chainLinkTimer.myNotify();
+
+            logErrors();
+            logEndChainLink();
+
 
         }
 

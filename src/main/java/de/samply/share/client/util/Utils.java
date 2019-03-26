@@ -369,4 +369,14 @@ public final class Utils {
 
     }
 
+    public static Long getAsLong (String number){
+
+        try{
+            return new Long(number);
+        } catch (Exception e){
+            return null;
+        }
+
+    }
+
 }

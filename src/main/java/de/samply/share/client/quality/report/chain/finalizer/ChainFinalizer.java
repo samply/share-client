@@ -30,5 +30,7 @@ public interface ChainFinalizer {
 
     public void finalizeChain();
     public ChainLinkFinalizer getChainLinkFinalizer();
+    public void addTimeout(long timeout);
+    public boolean isTimeoutReached();
 
 }
