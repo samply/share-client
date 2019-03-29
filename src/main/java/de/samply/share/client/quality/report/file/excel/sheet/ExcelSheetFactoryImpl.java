@@ -25,10 +25,13 @@ package de.samply.share.client.quality.report.file.excel.sheet;/*
 */
 
 
+import de.samply.share.client.quality.report.logger.PercentageLogger;
 import de.samply.share.client.quality.report.file.excel.row.context.ExcelRowContext;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactory;
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactoryException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -36,7 +39,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
     private ExcelRowFactory excelRowFactory;
-
+    protected static final Logger logger = LogManager.getLogger(ExcelSheetFactoryImpl.class);
 
 
     public ExcelSheetFactoryImpl(ExcelRowFactory excelRowFactory) {
@@ -50,8 +53,14 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
         sheet = addRowTitles(sheet, excelRowContext);
 
         int maxNumberOfRows = SpreadsheetVersion.EXCEL2007.getMaxRows();
+
+
+        int numberOfRows = excelRowContext.getNumberOfRows();
+        PercentageLogger percentageLogger = new PercentageLogger(logger, numberOfRows, "adding rows...");
+
         for (ExcelRowElements excelRowElements : excelRowContext){
 
+            percentageLogger.incrementCounter();
             addRow(sheet, excelRowElements);
 
             maxNumberOfRows--;
@@ -59,6 +68,7 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
         }
 
         return workbook;
+
     }
 
     private XSSFSheet addRowTitles (XSSFSheet sheet, ExcelRowContext excelRowContext) throws ExcelSheetFactoryException {

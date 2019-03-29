@@ -26,6 +26,7 @@ package de.samply.share.client.quality.report.file.excel.instances.statistics.da
 
 import de.samply.share.client.quality.report.file.excel.row.context.ExcelRowContextImpl;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
+import de.samply.share.client.quality.report.logger.PercentageLogger;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.client.quality.report.results.statistics.QualityResultsStatistics;
 import de.samply.share.common.utils.MdrIdDatatype;
@@ -49,8 +50,11 @@ public class DataElementStats_ExcelRowContext extends ExcelRowContextImpl<DataEl
 
     private void fillOutExcelRowParametersList (QualityResults qualityResults, QualityResultsStatistics qualityResultsStatistics){
 
+        PercentageLogger percentageLogger = new PercentageLogger(logger, qualityResults.getMdrIds().size(), "analyzing quality results");
+
         for (MdrIdDatatype mdrId : qualityResults.getMdrIds()){
 
+            percentageLogger.incrementCounter();
             DataElementStats_ExcelRowParameters excelRowParameters = createRowParameters(mdrId, qualityResultsStatistics);
             excelRowParametersList.add(excelRowParameters);
 

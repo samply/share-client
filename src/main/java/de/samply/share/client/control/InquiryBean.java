@@ -587,8 +587,9 @@ public class InquiryBean implements Serializable {
             }
             String filename = !(inquiry.getLabel().equals("")) ? inquiry.getLabel() + ".xlsx" : "Export.xlsx";
 
-            Faces.sendFile(bos.toByteArray(), filename, true);
             createTemporaryFile(bos, "lastExport.xlsx");
+            Faces.sendFile(bos.toByteArray(), filename, true);
+
 
         } catch (Exception e) {
             logger.error("Exception caught while trying to export data", e);

@@ -241,14 +241,28 @@ public class CentralSearchConnector {
 
     private String getLastUploadTimestamp (UploadStats uploadStats){
 
+        try{
+
+            return getLastUploadTimestamp_WithoutManagementException(uploadStats);
+
+        } catch (Exception e){
+            logger.info(e);
+            return DEFAULT_LAST_UPDATE_DATE;
+        }
+
+    }
+
+    private String getLastUploadTimestamp_WithoutManagementException (UploadStats uploadStats){
+
         String lastUploadTimestamp = null;
         if (uploadStats != null){
             lastUploadTimestamp = uploadStats.getLastUploadTimestamp();
         }
 
-        return (lastUploadTimestamp != null) ? lastUploadTimestamp : DEFAULT_LAST_UPDATE_DATE ;
+        return (lastUploadTimestamp != null) ? lastUploadTimestamp : DEFAULT_LAST_UPDATE_DATE;
 
     }
+
 
     /**
      * Set the upload time on the central mds db

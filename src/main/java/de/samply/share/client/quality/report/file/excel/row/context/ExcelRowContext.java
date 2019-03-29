@@ -29,5 +29,6 @@ import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowEle
 public interface ExcelRowContext extends Iterable<ExcelRowElements> {
 
     public ExcelRowElements createEmptyExcelRowElements();
+    public Integer getNumberOfRows();
 
 }

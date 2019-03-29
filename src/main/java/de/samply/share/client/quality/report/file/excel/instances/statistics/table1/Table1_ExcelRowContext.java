@@ -77,6 +77,11 @@ public class Table1_ExcelRowContext implements ExcelRowContext {
     }
 
     @Override
+    public Integer getNumberOfRows() {
+        return excelRowElementsList.size();
+    }
+
+    @Override
     public Iterator<ExcelRowElements> iterator() {
         return excelRowElementsList.iterator();
     }

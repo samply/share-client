@@ -38,6 +38,9 @@ public abstract class ExcelRowContextImpl<EXCEL_ROW_PARAMETERS> implements Excel
 
     protected List<EXCEL_ROW_PARAMETERS> excelRowParametersList = new ArrayList<>();
 
+    public Integer getNumberOfRows(){
+        return excelRowParametersList.size();
+    }
 
     protected class ExcelRowContextIterator implements Iterator<ExcelRowElements>{
 

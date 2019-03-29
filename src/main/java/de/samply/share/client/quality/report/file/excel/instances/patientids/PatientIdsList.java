@@ -88,6 +88,10 @@ public class PatientIdsList implements Iterable<List<String>>{
 
     }
 
+    public Integer getMaxNumberOfPatientsOfAllPatientLists(){
+        return maxList.size();
+    }
+
     @Override
     public Iterator<List<String>> iterator() {
         return new PatientIdsIterator();

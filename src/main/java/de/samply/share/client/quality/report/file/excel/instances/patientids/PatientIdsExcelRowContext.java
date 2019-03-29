@@ -24,6 +24,9 @@ package de.samply.share.client.quality.report.file.excel.instances.patientids;/*
 * permission to convey the resulting work.
 */
 
+import de.samply.share.client.quality.report.logger.PercentageLogger;
+import de.samply.share.client.quality.report.results.QualityResults;
+import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.file.excel.instances.basic.BasicExcelColumnMetaInfo;
 import de.samply.share.client.quality.report.file.excel.instances.basic.BasicExcelRowElements;
@@ -32,12 +35,10 @@ import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowEle
 import de.samply.share.client.quality.report.results.QualityResult;
 import de.samply.share.client.quality.report.results.sorted.AlphabeticallySortedMismatchedQualityResults;
 import de.samply.share.client.util.db.ConfigurationUtil;
-import de.samply.share.common.utils.MdrIdDatatype;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public abstract class PatientIdsExcelRowContext implements ExcelRowContext {
 
@@ -47,7 +48,13 @@ public abstract class PatientIdsExcelRowContext implements ExcelRowContext {
     private PatientIdsList patientIdsList = new PatientIdsList();
     private List<BasicExcelColumnMetaInfo> metaInfos = new ArrayList<>();
 
+    protected static final Logger logger = LogManager.getLogger(PatientIdsExcelRowContext.class);
+
     protected abstract Collection<String> getPatientIds (QualityResult qualityResult);
+
+    public Integer getNumberOfRows(){
+        return patientIdsList.getMaxNumberOfPatientsOfAllPatientLists();
+    }
 
     public PatientIdsExcelRowContext(AlphabeticallySortedMismatchedQualityResults qualityResults) {
 
@@ -73,7 +80,13 @@ public abstract class PatientIdsExcelRowContext implements ExcelRowContext {
 
 
         int counter = 0;
+
+        int numberOfQualityResults = getNumberOfQualityResults(qualityResults);
+        PercentageLogger percentageLogger = new PercentageLogger(logger, numberOfQualityResults, "analyzing quality results");
+
         for (QualityResult qualityResult : qualityResults){
+
+            percentageLogger.incrementCounter();
 
             MdrIdDatatype mdrId = qualityResults.getMdrId(counter);
             String value = qualityResults.getValue(counter);
@@ -84,6 +97,18 @@ public abstract class PatientIdsExcelRowContext implements ExcelRowContext {
             counter++;
 
         }
+
+    }
+
+    private int getNumberOfQualityResults(QualityResults qualityResults){
+
+        int counter = 0;
+
+        for (MdrIdDatatype mdrId : qualityResults.getMdrIds()){
+            counter += qualityResults.getValues(mdrId).size();
+        }
+
+        return counter;
 
     }
 

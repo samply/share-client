@@ -24,15 +24,16 @@ package de.samply.share.client.quality.report.file.excel.row.context;/*
 * permission to convey the resulting work.
 */
 
+import de.samply.share.client.quality.report.file.excel.row.mapper.ExcelRowMapperException;
+import de.samply.share.client.quality.report.logger.PercentageLogger;
+import de.samply.share.client.quality.report.results.statistics.QualityResultsStatistics;
+import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements_002;
-import de.samply.share.client.quality.report.file.excel.row.mapper.ExcelRowMapperException;
 import de.samply.share.client.quality.report.file.excel.row.mapper.ExcelRowMapper_002;
 import de.samply.share.client.quality.report.results.QualityResult;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.client.quality.report.results.sorted.AlphabeticallySortedMismatchedQualityResults;
-import de.samply.share.client.quality.report.results.statistics.QualityResultsStatistics;
-import de.samply.share.common.utils.MdrIdDatatype;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,11 +60,14 @@ public class ExcelRowContext_002 extends ExcelRowContextImpl<ExcelRowParameters_
     private void fillOutExcelRowParametersList (QualityResults qualityResults, QualityResultsStatistics qualityResultsStatistics){
 
 
+        int numberOfQualityResults = getNumberOfQualityResults(qualityResults);
+        PercentageLogger percentageLogger = new PercentageLogger(logger, numberOfQualityResults, "analyzing quality results...");
 
         for (MdrIdDatatype mdrId : qualityResults.getMdrIds()){
 
             for (String value : qualityResults.getValues(mdrId)){
 
+                percentageLogger.incrementCounter();
                 QualityResult qualityResult = qualityResults.getResult(mdrId, value);
 
                 ExcelRowParameters_002 excelRowParameters = createRowParameters(mdrId, value, qualityResult, qualityResultsStatistics);
@@ -72,6 +76,17 @@ public class ExcelRowContext_002 extends ExcelRowContextImpl<ExcelRowParameters_
             }
 
         }
+
+    }
+
+    private int getNumberOfQualityResults (QualityResults qualityResults){
+
+        int counter = 0;
+        for (MdrIdDatatype mdrId : qualityResults.getMdrIds()) {
+            counter += qualityResults.getValues(mdrId).size();
+        }
+
+        return counter;
 
     }
 
