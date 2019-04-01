@@ -149,97 +149,232 @@ public class Connector {
      * @param inquiries the inquiries
      */
     private List<InquiryLine> populateInquiryLines(Integer userId, List<Inquiry> inquiries) {
+
         List<InquiryLine> targetList = new ArrayList<>();
-        InquiryLine inquiryLine;
 
         for (Inquiry inquiry : inquiries) {
             // First, load related entries
-            InquiryDetails inquiryDetails =
-                    InquiryDetailsUtil.fetchInquiryDetailsById(inquiry.getLatestDetailsId());
-            List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
-
-            boolean seen = false;
-            if (userId != null) {
-                seen = UserSeenInquiryUtil.hasUserSeenInquiryByIds(userId, inquiry.getId());
-            }
-
-            inquiryLine = new InquiryLine();
-            inquiryLine.setId(inquiry.getId());
-            inquiryLine.setSeen(seen);
-
-            if (SamplyShareUtils.isNullOrEmpty(inquiry.getLabel())) {
-                inquiryLine.setName(Messages.getString("inqs_noLabel"));
-            } else {
-                inquiryLine.setName(inquiry.getLabel());
-            }
-
-            inquiryLine.setSearchFor(getAbbreviatedLabelsFor(requestedEntities));
-
-            inquiryLine.setReceivedAt(
-                    SamplyShareUtils.convertSqlTimestampToString(
-                            inquiryDetails.getReceivedAt(), "dd.MM.yyyy HH:mm"));
-
-            if (inquiry.getArchivedAt() != null) {
-                inquiryLine.setArchivedAt(
-                        SamplyShareUtils.convertSqlTimestampToString(
-                                inquiry.getArchivedAt(), "dd.MM.yyyy HH:mm"));
-            } else {
-                inquiryLine.setArchivedAt(null);
-            }
-
-            try {
-                InquiryResult inquiryResult =
-                        InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId());
-                if (inquiryResult == null) {
-                    inquiryLine.setFound(Messages.getString("inqs_noResults"));
-                    inquiryLine.setAsOf("-");
-                } else {
-                    if (inquiryResult.getIsError()) {
-                        inquiryLine.setFound("Error");
-                        inquiryLine.setErrorCode(
-                                SamplyShareUtils.isNullOrEmpty(inquiryResult.getErrorCode())
-                                        ? " "
-                                        : inquiryResult.getErrorCode());
-                    } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_READY) {
-                        inquiryLine.setFound(inquiryResult.getSize().toString());
-                        inquiryLine.setErrorCode("");
-                    } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_PROCESSING) {
-                        try {
-                            inquiryLine.setFound(inquiryResult.getSize().toString());
-                        } catch (Exception e) {
-                            inquiryLine.setFound(Messages.getString("inqs_processing"));
-                        }
-                        inquiryLine.setErrorCode(Messages.getString(""));
-                    } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_ABANDONED) {
-                        inquiryLine.setFound("");
-                        inquiryLine.setErrorCode(Messages.getString("inqs_abandoned"));
-                    }
-                    inquiryLine.setAsOf(
-                            SamplyShareUtils.convertSqlTimestampToString(
-                                    inquiryResult.getExecutedAt(), "dd.MM.yyyy HH:mm"));
-                }
-
-            } catch (Exception e) {
-                logger.warn("Exception caught while trying to populate inquiry lines", e);
-                inquiryLine.setAsOf("");
-                inquiryLine.setFound("Error");
-                inquiryLine.setErrorCode("");
-            }
-
-            String brokerName;
-            try {
-                Broker broker = BrokerUtil.fetchBrokerById(inquiry.getBrokerId());
-                brokerName = broker.getName();
-                if (SamplyShareUtils.isNullOrEmpty(brokerName)) {
-                    brokerName = broker.getAddress();
-                }
-            } catch (Exception e) {
-                brokerName = "unknown";
-            }
-            inquiryLine.setBrokerName(brokerName);
+            InquiryDetails inquiryDetails = fetchInquiryDetails(inquiry);
+            InquiryLine inquiryLine = fetchInquiryLine(userId, inquiry, inquiryDetails);
             targetList.add(inquiryLine);
+
         }
+
         return targetList;
+
+    }
+
+    private InquiryDetails fetchInquiryDetails(Inquiry inquiry){
+        return InquiryDetailsUtil.fetchInquiryDetailsById(inquiry.getLatestDetailsId());
+    }
+
+    private InquiryLine fetchInquiryLine(Integer userId, Inquiry inquiry, InquiryDetails inquiryDetails){
+
+        InquiryLine inquiryLine = new InquiryLine();
+
+        inquiryLine.setId(inquiry.getId());
+
+        inquiryLine = setSeen(userId, inquiry, inquiryLine);
+        inquiryLine = setSearchFor(inquiry, inquiryLine);
+        inquiryLine = setName(inquiry, inquiryLine);
+        inquiryLine = setReceivedAt(inquiryLine, inquiryDetails);
+        inquiryLine = setArchivedAt(inquiry, inquiryLine);
+        inquiryLine = setBrokerName(inquiry, inquiryLine);
+        inquiryLine = fetchLatestInquiryResultForInquiryDetailsById(inquiryLine, inquiryDetails);
+
+
+        return inquiryLine;
+
+    }
+
+    private InquiryLine setSeen (Integer userId, Inquiry inquiry, InquiryLine inquiryLine){
+
+        boolean seen = (userId != null) ? UserSeenInquiryUtil.hasUserSeenInquiryByIds(userId, inquiry.getId()) : false;
+        inquiryLine.setSeen(seen);
+
+        return inquiryLine;
+
+    }
+
+    private InquiryLine setSearchFor (Inquiry inquiry, InquiryLine inquiryLine){
+
+        List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
+        inquiryLine.setSearchFor(getAbbreviatedLabelsFor(requestedEntities));
+
+        return inquiryLine;
+
+    }
+
+    private InquiryLine setName (Inquiry inquiry, InquiryLine inquiryLine){
+
+        if (SamplyShareUtils.isNullOrEmpty(inquiry.getLabel())) {
+            inquiryLine.setName(Messages.getString("inqs_noLabel"));
+        } else {
+            inquiryLine.setName(inquiry.getLabel());
+        }
+
+        return inquiryLine;
+
+    }
+
+    private InquiryLine setReceivedAt (InquiryLine inquiryLine, InquiryDetails inquiryDetails){
+
+        inquiryLine.setReceivedAt(SamplyShareUtils.convertSqlTimestampToString(inquiryDetails.getReceivedAt(), "dd.MM.yyyy HH:mm"));
+        return inquiryLine;
+
+    }
+
+    private InquiryLine setAsOf (InquiryLine inquiryLine, InquiryResult inquiryResult){
+
+        inquiryLine.setAsOf(SamplyShareUtils.convertSqlTimestampToString(inquiryResult.getExecutedAt(), "dd.MM.yyyy HH:mm"));
+        return inquiryLine;
+
+    }
+
+    private InquiryLine setArchivedAt (Inquiry inquiry, InquiryLine inquiryLine){
+
+        if (inquiry.getArchivedAt() != null) {
+            inquiryLine.setArchivedAt(
+                    SamplyShareUtils.convertSqlTimestampToString(
+                            inquiry.getArchivedAt(), "dd.MM.yyyy HH:mm"));
+        } else {
+            inquiryLine.setArchivedAt(null);
+        }
+
+        return inquiryLine;
+
+    }
+
+    private InquiryLine fetchLatestInquiryResultForInquiryDetailsById(InquiryLine inquiryLine, InquiryDetails inquiryDetails){
+
+        try{
+
+            return fetchLatestInquiryResultForInquiryDetailsById_WithoutManagementException(inquiryLine, inquiryDetails);
+
+        } catch (Exception e) {
+
+            logger.warn("Exception caught while trying to populate inquiry lines", e);
+            inquiryLine.setAsOf("");
+            inquiryLine.setFound("Error");
+            inquiryLine.setErrorCode("");
+
+            return inquiryLine;
+
+        }
+
+    }
+
+    private InquiryLine fetchLatestInquiryResultForInquiryDetailsById_WithoutManagementException(InquiryLine inquiryLine, InquiryDetails inquiryDetails){
+
+            InquiryResult inquiryResult = InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId());
+
+            if  (inquiryResult == null) {
+                inquiryLine = addNoResultsToInquiryLine(inquiryLine);
+            } else {
+                inquiryLine = fetchLatestInquiryResultForInquiryDetailsById (inquiryLine, inquiryDetails, inquiryResult);
+                inquiryLine = setAsOf(inquiryLine, inquiryResult);
+            }
+
+            return inquiryLine;
+
+    }
+
+    private InquiryLine addNoResultsToInquiryLine (InquiryLine inquiryLine){
+
+        inquiryLine.setFound(Messages.getString("inqs_noResults"));
+        inquiryLine.setAsOf("-");
+
+        return inquiryLine;
+
+    }
+
+    private InquiryLine fetchLatestInquiryResultForInquiryDetailsById (InquiryLine inquiryLine, InquiryDetails inquiryDetails, InquiryResult inquiryResult){
+
+        String found = "";
+        String errorCode = "";
+
+        if (inquiryResult.getIsError()) {
+
+            found = "Error";
+
+            if (!SamplyShareUtils.isNullOrEmpty(inquiryResult.getErrorCode())) {
+                errorCode = inquiryResult.getErrorCode();
+            }
+
+        } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_READY) {
+
+            found = getSizeOfInquiryResult(inquiryResult, "inqs_ready");
+
+        } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_PROCESSING) {
+
+            found = getSizeOfInquiryResult(inquiryResult,"inqs_processing" );
+            errorCode = Messages.getString("");
+
+        } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_ABANDONED) {
+
+            errorCode = Messages.getString("inqs_abandoned");
+
+        }
+
+        inquiryLine = setFound(inquiryLine, found);
+        inquiryLine = setErrorCode(inquiryLine, errorCode);
+
+        return inquiryLine;
+
+    }
+
+    private String getSizeOfInquiryResult (InquiryResult inquiryResult, String defaultErrorMessage){
+
+        try {
+            return inquiryResult.getSize().toString();
+
+        } catch (Exception e) {
+            return Messages.getString("inqs_processing");
+        }
+
+    }
+
+    private InquiryLine setFound (InquiryLine inquiryLine, String found){
+
+        inquiryLine.setFound(found);
+        return inquiryLine;
+
+    }
+
+    private InquiryLine setErrorCode (InquiryLine inquiryLine, String errorCode){
+
+        inquiryLine.setErrorCode(errorCode);
+        return inquiryLine;
+
+    }
+
+    private InquiryLine setBrokerName (Inquiry inquiry, InquiryLine inquiryLine){
+
+        String brokerName = getBrokerName(inquiry);
+        inquiryLine.setBrokerName(brokerName);
+
+        return inquiryLine;
+
+    }
+
+
+    private String getBrokerName (Inquiry inquiry){
+
+        try {
+
+            Broker broker = BrokerUtil.fetchBrokerById(inquiry.getBrokerId());
+            String brokerName = broker.getName();
+
+            if (SamplyShareUtils.isNullOrEmpty(brokerName)) {
+                brokerName = broker.getAddress();
+            }
+
+            return brokerName;
+
+        } catch (Exception e) {
+            return "unknown";
+        }
+
     }
 
     public static String getLabelsFor(List<RequestedEntity> requestedEntities) {
