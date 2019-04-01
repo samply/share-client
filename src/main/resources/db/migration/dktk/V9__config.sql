@@ -10,7 +10,9 @@ INSERT INTO samply.configuration(name, setting, visible) values('QUALITY_REPORT_
 INSERT INTO samply.configuration(name, setting, visible) values('QUALITY_REPORT_SHOW_INFO_SHEET', 'true', false);
 INSERT INTO samply.configuration(name, setting, visible) values('QUALITY_REPORT_SHOW_FILTERED_ELEMENTS_SHEET', 'true', false);
 INSERT INTO samply.configuration(name, setting, visible) values('QUALITY_REPORT_SHOW_ALL_ELEMENTS_SHEET', 'true', false);
+INSERT INTO samply.configuration(name, setting, visible) values('QUALITY_REPORT_SHOW_PATIENT_IDS_SHEET', 'true', false);
 INSERT INTO samply.configuration(name, setting, visible) values('QUALITY_REPORT_SHOW_STATISTICS_SHEET', 'true', false);
+
 
 UPDATE samply.configuration SET setting='' WHERE name='QUALITY_REPORT_IGNORED_DATAELEMENTS';
 UPDATE samply.job_schedule SET cron_expression='0 0/1 * 1/1 * ? *'  WHERE job_key='DecentralSearchGroup.CollectInquiriesJob';

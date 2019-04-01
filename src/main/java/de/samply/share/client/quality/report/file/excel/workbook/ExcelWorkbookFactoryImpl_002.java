@@ -104,29 +104,27 @@ public class ExcelWorkbookFactoryImpl_002 implements ExcelWorkbookFactory {
         QualityResults sortedQualityResults = sortQualityResults(qualityResults);
         AlphabeticallySortedMismatchedQualityResults asmQualityResults = new AlphabeticallySortedMismatchedQualityResults(qualityResults);
 
-        logger.info("Adding explanatory sheet to Excel quality report file");
-        if (explanatoryExcelSheetFactory != null) {
-            XSSFWorkbook workbook2 = addExplanatorySheet(workbook);
-            if (workbook2 != null) {
-                workbook = workbook2;
-            }
-        }
-//                QUALITY_REPORT_SHOW_INFO_SHEET
-//                QUALITY_REPORT_SHOW_FILTERED_ELEMENTS_SHEET
-//                QUALITY_REPORT_SHOW_ALL_ELEMENTS_SHEET
-//                QUALITY_REPORT_SHOW_STATISTICS_SHEET
-
         if (isSheetSelectedToBeWritten(EnumConfiguration.QUALITY_REPORT_SHOW_INFO_SHEET)) {
-
-            logger.info("Adding filtered elements to quality report file");
-
-            QualityResultsStatistics filteredQualityResultsStatistics = getQualityResultStatistics(filteredQualityResults);
-            workbook = addSheet(workbook, FILTERED_ELEMENTS_SHEET_TITLE, filteredQualityResults, asmQualityResults, filteredQualityResultsStatistics);
-
+            logger.info("Adding explanatory sheet to Excel quality report file");
+            if (explanatoryExcelSheetFactory != null) {
+                XSSFWorkbook workbook2 = addExplanatorySheet(workbook);
+                if (workbook2 != null) {
+                    workbook = workbook2;
+                }
+            }
         }
 
         QualityResultsStatistics qualityResultsStatistics = null;
         if (isSheetSelectedToBeWritten(EnumConfiguration.QUALITY_REPORT_SHOW_FILTERED_ELEMENTS_SHEET)) {
+
+            logger.info("Adding filtered elements to quality report file");
+
+            qualityResultsStatistics = getQualityResultStatistics(filteredQualityResults);
+            workbook = addSheet(workbook, FILTERED_ELEMENTS_SHEET_TITLE, filteredQualityResults, asmQualityResults, qualityResultsStatistics);
+
+        }
+
+        if (isSheetSelectedToBeWritten(EnumConfiguration.QUALITY_REPORT_SHOW_ALL_ELEMENTS_SHEET)) {
 
             logger.info("Adding all elements to quality report file");
 
@@ -135,7 +133,7 @@ public class ExcelWorkbookFactoryImpl_002 implements ExcelWorkbookFactory {
 
         }
 
-        if (isSheetSelectedToBeWritten(EnumConfiguration.QUALITY_REPORT_SHOW_ALL_ELEMENTS_SHEET)) {
+        if (isSheetSelectedToBeWritten(EnumConfiguration.QUALITY_REPORT_SHOW_PATIENT_IDS_SHEET)) {
 
             logger.info("Adding mismatching patient local ids");
             workbook = addPatientLocalIdsSheet(workbook, asmQualityResults);
