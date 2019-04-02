@@ -319,7 +319,7 @@ public class InquiryBean implements Serializable {
      */
     public String archive() {
         inquiry.setArchivedAt(SamplyShareUtils.getCurrentSqlTimestamp());
-        latestInquiryDetails.setStatus(InquiryStatusType.IS_ARCHIVED);
+        Utils.setStatus(latestInquiryDetails, InquiryStatusType.IS_ARCHIVED);
 
         InquiryUtil.updateInquiry(inquiry);
         InquiryDetailsUtil.updateInquiryDetails(latestInquiryDetails);

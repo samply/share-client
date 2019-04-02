@@ -36,7 +36,14 @@ public class Connector {
     private final static String INQUIRIES_NO_LABEL = "inqs_noLabel";
     private final static String INQUIRIES_NOT_AVAILABLE = "inqs_not_available";
     private final static String INQUIRIES_ABANDONED = "inqs_abandoned";
+    private final static String INQUIRIES_ARCHIVED = "inqs_archived";
+    private final static String INQUIRIES_NEW = "inqs_new";
+    private final static String INQUIRIES_LDM_ERROR = "inqs_ldm_error";
+
+
     private final static String UNKNOWN = "unknown";
+    private final static String ERROR = "error";
+    private final static String EMPTY = "";
 
 
 
@@ -265,9 +272,9 @@ public class Connector {
         } catch (Exception e) {
 
             logger.warn("Exception caught while trying to populate inquiry lines", e);
-            inquiryLine.setAsOf("");
-            inquiryLine.setFound("Error");
-            inquiryLine.setErrorCode("");
+            inquiryLine.setAsOf(EMPTY);
+            inquiryLine.setFound(ERROR);
+            inquiryLine.setErrorCode(EMPTY);
 
             return inquiryLine;
 
@@ -301,28 +308,39 @@ public class Connector {
 
     private InquiryLine fetchLatestInquiryResultForInquiryDetailsById (InquiryLine inquiryLine, InquiryDetails inquiryDetails, InquiryResult inquiryResult){
 
-        String found = "";
-        String errorCode = "";
+        String found = EMPTY;
+        String errorCode = EMPTY;
 
         if (inquiryResult.getIsError()) {
 
-            found = "Error";
+            found = ERROR;
 
             if (!SamplyShareUtils.isNullOrEmpty(inquiryResult.getErrorCode())) {
                 errorCode = inquiryResult.getErrorCode();
             }
 
-        } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_READY) {
+        } else {
 
-            found = getSizeOfInquiryResult(inquiryResult, INQUIRIES_NOT_AVAILABLE);
-
-        } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_PROCESSING) {
-
-            found = getSizeOfInquiryResult(inquiryResult, INQUIRIES_PROCESSING);
-
-        } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_ABANDONED) {
-
-            errorCode = Messages.getString(INQUIRIES_ABANDONED);
+            switch (inquiryDetails.getStatus()) {
+                case IS_NEW:
+                    errorCode = Messages.getString(INQUIRIES_NEW);
+                    break;
+                case IS_PROCESSING:
+                    found = getSizeOfInquiryResult(inquiryResult, INQUIRIES_PROCESSING);
+                    break;
+                case IS_READY:
+                    found = getSizeOfInquiryResult(inquiryResult, INQUIRIES_NOT_AVAILABLE);
+                    break;
+                case IS_ABANDONED:
+                    errorCode = Messages.getString(INQUIRIES_ABANDONED);
+                    break;
+                case IS_LDM_ERROR:
+                    errorCode = Messages.getString(INQUIRIES_LDM_ERROR);
+                    break;
+                case IS_ARCHIVED:
+                    errorCode = Messages.getString(INQUIRIES_ARCHIVED);
+                    break;
+            }
 
         }
 
@@ -389,7 +407,7 @@ public class Connector {
 
     public static String getLabelsFor(List<RequestedEntity> requestedEntities) {
         if (SamplyShareUtils.isNullOrEmpty(requestedEntities)) {
-            return "";
+            return EMPTY;
         }
         StringBuilder stringBuilder = new StringBuilder();
         for (RequestedEntity re : requestedEntities) {

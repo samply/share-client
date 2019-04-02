@@ -35,6 +35,7 @@ import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.tables.pojos.Inquiry;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
+import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
@@ -73,7 +74,7 @@ public class DbCleanupJob implements Job {
             EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_ARCHIVE_INQUIRY_AFTER_THRESHOLD, inquiryDetails.getInquiryId(), Integer.toString(daysThreshold));
             Inquiry inquiry= InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
             inquiry.setArchivedAt(SamplyShareUtils.getCurrentSqlTimestamp());
-            inquiryDetails.setStatus(InquiryStatusType.IS_ARCHIVED);
+            Utils.setStatus(inquiryDetails, InquiryStatusType.IS_ARCHIVED);
             InquiryUtil.updateInquiry(inquiry);
         }
         InquiryDetailsUtil.updateInquiryDetails(inquiryDetailsList);
@@ -123,7 +124,7 @@ public class DbCleanupJob implements Job {
         inquiryResult.setValidUntil(SamplyShareUtils.getCurrentSqlTimestamp());
         inquiryResult.setLocation("");
         InquiryResultUtil.updateInquiryResult(inquiryResult);
-        inquiryDetails.setStatus(InquiryStatusType.IS_ARCHIVED);
+        Utils.setStatus(inquiryDetails, InquiryStatusType.IS_ARCHIVED);
         InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
     }
 
