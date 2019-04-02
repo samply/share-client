@@ -365,7 +365,7 @@ public final class Utils {
     public static void setStatus (InquiryDetails inquiryDetails, InquiryStatusType inquiryStatusType){
 
         inquiryDetails.setStatus(inquiryStatusType);
-        logger.debug ("Change in Inquiry Status ("+inquiryDetails.getInquiryId()+" ): " + inquiryDetails.getStatus());
+        logger.debug ("Change in Inquiry Status ("+inquiryDetails.getInquiryId()+"): " + inquiryDetails.getStatus());
 
     }
 
