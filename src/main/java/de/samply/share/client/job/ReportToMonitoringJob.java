@@ -61,11 +61,15 @@ public class ReportToMonitoringJob implements Job {
 
     private final ReportToMonitoringJobParams jobParams = new ReportToMonitoringJobParams();
 
-    static {
+    public ReportToMonitoringJob() {
+
         ldmConnector = ApplicationBean.getLdmConnector();
         for (Broker broker : BrokerUtil.fetchBrokers()) {
             brokerConnectors.add(new BrokerConnector(broker));
         }
+
+        logger.debug(ReportToMonitoringJob.class.getName() + " created");
+
     }
 
     @Override

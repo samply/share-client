@@ -201,7 +201,10 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
             stringBuilder.append(mdrId + ';');
         }
 
-        logger.debug(stringBuilder.toString());
+        if (stringBuilder.length() > 0){
+            logger.debug(stringBuilder.toString());
+        }
+
     }
 
     private ViewFields getViewFields (boolean completeMdsViewFields, boolean includeAdditionalViewfields) throws ExecutionException, MdrConnectionException {
