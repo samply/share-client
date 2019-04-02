@@ -366,27 +366,31 @@ public class ApplicationBean implements Serializable {
      * Update the URLs to the local components in the db with the settings read from the corresponding xml file
      */
     private static void updateCommonUrls() {
+
         if (urls != null) {
-            de.samply.share.client.model.db.tables.pojos.Configuration idmanagerConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
-            idmanagerConfigElement.setName(EnumConfiguration.ID_MANAGER_URL.name());
-            idmanagerConfigElement.setSetting(urls.getIdmanagerUrl());
-            ConfigurationUtil.insertOrUpdateConfigurationElement(idmanagerConfigElement);
 
-            de.samply.share.client.model.db.tables.pojos.Configuration ldmConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
-            ldmConfigElement.setName(EnumConfiguration.LDM_URL.name());
-            ldmConfigElement.setSetting(urls.getCentraxxUrl());
-            ConfigurationUtil.insertOrUpdateConfigurationElement(ldmConfigElement);
+            updateCommonUrls(EnumConfiguration.ID_MANAGER_URL, urls.getIdmanagerUrl());
+            updateCommonUrls(EnumConfiguration.LDM_URL, urls.getCentraxxUrl());
+            updateCommonUrls(EnumConfiguration.SHARE_URL, urls.getShareUrl());
+            updateCommonUrls(EnumConfiguration.MDR_URL, urls.getMdrUrl());
 
-            de.samply.share.client.model.db.tables.pojos.Configuration shareConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
-            shareConfigElement.setName(EnumConfiguration.SHARE_URL.name());
-            shareConfigElement.setSetting(urls.getShareUrl());
-            ConfigurationUtil.insertOrUpdateConfigurationElement(shareConfigElement);
-
-            de.samply.share.client.model.db.tables.pojos.Configuration mdrConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
-            mdrConfigElement.setName(EnumConfiguration.MDR_URL.name());
-            mdrConfigElement.setSetting(urls.getMdrUrl());
-            ConfigurationUtil.insertOrUpdateConfigurationElement(mdrConfigElement);
         }
+
+    }
+
+    private static void updateCommonUrls (EnumConfiguration enumConfiguration, String url){
+
+        de.samply.share.client.model.db.tables.pojos.Configuration configElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
+        configElement.setName(enumConfiguration.name());
+        configElement.setSetting(url);
+        ConfigurationUtil.insertOrUpdateConfigurationElement(configElement);
+
+        logConfiguration(configElement);
+
+    }
+
+    private static void logConfiguration (de.samply.share.client.model.db.tables.pojos.Configuration configuration){
+        logger.debug("save in database : "+configuration.getName()+ "=" + configuration.getSetting());
     }
 
     /**

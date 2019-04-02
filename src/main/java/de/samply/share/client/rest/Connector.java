@@ -29,6 +29,17 @@ public class Connector {
 
     private static final Logger logger = LogManager.getLogger(InquiryHandlingBean.class);
 
+    private final static String DATE_FORMAT = "dd.MM.yyyy HH:mm";
+
+    private final static String INQUIRIES_PROCESSING = "inqs_processing";
+    private final static String INQUIRIES_NO_RESULTS = "inqs_noResults";
+    private final static String INQUIRIES_NO_LABEL = "inqs_noLabel";
+    private final static String INQUIRIES_NOT_AVAILABLE = "inqs_not_available";
+    private final static String INQUIRIES_ABANDONED = "inqs_abandoned";
+    private final static String UNKNOWN = "unknown";
+
+
+
     private List<InquiryLine> activeInquiryList;
     private List<InquiryLine> erroneousInquiryList;
     private List<InquiryLine> archivedInquiryList;
@@ -208,7 +219,7 @@ public class Connector {
     private InquiryLine setName (Inquiry inquiry, InquiryLine inquiryLine){
 
         if (SamplyShareUtils.isNullOrEmpty(inquiry.getLabel())) {
-            inquiryLine.setName(Messages.getString("inqs_noLabel"));
+            inquiryLine.setName(Messages.getString(INQUIRIES_NO_LABEL));
         } else {
             inquiryLine.setName(inquiry.getLabel());
         }
@@ -219,14 +230,14 @@ public class Connector {
 
     private InquiryLine setReceivedAt (InquiryLine inquiryLine, InquiryDetails inquiryDetails){
 
-        inquiryLine.setReceivedAt(SamplyShareUtils.convertSqlTimestampToString(inquiryDetails.getReceivedAt(), "dd.MM.yyyy HH:mm"));
+        inquiryLine.setReceivedAt(SamplyShareUtils.convertSqlTimestampToString(inquiryDetails.getReceivedAt(), DATE_FORMAT));
         return inquiryLine;
 
     }
 
     private InquiryLine setAsOf (InquiryLine inquiryLine, InquiryResult inquiryResult){
 
-        inquiryLine.setAsOf(SamplyShareUtils.convertSqlTimestampToString(inquiryResult.getExecutedAt(), "dd.MM.yyyy HH:mm"));
+        inquiryLine.setAsOf(SamplyShareUtils.convertSqlTimestampToString(inquiryResult.getExecutedAt(), DATE_FORMAT));
         return inquiryLine;
 
     }
@@ -236,7 +247,7 @@ public class Connector {
         if (inquiry.getArchivedAt() != null) {
             inquiryLine.setArchivedAt(
                     SamplyShareUtils.convertSqlTimestampToString(
-                            inquiry.getArchivedAt(), "dd.MM.yyyy HH:mm"));
+                            inquiry.getArchivedAt(), DATE_FORMAT));
         } else {
             inquiryLine.setArchivedAt(null);
         }
@@ -281,7 +292,7 @@ public class Connector {
 
     private InquiryLine addNoResultsToInquiryLine (InquiryLine inquiryLine){
 
-        inquiryLine.setFound(Messages.getString("inqs_noResults"));
+        inquiryLine.setFound(Messages.getString(INQUIRIES_NO_RESULTS));
         inquiryLine.setAsOf("-");
 
         return inquiryLine;
@@ -303,16 +314,15 @@ public class Connector {
 
         } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_READY) {
 
-            found = getSizeOfInquiryResult(inquiryResult, "inqs_ready");
+            found = getSizeOfInquiryResult(inquiryResult, INQUIRIES_NOT_AVAILABLE);
 
         } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_PROCESSING) {
 
-            found = getSizeOfInquiryResult(inquiryResult,"inqs_processing" );
-            errorCode = Messages.getString("");
+            found = getSizeOfInquiryResult(inquiryResult, INQUIRIES_PROCESSING);
 
         } else if (inquiryDetails.getStatus() == InquiryStatusType.IS_ABANDONED) {
 
-            errorCode = Messages.getString("inqs_abandoned");
+            errorCode = Messages.getString(INQUIRIES_ABANDONED);
 
         }
 
@@ -329,7 +339,7 @@ public class Connector {
             return inquiryResult.getSize().toString();
 
         } catch (Exception e) {
-            return Messages.getString("inqs_processing");
+            return Messages.getString(defaultErrorMessage);
         }
 
     }
@@ -372,7 +382,7 @@ public class Connector {
             return brokerName;
 
         } catch (Exception e) {
-            return "unknown";
+            return UNKNOWN;
         }
 
     }

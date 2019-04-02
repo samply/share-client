@@ -15,4 +15,4 @@ INSERT INTO samply.configuration(name, setting, visible) values('QUALITY_REPORT_
 
 
 UPDATE samply.configuration SET setting='' WHERE name='QUALITY_REPORT_IGNORED_DATAELEMENTS';
-UPDATE samply.job_schedule SET cron_expression='0 0/1 * 1/1 * ? *'  WHERE job_key='DecentralSearchGroup.CollectInquiriesJob';
+UPDATE samply.job_schedule SET cron_expression='0/50 * * * * ?'  WHERE job_key='DecentralSearchGroup.CollectInquiriesJob';
