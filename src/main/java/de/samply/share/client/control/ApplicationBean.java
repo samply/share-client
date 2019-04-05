@@ -7,9 +7,11 @@ import de.dth.mdr.validator.exception.MdrException;
 import de.samply.common.config.Configuration;
 import de.samply.common.config.ObjectFactory;
 import de.samply.common.http.HttpConnector;
+import de.samply.common.http.HttpConnectorException;
 import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.common.mdrclient.MdrInvalidResponseException;
+import de.samply.config.util.FileFinderUtil;
 import de.samply.config.util.JAXBUtil;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.job.params.QuartzJob;
@@ -18,9 +20,9 @@ import de.samply.share.client.model.check.ConnectCheckResult;
 import de.samply.share.client.model.common.Bridgehead;
 import de.samply.share.client.model.common.Operator;
 import de.samply.share.client.model.common.Urls;
-import de.samply.share.client.model.db.enums.*;
-import de.samply.share.client.model.db.tables.pojos.Credentials;
-import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
+import de.samply.share.client.model.db.enums.EventMessageType;
+import de.samply.share.client.model.db.enums.InquiryStatusType;
+import de.samply.share.client.model.db.enums.ReplyRuleType;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
@@ -36,7 +38,6 @@ import de.samply.share.common.model.dto.UserAgent;
 import de.samply.share.common.utils.Constants;
 import de.samply.share.common.utils.ProjectInfo;
 import de.samply.web.mdrFaces.MdrContext;
-import org.apache.http.HttpHeaders;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,6 +58,7 @@ import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -64,7 +66,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -87,14 +88,13 @@ public class ApplicationBean implements Serializable {
     private static final String COMMON_INFOS_FILENAME_SUFFIX = "_bridgehead_info.xml";
     private static final List<String> NAMESPACES = new ArrayList<>(Arrays.asList("dktk", "adt"));
 
-    private static final int TIMEOUT_IN_SECONDS = 15;
-
     private static Urls urls;
     private static Operator operator;
     private static Bridgehead infos;
 
     private static boolean qrTaskRunning;
 
+    private static HttpConnector httpConnector;
     private static Configuration configuration;
     private static MdrClient mdrClient;
 
@@ -110,16 +110,14 @@ public class ApplicationBean implements Serializable {
     private static MdrConnection mdrConnection;
     private static MDRValidator mdrValidator;
     private static LdmConnector ldmConnector;
+    private static MainzellisteConnector mainzellisteConnector;
+    private static CTSConnector ctsConnector;
 
     private static final ConnectCheckResult shareAvailability = new ConnectCheckResult(true, "Samply.Share.Client", ProjectInfo.INSTANCE.getVersionString());
     private ConnectCheckResult ldmAvailability = new ConnectCheckResult();
     private ConnectCheckResult idmAvailability = new ConnectCheckResult();
 
-    private static Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-
-    public static Locale getLocale() {
-        return locale;
-    }
+    static String[] fallbacks;
 
     @PostConstruct
     public void init() {
@@ -133,10 +131,19 @@ public class ApplicationBean implements Serializable {
         // Load common-config.xml
         loadCommonConfig();
 
-        loadUrls();
-        loadOperator();
-        loadBridgeheadInfo();
-        updateCommonUrls();
+        if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("dktk") || ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("samply")) {
+            loadUrls();
+            loadOperator();
+            loadBridgeheadInfo();
+            updateCommonUrls();
+        }
+
+        // Initialize HTTP Connector
+        try {
+            reInitHttpConnector();
+        } catch (HttpConnectorException e) {
+            throw new RuntimeException("Could not spawn http connector.", e);
+        }
 
         resetMdrContext();
         patientValidator = new PatientValidator(MdrContext.getMdrContext().getMdrClient());
@@ -153,23 +160,26 @@ public class ApplicationBean implements Serializable {
 
         EventLogUtil.insertEventLogEntry(EventMessageType.E_SYSTEM_STARTUP);
         checkProcessingInquiries();
+        if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
+            initMainzelliste();
+            initCTS();
+
+        }
+    }
+
+    private void initMainzelliste() {
+        mainzellisteConnector = new MainzellisteConnector();
+    }
+
+    private void initCTS() {
+        ctsConnector = new CTSConnector();
     }
 
     private void checkProcessingInquiries() {
         List<InquiryDetails> inquiryDetailsList = InquiryDetailsUtil.getInquiryDetailsByStatus(InquiryStatusType.IS_PROCESSING);
-        inquiryDetailsList.addAll((InquiryDetailsUtil.getInquiryDetailsByStatus(InquiryStatusType.IS_PARTIALLY_READY)));
         for (InquiryDetails inquiryDetails : inquiryDetailsList) {
             inquiryDetails.setStatus(InquiryStatusType.IS_NEW);
             InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
-
-            setInquiryCriteriaStatusNew(inquiryDetails);
-        }
-    }
-
-    private void setInquiryCriteriaStatusNew(InquiryDetails inquiryDetails) {
-        for (InquiryCriteria inquiryCriteria : InquiryCriteriaUtil.getInquiryCriteriaForInquiryDetails(inquiryDetails)) {
-            inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_NEW);
-            InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteria);
         }
     }
 
@@ -213,38 +223,42 @@ public class ApplicationBean implements Serializable {
         }
     }
 
+    // TODO: other connector implementations
     public static void initLdmConnector() {
-        switch (ApplicationUtils.getConnectorType()) {
-            case DKTK:
-                if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
-                    try {
-                        int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
-                        ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true, maxCacheSize);
-                    } catch (NumberFormatException e) {
-                        ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true);
-                    }
-                } else {
-                    ApplicationBean.ldmConnector = new LdmConnectorCentraxx(false);
+        if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("samply")) {
+            if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
+                try {
+                    int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
+                    ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true, maxCacheSize);
+                } catch (NumberFormatException e) {
+                    ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true);
                 }
-                break;
+            } else {
+                ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(false);
+            }
+        } else if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("dktk")) {
+            if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
+                try {
+                    int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
+                    ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true, maxCacheSize);
+                } catch (NumberFormatException e) {
+                    ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true);
+                }
+            } else {
+                ApplicationBean.ldmConnector = new LdmConnectorCentraxx(false);
+            }
+        } else if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("fhir")) {
 
-            case SAMPLY:
-                if (ApplicationUtils.isLanguageCql()) {
-                        ApplicationBean.ldmConnector = new LdmConnectorCql(false);
-                }else {
-                    if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
-                        try {
-                            int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
-                            ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true, maxCacheSize);
-                        } catch (NumberFormatException e) {
-                            ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true);
-                        }
-                    } else {
-                        ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(false);
-                    }
-                }
-                break;
         }
+    }
+
+    /**
+     * Fill the CredentialsProvider and reinitialize the HttpConnector
+     */
+    private static void reInitHttpConnector() throws HttpConnectorException {
+        CredentialsProvider credentialsProvider = Utils.prepareCredentialsProvider();
+        httpConnector = new HttpConnector(ConfigurationUtil.getHttpConfigParams(configuration), credentialsProvider);
+        httpConnector.addCustomHeader(Constants.HEADER_XML_NAMESPACE, Constants.VALUE_XML_NAMESPACE_COMMON);
     }
 
     /**
@@ -255,8 +269,13 @@ public class ApplicationBean implements Serializable {
     private void resetMdrContext() {
         String mdrUrl;
 
+//        if (ProjectInfo.INSTANCE.getProjectName().equals("osse")) {
+//            logger.debug("Getting osse mdr url");
+//            mdrUrl = OsseEdcContext.getOsseEdcConfiguration().getMdrUrl();
+//        } else {
         mdrUrl = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_URL);
-        mdrClient = new MdrClient(mdrUrl, createHttpConnector().getJerseyClient(mdrUrl));
+//        }
+        mdrClient = new MdrClient(mdrUrl, httpConnector.getJerseyClient(mdrUrl));
         mdrClient.cleanCache();
         MdrContext.getMdrContext().init(mdrClient);
         logger.debug("Reinitialized MDR Client with url " + mdrUrl + " - base uri is " + mdrClient.getBaseURI());
@@ -330,7 +349,7 @@ public class ApplicationBean implements Serializable {
         } catch (FileNotFoundException e) {
             logger.error("No common bridgehead info file found by using samply.common.config for project " + ProjectInfo.INSTANCE.getProjectName());
         } catch (UnmarshalException ue) {
-            throw new RuntimeException("Unable to unmarshal bridgehead_info file", ue);
+            throw new RuntimeException("Unable to unmarshal bridgehead_info file");
         } catch (SAXException | JAXBException | ParserConfigurationException e) {
             e.printStackTrace();
         }
@@ -360,16 +379,14 @@ public class ApplicationBean implements Serializable {
      */
     private static void updateCommonUrls() {
         if (urls != null) {
-            if (ApplicationUtils.isDktk()) {
-                de.samply.share.client.model.db.tables.pojos.Configuration idmanagerConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
-                idmanagerConfigElement.setName(EnumConfiguration.ID_MANAGER_URL.name());
-                idmanagerConfigElement.setSetting(urls.getIdmanagerUrl());
-                ConfigurationUtil.insertOrUpdateConfigurationElement(idmanagerConfigElement);
-            }
+            de.samply.share.client.model.db.tables.pojos.Configuration idmanagerConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
+            idmanagerConfigElement.setName(EnumConfiguration.ID_MANAGER_URL.name());
+            idmanagerConfigElement.setSetting(urls.getIdmanagerUrl());
+            ConfigurationUtil.insertOrUpdateConfigurationElement(idmanagerConfigElement);
 
             de.samply.share.client.model.db.tables.pojos.Configuration ldmConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
             ldmConfigElement.setName(EnumConfiguration.LDM_URL.name());
-            ldmConfigElement.setSetting(urls.getLdmUrl());
+            ldmConfigElement.setSetting(urls.getCentraxxUrl());
             ConfigurationUtil.insertOrUpdateConfigurationElement(ldmConfigElement);
 
             de.samply.share.client.model.db.tables.pojos.Configuration shareConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
@@ -381,6 +398,18 @@ public class ApplicationBean implements Serializable {
             mdrConfigElement.setName(EnumConfiguration.MDR_URL.name());
             mdrConfigElement.setSetting(urls.getMdrUrl());
             ConfigurationUtil.insertOrUpdateConfigurationElement(mdrConfigElement);
+
+            if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
+                de.samply.share.client.model.db.tables.pojos.Configuration ctsConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
+                ctsConfigElement.setName(EnumConfiguration.CTS_URL.name());
+                ctsConfigElement.setSetting(urls.getCtsUrl());
+                ConfigurationUtil.insertOrUpdateConfigurationElement(ctsConfigElement);
+
+                de.samply.share.client.model.db.tables.pojos.Configuration mainzellisteConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
+                mainzellisteConfigElement.setName(EnumConfiguration.MAINZELLISTE_URL.name());
+                mainzellisteConfigElement.setSetting(urls.getMainzellisteUrl());
+                ConfigurationUtil.insertOrUpdateConfigurationElement(mainzellisteConfigElement);
+            }
         }
     }
 
@@ -392,7 +421,7 @@ public class ApplicationBean implements Serializable {
     private static void cancelAllJobsInGroup(String groupName) {
         logger.info("Cancelling Jobs in group " + groupName);
         try {
-            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.groupEquals(groupName))) {
+            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(groupName))) {
                 logger.info("Remove triggers for Job " + jobKey.toString());
                 List<? extends Trigger> triggersOfJob = scheduler.getTriggersOfJob(jobKey);
                 for (Trigger trigger : triggersOfJob) {
@@ -407,7 +436,7 @@ public class ApplicationBean implements Serializable {
     /**
      * Cancel all jobs that are linked with an upload
      */
-    static void cancelAllJobsForUpload() {
+    public static void cancelAllJobsForUpload() {
         logger.info("Cancelling upload related jobs");
         try {
             for (JobExecutionContext jobExecutionContext : scheduler.getCurrentlyExecutingJobs()) {
@@ -426,7 +455,7 @@ public class ApplicationBean implements Serializable {
     /**
      * Get the list of scheduled jobs from the database and arrange starting them
      */
-    static void scheduleJobsFromDatabase() {
+    public static void scheduleJobsFromDatabase() {
         List<JobSchedule> jobSchedules = JobScheduleUtil.getJobSchedules();
         for (JobSchedule jobSchedule : jobSchedules) {
             QuartzJob quartzJob = new QuartzJob(jobSchedule.getJobKey(), null, null, null, jobSchedule.getCronExpression(), jobSchedule.getPaused(), "");
@@ -496,41 +525,7 @@ public class ApplicationBean implements Serializable {
         return infos;
     }
 
-    public static Bridgehead getBridgeheadInfos() {
-        return infos;
-    }
-
-
-    public static HttpConnector createHttpConnector() {
-        return createHttpConnector(TIMEOUT_IN_SECONDS);
-    }
-
-    public static HttpConnector createHttpConnector(int timeout) {
-        CredentialsProvider credentialsProvider = Utils.prepareCredentialsProvider();
-
-        HttpConnector httpConnector = new HttpConnector(ConfigurationUtil.getHttpConfigParams(configuration), credentialsProvider, timeout);
-        httpConnector.setUserAgent(getUserAgent().toString());
-        httpConnector.addCustomHeader(Constants.HEADER_XML_NAMESPACE, Constants.VALUE_XML_NAMESPACE_COMMON);
-
-        return httpConnector;
-    }
-
-    public static HttpConnector createHttpConnector(TargetType targetType) {
-        return createHttpConnector(targetType, TIMEOUT_IN_SECONDS);
-    }
-
-    public static HttpConnector createHttpConnector(TargetType targetType, int timeout) {
-        HttpConnector httpConnector = createHttpConnector(timeout);
-
-        List<Credentials> credentialsByTarget = CredentialsUtil.getCredentialsByTarget(targetType);
-        if (credentialsByTarget.isEmpty()) {
-            logger.warn("No credentials for target type '" + targetType + "' found. Using default HttpConnector without credentials for '" + targetType + "'.");
-            return createHttpConnector();
-        }
-
-        Credentials firstCredentials = credentialsByTarget.get(0);
-        httpConnector.addCustomHeader(HttpHeaders.AUTHORIZATION, "Basic " + StoreConnector.getBase64Credentials(firstCredentials.getUsername(), firstCredentials.getPasscode()));
-
+    public static HttpConnector getHttpConnector() {
         return httpConnector;
     }
 
@@ -547,27 +542,32 @@ public class ApplicationBean implements Serializable {
     }
 
     public static UserAgent getUserAgent() {
-        if (userAgent == null) {
-            return getDefaultUserAgent();
-        }
-
         return userAgent;
-    }
-
-    public static UserAgent getDefaultUserAgent() {
-        return new UserAgent(ProjectInfo.INSTANCE.getProjectName(), "Samply.Share", ProjectInfo.INSTANCE.getVersionString());
     }
 
     public static void setUserAgent(UserAgent userAgent) {
         ApplicationBean.userAgent = userAgent;
+        httpConnector.setUserAgent(userAgent.toString());
     }
 
     public static Scheduler getScheduler() {
         return scheduler;
     }
 
+    public static void resetCredentialsProvider() {
+        httpConnector.setCp(Utils.prepareCredentialsProvider());
+    }
+
     public static String getDisplayName() {
-        return ApplicationUtils.getConnectorType().getDisplayName();
+        if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("osse")) {
+            return "OSSE.Share";
+        } else if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("dktk")) {
+            return "DKTK.Teiler";
+        } else if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("gbn")) {
+            return "DKTK.Teiler (GBN)";
+        } else {
+            return "Samply.Share";
+        }
     }
 
     /**
@@ -617,11 +617,11 @@ public class ApplicationBean implements Serializable {
         return patientValidator;
     }
 
-    static ChainStatisticsManager getChainStatisticsManager() {
+    public static ChainStatisticsManager getChainStatisticsManager() {
         return chainStatisticsManager;
     }
 
-    static ChainFinalizer getChainFinalizer() {
+    public static ChainFinalizer getChainFinalizer() {
         return chainFinalizer;
     }
 
@@ -645,7 +645,7 @@ public class ApplicationBean implements Serializable {
         return idmAvailability;
     }
 
-    static MDRValidator getMDRValidator() {
+    public static MDRValidator getMDRValidator() {
         return mdrValidator;
     }
 
