@@ -259,7 +259,7 @@ public class CentralSearchConnector {
             lastUploadTimestamp = uploadStats.getLastUploadTimestamp();
         }
 
-        return (lastUploadTimestamp != null) ? lastUploadTimestamp : DEFAULT_LAST_UPDATE_DATE;
+        return (lastUploadTimestamp != null || lastUploadTimestamp.equalsIgnoreCase("null")) ? lastUploadTimestamp : DEFAULT_LAST_UPDATE_DATE;
 
     }
 
