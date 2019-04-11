@@ -27,21 +27,25 @@ package de.samply.share.client.quality.report.results.operations;/*
 
 import de.dth.mdr.validator.MDRValidator;
 import de.dth.mdr.validator.exception.ValidatorException;
+import de.samply.share.client.quality.report.logger.PercentageLogger;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.QueryValidator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public class QualityResultsValidator {
 
 
+    private static final Logger logger = LogManager.getLogger(QualityResultsValidator.class);
 
     private QueryValidator queryValidator;
-    private MDRValidator dthValidator;
+    private MDRValidator mdrValidator;
 
 
     public QualityResultsValidator(MDRValidator dthValidator, QueryValidator queryValidator) {
-        this.dthValidator = dthValidator;
+        this.mdrValidator = dthValidator;
         this.queryValidator = queryValidator;
     }
 
@@ -49,11 +53,15 @@ public class QualityResultsValidator {
 
         if (qualityResults != null){
 
+            int numberOfQualityResults = getNumberOfQualityResults(qualityResults);
+            PercentageLogger percentageLogger = new PercentageLogger(logger, numberOfQualityResults, "validating quality results...");
             for (MdrIdDatatype mdrId : qualityResults.getMdrIds()){
 
+                logger.debug("validating element  "+mdrId );
                 for (String value : qualityResults.getValues(mdrId)){
 
                     qualityResults = validate(qualityResults, mdrId, value);
+                    percentageLogger.incrementCounter();
 
                 }
 
@@ -62,6 +70,18 @@ public class QualityResultsValidator {
         }
 
         return qualityResults;
+    }
+
+    private int getNumberOfQualityResults(QualityResults qualityResults){
+
+        int counter = 0;
+
+        for (MdrIdDatatype mdrId : qualityResults.getMdrIds()){
+            counter += qualityResults.getValues(mdrId).size();
+        }
+
+        return counter;
+
     }
 
     private QualityResults validate (QualityResults qualityResults, MdrIdDatatype mdrId, String value) throws QualityResultsValidatorException {
@@ -105,16 +125,28 @@ public class QualityResultsValidator {
 
         try {
 
-            return (value != null) && dthValidator.validate(getMdrKey(mdrId), value);
+            return (value != null) && mdrValidator.validate(mdrId.toString(), value);
 
         } catch (ValidatorException e) {
-            throw new QualityResultsValidatorException(e);
+             //throw new QualityResultsValidatorException(e);
+            logger.debug(mdrId+":"+value);
+            logger.debug(e);
+
+            return false;
+            //return isValid_LastMdrId(mdrId, value);
         }
 
     }
 
-    private String getMdrKey (MdrIdDatatype mdrId){
-        return mdrId.toString();
+    private boolean isValid_LastMdrId (MdrIdDatatype mdrId, String value) throws QualityResultsValidatorException {
+
+        try {
+            return (value != null) && mdrValidator.validate(mdrId.getLatestMdr(), value);
+
+        } catch (ValidatorException e) {
+            throw new QualityResultsValidatorException(e);
+        }
     }
+
 
 }
