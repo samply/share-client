@@ -28,6 +28,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.samply.share.client.quality.report.logger.PercentageLogger;
 import de.samply.share.common.utils.MdrIdDatatype;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,12 +67,16 @@ public class CxxMappingParser {
 
         if (jsonArray != null){
 
+            PercentageLogger percentageLogger = new PercentageLogger(logger, jsonArray.size(), "analyzing mdr mapping...");
             for (JsonElement jsonElement : jsonArray){
 
                 CxxMappingElement cxxMappingElement = getCxxMappingElement(jsonElement);
                 if (cxxMappingElement != null){
+                    logger.debug(cxxMappingElement.getMdrId());
                     cxxMappingElementList.add(cxxMappingElement);
                 }
+
+                percentageLogger.incrementCounter();
 
             }
 
@@ -105,34 +110,94 @@ public class CxxMappingParser {
 
     private CxxMappingElement addMdrRepresentations (CxxMappingElement cxxMappingElement, JsonObject jsonObject){
 
+        try{
+
+            return addMdrRepresentations_WithoutManagementException(cxxMappingElement, jsonObject);
+
+        } catch (Exception e){
+
+            logger.debug(e);
+            return cxxMappingElement;
+
+        }
+
+    }
+
+    private CxxMappingElement addMdrRepresentations_WithoutManagementException (CxxMappingElement cxxMappingElement, JsonObject jsonObject){
+
         JsonElement jsonElementMdrRepresentations = jsonObject.get(CxxConstants.MDR_REPRESENTATIONS);
 
         if (jsonElementMdrRepresentations != null){
 
             JsonArray jsonArrayMdrRepresentations = jsonElementMdrRepresentations.getAsJsonArray();
 
-            for ( JsonElement jsonElementMdrRepresentation : jsonArrayMdrRepresentations){
+            if (jsonArrayMdrRepresentations != null) {
 
-                JsonObject jsonObjectMdrRepresentation = jsonElementMdrRepresentation.getAsJsonObject();
-                String mdrValue = getStringOfJsonObject(jsonObjectMdrRepresentation, CxxConstants.MDR_PERMITTED_VALUE);
+                for (JsonElement jsonElementMdrRepresentation : jsonArrayMdrRepresentations) {
 
-                JsonElement jsonElementCxxRepresentations = jsonObjectMdrRepresentation.get(CxxConstants.CXX_REPRESENTATIONS);
-                JsonArray jsonArrayCxxRepresentations = jsonElementCxxRepresentations.getAsJsonArray();
+                    JsonObject jsonObjectMdrRepresentation = jsonElementMdrRepresentation.getAsJsonObject();
+                    String mdrValue = getStringOfJsonObject(jsonObjectMdrRepresentation, CxxConstants.MDR_PERMITTED_VALUE);
 
-                for (JsonElement jsonElementCxxRepresentation : jsonArrayCxxRepresentations){
+                    JsonElement jsonElementCxxRepresentations = jsonObjectMdrRepresentation.get(CxxConstants.CXX_REPRESENTATIONS);
 
-                    JsonObject jsonObjectCxxRepresentation = jsonElementCxxRepresentation.getAsJsonObject();
-                    String cxxValue = getStringOfJsonObject(jsonObjectCxxRepresentation, CxxConstants.CXX_VALUE_NAME);
 
-                    cxxMappingElement.addValue(mdrValue, cxxValue);
+                    cxxMappingElement = addJsonElementCxxRepresentations(cxxMappingElement, mdrValue, jsonElementCxxRepresentations);
 
                 }
-
             }
         }
 
         return cxxMappingElement;
     }
+
+
+    private CxxMappingElement addJsonElementCxxRepresentations (CxxMappingElement cxxMappingElement, String mdrValue, JsonElement jsonElementCxxRepresentations){
+
+        try {
+
+            return addJsonElementCxxRepresentations_WithoutManagementException(cxxMappingElement, mdrValue, jsonElementCxxRepresentations);
+
+        } catch (Exception e){
+
+            logger.debug(e);
+            return cxxMappingElement;
+
+        }
+
+    }
+
+    private CxxMappingElement addJsonElementCxxRepresentations_WithoutManagementException (CxxMappingElement cxxMappingElement, String mdrValue, JsonElement jsonElementCxxRepresentations){
+
+        boolean hasCxxValues = false;
+
+        if (jsonElementCxxRepresentations != null){
+
+            JsonArray jsonArrayCxxRepresentations = jsonElementCxxRepresentations.getAsJsonArray();
+
+            if (jsonArrayCxxRepresentations != null) {
+
+                for (JsonElement jsonElementCxxRepresentation : jsonArrayCxxRepresentations) {
+
+                    JsonObject jsonObjectCxxRepresentation = jsonElementCxxRepresentation.getAsJsonObject();
+                    String cxxValue = getStringOfJsonObject(jsonObjectCxxRepresentation, CxxConstants.CXX_VALUE_NAME);
+
+                    cxxMappingElement.addValue(mdrValue, cxxValue);
+                    hasCxxValues = true;
+
+                }
+
+            }
+
+        }
+
+        if (!hasCxxValues){
+            logger.debug(mdrValue+" without CentraXX value");
+        }
+
+        return cxxMappingElement;
+
+    }
+
 
     private MdrIdDatatype getMdrId(JsonObject jsonObject){
 

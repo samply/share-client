@@ -225,7 +225,12 @@ public class CentralSearchConnector {
             }
             DateRestriction dateRestriction = new DateRestriction();
             try {
-                dateRestriction.setLastUpload(SamplyShareUtils.convertDateStringToString(getLastUploadTimestamp(uploadStats), DATE_FORMAT_HTTP_HEADER, DATE_FORMAT_TARGET));
+                String lastUpload = getLastUploadTimestamp(uploadStats);
+                logger.debug (lastUpload);
+                String lastUpload2 = SamplyShareUtils.convertDateStringToString(lastUpload, DATE_FORMAT_HTTP_HEADER, DATE_FORMAT_TARGET);
+                logger.debug (lastUpload2);
+
+                dateRestriction.setLastUpload(lastUpload2);
                 dateRestriction.setServerTime(SamplyShareUtils.convertDateStringToString(dateHeader, DATE_FORMAT_HTTP_HEADER, DATE_FORMAT_TARGET));
             } catch (ParseException e) {
                 throw new CentralSearchConnectorException("Parse Exception while trying to set date restriction.", e);
@@ -259,7 +264,7 @@ public class CentralSearchConnector {
             lastUploadTimestamp = uploadStats.getLastUploadTimestamp();
         }
 
-        return (lastUploadTimestamp != null || lastUploadTimestamp.equalsIgnoreCase("null")) ? lastUploadTimestamp : DEFAULT_LAST_UPDATE_DATE;
+        return (lastUploadTimestamp != null && !lastUploadTimestamp.contains("null")) ? lastUploadTimestamp : DEFAULT_LAST_UPDATE_DATE;
 
     }
 

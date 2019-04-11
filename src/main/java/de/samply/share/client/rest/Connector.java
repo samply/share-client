@@ -83,10 +83,14 @@ public class Connector {
     public Response getArchivedInquiries(
             @HeaderParam("userid") Integer userId,
             @HeaderParam("Authorization") String authStringBase64) {
+        logger.debug("getting archived inquiries");
+        logger.debug("authorizing");
         if (!authorize(authStringBase64)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
+        logger.debug("loading archived inquiry list");
         loadArchivedInquiryList(userId);
+        logger.debug("return archived inquiry list");
         return Response.ok(addDataBracket(archivedInquiryList)).build();
     }
 
@@ -102,6 +106,7 @@ public class Connector {
 
     private boolean authorize(String base64) {
         if (!StringUtils.startsWith(base64, "Basic")) {
+            logger.debug ("auth1"+ base64);
             return false;
         }
         String base64Credentials = base64.substring("Basic".length()).trim();
@@ -111,14 +116,18 @@ public class Connector {
                         Charset.forName("UTF-8"));
         final String[] values = credentials.split(":", 2);
         if (values.length != 2) {
+            logger.debug ("auth2");
             return false;
         }
         if (!StringUtils.equals(StoreConnector.authorizedUsername, values[0])) {
+            logger.debug ("auth3");
             return false;
         }
         if (!StringUtils.equals(StoreConnector.authorizedPassword, values[1])) {
+            logger.debug ("auth4");
             return false;
         }
+        logger.debug ("auth5");
         return true;
     }
 
@@ -129,6 +138,7 @@ public class Connector {
         stringBuilder.append("{\"data\": ");
         stringBuilder.append(json);
         stringBuilder.append("}");
+
         return stringBuilder.toString();
     }
 

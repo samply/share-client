@@ -113,8 +113,8 @@ public class ApplicationBean implements Serializable {
     private static LdmConnector ldmConnector;
 
     private static final ConnectCheckResult shareAvailability = new ConnectCheckResult(true, "Samply.Share.Client", ProjectInfo.INSTANCE.getVersionString());
-    private ConnectCheckResult ldmAvailability = new ConnectCheckResult();
-    private ConnectCheckResult idmAvailability = new ConnectCheckResult();
+    private static ConnectCheckResult ldmAvailability = new ConnectCheckResult();
+    private static ConnectCheckResult idmAvailability = new ConnectCheckResult();
 
     static String[] fallbacks;
 

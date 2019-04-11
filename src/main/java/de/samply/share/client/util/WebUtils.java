@@ -44,8 +44,8 @@ import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.common.Attribute;
 import de.samply.share.model.common.Case;
 import de.samply.share.model.common.Container;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -62,7 +62,7 @@ import java.util.TimeZone;
  */
 public final class WebUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(WebUtils.class);
+    private static final Logger logger = LogManager.getLogger(WebUtils.class);
 
     /**
      * Prohibit class instantiation
