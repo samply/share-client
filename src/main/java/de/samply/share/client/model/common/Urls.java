@@ -23,6 +23,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="idmanagerUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *         &lt;element name="centraxxUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *         &lt;element name="mdrUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
+ *         &lt;element name="mainzellisteUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
+ *         &lt;element name="mdrUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *       &lt;/all>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -170,7 +172,7 @@ public class Urls {
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public String getCtsUrl() {
-        return mdrUrl;
+        return ctsUrl;
     }
 
     /**
@@ -181,7 +183,7 @@ public class Urls {
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setCtsUrl(String value) {
-        this.mdrUrl = value;
+        this.ctsUrl = value;
     }
     /**
      * Gets the value of the mainzellisteUrl property.
@@ -191,7 +193,7 @@ public class Urls {
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public String getMainzellisteUrl() {
-        return mdrUrl;
+        return mainzellisteUrl;
     }
 
     /**
@@ -202,6 +204,6 @@ public class Urls {
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setMainzellisteUrl(String value) {
-        this.mdrUrl = value;
+        this.mainzellisteUrl = value;
     }
 }

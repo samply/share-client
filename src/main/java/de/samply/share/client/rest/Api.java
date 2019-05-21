@@ -18,9 +18,11 @@ public class Api {
     @Path("/postCTS")
     public Response postToCTS(String bundle, @HeaderParam("Authorization") String basicAuth) {
         try {
-            CTSConnector ctsConnector= new CTSConnector();
+            CTSConnector ctsConnector = new CTSConnector();
             ctsConnector.postPseudonmToCTS(bundle);
             return Response.ok().build();
+        }catch (NullPointerException e){
+            return Response.status(400).entity(e.getMessage()).build();
         }catch (Exception e){
             return Response.serverError().build();
         }

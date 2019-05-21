@@ -1,41 +1,33 @@
 package de.samply.share.client.job;
 
-import de.samply.share.client.control.ApplicationUtils;
-import de.samply.share.client.job.util.InquiryCriteriaEntityType;
-import de.samply.share.client.job.util.InquiryCriteriaFactory;
 import de.samply.share.client.model.EnumInquiryPresent;
 import de.samply.share.client.model.db.enums.EntityType;
 import de.samply.share.client.model.db.enums.EventMessageType;
-import de.samply.share.client.model.db.enums.InquiryCriteriaStatusType;
-import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.tables.pojos.*;
-import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.BrokerConnector;
-import de.samply.share.client.util.connector.InquiryUtils;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.*;
+import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.common.Inquiry;
-import de.samply.share.model.cql.CqlQuery;
 import de.samply.share.utils.QueryConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.quartz.DisallowConcurrentExecution;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
+import org.quartz.*;
 
-import javax.xml.bind.JAXBException;
+import javax.xml.bind.*;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static de.samply.share.client.model.EnumInquiryPresent.*;
+import static de.samply.share.client.model.EnumInquiryPresent.IP_DIFFERENT_REVISION;
+import static de.samply.share.client.model.EnumInquiryPresent.IP_SAME_REVISION;
+import static de.samply.share.client.model.EnumInquiryPresent.IP_UNAVAILABLE;
 import static de.samply.share.client.model.db.enums.InquiryStatusType.IS_NEW;
 
 /**
  * This Job collects inquiries from all connected searchbrokers
- *
+ * <p>
  * It is defined and scheduled in the quartz-jobs.xml
  * <p>
  * The basic steps it performs are:
@@ -51,7 +43,7 @@ public class CollectInquiriesJob implements Job {
     private static final Logger logger = LogManager.getLogger(CollectInquiriesJob.class);
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) {
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
         List<Broker> brokers = BrokerUtil.fetchBrokers();
         for (Broker broker : brokers) {
@@ -66,6 +58,8 @@ public class CollectInquiriesJob implements Job {
             try {
                 Map<String, String> inquiries = brokerConnector.getInquiryList();
                 loadAndPersistInquiries(brokerConnector, inquiries);
+            } catch (JAXBException | URISyntaxException e) {
+                logger.error("Error loading and/or persisting inquiries", e);
             } catch (BrokerConnectorException e) {
                 logger.warn("Could not connect to " + broker.getAddress());
             }
@@ -75,14 +69,17 @@ public class CollectInquiriesJob implements Job {
     /**
      * Load and persist inquiries for a given searchbroker.
      *
-     * @param brokerConnector      the broker
+     * @param broker               the broker
      * @param inquiryIdAndRevision the inquiry id and revision
+     * @return true, if successful
      */
-    private void loadAndPersistInquiries(BrokerConnector brokerConnector, Map<String, String> inquiryIdAndRevision) throws BrokerConnectorException {
+    private boolean loadAndPersistInquiries(BrokerConnector brokerConnector, Map<String, String> inquiryIdAndRevision) throws BrokerConnectorException, JAXBException, URISyntaxException {
+        Iterator<Map.Entry<String, String>> it = inquiryIdAndRevision.entrySet().iterator();
         Broker broker = brokerConnector.getBroker();
         int brokerId = broker.getId();
 
-        for (Map.Entry pairs : inquiryIdAndRevision.entrySet()) {
+        while (it.hasNext()) {
+            Map.Entry pairs = it.next();
             String inquiryIdString = pairs.getKey().toString();
             String revision = pairs.getValue().toString();
             Inquiry inquiry;
@@ -119,7 +116,9 @@ public class CollectInquiriesJob implements Job {
                 default:
                     break;
             }
+            it.remove();
         }
+        return true;
     }
 
     /**
@@ -155,10 +154,10 @@ public class CollectInquiriesJob implements Job {
      * Persist inquiry without result.
      *
      * @param incomingInquiry the incoming inquiry
-     * @param broker        the broker from which the inquiry was loaded
+     * @param broker          the broker from which the inquiry was loaded
      * @return the inquiry id (as in the database)
      */
-    private int storeInquiry(Inquiry incomingInquiry, Broker broker) {
+    private int storeInquiry(Inquiry incomingInquiry, Broker broker) throws JAXBException {
         de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = new de.samply.share.client.model.db.tables.pojos.Inquiry();
         inquiry.setLabel(incomingInquiry.getLabel());
         inquiry.setDescription(incomingInquiry.getDescription());
@@ -168,7 +167,7 @@ public class CollectInquiriesJob implements Job {
         int inquiryId = InquiryUtil.insertInquiry(inquiry);
 
         for (String requestedEntity : incomingInquiry.getSearchFor()) {
-            RequestedEntity re;
+            RequestedEntity re = null;
             String reLower = requestedEntity.toLowerCase();
             if (reLower.contains("biomaterial")) {
                 re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.E_BIOMATERIAL);
@@ -176,13 +175,13 @@ public class CollectInquiriesJob implements Job {
                 re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.E_CLINICAL_DATA);
             } else if (reLower.contains("patienten")) {
                 re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.E_PATIENT_FOR_STUDY);
-            } else if (SamplyShareUtils.isNullOrEmpty(reLower)) {
-                logger.debug("No specific entity requested");
-                re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.E_BIOMATERIAL);
+                if (ProjectInfo.INSTANCE.getProjectName().equals("samply")) {
+                } else if (SamplyShareUtils.isNullOrEmpty(reLower)) {
+                    logger.debug("No specific entity requested");
+                    re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.E_BIOLOGICAL_SAMPLES);
+                }
             } else {
                 logger.warn("Unknown requested entity: " + requestedEntity);
-                //TODO: Check if UNKNOWN should be default
-                re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.UNKNOWN);
             }
             if (re != null) {
                 RequestedEntityUtil.insertInquiryIdRequestedEntity(inquiryId, re);
@@ -201,7 +200,9 @@ public class CollectInquiriesJob implements Job {
      * @param brokerId        the broker id
      * @param inquiryDbId     if known, the inquiry id in db. -1 else
      */
-    private void addInquiryDetails(Inquiry incomingInquiry, int brokerId, int inquiryDbId, int contactId) {
+    private void addInquiryDetails(Inquiry incomingInquiry, int brokerId, int inquiryDbId, int contactId) throws JAXBException {
+        String originalCriteria = QueryConverter.queryToXml(incomingInquiry.getQuery());
+
         Date now = new Date();
         long time = now.getTime();
 
@@ -213,70 +214,15 @@ public class CollectInquiriesJob implements Job {
             InquiryDetails inquiryDetails = new InquiryDetails();
             inquiryDetails.setInquiryId(inquiryDbId);
             inquiryDetails.setContactId(contactId);
+            inquiryDetails.setCriteriaOriginal(originalCriteria);
             inquiryDetails.setExposeLocation(incomingInquiry.getExposeURL());
             inquiryDetails.setRevision(Integer.parseInt(incomingInquiry.getRevision()));
             inquiryDetails.setReceivedAt(new Timestamp(time));
-            Utils.setStatus(inquiryDetails, IS_NEW);
+            inquiryDetails.setStatus(IS_NEW);
 
-            int detailsId = InquiryDetailsUtil.insertInquiryDetails(inquiryDetails);
-
-            addInquiryCriteria(incomingInquiry, detailsId);
+            InquiryDetailsUtil.insertInquiryDetails(inquiryDetails);
         } catch (Exception e) {
             logger.error("Exception caught while trying to add inquiry details", e);
         }
-    }
-
-    private void addInquiryCriteria(Inquiry incomingInquiry, int detailsId) throws JAXBException {
-        if (ApplicationUtils.isLanguageCql()) {
-            addInquiryCriteriaCql(incomingInquiry, detailsId);
-        }
-
-        if (ApplicationUtils.isLanguageQuery()) {
-            addInquiryCriteriaQuery(incomingInquiry, detailsId);
-        }
-    }
-
-    private void addInquiryCriteriaQuery(Inquiry incomingInquiry, int detailsId) throws JAXBException {
-        InquiryCriteria inquiryCriteria = new InquiryCriteriaFactory().createForViewQuery(detailsId);
-
-        String originalCriteria = QueryConverter.queryToXml(incomingInquiry.getQuery());
-        inquiryCriteria.setCriteriaOriginal(originalCriteria);
-
-        InquiryCriteriaUtil.insertInquiryCriteria(inquiryCriteria);
-    }
-
-    private void addInquiryCriteriaCql(Inquiry incomingInquiry, int detailsId) {
-        boolean entityTypeError = false;
-
-        for (CqlQuery cqlQuery : incomingInquiry.getCqlQueryList().getQueries()) {
-            InquiryCriteriaEntityType entityType;
-
-            entityType = InquiryCriteriaEntityType.readFrom(cqlQuery.getEntityType());
-            if (entityType == InquiryCriteriaEntityType.ERROR) {
-                logger.warn("No entity type '" + cqlQuery.getEntityType() + "' could be found");
-                entityTypeError = true;
-            }
-
-            InquiryCriteria inquiryCriteria = new InquiryCriteriaFactory().createForCqlQuery(detailsId, entityType);
-            inquiryCriteria.setCriteriaOriginal(cqlQuery.getCql());
-            InquiryCriteriaUtil.insertInquiryCriteria(inquiryCriteria);
-        }
-
-        if (entityTypeError) {
-            handleEntityTypeError(detailsId);
-        }
-    }
-
-    private void handleEntityTypeError(int detailsId) {
-        InquiryDetails inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(detailsId);
-        Utils.setStatus(inquiryDetails, InquiryStatusType.IS_ABANDONED);
-        InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
-
-        for (InquiryCriteria inquiryCriteriaTemp : InquiryCriteriaUtil.getInquiryCriteriaForInquiryDetails(inquiryDetails)) {
-            inquiryCriteriaTemp.setStatus(InquiryCriteriaStatusType.ICS_ABANDONED);
-            InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteriaTemp);
-        }
-
-        new InquiryUtils().changeStatusOfInquiryResultToError(inquiryDetails);
     }
 }

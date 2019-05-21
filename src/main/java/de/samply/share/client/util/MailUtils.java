@@ -68,7 +68,7 @@ public class MailUtils {
         List<InquiryResult> inquiriesBio = InquiryResultUtil.getInquiryResultsForNotification(EntityType.E_BIOMATERIAL, includeEmptyResults);
         List<InquiryResult> inquiriesClinicalData = InquiryResultUtil.getInquiryResultsForNotification(EntityType.E_CLINICAL_DATA, includeEmptyResults);
         List<InquiryResult> inquiriesStudy = InquiryResultUtil.getInquiryResultsForNotification(EntityType.E_PATIENT_FOR_STUDY, includeEmptyResults);
-        List<InquiryResult> inquiriesUnknown = InquiryResultUtil.getInquiryResultsForNotification(EntityType.UNKNOWN, includeEmptyResults);
+        List<InquiryResult> inquiriesUnknown = InquiryResultUtil.getInquiryResultsForNotification(EntityType.E_BIOLOGICAL_SAMPLES, includeEmptyResults);
 
 
         logger.debug("biomaterial...");
@@ -77,8 +77,8 @@ public class MailUtils {
         sendMails(inquiriesClinicalData, EntityType.E_CLINICAL_DATA);
         logger.debug("patients (for studies)...");
         sendMails(inquiriesStudy, EntityType.E_PATIENT_FOR_STUDY);
-        logger.debug("unknown...");
-        sendMails(inquiriesUnknown, EntityType.UNKNOWN);
+        logger.debug("samples...");
+        sendMails(inquiriesUnknown, EntityType.E_BIOLOGICAL_SAMPLES);
     }
 
     /**

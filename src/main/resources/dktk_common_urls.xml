@@ -3,4 +3,6 @@
     <com:idmanagerUrl>http://172.22.53.221:8180/ID-Manager</com:idmanagerUrl>
     <com:ldmUrl>http://172.22.53.221:8080/centraxx</com:ldmUrl>
     <com:mdrUrl>https://mdr.germanbiobanknode.de/v3/api/mdr</com:mdrUrl>
+    <com:mainzellisteUrl>http://localhost:8086</com:mainzellisteUrl>
+    <com:ctsUrl>http://localhost:8088/</com:ctsUrl>
 </com:urls>

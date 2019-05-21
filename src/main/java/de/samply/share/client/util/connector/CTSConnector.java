@@ -10,6 +10,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.hl7.fhir.dstu3.model.Bundle;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 public class CTSConnector {
@@ -34,7 +35,7 @@ public class CTSConnector {
         }
     }
 
-    public String postPseudonmToCTS(String bundleString) {
+    public String postPseudonmToCTS(String bundleString) throws NullPointerException, IOException {
         FHIRResource fhirResource = new FHIRResource();
         Bundle bundle = fhirResource.convertToBundleResource(bundleString);
         MainzellisteConnector mainzellisteConnector = new MainzellisteConnector();
