@@ -1,6 +1,7 @@
 package de.samply.share.client.util.connector;
 
 
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
@@ -24,7 +25,7 @@ import org.jooq.tools.json.ParseException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainzellisteConnector {
@@ -49,6 +50,13 @@ public class MainzellisteConnector {
         }
     }
 
+    /**
+     * pseudonymise a patient
+     * @param bundle the patient bundle
+     * @return the pseudonymized patient
+     * @throws IllegalArgumentException
+     * @throws IOException
+     */
     public String getPatientPseudonym(Bundle bundle) throws IllegalArgumentException, IOException {
         for (int i = 0; i < bundle.getEntry().size(); i++) {
             Resource resource = bundle.getEntry().get(i).getResource();
@@ -56,26 +64,52 @@ public class MainzellisteConnector {
                 JSONObject patient = createJSONPatient((Patient) resource);
                 Patient orginal = (Patient) resource;
                 JSONObject encryptedID = getPseudonymFromMainzelliste(patient);
-                JSONObject encryptedPatient = new JSONObject();
-                Patient patient1 = new Patient();
-                DateType date = new DateType();
-                date.setValueAsString(orginal.getBirthDateElement().getYear()+"-01-01");
-                patient1.setBirthDateElement(date);
-                patient1.setGender(orginal.getGender());
-                patient1.setId((String) encryptedID.get("EncID"));
-                patient1.setDeceased(orginal.getDeceased());
-                Meta meta = new Meta();
-                meta.addProfile(
-                        "http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert/0.1"
-                );
-                patient1.setMeta(meta);
-                System.out.println(patient1.toString());
-                bundle.getEntry().get(i).setResource(patient1);
+                Patient patientNew= createPseudonymziedPatient(orginal,encryptedID);
+                System.out.println(patientNew.toString());
+                bundle.getEntry().get(i).setResource(patientNew);
             }
         }
         return "";
     }
 
+
+    /**
+     * Create a new patient and add only the necessary attributes for a pseudonymized patient
+     * @param orginal
+     * @param encryptedID
+     * @return the pseudonymized patient
+     */
+    private Patient createPseudonymziedPatient(Patient orginal, JSONObject encryptedID){
+        Patient patientNew = new Patient();
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(Calendar.YEAR, orginal.getBirthDateElement().getYear());
+        DateType date = new DateType(calendar.getTime(), TemporalPrecisionEnum.YEAR);
+        patientNew.setBirthDate(calendar.getTime());
+        patientNew.setBirthDateElement(date);
+        patientNew.setGender(orginal.getGender());
+        List<Identifier> identifierList= new ArrayList<>();
+        Identifier identifier= new Identifier();
+        identifier.setValue(encryptedID.get("EncID").toString());
+        identifierList.add(identifier);
+        patientNew.setIdentifier(identifierList);
+        patientNew.setDeceased(orginal.getDeceased());
+        patientNew.setId(orginal.getId());
+        Meta meta = new Meta();
+        meta.addProfile(
+                "http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert/0.1"
+        );
+        patientNew.setMeta(meta);
+        return patientNew;
+    }
+
+
+    /**
+     * Extract from the patient only the necessary attributes for the Mainzelliste
+     * @param patient
+     * @return A patient with the attributes from the original patient
+     * @throws NullPointerException
+     */
     private JSONObject createJSONPatient(Patient patient) throws NullPointerException {
         JSONObject patientPs = new JSONObject();
         try {
@@ -94,6 +128,13 @@ public class MainzellisteConnector {
         return patientPs;
     }
 
+    /**
+     * Check if an attribute is empty
+     * @param attribute
+     * @param attributeName
+     * @return the attribute if its not empty
+     * @throws NullPointerException
+     */
     private String checkIfAttributeExist(String attribute, String attributeName) throws NullPointerException {
         if (attribute == null) {
             throw new NullPointerException("The attribute " + attributeName + " was empty");
@@ -102,6 +143,12 @@ public class MainzellisteConnector {
         }
     }
 
+    /**
+     * Post the original patient to the Mainzelliste and get an encrypted ID
+     * @param patient
+     * @return an encrypted ID
+     * @throws IOException
+     */
     private JSONObject getPseudonymFromMainzelliste(JSONObject patient) throws IOException {
         HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MAINZELLISTE_URL) + GET_ENCRYPTID_URL));
         HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
