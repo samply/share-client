@@ -33,7 +33,6 @@ import com.google.common.base.Stopwatch;
 import de.samply.common.http.HttpConnector;
 import de.samply.common.ldmclient.LdmClientException;
 import de.samply.common.ldmclient.samplystore.LdmClientSamplystore;
-import de.samply.common.ldmclient.samplystore.LdmClientSamplystoreException;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
@@ -114,10 +113,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
 
     private void init() throws LDMConnectorException {
         try {
-            this.samplystoreBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
-            httpConnector = ApplicationBean.getHttpConnector();
-            this.samplystoreHost = SamplyShareUtils.getAsHttpHost(samplystoreBaseUrl);
-            httpClient = httpConnector.getHttpClient(samplystoreHost);
+            initBasic();
             this.ldmClient = new LdmClientSamplystore(httpClient, samplystoreBaseUrl);
         } catch (MalformedURLException | LdmClientException e) {
             throw new LDMConnectorException(e);
@@ -126,10 +122,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
 
     private void init(boolean useCaching) throws LDMConnectorException {
         try {
-            this.samplystoreBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
-            httpConnector = ApplicationBean.getHttpConnector();
-            this.samplystoreHost = SamplyShareUtils.getAsHttpHost(samplystoreBaseUrl);
-            httpClient = httpConnector.getHttpClient(samplystoreHost);
+            initBasic();
             this.ldmClient = new LdmClientSamplystore(httpClient, samplystoreBaseUrl, useCaching);
         } catch (MalformedURLException | LdmClientException e) {
             throw new LDMConnectorException(e);
@@ -138,14 +131,18 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
 
     private void init(boolean useCaching, int maxCacheSize) throws LDMConnectorException {
         try {
-            this.samplystoreBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
-            httpConnector = ApplicationBean.getHttpConnector();
-            this.samplystoreHost = SamplyShareUtils.getAsHttpHost(samplystoreBaseUrl);
-            httpClient = httpConnector.getHttpClient(samplystoreHost);
+            initBasic();
             this.ldmClient = new LdmClientSamplystore(httpClient, samplystoreBaseUrl, useCaching, maxCacheSize);
         } catch (MalformedURLException | LdmClientException e) {
             throw new LDMConnectorException(e);
         }
+    }
+
+    private void initBasic() throws MalformedURLException {
+        this.samplystoreBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
+        httpConnector = ApplicationBean.getHttpConnector();
+        this.samplystoreHost = SamplyShareUtils.getAsHttpHost(samplystoreBaseUrl);
+        httpClient = httpConnector.getHttpClient(samplystoreHost);
     }
 
     /**
@@ -225,7 +222,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
     public QueryResult getResultsFromPage(String location, int page) throws LDMConnectorException {
         try {
             return ldmClient.getResultPage(location, page);
-        } catch (LdmClientSamplystoreException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -249,7 +246,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
     public Object getStatsOrError(String location) throws LDMConnectorException {
         try {
             return ldmClient.getStatsOrError(location);
-        } catch (LdmClientSamplystoreException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -261,7 +258,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
     public QueryResultStatistic getQueryResultStatistic(String location) throws LDMConnectorException {
         try {
             return ldmClient.getQueryResultStatistic(location);
-        } catch (LdmClientSamplystoreException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -273,7 +270,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
     public Integer getResultCount(String location) throws LDMConnectorException {
         try {
             return ldmClient.getResultCount(location);
-        } catch (LdmClientSamplystoreException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -413,7 +410,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
                 }
                 TimeUnit.SECONDS.sleep(secondsSleep);
             } while (++retryNr < maxAttempts);
-        } catch (LdmClientSamplystoreException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
         return 0;
@@ -463,7 +460,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
                     return result;
                 }
             } while (retryNr < maxAttempts);
-        } catch (LdmClientSamplystoreException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
         return result;

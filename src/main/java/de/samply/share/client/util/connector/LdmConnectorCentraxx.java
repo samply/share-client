@@ -37,8 +37,6 @@ import de.samply.common.http.HttpConnector;
 import de.samply.common.ldmclient.LdmClient;
 import de.samply.common.ldmclient.LdmClientException;
 import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
-import de.samply.common.ldmclient.centraxx.LdmClientCentraxxException;
-import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
@@ -94,7 +92,6 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     private static final Logger logger = LogManager.getLogger(LdmConnectorCentraxx.class);
 
     private transient HttpConnector httpConnector;
-    private transient MdrClient mdrClient;
     private LdmClientCentraxx ldmClient;
     private CloseableHttpClient httpClient;
     private String centraxxBaseUrl;
@@ -105,7 +102,6 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     public LdmConnectorCentraxx() {
         try {
             init();
-            this.mdrClient = ApplicationBean.getMdrClient();
         } catch (LDMConnectorException e) {
             throw new RuntimeException(e);
         }
@@ -114,7 +110,6 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     public LdmConnectorCentraxx(boolean useCaching) {
         try {
             init(useCaching);
-            this.mdrClient = ApplicationBean.getMdrClient();
         } catch (LDMConnectorException e) {
             throw new RuntimeException(e);
         }
@@ -123,7 +118,6 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     public LdmConnectorCentraxx(boolean useCaching, int maxCacheSize) {
         try {
             init(useCaching, maxCacheSize);
-            this.mdrClient = ApplicationBean.getMdrClient();
         } catch (LDMConnectorException e) {
             throw new RuntimeException(e);
         }
@@ -135,10 +129,7 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
 
     private void init() throws LDMConnectorException {
         try {
-            this.centraxxBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
-            httpConnector = ApplicationBean.getHttpConnector();
-            this.centraxxHost = SamplyShareUtils.getAsHttpHost(centraxxBaseUrl);
-            httpClient = httpConnector.getHttpClient(centraxxHost);
+            initBasic();
             this.ldmClient = new LdmClientCentraxx(httpClient, centraxxBaseUrl);
         } catch (MalformedURLException | LdmClientException e) {
             throw new LDMConnectorException(e);
@@ -147,10 +138,7 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
 
     private void init(boolean useCaching) throws LDMConnectorException {
         try {
-            this.centraxxBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
-            httpConnector = ApplicationBean.getHttpConnector();
-            this.centraxxHost = SamplyShareUtils.getAsHttpHost(centraxxBaseUrl);
-            httpClient = httpConnector.getHttpClient(centraxxHost);
+            initBasic();
             this.ldmClient = new LdmClientCentraxx(httpClient, centraxxBaseUrl, useCaching);
         } catch (MalformedURLException | LdmClientException e) {
             throw new LDMConnectorException(e);
@@ -159,14 +147,18 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
 
     private void init(boolean useCaching, int maxCacheSize) throws LDMConnectorException {
         try {
-            this.centraxxBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
-            httpConnector = ApplicationBean.getHttpConnector();
-            this.centraxxHost = SamplyShareUtils.getAsHttpHost(centraxxBaseUrl);
-            httpClient = httpConnector.getHttpClient(centraxxHost);
+            initBasic();
             this.ldmClient = new LdmClientCentraxx(httpClient, centraxxBaseUrl, useCaching, maxCacheSize);
         } catch (MalformedURLException | LdmClientException e) {
             throw new LDMConnectorException(e);
         }
+    }
+
+    private void initBasic() throws MalformedURLException {
+        this.centraxxBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
+        httpConnector = ApplicationBean.getHttpConnector();
+        this.centraxxHost = SamplyShareUtils.getAsHttpHost(centraxxBaseUrl);
+        httpClient = httpConnector.getHttpClient(centraxxHost);
     }
 
     /**
@@ -278,7 +270,7 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     public QueryResult getResultsFromPage(String location, int page) throws LDMConnectorException {
         try {
             return ldmClient.getResultPage(location, page);
-        } catch (LdmClientCentraxxException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -306,7 +298,7 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     public Object getStatsOrError(String location) throws LDMConnectorException {
         try {
             return ldmClient.getStatsOrError(location);
-        } catch (LdmClientCentraxxException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -314,7 +306,7 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     public QueryResultStatistic getQueryResultStatistic(String location) throws LDMConnectorException {
         try {
             return ldmClient.getQueryResultStatistic(location);
-        } catch (LdmClientCentraxxException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -326,7 +318,7 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     public Integer getResultCount(String location) throws LDMConnectorException {
         try {
             return ldmClient.getResultCount(location);
-        } catch (LdmClientCentraxxException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -470,7 +462,7 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
                 }
                 TimeUnit.SECONDS.sleep(secondsSleep);
             } while (++retryNr < maxAttempts);
-        } catch (LdmClientCentraxxException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
         return 0;
@@ -530,7 +522,7 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
                     return result;
                 }
             } while (retryNr < maxAttempts);
-        } catch (LdmClientCentraxxException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
         return result;

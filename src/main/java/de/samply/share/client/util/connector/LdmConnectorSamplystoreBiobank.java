@@ -5,8 +5,6 @@ import de.samply.common.http.HttpConnector;
 import de.samply.common.ldmclient.LdmClient;
 import de.samply.common.ldmclient.LdmClientException;
 import de.samply.common.ldmclient.samplystoreBiobank.LdmClientSamplystoreBiobank;
-import de.samply.common.ldmclient.samplystoreBiobank.LdmClientSamplystoreBiobankException;
-import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
@@ -55,7 +53,6 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
     private static final Logger logger = LogManager.getLogger(de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank.class);
 
     private transient HttpConnector httpConnector;
-    private transient MdrClient mdrClient;
     private LdmClientSamplystoreBiobank ldmClient;
     private CloseableHttpClient httpClient;
     private String samplystoreBaseUrl;
@@ -67,7 +64,6 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
     public LdmConnectorSamplystoreBiobank() {
         try {
             init();
-            this.mdrClient = ApplicationBean.getMdrClient();
         } catch (LDMConnectorException e) {
             throw new RuntimeException(e);
         }
@@ -76,7 +72,6 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
     public LdmConnectorSamplystoreBiobank(boolean useCaching) {
         try {
             init(useCaching);
-            this.mdrClient = ApplicationBean.getMdrClient();
         } catch (LDMConnectorException e) {
             throw new RuntimeException(e);
         }
@@ -85,7 +80,6 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
     public LdmConnectorSamplystoreBiobank(boolean useCaching, int maxCacheSize) {
         try {
             init(useCaching, maxCacheSize);
-            this.mdrClient = ApplicationBean.getMdrClient();
         } catch (LDMConnectorException e) {
             throw new RuntimeException(e);
         }
@@ -171,7 +165,7 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
     public BbmriResult getResultsFromPage(String location, int page) throws LDMConnectorException {
         try {
             return ldmClient.getResultPage(location, page);
-        } catch (LdmClientSamplystoreBiobankException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -195,7 +189,7 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
     public Object getStatsOrError(String location) throws LDMConnectorException {
         try {
             return ldmClient.getStatsOrError(location);
-        } catch (LdmClientSamplystoreBiobankException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -207,7 +201,7 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
     public QueryResultStatistic getQueryResultStatistic(String location) throws LDMConnectorException {
         try {
             return ldmClient.getQueryResultStatistic(location);
-        } catch (LdmClientSamplystoreBiobankException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -219,7 +213,7 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
     public Integer getResultCount(String location) throws LDMConnectorException {
         try {
             return ldmClient.getResultCount(location);
-        } catch (LdmClientSamplystoreBiobankException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -413,7 +407,7 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
                     return result;
                 }
             } while (retryNr < maxAttempts);
-        } catch (LdmClientSamplystoreBiobankException e) {
+        } catch (LdmClientException e) {
             e.printStackTrace();
         }
         return result;
