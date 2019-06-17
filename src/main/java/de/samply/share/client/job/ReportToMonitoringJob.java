@@ -34,16 +34,15 @@ import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.model.db.tables.pojos.Broker;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
+import de.samply.share.common.utils.ProjectInfo;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +68,7 @@ public class ReportToMonitoringJob implements Job {
     }
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
         if (jobParams.anyCheckToPerform()) {
             for (BrokerConnector brokerConnector : brokerConnectors) {
                 List<StatusReportItem> statusReportItems = gatherStatusReportItems(brokerConnector);
@@ -91,35 +90,52 @@ public class ReportToMonitoringJob implements Job {
     private List<StatusReportItem> gatherStatusReportItems(BrokerConnector brokerConnector) {
         List<StatusReportItem> statusReportItems = new ArrayList<>();
 
-        if (jobParams.isCountTotal()) {
-            StatusReportItem totalCount = getTotalCount();
-            statusReportItems.add(totalCount);
-        }
-
-        if (jobParams.isCountDktkFlagged()) {
-            StatusReportItem dktkCount = getDktkCount();
-            statusReportItems.add(dktkCount);
-        }
-
-        if (jobParams.isCountReferenceQuery() || jobParams.isTimeReferenceQuery()) {
-            ReferenceQueryCheckResult referenceQueryCheckResult = getReferenceQueryResult(brokerConnector);
-            if (jobParams.isCountReferenceQuery()) {
-                StatusReportItem referenceQueryCount = getReferenceQueryCount(referenceQueryCheckResult);
-                statusReportItems.add(referenceQueryCount);
+        if(ProjectInfo.INSTANCE.getVersionString().toLowerCase().equals("dktk")) {
+            if (jobParams.isCountTotal()) {
+                StatusReportItem totalCount = getTotalCount();
+                statusReportItems.add(totalCount);
             }
-            if (jobParams.isTimeReferenceQuery()) {
-                StatusReportItem referenceQueryTime = getReferenceQueryTime(referenceQueryCheckResult);
-                statusReportItems.add(referenceQueryTime);
+
+            if (jobParams.isCountDktkFlagged()) {
+                StatusReportItem dktkCount = getDktkCount();
+                statusReportItems.add(dktkCount);
+            }
+
+            if (jobParams.isCountReferenceQuery() || jobParams.isTimeReferenceQuery()) {
+                ReferenceQueryCheckResult referenceQueryCheckResult = getReferenceQueryResult(brokerConnector);
+                if (jobParams.isCountReferenceQuery()) {
+                    StatusReportItem referenceQueryCount = getReferenceQueryCount(referenceQueryCheckResult);
+                    statusReportItems.add(referenceQueryCount);
+                }
+                if (jobParams.isTimeReferenceQuery()) {
+                    StatusReportItem referenceQueryTime = getReferenceQueryTime(referenceQueryCheckResult);
+                    statusReportItems.add(referenceQueryTime);
+                }
+            }
+
+            if (jobParams.isCentraxxMappingInformation()) {
+                StatusReportItem centraxxMappingVersion = getCentraxxMappingVersion();
+                statusReportItems.add(centraxxMappingVersion);
+                StatusReportItem centraxxMappingDate = getCentraxxMappingDate();
+                statusReportItems.add(centraxxMappingDate);
+            }
+        }else if(ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("samply")){
+            if (jobParams.isCountTotal()) {
+                StatusReportItem totalCount = getTotalCount();
+                statusReportItems.add(totalCount);
+            }
+            if (jobParams.isCountReferenceQuery() || jobParams.isTimeReferenceQuery()) {
+                ReferenceQueryCheckResult referenceQueryCheckResult = getReferenceQueryResult(brokerConnector);
+                if (jobParams.isCountReferenceQuery()) {
+                    StatusReportItem referenceQueryCount = getReferenceQueryCount(referenceQueryCheckResult);
+                    statusReportItems.add(referenceQueryCount);
+                }
+                if (jobParams.isTimeReferenceQuery()) {
+                    StatusReportItem referenceQueryTime = getReferenceQueryTime(referenceQueryCheckResult);
+                    statusReportItems.add(referenceQueryTime);
+                }
             }
         }
-
-        if (jobParams.isCentraxxMappingInformation()) {
-            StatusReportItem centraxxMappingVersion = getCentraxxMappingVersion();
-            statusReportItems.add(centraxxMappingVersion);
-            StatusReportItem centraxxMappingDate = getCentraxxMappingDate();
-            statusReportItems.add(centraxxMappingDate);
-        }
-
         return statusReportItems;
     }
 
@@ -231,12 +247,12 @@ public class ReportToMonitoringJob implements Job {
     private static StatusReportItem getCentraxxMappingVersion() {
         StatusReportItem centraxxMappingVersion = new StatusReportItem();
         centraxxMappingVersion.setParameter_name(StatusReportItem.PARAMETER_CENTRAXX_MAPPING_VERSION);
-        if (ldmConnector.getClass() != LdmConnectorCentraxx.class) {
+        if (!ldmConnector.isLdmCentrax()) {
             centraxxMappingVersion.setExit_status("1");
             centraxxMappingVersion.setStatus_text("Does not apply");
         } else {
             try {
-                String mappingVersion = ((LdmConnectorCentraxx)ldmConnector).getMappingVersion();
+                String mappingVersion = ldmConnector.getMappingVersion();
                 centraxxMappingVersion.setExit_status("0");
                 centraxxMappingVersion.setStatus_text(mappingVersion);
             } catch (Exception e) {
@@ -256,12 +272,12 @@ public class ReportToMonitoringJob implements Job {
     private static StatusReportItem getCentraxxMappingDate() {
         StatusReportItem centraxxMappingDate = new StatusReportItem();
         centraxxMappingDate.setParameter_name(StatusReportItem.PARAMETER_CENTRAXX_MAPPING_DATE);
-        if (ldmConnector.getClass() != LdmConnectorCentraxx.class) {
+        if (!ldmConnector.isLdmCentrax()) {
             centraxxMappingDate.setExit_status("1");
             centraxxMappingDate.setStatus_text("Does not apply");
         } else {
             try {
-                String mappingDate = ((LdmConnectorCentraxx)ldmConnector).getMappingVersion();
+                String mappingDate = ldmConnector.getMappingDate();
                 centraxxMappingDate.setExit_status("0");
                 centraxxMappingDate.setStatus_text(mappingDate);
             } catch (Exception e) {

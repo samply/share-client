@@ -28,17 +28,16 @@
 
 package de.samply.share.client.util.connector;
 
-import de.samply.common.ldmclient.centraxx.LdmClientCentraxxException;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
+import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.common.utils.MdrIdDatatype;
-import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.Query;
 import de.samply.share.model.common.QueryResultStatistic;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,18 +56,12 @@ public interface LdmConnector<T, U> {
     /**
      * Posts a query to local datamanagement and returns the location of the result.
      *
-     * @param query
-     *            the query
-     * @param removeKeysFromView
-     *            A list of keys to be removed from the query (and viewfields)
-     * @param completeMdsViewFields
-     *            if true, add all entries from mds-b and mds-k to viewfields
-     * @param statisticsOnly
-     *            if true, set a parameter to only request a count of the results, not the whole result lists
-     * @param includeAdditionalViewfields
-     *            if true, check if there are additional viewfields to set in the database. For uploads to central
-     *            mds database, this should be false
-     *
+     * @param query                       the query
+     * @param removeKeysFromView          A list of keys to be removed from the query (and viewfields)
+     * @param completeMdsViewFields       if true, add all entries from mds-b and mds-k to viewfields
+     * @param statisticsOnly              if true, set a parameter to only request a count of the results, not the whole result lists
+     * @param includeAdditionalViewfields if true, check if there are additional viewfields to set in the database. For uploads to central
+     *                                    mds database, this should be false
      * @return the location of the result
      * @throws LDMConnectorException
      */
@@ -77,10 +70,8 @@ public interface LdmConnector<T, U> {
     /**
      * Posts an xml view to local datamanagement and returns the location of the result.
      *
-     * @param view
-     *            the view
-     * @param statisticsOnly
-     *            if true, set a parameter to only request a count of the results, not the whole result lists
+     * @param view           the view
+     * @param statisticsOnly if true, set a parameter to only request a count of the results, not the whole result lists
      * @return the location of the result
      * @throws LDMConnectorException
      */
@@ -89,15 +80,11 @@ public interface LdmConnector<T, U> {
     /**
      * Posts an xml criteria snippet to local datamanagement and returns the location of the result.
      *
-     * @param criteria
-     *            the criteria
-     * @param completeMdsViewFields
-     *            if true, add all entries from mds-b and mds-k to viewfields
-     * @param statisticsOnly
-     *            if true, set a parameter to only request a count of the results, not the whole result lists
-     * @param includeAdditionalViewfields
-     *            if true, check if there are additional viewfields to set in the database. For uploads to central
-     *            mds database, this should be false
+     * @param criteria                    the criteria
+     * @param completeMdsViewFields       if true, add all entries from mds-b and mds-k to viewfields
+     * @param statisticsOnly              if true, set a parameter to only request a count of the results, not the whole result lists
+     * @param includeAdditionalViewfields if true, check if there are additional viewfields to set in the database. For uploads to central
+     *                                    mds database, this should be false
      * @return the location of the result
      * @throws LDMConnectorException
      */
@@ -106,8 +93,7 @@ public interface LdmConnector<T, U> {
     /**
      * Gets the query result from a given query location.
      *
-     * @param location
-     *            the location
+     * @param location the location
      * @return the results
      * @throws LDMConnectorException
      */
@@ -118,10 +104,8 @@ public interface LdmConnector<T, U> {
     /**
      * Checks if the query is present in the given location.
      *
-     * @param location
-     *            the location where the query should be available
+     * @param location the location where the query should be available
      * @return true, if is query present
-     *
      * @throws LDMConnectorException
      */
     boolean isQueryPresent(String location) throws LDMConnectorException;
@@ -129,8 +113,7 @@ public interface LdmConnector<T, U> {
     /**
      * Gets the stats for a query on the given location.
      *
-     * @param location
-     *            the location
+     * @param location the location
      * @return the stats
      * @throws LDMConnectorException
      */
@@ -141,8 +124,7 @@ public interface LdmConnector<T, U> {
     /**
      * Gets the result count for a query on a given location.
      *
-     * @param location
-     *            the location
+     * @param location the location
      * @return the result count
      * @throws LDMConnectorException
      */
@@ -151,8 +133,7 @@ public interface LdmConnector<T, U> {
     /**
      * Gets the page count for a query on a given location.
      *
-     * @param location
-     *            the location
+     * @param location the location
      * @return the result count
      * @throws LDMConnectorException
      */
@@ -178,7 +159,7 @@ public interface LdmConnector<T, U> {
      * Write a page of transformed patients to disk (used for dryrun)
      *
      * @param queryResult
-     * @param index the number of the page in the result
+     * @param index       the number of the page in the result
      * @throws IOException
      */
     void writeQueryResultPageToDisk(T queryResult, int index) throws IOException;
@@ -199,6 +180,7 @@ public interface LdmConnector<T, U> {
 
     /**
      * Get the amount of patients in centraxx
+     *
      * @param dktkFlagged when true, only count those with dktk consent. when false, count ALL (not just those without consent)
      * @return the amount of patients in centraxx
      */
@@ -206,12 +188,26 @@ public interface LdmConnector<T, U> {
 
     /**
      * Execute a reference query and return amount of patients and execution time
+     *
      * @param referenceQuery the query to execute
      * @return amount of patients and execution time
      */
     ReferenceQueryCheckResult getReferenceQueryCheckResult(Query referenceQuery) throws LDMConnectorException;
 
-    int getPatientAge(U patient);
+    default boolean isLdmCentrax() {
+        return false;
+    }
 
-    QueryResult getExportQueryResult(QueryResult queryResult) throws InterruptedException, IOException, LdmClientCentraxxException, JAXBException;
+    default String getMappingVersion() {
+        return "undefined";
+    }
+
+    default String getMappingDate() {
+        return "undefined";
+    }
+
+    default List<CxxMappingElement> getMapping() {
+        return new ArrayList<>();
+    }
+
 }

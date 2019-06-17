@@ -27,13 +27,16 @@ package de.samply.share.client.quality.report.localdatamanagement;/*
 
 import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
 import de.samply.share.client.control.ApplicationBean;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
+import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.Error;
 import de.samply.share.model.common.View;
 import de.samply.share.utils.QueryConverter;
-import org.apache.http.*;
+import org.apache.http.Consts;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -47,7 +50,6 @@ import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
 
 
 public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnector implements LocalDataManagementRequester{
@@ -76,7 +78,7 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
         }
     }
 
-    private LocalDataManagementResponse<String> postViewAndGetLocationUrlWithoutExceptions (View view, boolean statisticsOnly) throws SQLException, JAXBException, UnsupportedEncodingException, LocalDataManagementRequesterException {
+    private LocalDataManagementResponse<String> postViewAndGetLocationUrlWithoutExceptions (View view, boolean statisticsOnly) throws JAXBException, UnsupportedEncodingException, LocalDataManagementRequesterException {
 
         String localDataManagementUrl = SamplyShareUtils.addTrailingSlash(getLocalDataManagementUrl());
         localDataManagementUrl += LocalDataManagementUrlSuffixAndParameters.BASE;
@@ -158,7 +160,7 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
 
     public LocalDataManagementResponse<String> getSqlMappingVersion_WithoutManagementException() throws LocalDataManagementRequesterException {
 
-        LdmConnectorCentraxx ldmConnector = (LdmConnectorCentraxx) ApplicationBean.getLdmConnector();
+        LdmConnector ldmConnector = ApplicationBean.getLdmConnector();
         String version = ldmConnector.getMappingVersion();
 
         LocalDataManagementResponse<String> localDataManagementResponse = new LocalDataManagementResponse<>();
@@ -168,33 +170,6 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
         return localDataManagementResponse;
 
     }
-
-
-//    @Override
-//    public LocalDataManagementResponse<String> getSqlMappingVersion() throws LocalDataManagementRequesterException {
-//
-//        String localDataManagementUrl = SamplyShareUtils.addTrailingSlash(getLocalDataManagementUrl());
-//        localDataManagementUrl += LocalDataManagementUrlSuffixAndParameters.BASE;
-//        String suffix = LocalDataManagementUrlSuffixAndParameters.SQL_MAPPING_VERSION + "/" + getCentraXXMappingMdrKey();
-//
-//        String uri = new MyUri(localDataManagementUrl, suffix).toString();
-//        HttpGet httpGet = createHttpGet(uri);
-//
-//        httpGet.addHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
-//
-//        //TODO
-//        return getLocalDataManagementResponse(uri, httpGet,String.class);
-//
-//    }
-//
-//    private String getCentraXXMappingMdrKey (){
-//
-//        String centraxxMappingMdrKey = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_CENTRAXX_MAPPING_VERSION);
-//        MdrIdDatatype mappingMdrItem = new MdrIdDatatype(centraxxMappingMdrKey);
-//
-//        return mappingMdrItem.getLatestCentraxx();
-//
-//    }
 
     private LocalDataManagementResponse<QueryResult> getQueryResult(MyUri myUri) throws LocalDataManagementRequesterException {
         return getLocalDataManagementResponse(myUri, QueryResult.class);

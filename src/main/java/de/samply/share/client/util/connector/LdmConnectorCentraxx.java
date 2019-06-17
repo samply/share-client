@@ -34,6 +34,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.samply.common.http.HttpConnector;
+import de.samply.common.ldmclient.LdmClient;
 import de.samply.common.ldmclient.LdmClientException;
 import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
 import de.samply.common.ldmclient.centraxx.LdmClientCentraxxException;
@@ -47,7 +48,6 @@ import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.quality.report.MdrMappedElements;
 import de.samply.share.client.util.MdrUtils;
-import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
 import de.samply.share.client.util.connector.centraxx.CxxMappingParser;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
@@ -78,14 +78,11 @@ import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
-import static de.samply.dktk.converter.PatientConverterUtil.convertDate;
 
 /**
  * Implementation of the LdmConnector interface for centraxx backends
@@ -130,6 +127,10 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
         } catch (LDMConnectorException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean isLdmCentrax() {
+        return true;
     }
 
     private void init() throws LDMConnectorException {
@@ -500,15 +501,14 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
                         Error error = (Error) statsOrError;
 
                         switch (error.getErrorCode()) {
-                            case LdmClientCentraxx.ERROR_CODE_DATE_PARSING_ERROR:
-                            case LdmClientCentraxx.ERROR_CODE_UNIMPLEMENTED:
-                            case LdmClientCentraxx.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
+                            case LdmClient.ERROR_CODE_DATE_PARSING_ERROR:
+                            case LdmClient.ERROR_CODE_UNIMPLEMENTED:
+                            case LdmClient.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
                                 logger.warn("Could not execute reference query correctly. Error: " + error.getErrorCode() + ": " + error.getDescription());
                                 return result;
-                            case LdmClientCentraxx.ERROR_CODE_UNKNOWN_MDRKEYS:
+                            case LdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
                             default:
-                                ArrayList<String> unknownKeys = new ArrayList<>();
-                                unknownKeys.addAll(error.getMdrKey());
+                                ArrayList<String> unknownKeys = new ArrayList<>(error.getMdrKey());
                                 referenceView = QueryConverter.removeAttributesFromView(referenceView, unknownKeys);
                                 stopwatch.start();
                                 resultLocation = ldmClient.postView(referenceView, false);
@@ -594,6 +594,7 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
      *
      * @return whatever is written as revision information in this reply
      */
+    @Override
     public String getMappingVersion() {
         String centraxxMappingMdrKey = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_CENTRAXX_MAPPING_VERSION);
         MdrIdDatatype mappingMdrItem = new MdrIdDatatype(centraxxMappingMdrKey);
@@ -687,40 +688,5 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
 
         }
 
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getPatientAge(Patient patient) {
-        String birthdayValueString = null;
-
-        for (de.samply.share.model.ccp.Attribute attr : patient.getAttribute()) {
-            MdrIdDatatype attrMdrId = new MdrIdDatatype(attr.getMdrKey());
-            if (BIRTHDAY_MDR_ID.equalsIgnoreVersion(attrMdrId)) {
-                birthdayValueString = attr.getValue().getValue();
-                break;
-            }
-        }
-
-        if (birthdayValueString == null) {
-            return -1;
-        }
-
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-            Date birthDate = convertDate(birthdayValueString, dateFormat);
-            Date now = new Date();
-            return Utils.getDiffYears(birthDate, now);
-        } catch (Exception e) {
-            logger.error("error trying to get date: " + e);
-            return -1;
-        }
-    }
-
-    public QueryResult getExportQueryResult(QueryResult queryResult) throws InterruptedException, IOException, LdmClientCentraxxException, JAXBException {
-        QueryResult queryResult1=ldmClient.exportQuery(queryResult);
-        return  queryResult1;
     }
 }

@@ -61,6 +61,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -68,6 +69,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
+import static org.omnifaces.util.Faces.getServletContext;
 
 /**
  * Backing Bean that is valid during the whole runtime of the application.
@@ -112,6 +115,8 @@ public class ApplicationBean implements Serializable {
     private static final ConnectCheckResult shareAvailability = new ConnectCheckResult(true, "Samply.Share.Client", ProjectInfo.INSTANCE.getVersionString());
     private ConnectCheckResult ldmAvailability = new ConnectCheckResult();
     private ConnectCheckResult idmAvailability = new ConnectCheckResult();
+
+    static String[] fallbacks;
 
     @PostConstruct
     public void init() {
@@ -207,7 +212,7 @@ public class ApplicationBean implements Serializable {
     // TODO: other connector implementations
     public static void initLdmConnector() {
         if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("samply")) {
-        if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
+            if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
                 try {
                     int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
                     ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true, maxCacheSize);
@@ -248,12 +253,7 @@ public class ApplicationBean implements Serializable {
     private void resetMdrContext() {
         String mdrUrl;
 
-//        if (ProjectInfo.INSTANCE.getProjectName().equals("osse")) {
-//            logger.debug("Getting osse mdr url");
-//            mdrUrl = OsseEdcContext.getOsseEdcConfiguration().getMdrUrl();
-//        } else {
-          mdrUrl = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_URL);
-//        }
+        mdrUrl = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_URL);
         mdrClient = new MdrClient(mdrUrl, httpConnector.getJerseyClient(mdrUrl));
         mdrClient.cleanCache();
         MdrContext.getMdrContext().init(mdrClient);
@@ -268,7 +268,7 @@ public class ApplicationBean implements Serializable {
             JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
             configuration = JAXBUtil
                     .findUnmarshall(ProjectInfo.INSTANCE.getProjectName().toLowerCase() + COMMON_CONFIG_FILENAME_SUFFIX,
-                            jaxbContext, Configuration.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase());
+                            jaxbContext, Configuration.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase(), System.getProperty("catalina.base") + File.separator + "conf", getServletContext().getRealPath("/WEB-INF"));
             CredentialsUtil.updateProxyCredentials(configuration);
             updateProxiesInDb();
         } catch (FileNotFoundException e) {
@@ -288,7 +288,7 @@ public class ApplicationBean implements Serializable {
             JAXBContext jaxbContext = JAXBContext.newInstance(de.samply.share.client.model.common.ObjectFactory.class);
             urls = JAXBUtil
                     .findUnmarshall(ProjectInfo.INSTANCE.getProjectName().toLowerCase() + COMMON_URLS_FILENAME_SUFFIX,
-                            jaxbContext, Urls.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase());
+                            jaxbContext, Urls.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase(), System.getProperty("catalina.base") + File.separator + "conf", getServletContext().getRealPath("/WEB-INF"));
         }   catch (FileNotFoundException e) {
             logger.error("No common urls file found by using samply.common.config for project " + ProjectInfo.INSTANCE.getProjectName());
         } catch (UnmarshalException ue) {
@@ -306,7 +306,7 @@ public class ApplicationBean implements Serializable {
             JAXBContext jaxbContext = JAXBContext.newInstance(de.samply.share.client.model.common.ObjectFactory.class);
             operator = JAXBUtil
                     .findUnmarshall(ProjectInfo.INSTANCE.getProjectName().toLowerCase() + COMMON_OPERATOR_FILENAME_SUFFIX,
-                            jaxbContext, Operator.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase());
+                            jaxbContext, Operator.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase(), System.getProperty("catalina.base") + File.separator + "conf", getServletContext().getRealPath("/WEB-INF"));
         }   catch (FileNotFoundException e) {
             logger.error("No common operator file found by using samply.common.config for project " + ProjectInfo.INSTANCE.getProjectName());
         } catch (UnmarshalException ue) {
@@ -324,7 +324,7 @@ public class ApplicationBean implements Serializable {
             JAXBContext jaxbContext = JAXBContext.newInstance(de.samply.share.client.model.common.ObjectFactory.class);
             infos = JAXBUtil
                     .findUnmarshall(ProjectInfo.INSTANCE.getProjectName().toLowerCase() + COMMON_INFOS_FILENAME_SUFFIX,
-                            jaxbContext, Bridgehead.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase());
+                            jaxbContext, Bridgehead.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase(), System.getProperty("catalina.base") + File.separator + "conf", getServletContext().getRealPath("/WEB-INF"));
         }   catch (FileNotFoundException e) {
             logger.error("No common bridgehead info file found by using samply.common.config for project " + ProjectInfo.INSTANCE.getProjectName());
         } catch (UnmarshalException ue) {
@@ -343,7 +343,7 @@ public class ApplicationBean implements Serializable {
             httpProxyConfigElement.setName(EnumConfiguration.HTTP_PROXY.name());
             httpProxyConfigElement.setSetting(configuration.getProxy().getHTTP().getUrl().toString());
             ConfigurationUtil.insertOrUpdateConfigurationElement(httpProxyConfigElement);
-            
+
             de.samply.share.client.model.db.tables.pojos.Configuration httpsProxyConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
             httpsProxyConfigElement.setName(EnumConfiguration.HTTPS_PROXY.name());
             httpsProxyConfigElement.setSetting(configuration.getProxy().getHTTPS().getUrl().toString());
@@ -388,7 +388,7 @@ public class ApplicationBean implements Serializable {
     private static void cancelAllJobsInGroup(String groupName) {
         logger.info("Cancelling Jobs in group " + groupName);
         try {
-            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(groupName))) {
+            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.groupEquals(groupName))) {
                 logger.info("Remove triggers for Job " + jobKey.toString());
                 List<? extends Trigger> triggersOfJob = scheduler.getTriggersOfJob(jobKey);
                 for (Trigger trigger : triggersOfJob) {

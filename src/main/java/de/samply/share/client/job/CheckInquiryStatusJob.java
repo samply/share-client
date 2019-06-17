@@ -29,7 +29,7 @@
 package de.samply.share.client.job;
 
 import com.google.common.base.Joiner;
-import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
+import de.samply.common.ldmclient.LdmClient;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.job.params.*;
 import de.samply.share.client.model.EnumConfigurationTimings;
@@ -40,8 +40,6 @@ import de.samply.share.client.model.db.enums.UploadStatusType;
 import de.samply.share.client.model.db.tables.pojos.*;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
-import de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
@@ -210,7 +208,7 @@ public class CheckInquiryStatusJob implements Job {
      * @param jobExecutionContext the jobExecutionContext of this job instance
      * @return true if stats were received, false if an error was received or something unexpected happened
      */
-    private boolean handleStatsOrError(Object object, JobExecutionContext jobExecutionContext) throws JSONException, SchedulerException {
+    private boolean handleStatsOrError(Object object, JobExecutionContext jobExecutionContext) throws SchedulerException {
         // null is returned e.g. if the stats are not yet available
         if (object == null) {
             // Just continue with regular schedule
@@ -223,15 +221,15 @@ public class CheckInquiryStatusJob implements Job {
             InquiryResultUtil.updateInquiryResult(inquiryResult);
 
             switch (error.getErrorCode()) {
-                case LdmClientCentraxx.ERROR_CODE_DATE_PARSING_ERROR:
-                case LdmClientCentraxx.ERROR_CODE_UNIMPLEMENTED:
-                case LdmClientCentraxx.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
+                case LdmClient.ERROR_CODE_DATE_PARSING_ERROR:
+                case LdmClient.ERROR_CODE_UNIMPLEMENTED:
+                case LdmClient.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
                     log(EventMessageType.E_LDM_ERROR, "code:" + error.getErrorCode(), "description:" + error.getDescription());
                     inquiryDetails.setStatus(InquiryStatusType.IS_LDM_ERROR);
                     InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
                     unscheduleThisJob(jobExecutionContext);
                     break;
-                case LdmClientCentraxx.ERROR_CODE_UNKNOWN_MDRKEYS:
+                case LdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
                     String unknownKeys = Joiner.on(ExecuteInquiryJobParams.SEPARATOR_UNKNOWN_KEYS).join(error.getMdrKey());
                     log(EventMessageType.E_LDM_ERROR, "code:" + error.getErrorCode(), "keys:" + unknownKeys);
                     spawnNewInquiryExecutionJob(unknownKeys);

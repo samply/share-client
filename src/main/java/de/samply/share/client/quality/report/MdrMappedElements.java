@@ -25,7 +25,6 @@ package de.samply.share.client.quality.report;/*
  */
 
 import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
 import de.samply.share.common.utils.MdrIdDatatype;
 
@@ -35,7 +34,7 @@ import java.util.Map;
 
 public class MdrMappedElements {
 
-    Map<MdrIdDatatype, CxxMappingElement> mdrId_cxxMappingElement_Map = new HashMap<>();
+    private Map<MdrIdDatatype, CxxMappingElement> mdrId_cxxMappingElement_Map = new HashMap<>();
 
     public MdrMappedElements(LdmConnector ldmConnector) {
 
@@ -43,44 +42,41 @@ public class MdrMappedElements {
 
     }
 
-    private void addMappedElements(LdmConnector ldmConnector){
+    private void addMappedElements(LdmConnector<?, ?> ldmConnector) {
 
-        if (ldmConnector instanceof LdmConnectorCentraxx){
+        if (ldmConnector.isLdmCentrax()) {
 
-            List<CxxMappingElement> mapping = ((LdmConnectorCentraxx) ldmConnector).getMapping();
+            List<CxxMappingElement> mapping = ldmConnector.getMapping();
 
-            for (CxxMappingElement mappingElement : mapping){
+            for (CxxMappingElement mappingElement : mapping) {
 
                 MdrIdDatatype mdrId = mappingElement.getMdrId();
                 MdrIdDatatype basicMdrId = getBasicMdrIdDataType(mdrId);
 
                 mdrId_cxxMappingElement_Map.put(basicMdrId, mappingElement);
-
             }
-
         }
-
     }
 
-    private MdrIdDatatype getBasicMdrIdDataType(MdrIdDatatype mdrIdDatatype){
+    private MdrIdDatatype getBasicMdrIdDataType(MdrIdDatatype mdrIdDatatype) {
         return new MdrIdDatatype(mdrIdDatatype.getMajor());
     }
 
-    public boolean isMapped (MdrIdDatatype mdrId){
+    public boolean isMapped(MdrIdDatatype mdrId) {
 
         MdrIdDatatype basicMdrId = getBasicMdrIdDataType(mdrId);
         return mdrId_cxxMappingElement_Map.containsKey(basicMdrId);
 
     }
 
-    public boolean isMapped (String mdrId){
+    public boolean isMapped(String mdrId) {
 
         MdrIdDatatype basicMdrId = getBasicMdrIdDataType(new MdrIdDatatype(mdrId));
         return mdrId_cxxMappingElement_Map.containsKey(basicMdrId);
 
     }
 
-    public CxxMappingElement getCxxMappingElement (MdrIdDatatype mdrId){
+    public CxxMappingElement getCxxMappingElement(MdrIdDatatype mdrId) {
 
         MdrIdDatatype basicMdrId = getBasicMdrIdDataType(mdrId);
         return mdrId_cxxMappingElement_Map.get(basicMdrId);

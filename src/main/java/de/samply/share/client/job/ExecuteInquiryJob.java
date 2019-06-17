@@ -11,7 +11,6 @@ import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.util.Replace;
 import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
 import de.samply.share.common.model.uiquerybuilder.QueryItem;
@@ -68,7 +67,6 @@ public class ExecuteInquiryJob implements Job {
 
         try {
             setInquiryDetailsStatus(IS_PROCESSING);
-            String tmpInquiryDetails = "";
             Query modifiedQuery= new Query();
             Query originalQuery = QueryConverter.xmlToQuery(inquiryDetails.getCriteriaOriginal());
 
@@ -76,7 +74,7 @@ public class ExecuteInquiryJob implements Job {
             originalQuery = fixDateIssues(originalQuery);
 
             if (!SamplyShareUtils.isNullOrEmpty(unknownKeys)) {
-                log(EventMessageType.E_REPEAT_EXECUTE_INQUIRY_JOB_WITHOUT_UNKNOWN_KEYS, unknownKeys.toArray(new String[unknownKeys.size()]));
+                log(EventMessageType.E_REPEAT_EXECUTE_INQUIRY_JOB_WITHOUT_UNKNOWN_KEYS, unknownKeys.toArray(new String[0]));
                 modifiedQuery = QueryConverter.removeAttributesFromQuery(originalQuery, unknownKeys);
                 inquiryDetails.setCriteriaModified(QueryConverter.queryToXml(modifiedQuery));
                 InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
@@ -89,7 +87,7 @@ public class ExecuteInquiryJob implements Job {
                 // TODO remove this "temporary" workaround as soon as possible! This is linked with the age-old issue of different java date formats in some mdr elements!
                 originalQuery = fixDateIssues(originalQuery);
                 if (!SamplyShareUtils.isNullOrEmpty(unknownKeys)) {
-                    log(EventMessageType.E_REPEAT_EXECUTE_INQUIRY_JOB_WITHOUT_UNKNOWN_KEYS, unknownKeys.toArray(new String[unknownKeys.size()]));
+                    log(EventMessageType.E_REPEAT_EXECUTE_INQUIRY_JOB_WITHOUT_UNKNOWN_KEYS, unknownKeys.toArray(new String[0]));
                     modifiedQuery = QueryConverter.removeAttributesFromQuery(originalQuery, unknownKeys);
                     inquiryDetails.setCriteriaModified(QueryConverter.queryToXml(modifiedQuery));
                 }

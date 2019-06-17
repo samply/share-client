@@ -31,8 +31,8 @@ package de.samply.share.client.util.connector;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
 import de.samply.common.http.HttpConnector;
+import de.samply.common.ldmclient.LdmClient;
 import de.samply.common.ldmclient.LdmClientException;
-import de.samply.common.ldmclient.centraxx.LdmClientCentraxxException;
 import de.samply.common.ldmclient.samplystore.LdmClientSamplystore;
 import de.samply.common.ldmclient.samplystore.LdmClientSamplystoreException;
 import de.samply.common.mdrclient.MdrClient;
@@ -44,15 +44,13 @@ import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.util.MdrUtils;
-import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.SamplyShareUtils;
-import de.samply.share.model.common.*;
 import de.samply.share.model.common.Error;
-import de.samply.share.model.common.QueryResultStatistic;
+import de.samply.share.model.common.*;
 import de.samply.share.model.osse.ObjectFactory;
 import de.samply.share.model.osse.Patient;
 import de.samply.share.model.osse.QueryResult;
@@ -72,14 +70,11 @@ import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
-import static de.samply.dktk.converter.PatientConverterUtil.convertDate;
 
 /**
  * Implementation of the LdmConnector interface for samply store rest backends
@@ -454,10 +449,11 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
                         Error error = (Error) statsOrError;
 
                         switch (error.getErrorCode()) {
-                            case LdmClientSamplystore.ERROR_CODE_UNKNOWN_MDRKEYS:
+                            //Remark: This value used to be 400. However, this seems to be a copy&paste mistake. Moreover, the class is not used.
+                            // TODO: Make sure that the class is not used and delete it (or the whole project).
+                            case LdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
                             default:
-                                ArrayList<String> unknownKeys = new ArrayList<>();
-                                unknownKeys.addAll(error.getMdrKey());
+                                ArrayList<String> unknownKeys = new ArrayList<>(error.getMdrKey());
                                 referenceView = QueryConverter.removeAttributesFromView(referenceView, unknownKeys);
                                 stopwatch.start();
                                 resultLocation = ldmClient.postView(referenceView);
@@ -536,40 +532,5 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
             throw new LDMConnectorException(e);
         }
         return view;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getPatientAge(Patient patient) {
-        String birthdayValueString = null;
-
-        for (de.samply.share.model.osse.Attribute attr : patient.getAttribute()) {
-            MdrIdDatatype attrMdrId = new MdrIdDatatype(attr.getMdrKey());
-            if (BIRTHDAY_MDR_ID.equalsIgnoreVersion(attrMdrId)) {
-                birthdayValueString = attr.getValue().getValue();
-                break;
-            }
-        }
-
-        if (birthdayValueString == null) {
-            return -1;
-        }
-
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-            Date birthDate = convertDate(birthdayValueString, dateFormat);
-            Date now = new Date();
-            return Utils.getDiffYears(birthDate, now);
-        } catch (Exception e) {
-            logger.error("error trying to get date: " + e);
-            return -1;
-        }
-    }
-
-    @Override
-    public de.samply.share.model.ccp.QueryResult getExportQueryResult(de.samply.share.model.ccp.QueryResult queryResult) throws InterruptedException, IOException, LdmClientCentraxxException, JAXBException {
-        return null;
     }
 }

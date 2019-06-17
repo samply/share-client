@@ -38,8 +38,6 @@ import de.samply.share.client.model.db.tables.pojos.InquiryResultStats;
 import de.samply.share.client.model.graphData.AgeDistribution;
 import de.samply.share.client.model.graphData.GenderDistribution;
 import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
-import de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.InquiryResultStatsUtil;
@@ -80,7 +78,7 @@ public class GenerateInquiryResultStatsJob implements Job {
     }
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
 
         jobKey = jobExecutionContext.getJobDetail().getKey();
         JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();

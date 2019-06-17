@@ -29,6 +29,8 @@ public class Migration {
         flyway.setDataSource(dataSource);
         flyway.setLocations("db/migration/" + ProjectInfo.INSTANCE.getProjectName());
         flyway.setSchemas("samply");
+        // TODO: Remove after cleaning init-scripts
+        flyway.setIgnoreMissingMigrations(true);
         flyway.migrate();
     }
 }

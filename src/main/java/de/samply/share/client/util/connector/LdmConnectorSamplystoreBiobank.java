@@ -2,9 +2,8 @@ package de.samply.share.client.util.connector;
 
 import com.google.common.base.Stopwatch;
 import de.samply.common.http.HttpConnector;
+import de.samply.common.ldmclient.LdmClient;
 import de.samply.common.ldmclient.LdmClientException;
-import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
-import de.samply.common.ldmclient.centraxx.LdmClientCentraxxException;
 import de.samply.common.ldmclient.samplystoreBiobank.LdmClientSamplystoreBiobank;
 import de.samply.common.ldmclient.samplystoreBiobank.LdmClientSamplystoreBiobankException;
 import de.samply.common.mdrclient.MdrClient;
@@ -16,15 +15,14 @@ import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.util.MdrUtils;
-import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.bbmri.BbmriResult;
-import de.samply.share.model.common.*;
 import de.samply.share.model.common.Error;
+import de.samply.share.model.common.*;
 import de.samply.share.model.osse.Patient;
 import de.samply.share.utils.QueryConverter;
 import org.apache.http.HttpEntity;
@@ -42,14 +40,11 @@ import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
-import static de.samply.dktk.converter.PatientConverterUtil.convertDate;
 
 public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult, Patient> {
 
@@ -389,15 +384,14 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
                         Error error = (Error) statsOrError;
 
                         switch (error.getErrorCode()) {
-                            case LdmClientCentraxx.ERROR_CODE_DATE_PARSING_ERROR:
-                            case LdmClientCentraxx.ERROR_CODE_UNIMPLEMENTED:
-                            case LdmClientCentraxx.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
+                            case LdmClient.ERROR_CODE_DATE_PARSING_ERROR:
+                            case LdmClient.ERROR_CODE_UNIMPLEMENTED:
+                            case LdmClient.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
                                 logger.warn("Could not execute reference query correctly. Error: " + error.getErrorCode() + ": " + error.getDescription());
                                 return result;
-                            case LdmClientCentraxx.ERROR_CODE_UNKNOWN_MDRKEYS:
+                            case LdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
                             default:
-                                ArrayList<String> unknownKeys = new ArrayList<>();
-                                unknownKeys.addAll(error.getMdrKey());
+                                ArrayList<String> unknownKeys = new ArrayList<>(error.getMdrKey());
                                 referenceView = QueryConverter.removeAttributesFromView(referenceView, unknownKeys);
                                 stopwatch.start();
                                 resultLocation = ldmClient.postView(referenceView, false);
@@ -428,7 +422,6 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
     /**
      * Create a basic view that is used to get the amount of patients in centraxx
      *
-     * @param dktkFlagged when true, only count those with dktk consent. when false, count ALL (not just those without consent)
      * @return the constructed view object that can be posted to centraxx
      */
     private View createViewForMonitoring() throws LDMConnectorException {
@@ -453,50 +446,10 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
      * @param referenceQuery the reference query, as received from the broker
      * @return the constructed view object that can be posted to centraxx
      */
-    private View createReferenceViewForMonitoring(Query referenceQuery) throws LDMConnectorException {
+    private View createReferenceViewForMonitoring(Query referenceQuery) {
         View view = new View();
         view.setQuery(referenceQuery);
-//        try {
-//            view.setViewFields(MdrUtils.getViewFields(true));
-//        } catch (MdrConnectionException | ExecutionException e) {
-//            throw new LDMConnectorException(e);
-//        }
         return view;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getPatientAge(Patient patient) {
-        String birthdayValueString = null;
-
-        for (de.samply.share.model.osse.Attribute attr : patient.getAttribute()) {
-            MdrIdDatatype attrMdrId = new MdrIdDatatype(attr.getMdrKey());
-            if (BIRTHDAY_MDR_ID.equalsIgnoreVersion(attrMdrId)) {
-                birthdayValueString = attr.getValue().getValue();
-                break;
-            }
-        }
-
-        if (birthdayValueString == null) {
-            return -1;
-        }
-
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-            Date birthDate = convertDate(birthdayValueString, dateFormat);
-            Date now = new Date();
-            return Utils.getDiffYears(birthDate, now);
-        } catch (Exception e) {
-            logger.error("error trying to get date: " + e);
-            return -1;
-        }
-    }
-
-    @Override
-    public de.samply.share.model.ccp.QueryResult getExportQueryResult(de.samply.share.model.ccp.QueryResult queryResult) throws InterruptedException, IOException, LdmClientCentraxxException, JAXBException {
-        return null;
     }
 }
 
