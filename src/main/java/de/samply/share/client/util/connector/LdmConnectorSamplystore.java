@@ -31,11 +31,9 @@ package de.samply.share.client.util.connector;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
 import de.samply.common.http.HttpConnector;
-import de.samply.common.ldmclient.LdmClient;
 import de.samply.common.ldmclient.LdmClientException;
 import de.samply.common.ldmclient.samplystore.LdmClientSamplystore;
 import de.samply.common.ldmclient.samplystore.LdmClientSamplystoreException;
-import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
@@ -79,12 +77,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * Implementation of the LdmConnector interface for samply store rest backends
  */
+// TODO: Make sure that the class is not used and delete it (or the whole project).
 public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patient> {
 
     private static final Logger logger = LogManager.getLogger(LdmConnectorSamplystore.class);
 
     private transient HttpConnector httpConnector;
-    private transient MdrClient mdrClient;
     private LdmClientSamplystore ldmClient;
     private CloseableHttpClient httpClient;
     private String samplystoreBaseUrl;
@@ -93,7 +91,6 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
     public LdmConnectorSamplystore() {
         try {
             init();
-            this.mdrClient = ApplicationBean.getMdrClient();
         } catch (LDMConnectorException e) {
             throw new RuntimeException(e);
         }
@@ -102,7 +99,6 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
     public LdmConnectorSamplystore(boolean useCaching) {
         try {
             init(useCaching);
-            this.mdrClient = ApplicationBean.getMdrClient();
         } catch (LDMConnectorException e) {
             throw new RuntimeException(e);
         }
@@ -111,7 +107,6 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
     public LdmConnectorSamplystore(boolean useCaching, int maxCacheSize) {
         try {
             init(useCaching, maxCacheSize);
-            this.mdrClient = ApplicationBean.getMdrClient();
         } catch (LDMConnectorException e) {
             throw new RuntimeException(e);
         }
@@ -157,7 +152,7 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
      * {@inheritDoc}
      *
      * @param completeMdsViewFields not yet supported
-     * @param statisticsOnly not yet supported
+     * @param statisticsOnly        not yet supported
      */
     @Override
     public String postQuery(Query query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException {
@@ -448,17 +443,10 @@ public class LdmConnectorSamplystore implements LdmConnector<QueryResult, Patien
                         stopwatch.reset();
                         Error error = (Error) statsOrError;
 
-                        switch (error.getErrorCode()) {
-                            //Remark: This value used to be 400. However, this seems to be a copy&paste mistake. Moreover, the class is not used.
-                            // TODO: Make sure that the class is not used and delete it (or the whole project).
-                            case LdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
-                            default:
-                                ArrayList<String> unknownKeys = new ArrayList<>(error.getMdrKey());
-                                referenceView = QueryConverter.removeAttributesFromView(referenceView, unknownKeys);
-                                stopwatch.start();
-                                resultLocation = ldmClient.postView(referenceView);
-                                break;
-                        }
+                        ArrayList<String> unknownKeys = new ArrayList<>(error.getMdrKey());
+                        referenceView = QueryConverter.removeAttributesFromView(referenceView, unknownKeys);
+                        stopwatch.start();
+                        resultLocation = ldmClient.postView(referenceView);
                     } else if (statsOrError.getClass().equals(QueryResultStatistic.class)) {
                         QueryResultStatistic qrs = (QueryResultStatistic) statsOrError;
                         result.setCount(qrs.getTotalSize());
