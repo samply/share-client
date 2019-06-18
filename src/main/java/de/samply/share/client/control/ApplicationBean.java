@@ -7,7 +7,6 @@ import de.dth.mdr.validator.exception.MdrException;
 import de.samply.common.config.Configuration;
 import de.samply.common.config.ObjectFactory;
 import de.samply.common.http.HttpConnector;
-import de.samply.common.http.HttpConnectorException;
 import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.common.mdrclient.MdrInvalidResponseException;
@@ -138,11 +137,7 @@ public class ApplicationBean implements Serializable {
         }
 
         // Initialize HTTP Connector
-        try {
-            reInitHttpConnector();
-        } catch (HttpConnectorException e) {
-            throw new RuntimeException("Could not spawn http connector.", e);
-        }
+        reInitHttpConnector();
 
         resetMdrContext();
         patientValidator = new PatientValidator(MdrContext.getMdrContext().getMdrClient());
@@ -239,7 +234,7 @@ public class ApplicationBean implements Serializable {
     /**
      * Fill the CredentialsProvider and reinitialize the HttpConnector
      */
-    private static void reInitHttpConnector() throws HttpConnectorException {
+    private static void reInitHttpConnector() {
         CredentialsProvider credentialsProvider = Utils.prepareCredentialsProvider();
         httpConnector = new HttpConnector(ConfigurationUtil.getHttpConfigParams(configuration), credentialsProvider);
         httpConnector.addCustomHeader(Constants.HEADER_XML_NAMESPACE, Constants.VALUE_XML_NAMESPACE_COMMON);

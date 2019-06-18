@@ -526,11 +526,6 @@
         </dependency>
         <dependency>
             <groupId>de.samply</groupId>
-            <artifactId>samply.common.ldmclient.fhir</artifactId>
-            <version>${common-ldmclient.samplystore.fhir.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.samply</groupId>
             <artifactId>share-dto</artifactId>
             <version>4.1.1-SNAPSHOT</version>
         </dependency>
