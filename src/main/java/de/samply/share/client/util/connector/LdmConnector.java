@@ -194,8 +194,12 @@ public interface LdmConnector<T, U> {
      */
     ReferenceQueryCheckResult getReferenceQueryCheckResult(Query referenceQuery) throws LDMConnectorException;
 
-    default boolean isLdmCentrax() {
+    default boolean isLdmCentraxx() {
         return false;
+    }
+
+    default boolean isLdmSamplystoreBiobank() {
+        return true;
     }
 
     default String getMappingVersion() {

@@ -14,6 +14,7 @@ import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.util.MdrUtils;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
+import de.samply.share.client.util.connector.exception.LdmConnectorRuntimeException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.ProjectInfo;
@@ -44,78 +45,84 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Implementation of the LdmConnector interface for samply store rest backends
+ */
 public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult, Patient> {
 
-    /**
-     * Implementation of the LdmConnector interface for samply store rest backends
-     */
-
-    private static final Logger logger = LogManager.getLogger(de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank.class);
+    private static final Logger logger = LogManager.getLogger(LdmConnectorSamplystoreBiobank.class);
 
     private transient HttpConnector httpConnector;
     private LdmClientSamplystoreBiobank ldmClient;
     private CloseableHttpClient httpClient;
-    private String samplystoreBaseUrl;
-    private HttpHost samplystoreHost;
-
-    private static final boolean CACHING_DEFAULT_VALUE = false;
-    private static final int CACHE_DEFAULT_SIZE = 1000;
-
-    public LdmConnectorSamplystoreBiobank() {
-        try {
-            init();
-        } catch (LDMConnectorException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private String baseUrl;
+    private HttpHost host;
 
     public LdmConnectorSamplystoreBiobank(boolean useCaching) {
-        try {
-            init(useCaching);
-        } catch (LDMConnectorException e) {
-            throw new RuntimeException(e);
-        }
+        init(useCaching);
     }
 
     public LdmConnectorSamplystoreBiobank(boolean useCaching, int maxCacheSize) {
-        try {
-            init(useCaching, maxCacheSize);
-        } catch (LDMConnectorException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void init() throws LDMConnectorException {
-        init(CACHING_DEFAULT_VALUE, CACHE_DEFAULT_SIZE);
-    }
-
-    private void init(boolean useCaching) throws LDMConnectorException {
-        init(useCaching, CACHE_DEFAULT_SIZE);
-    }
-
-    private void init(boolean useCaching, int maxCacheSize) throws LDMConnectorException {
-        try {
-            this.samplystoreBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
-            httpConnector = ApplicationBean.getHttpConnector();
-            httpConnector.addCustomHeader("Authorization", "Basic " + StoreConnector.getBase64Credentials(StoreConnector.authorizedUsername, StoreConnector.authorizedPassword));
-            this.samplystoreHost = SamplyShareUtils.getAsHttpHost(samplystoreBaseUrl);
-            httpClient = httpConnector.getHttpClient(samplystoreHost);
-            this.ldmClient = new LdmClientSamplystoreBiobank(httpClient, samplystoreBaseUrl, useCaching, maxCacheSize);
-        } catch (MalformedURLException | LdmClientException e) {
-            throw new LDMConnectorException(e);
-        }
+        init(useCaching, maxCacheSize);
     }
 
     @Override
-    public String postQuery(de.samply.share.model.common.Query query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException {
-        try {
-            View view = new View();
-            view.setQuery(query);
-            // TODO: How to get viewfields for samply store to use?
-            ViewFields viewFields = new ViewFields();
+    public boolean isLdmSamplystoreBiobank() {
+        return true;
+    }
 
-            view.setViewFields(viewFields);
-            return ldmClient.postView(view,statisticsOnly);
+    private void init(boolean useCaching) {
+        initBasic();
+
+        try {
+            this.ldmClient = new LdmClientSamplystoreBiobank(httpClient, baseUrl, useCaching);
+        } catch (LdmClientException e) {
+            throw new LdmConnectorRuntimeException(e);
+        }
+    }
+
+    private void init(boolean useCaching, int maxCacheSize) throws LdmConnectorRuntimeException {
+        initBasic();
+
+        try {
+            this.ldmClient = new LdmClientSamplystoreBiobank(httpClient, baseUrl, useCaching, maxCacheSize);
+        } catch (LdmClientException e) {
+            throw new LdmConnectorRuntimeException(e);
+        }
+    }
+
+    private void initBasic() throws LdmConnectorRuntimeException {
+        this.baseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
+        httpConnector = ApplicationBean.getHttpConnector();
+        if (isLdmSamplystoreBiobank()) {
+            httpConnector.addCustomHeader("Authorization", "Basic " + StoreConnector.getBase64Credentials(StoreConnector.authorizedUsername, StoreConnector.authorizedPassword));
+        }
+        httpClient = httpConnector.getHttpClient(host);
+        try {
+            this.host = SamplyShareUtils.getAsHttpHost(baseUrl);
+        } catch (MalformedURLException e) {
+            throw new LdmConnectorRuntimeException(e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String postQuery(Query query,
+                            List<String> removeKeysFromView,
+                            boolean completeMdsViewFields,
+                            boolean statisticsOnly,
+                            boolean includeAdditionalViewfields) throws LDMConnectorException {
+        View view = new View();
+        view.setQuery(query);
+        // TODO: How to get viewfields for samply store to use?
+        ViewFields viewFields = new ViewFields();
+
+        view.setViewFields(viewFields);
+
+        try {
+            return ldmClient.postView(view, statisticsOnly);
         } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
@@ -127,6 +134,7 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
     @Override
     public String postViewString(String view, boolean statisticsOnly) throws LDMConnectorException {
         try {
+            //TODO: Add missing parameter statisticsOnly
             return ldmClient.postViewString(view);
         } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
@@ -248,16 +256,20 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
         return ldmClient.isResultPageAvailable(location, 0);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean isResultDone(String location, de.samply.share.model.common.QueryResultStatistic qrs) throws LDMConnectorException {
+    public boolean isResultDone(String location, QueryResultStatistic queryResultStatistic) throws LDMConnectorException {
         if (SamplyShareUtils.isNullOrEmpty(location)) {
             throw new LDMConnectorException("Location of query is empty");
         }
-        if (qrs != null) {
-            if (qrs.getTotalSize() == 0) {
+
+        if (queryResultStatistic != null) {
+            if (queryResultStatistic.getTotalSize() == 0) {
                 return true;
             }
-            int lastPageIndex = qrs.getNumberOfPages() - 1;
+            int lastPageIndex = queryResultStatistic.getNumberOfPages() - 1;
             return ldmClient.isResultPageAvailable(location, lastPageIndex);
         } else {
             throw new LDMConnectorException("QueryResultStatistic is null.");
@@ -270,16 +282,25 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
      */
     @Override
     public void writeQueryResultPageToDisk(BbmriResult queryResult, int index) throws IOException {
+        File dir = (File) ProjectInfo.INSTANCE.getServletContext().getAttribute(TEMPDIR);
+        File xmlFile = new File(dir + System.getProperty("file.separator") + extractQueryResultId(queryResult) + "_" + index + "_transformed" + XML_SUFFIX);
+
         try {
-            File dir = (File) ProjectInfo.INSTANCE.getServletContext().getAttribute(TEMPDIR);
-            File xmlFile = new File(dir + System.getProperty("file.separator") + queryResult.getQueryId() + "_" + index + "_transformed" + XML_SUFFIX);
             final JAXBContext context = JAXBContext.newInstance(BbmriResult.class);
             final Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            marshaller.marshal(queryResult, xmlFile);
+            marshalQueryResult(queryResult, xmlFile, marshaller);
         } catch (JAXBException e) {
             throw new IOException(e);
         }
+    }
+
+    private int extractQueryResultId(BbmriResult queryResult) {
+        return queryResult.getQueryId();
+    }
+
+    private void marshalQueryResult(BbmriResult queryResult, File xmlFile, Marshaller marshaller) throws JAXBException {
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.marshal(queryResult, xmlFile);
     }
 
     /**
@@ -301,10 +322,10 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
     public CheckResult checkConnection() {
         CheckResult result = new CheckResult();
         result.setExecutionDate(new Date());
-        HttpGet httpGet = new HttpGet(samplystoreBaseUrl + "rest/info/");
+        HttpGet httpGet = new HttpGet(baseUrl + "rest/info/");
         result.getMessages().add(new Message(httpGet.getRequestLine().toString(), "fa-long-arrow-right"));
 
-        try (CloseableHttpResponse response = httpClient.execute(samplystoreHost, httpGet)) {
+        try (CloseableHttpResponse response = httpClient.execute(host, httpGet)) {
             HttpEntity entity = response.getEntity();
             EntityUtils.consume(entity);
 
@@ -338,9 +359,10 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
         View view = createViewForMonitoring();
         String resultLocation = null;
         try {
-            resultLocation = ldmClient.postView(view);
+            boolean statisticsOnly = isLdmCentraxx();
+            resultLocation = ldmClient.postView(view, statisticsOnly);
         } catch (LdmClientException e) {
-            e.printStackTrace();
+            handleLdmClientException(e);
         }
         do {
             try {
@@ -356,8 +378,11 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public ReferenceQueryCheckResult getReferenceQueryCheckResult(de.samply.share.model.common.Query referenceQuery) throws LDMConnectorException {
+    public ReferenceQueryCheckResult getReferenceQueryCheckResult(Query referenceQuery) throws LDMConnectorException {
         ReferenceQueryCheckResult result = new ReferenceQueryCheckResult();
         try {
             View referenceView = createReferenceViewForMonitoring(referenceQuery);
@@ -408,7 +433,7 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
                 }
             } while (retryNr < maxAttempts);
         } catch (LdmClientException e) {
-            e.printStackTrace();
+            handleLdmClientException(e);
         }
         return result;
     }
@@ -445,5 +470,12 @@ public class LdmConnectorSamplystoreBiobank implements LdmConnector<BbmriResult,
         view.setQuery(referenceQuery);
         return view;
     }
-}
 
+    private void handleLdmClientException(LdmClientException e) throws LDMConnectorException {
+        if (isLdmCentraxx()) {
+            throw new LDMConnectorException(e);
+        } else if (isLdmSamplystoreBiobank()) {
+            e.printStackTrace();
+        }
+    }
+}

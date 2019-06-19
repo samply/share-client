@@ -247,7 +247,7 @@ public class ReportToMonitoringJob implements Job {
     private static StatusReportItem getCentraxxMappingVersion() {
         StatusReportItem centraxxMappingVersion = new StatusReportItem();
         centraxxMappingVersion.setParameter_name(StatusReportItem.PARAMETER_CENTRAXX_MAPPING_VERSION);
-        if (!ldmConnector.isLdmCentrax()) {
+        if (!ldmConnector.isLdmCentraxx()) {
             centraxxMappingVersion.setExit_status("1");
             centraxxMappingVersion.setStatus_text("Does not apply");
         } else {
@@ -272,7 +272,7 @@ public class ReportToMonitoringJob implements Job {
     private static StatusReportItem getCentraxxMappingDate() {
         StatusReportItem centraxxMappingDate = new StatusReportItem();
         centraxxMappingDate.setParameter_name(StatusReportItem.PARAMETER_CENTRAXX_MAPPING_DATE);
-        if (!ldmConnector.isLdmCentrax()) {
+        if (!ldmConnector.isLdmCentraxx()) {
             centraxxMappingDate.setExit_status("1");
             centraxxMappingDate.setStatus_text("Does not apply");
         } else {

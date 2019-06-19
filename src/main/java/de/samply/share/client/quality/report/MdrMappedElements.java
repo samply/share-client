@@ -44,7 +44,7 @@ public class MdrMappedElements {
 
     private void addMappedElements(LdmConnector<?, ?> ldmConnector) {
 
-        if (ldmConnector.isLdmCentrax()) {
+        if (ldmConnector.isLdmCentraxx()) {
 
             List<CxxMappingElement> mapping = ldmConnector.getMapping();
 

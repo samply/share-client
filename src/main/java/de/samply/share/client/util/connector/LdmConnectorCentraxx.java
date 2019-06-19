@@ -49,6 +49,7 @@ import de.samply.share.client.util.MdrUtils;
 import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
 import de.samply.share.client.util.connector.centraxx.CxxMappingParser;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
+import de.samply.share.client.util.connector.exception.LdmConnectorRuntimeException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.CredentialsUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
@@ -85,80 +86,61 @@ import java.util.concurrent.TimeUnit;
 /**
  * Implementation of the LdmConnector interface for centraxx backends
  */
-// TODO clean up
 public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> {
 
-    /** The Constant logger. */
     private static final Logger logger = LogManager.getLogger(LdmConnectorCentraxx.class);
 
     private transient HttpConnector httpConnector;
     private LdmClientCentraxx ldmClient;
     private CloseableHttpClient httpClient;
-    private String centraxxBaseUrl;
-    private HttpHost centraxxHost;
+    private String baseUrl;
+    private HttpHost host;
+
     private CxxMappingParser cxxMappingParser = new CxxMappingParser();
     private MdrMappedElements mdrMappedElements;
 
-    public LdmConnectorCentraxx() {
-        try {
-            init();
-        } catch (LDMConnectorException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public LdmConnectorCentraxx(boolean useCaching) {
-        try {
-            init(useCaching);
-        } catch (LDMConnectorException e) {
-            throw new RuntimeException(e);
-        }
+        init(useCaching);
     }
 
     public LdmConnectorCentraxx(boolean useCaching, int maxCacheSize) {
-        try {
-            init(useCaching, maxCacheSize);
-        } catch (LDMConnectorException e) {
-            throw new RuntimeException(e);
-        }
+        init(useCaching, maxCacheSize);
     }
 
-    public boolean isLdmCentrax() {
+    @Override
+    public boolean isLdmCentraxx() {
         return true;
     }
 
-    private void init() throws LDMConnectorException {
+    private void init(boolean useCaching) {
+        initBasic();
+
         try {
-            initBasic();
-            this.ldmClient = new LdmClientCentraxx(httpClient, centraxxBaseUrl);
-        } catch (MalformedURLException | LdmClientException e) {
-            throw new LDMConnectorException(e);
+            this.ldmClient = new LdmClientCentraxx(httpClient, baseUrl, useCaching);
+        } catch (LdmClientException e) {
+            throw new LdmConnectorRuntimeException(e);
         }
     }
 
-    private void init(boolean useCaching) throws LDMConnectorException {
+    private void init(boolean useCaching, int maxCacheSize) throws LdmConnectorRuntimeException {
+        initBasic();
+
         try {
-            initBasic();
-            this.ldmClient = new LdmClientCentraxx(httpClient, centraxxBaseUrl, useCaching);
-        } catch (MalformedURLException | LdmClientException e) {
-            throw new LDMConnectorException(e);
+            this.ldmClient = new LdmClientCentraxx(httpClient, baseUrl, useCaching, maxCacheSize);
+        } catch (LdmClientException e) {
+            throw new LdmConnectorRuntimeException(e);
         }
     }
 
-    private void init(boolean useCaching, int maxCacheSize) throws LDMConnectorException {
-        try {
-            initBasic();
-            this.ldmClient = new LdmClientCentraxx(httpClient, centraxxBaseUrl, useCaching, maxCacheSize);
-        } catch (MalformedURLException | LdmClientException e) {
-            throw new LDMConnectorException(e);
-        }
-    }
-
-    private void initBasic() throws MalformedURLException {
-        this.centraxxBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
+    private void initBasic() throws LdmConnectorRuntimeException {
+        this.baseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
         httpConnector = ApplicationBean.getHttpConnector();
-        this.centraxxHost = SamplyShareUtils.getAsHttpHost(centraxxBaseUrl);
-        httpClient = httpConnector.getHttpClient(centraxxHost);
+        httpClient = httpConnector.getHttpClient(host);
+        try {
+            this.host = SamplyShareUtils.getAsHttpHost(baseUrl);
+        } catch (MalformedURLException e) {
+            throw new LdmConnectorRuntimeException(e);
+        }
     }
 
     /**
@@ -170,60 +152,61 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
                             boolean completeMdsViewFields,
                             boolean statisticsOnly,
                             boolean includeAdditionalViewfields) throws LDMConnectorException {
+        View view = new View();
+        // Substitute BETWEEN and IN operators
+        Query fixedQuery = QueryConverter.substituteOperators(query);
+        view.setQuery(fixedQuery);
+
+        ViewFields viewFields = null;
         try {
-            View view = new View();
-            // Substitute BETWEEN and IN operators
-            Query fixedQuery = QueryConverter.substituteOperators(query);
-            view.setQuery(fixedQuery);
-            ViewFields viewFields = MdrUtils.getViewFields(completeMdsViewFields);
+            viewFields = MdrUtils.getViewFields(completeMdsViewFields);
+        } catch (MdrConnectionException | ExecutionException e) {
+            throw new LDMConnectorException(e);
+        }
 
-            // Add additional viewfields, as defined in the config
-            String additionalViewfields = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.INQUIRY_ADDITIONAL_MDRKEYS);
-            if (includeAdditionalViewfields && !SamplyShareUtils.isNullOrEmpty(additionalViewfields)) {
-                List<String> viewFieldList = Splitter.on(';').splitToList(additionalViewfields);
-                for (String viewField : viewFieldList) {
-                        viewFields.getMdrKey().add(viewField);
-                }
+        // Add additional viewfields, as defined in the config
+        String additionalViewfields = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.INQUIRY_ADDITIONAL_MDRKEYS);
+        if (includeAdditionalViewfields && !SamplyShareUtils.isNullOrEmpty(additionalViewfields)) {
+            List<String> viewFieldList = Splitter.on(';').splitToList(additionalViewfields);
+            for (String viewField : viewFieldList) {
+                viewFields.getMdrKey().add(viewField);
             }
+        }
 
-            viewFields = filterNotExistentMdrIdsInViewFields(viewFields);
+        viewFields = filterNotExistentMdrIdsInViewFields(viewFields);
 
-            view.setViewFields(viewFields);
-            if (!SamplyShareUtils.isNullOrEmpty(removeKeysFromView)) {
-                view = QueryConverter.removeAttributesFromView(view, removeKeysFromView);
-            }
+        view.setViewFields(viewFields);
+        if (!SamplyShareUtils.isNullOrEmpty(removeKeysFromView)) {
+            view = QueryConverter.removeAttributesFromView(view, removeKeysFromView);
+        }
+
+        try {
             return ldmClient.postView(view, statisticsOnly);
-        } catch (MdrConnectionException | ExecutionException | LdmClientException e) {
+        } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
     }
 
-    private ViewFields filterNotExistentMdrIdsInViewFields (ViewFields viewFields){
+    private ViewFields filterNotExistentMdrIdsInViewFields(ViewFields viewFields) {
 
-        if (viewFields != null){
+        if (viewFields != null) {
 
             List<String> mdrKeyList = viewFields.getMdrKey();
-            if (mdrKeyList != null){
+            if (mdrKeyList != null) {
 
                 MdrMappedElements mdrMappedElements = getMdrMappedElements();
 
-                List<String> filteredMdrKeyList = new ArrayList<>();
-                filteredMdrKeyList.addAll(mdrKeyList);
+                List<String> filteredMdrKeyList = new ArrayList<>(mdrKeyList);
 
-                for (String mdrId : filteredMdrKeyList){
-                    if (!mdrMappedElements.isMapped(mdrId)){
+                for (String mdrId : filteredMdrKeyList) {
+                    if (!mdrMappedElements.isMapped(mdrId)) {
                         mdrKeyList.remove(mdrId);
                     }
                 }
-
-
             }
-
-
         }
 
         return viewFields;
-
     }
 
     /**
@@ -288,13 +271,9 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     }
 
     /**
-     * Gets the stats for a query on the given location.
-     *
-     * @param location
-     *            the location
-     * @return the stats or the error
-     * @throws LDMConnectorException
+     * {@inheritDoc}
      */
+    @Override
     public Object getStatsOrError(String location) throws LDMConnectorException {
         try {
             return ldmClient.getStatsOrError(location);
@@ -303,6 +282,10 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public QueryResultStatistic getQueryResultStatistic(String location) throws LDMConnectorException {
         try {
             return ldmClient.getQueryResultStatistic(location);
@@ -324,11 +307,7 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     }
 
     /**
-     * Gets the page count for a query on a given location.
-     *
-     * @param location the location
-     * @return the result count
-     * @throws LDMConnectorException
+     * {@inheritDoc}
      */
     @Override
     public Integer getPageCount(String location) throws LDMConnectorException {
@@ -377,22 +356,32 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
         }
     }
 
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void writeQueryResultPageToDisk(QueryResult queryResult, int index) throws IOException {
+        File dir = (File) ProjectInfo.INSTANCE.getServletContext().getAttribute(TEMPDIR);
+        File xmlFile = new File(dir + System.getProperty("file.separator") + extractQueryResultId(queryResult) + "_" + index + "_transformed" + XML_SUFFIX);
+
         try {
-            File dir = (File) ProjectInfo.INSTANCE.getServletContext().getAttribute(TEMPDIR);
-            File xmlFile = new File(dir + System.getProperty("file.separator") + queryResult.getId() + "_" + index + "_transformed" + XML_SUFFIX);
             final JAXBContext context = JAXBContext.newInstance(QueryResult.class);
             final Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            ObjectFactory objectFactory = new ObjectFactory();
-            marshaller.marshal(objectFactory.createQueryResult(queryResult), xmlFile);
+            marshalQueryResult(queryResult, xmlFile, marshaller);
         } catch (JAXBException e) {
             throw new IOException(e);
         }
+    }
+
+    protected String extractQueryResultId(QueryResult queryResult) {
+        return queryResult.getId();
+    }
+
+    protected void marshalQueryResult(QueryResult queryResult, File xmlFile, Marshaller marshaller) throws JAXBException {
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ObjectFactory objectFactory = new ObjectFactory();
+        marshaller.marshal(objectFactory.createQueryResult(queryResult), xmlFile);
     }
 
     /**
@@ -414,10 +403,10 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     public CheckResult checkConnection() {
         CheckResult result = new CheckResult();
         result.setExecutionDate(new Date());
-        HttpGet httpGet = new HttpGet(centraxxBaseUrl + "rest/info/");
+        HttpGet httpGet = new HttpGet(baseUrl + "rest/info/");
         result.getMessages().add(new Message(httpGet.getRequestLine().toString(), "fa-long-arrow-right"));
 
-        try (CloseableHttpResponse response = httpClient.execute(centraxxHost, httpGet)) {
+        try (CloseableHttpResponse response = httpClient.execute(host, httpGet)) {
             HttpEntity entity = response.getEntity();
             EntityUtils.consume(entity);
 
@@ -442,29 +431,31 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
      */
     @Override
     public int getPatientCount(boolean dktkFlagged) throws LDMConnectorException, InterruptedException {
-        try {
-            int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
-                    EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
-            int secondsSleep = ConfigurationUtil.getConfigurationTimingsElementValue(
-                    EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_INTERVAL_SECONDS);
-            int retryNr = 0;
+        int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
+                EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
+        int secondsSleep = ConfigurationUtil.getConfigurationTimingsElementValue(
+                EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_INTERVAL_SECONDS);
+        int retryNr = 0;
 
-            View view = createViewForMonitoring(dktkFlagged);
-            String resultLocation = ldmClient.postView(view, true);
-            do {
-                try {
-                    Integer resultCount = getResultCount(resultLocation);
-                    if (resultCount != null) {
-                        return resultCount;
-                    }
-                } catch (LDMConnectorException e) {
-                    // Catch the exception since it might just mean the result is not ready yet
-                }
-                TimeUnit.SECONDS.sleep(secondsSleep);
-            } while (++retryNr < maxAttempts);
+        View view = createViewForMonitoring(dktkFlagged);
+        String resultLocation = null;
+        try {
+            boolean statisticsOnly = isLdmCentraxx();
+            resultLocation = ldmClient.postView(view, statisticsOnly);
         } catch (LdmClientException e) {
-            throw new LDMConnectorException(e);
+            handleLdmClientException(e);
         }
+        do {
+            try {
+                Integer resultCount = getResultCount(resultLocation);
+                if (resultCount != null) {
+                    return resultCount;
+                }
+            } catch (LDMConnectorException e) {
+                // Catch the exception since it might just mean the result is not ready yet
+            }
+            TimeUnit.SECONDS.sleep(secondsSleep);
+        } while (++retryNr < maxAttempts);
         return 0;
     }
 
@@ -523,7 +514,7 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
                 }
             } while (retryNr < maxAttempts);
         } catch (LdmClientException e) {
-            throw new LDMConnectorException(e);
+            handleLdmClientException(e);
         }
         return result;
     }
@@ -590,10 +581,10 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     public String getMappingVersion() {
         String centraxxMappingMdrKey = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_CENTRAXX_MAPPING_VERSION);
         MdrIdDatatype mappingMdrItem = new MdrIdDatatype(centraxxMappingMdrKey);
-        HttpGet httpGet = new HttpGet(centraxxBaseUrl + "rest/teiler/mapping/" + mappingMdrItem.getLatestCentraxx());
+        HttpGet httpGet = new HttpGet(baseUrl + "rest/teiler/mapping/" + mappingMdrItem.getLatestCentraxx());
         httpGet.addHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
 
-        try (CloseableHttpResponse response = httpClient.execute(centraxxHost, httpGet)) {
+        try (CloseableHttpResponse response = httpClient.execute(host, httpGet)) {
             HttpEntity entity = response.getEntity();
             String mappingInfo = EntityUtils.toString(entity, "UTF-8");
             EntityUtils.consume(entity);
@@ -621,10 +612,10 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
     public String getMappingDate() {
         String centraxxMappingDateMdrKey = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_CENTRAXX_MAPPING_DATE);
         MdrIdDatatype mappingMdrDateItem = new MdrIdDatatype(centraxxMappingDateMdrKey);
-        HttpGet httpGet = new HttpGet(centraxxBaseUrl + "rest/teiler/mapping/" + mappingMdrDateItem.getLatestCentraxx());
+        HttpGet httpGet = new HttpGet(baseUrl + "rest/teiler/mapping/" + mappingMdrDateItem.getLatestCentraxx());
         httpGet.addHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
 
-        try (CloseableHttpResponse response = httpClient.execute(centraxxHost, httpGet)) {
+        try (CloseableHttpResponse response = httpClient.execute(host, httpGet)) {
             HttpEntity entity = response.getEntity();
             String mappingInfo = EntityUtils.toString(entity, "UTF-8");
             EntityUtils.consume(entity);
@@ -644,18 +635,18 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
         }
     }
 
-    public List<CxxMappingElement> getMapping (){
+    public List<CxxMappingElement> getMapping() {
 
-        HttpGet httpGet = new HttpGet(centraxxBaseUrl + "rest/teiler/mapping");
+        HttpGet httpGet = new HttpGet(baseUrl + "rest/teiler/mapping");
         httpGet.addHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
 
         return getMapping(httpGet);
 
     }
 
-    private MdrMappedElements getMdrMappedElements(){
+    private MdrMappedElements getMdrMappedElements() {
 
-        if (mdrMappedElements == null){
+        if (mdrMappedElements == null) {
             mdrMappedElements = new MdrMappedElements(this);
         }
 
@@ -663,12 +654,12 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
 
     }
 
-    private List<CxxMappingElement> getMapping (HttpGet httpGet){
+    private List<CxxMappingElement> getMapping(HttpGet httpGet) {
 
-        try (CloseableHttpResponse response = httpClient.execute(centraxxHost, httpGet)) {
+        try (CloseableHttpResponse response = httpClient.execute(host, httpGet)) {
 
             HttpEntity entity = response.getEntity();
-            String  cxxMapping = EntityUtils.toString(entity, "UTF-8");
+            String cxxMapping = EntityUtils.toString(entity, "UTF-8");
             EntityUtils.consume(entity);
 
             return cxxMappingParser.parse(cxxMapping);
@@ -680,5 +671,13 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
 
         }
 
+    }
+
+    protected void handleLdmClientException(LdmClientException e) throws LDMConnectorException {
+        if (isLdmCentraxx()) {
+            throw new LDMConnectorException(e);
+        } else if (isLdmSamplystoreBiobank()) {
+            e.printStackTrace();
+        }
     }
 }
