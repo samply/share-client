@@ -32,7 +32,6 @@ import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.model.common.Query;
 import de.samply.share.model.common.QueryResultStatistic;
 
@@ -43,13 +42,10 @@ import java.util.List;
 /**
  * An interface for a connector to local data management systems
  *
- * @param <T> QueryResult type
- * @param <U> Patient type
+ * @param <T_RESULT> QueryResult type
  */
-public interface LdmConnector<T, U> {
+public interface LdmConnector<T_RESULT> {
 
-    String BIRTHDAY_URN = "urn:dktk:dataelement:26:4";
-    MdrIdDatatype BIRTHDAY_MDR_ID = new MdrIdDatatype(BIRTHDAY_URN);
     String TEMPDIR = "javax.servlet.context.tempdir";
     String XML_SUFFIX = ".xml";
 
@@ -97,9 +93,9 @@ public interface LdmConnector<T, U> {
      * @return the results
      * @throws LDMConnectorException
      */
-    T getResults(String location) throws LDMConnectorException;
+    T_RESULT getResults(String location) throws LDMConnectorException;
 
-    T getResultsFromPage(String location, int page) throws LDMConnectorException;
+    T_RESULT getResultsFromPage(String location, int page) throws LDMConnectorException;
 
     /**
      * Checks if the query is present in the given location.
@@ -162,7 +158,7 @@ public interface LdmConnector<T, U> {
      * @param index       the number of the page in the result
      * @throws IOException
      */
-    void writeQueryResultPageToDisk(T queryResult, int index) throws IOException;
+    void writeQueryResultPageToDisk(T_RESULT queryResult, int index) throws IOException;
 
     /**
      * Get the name and version number of the local datamanagement

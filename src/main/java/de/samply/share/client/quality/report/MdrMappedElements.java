@@ -42,7 +42,7 @@ public class MdrMappedElements {
 
     }
 
-    private void addMappedElements(LdmConnector<?, ?> ldmConnector) {
+    private void addMappedElements(LdmConnector<?> ldmConnector) {
 
         if (ldmConnector.isLdmCentraxx()) {
 

@@ -33,12 +33,10 @@ import com.google.common.base.Stopwatch;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.samply.common.http.HttpConnector;
 import de.samply.common.ldmclient.LdmClient;
 import de.samply.common.ldmclient.LdmClientException;
 import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
 import de.samply.common.mdrclient.MdrConnectionException;
-import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.check.CheckResult;
@@ -49,7 +47,6 @@ import de.samply.share.client.util.MdrUtils;
 import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
 import de.samply.share.client.util.connector.centraxx.CxxMappingParser;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
-import de.samply.share.client.util.connector.exception.LdmConnectorRuntimeException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.CredentialsUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
@@ -63,7 +60,6 @@ import de.samply.share.model.common.*;
 import de.samply.share.utils.QueryConverter;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpHost;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -76,7 +72,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,15 +81,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Implementation of the LdmConnector interface for centraxx backends
  */
-public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> {
+public class LdmConnectorCentraxx extends AbstractLdmConnector<LdmClientCentraxx, QueryResult, de.samply.common.ldmclient.centraxx.model.QueryResultStatistic, de.samply.share.model.ccp.Error, de.samply.share.model.ccp.View, Patient> {
 
     private static final Logger logger = LogManager.getLogger(LdmConnectorCentraxx.class);
-
-    private transient HttpConnector httpConnector;
-    private LdmClientCentraxx ldmClient;
-    private CloseableHttpClient httpClient;
-    private String baseUrl;
-    private HttpHost host;
 
     private CxxMappingParser cxxMappingParser = new CxxMappingParser();
     private MdrMappedElements mdrMappedElements;
@@ -112,35 +101,12 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
         return true;
     }
 
-    private void init(boolean useCaching) {
-        initBasic();
-
-        try {
-            this.ldmClient = new LdmClientCentraxx(httpClient, baseUrl, useCaching);
-        } catch (LdmClientException e) {
-            throw new LdmConnectorRuntimeException(e);
-        }
+    protected LdmClientCentraxx createLdmClient(CloseableHttpClient httpClient, String baseUrl, boolean useCaching) throws LdmClientException {
+        return new LdmClientCentraxx(httpClient, baseUrl, useCaching);
     }
 
-    private void init(boolean useCaching, int maxCacheSize) throws LdmConnectorRuntimeException {
-        initBasic();
-
-        try {
-            this.ldmClient = new LdmClientCentraxx(httpClient, baseUrl, useCaching, maxCacheSize);
-        } catch (LdmClientException e) {
-            throw new LdmConnectorRuntimeException(e);
-        }
-    }
-
-    private void initBasic() throws LdmConnectorRuntimeException {
-        this.baseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
-        httpConnector = ApplicationBean.getHttpConnector();
-        httpClient = httpConnector.getHttpClient(host);
-        try {
-            this.host = SamplyShareUtils.getAsHttpHost(baseUrl);
-        } catch (MalformedURLException e) {
-            throw new LdmConnectorRuntimeException(e);
-        }
+    protected LdmClientCentraxx createLdmClient(CloseableHttpClient httpClient, String baseUrl, boolean useCaching, int maxCacheSize) throws LdmClientException {
+        return new LdmClientCentraxx(httpClient, baseUrl, useCaching, maxCacheSize);
     }
 
     /**
@@ -374,10 +340,12 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
         }
     }
 
+    @Override
     protected String extractQueryResultId(QueryResult queryResult) {
         return queryResult.getId();
     }
 
+    @Override
     protected void marshalQueryResult(QueryResult queryResult, File xmlFile, Marshaller marshaller) throws JAXBException {
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         ObjectFactory objectFactory = new ObjectFactory();
@@ -671,13 +639,5 @@ public class LdmConnectorCentraxx implements LdmConnector<QueryResult, Patient> 
 
         }
 
-    }
-
-    protected void handleLdmClientException(LdmClientException e) throws LDMConnectorException {
-        if (isLdmCentraxx()) {
-            throw new LDMConnectorException(e);
-        } else if (isLdmSamplystoreBiobank()) {
-            e.printStackTrace();
-        }
     }
 }
