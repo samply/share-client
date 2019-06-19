@@ -83,16 +83,16 @@ public abstract class AbstractLdmConnector<
 
     private void initBasic() throws LdmConnectorRuntimeException {
         this.baseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
-        httpConnector = ApplicationBean.getHttpConnector();
+        this.httpConnector = ApplicationBean.getHttpConnector();
         if (isLdmSamplystoreBiobank()) {
             httpConnector.addCustomHeader("Authorization", "Basic " + StoreConnector.getBase64Credentials(StoreConnector.authorizedUsername, StoreConnector.authorizedPassword));
         }
-        httpClient = httpConnector.getHttpClient(host);
         try {
             this.host = SamplyShareUtils.getAsHttpHost(baseUrl);
         } catch (MalformedURLException e) {
             throw new LdmConnectorRuntimeException(e);
         }
+        this.httpClient = httpConnector.getHttpClient(host);
     }
 
     /**
