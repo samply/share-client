@@ -28,6 +28,7 @@
 
 package de.samply.share.client.util.db;
 
+import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.db.tables.daos.ConfigurationDao;
@@ -35,7 +36,6 @@ import de.samply.share.client.model.db.tables.daos.ConfigurationTimingsDao;
 import de.samply.share.client.model.db.tables.pojos.Configuration;
 import de.samply.share.client.model.db.tables.pojos.ConfigurationTimings;
 import de.samply.share.common.model.dto.UserAgent;
-import de.samply.share.common.utils.ProjectInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -107,9 +107,8 @@ public class ConfigurationUtil {
      * Insert a new configuration element into the database
      *
      * @param configuration the new configuration element to insert
-     * @return the assigned database id of the newly inserted configuration element
      */
-    public static void insertConfigurationElement(Configuration configuration) {
+    private static void insertConfigurationElement(Configuration configuration) {
         configurationDao.insert(configuration);
     }
 
@@ -117,9 +116,8 @@ public class ConfigurationUtil {
      * Insert a new configuration timing element into the database
      *
      * @param configurationTimings the new configuration timing element to insert
-     * @return the assigned database id of the newly inserted configuration timing element
      */
-    public static void insertConfigurationTimingsElement(ConfigurationTimings configurationTimings) {
+    private static void insertConfigurationTimingsElement(ConfigurationTimings configurationTimings) {
         configurationTimingsDao.insert(configurationTimings);
     }
 
@@ -128,7 +126,7 @@ public class ConfigurationUtil {
      *
      * @param configuration the configuration element to update
      */
-    public static void updateConfigurationElement(Configuration configuration) {
+    private static void updateConfigurationElement(Configuration configuration) {
         configurationDao.update(configuration);
     }
 
@@ -137,7 +135,7 @@ public class ConfigurationUtil {
      *
      * @param configurationTimings the configuration timing element to update
      */
-    public static void updateConfigurationTimingsElement(ConfigurationTimings configurationTimings) {
+    private static void updateConfigurationTimingsElement(ConfigurationTimings configurationTimings) {
         configurationTimingsDao.update(configurationTimings);
     }
 
@@ -146,7 +144,7 @@ public class ConfigurationUtil {
      *
      * @param configuration the configuration element to delete
      */
-    public static void deleteConfigurationElement(Configuration configuration) {
+    private static void deleteConfigurationElement(Configuration configuration) {
         configurationDao.delete(configuration);
     }
 
@@ -155,7 +153,7 @@ public class ConfigurationUtil {
      *
      * @param configurationTimings the configuration timing element to delete
      */
-    public static void deleteConfigurationTimingsElement(ConfigurationTimings configurationTimings) {
+    private static void deleteConfigurationTimingsElement(ConfigurationTimings configurationTimings) {
         configurationTimingsDao.delete(configurationTimings);
     }
 
@@ -208,7 +206,7 @@ public class ConfigurationUtil {
 
         Configuration configuration = getConfigurationElement(configurationElement);
 
-        List<String> results = null;
+        List<String> results;
 
         if (configuration != null){
 
@@ -275,7 +273,7 @@ public class ConfigurationUtil {
             }
             configParams.put(PROXY_BYPASS_PRIVATE_NETWORKS, Boolean.TRUE.toString());
 
-            UserAgent userAgent = new UserAgent(ProjectInfo.INSTANCE.getProjectName(), "Samply.Share", ProjectInfo.INSTANCE.getVersionString());
+            UserAgent userAgent = ApplicationBean.getDefaultUserAgent();
             configParams.put(USER_AGENT, userAgent.toString());
 
         } catch (NumberFormatException e) {

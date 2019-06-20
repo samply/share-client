@@ -166,9 +166,7 @@ public class CredentialsBean implements Serializable {
             }
         }
 
-        return credentialsList.toArray(new AuthSchemeType[credentialsList.size()]);
-
-        //return CredentialsType.values();
+        return credentialsList.toArray(new AuthSchemeType[0]);
     }
 
     /**
@@ -222,7 +220,7 @@ public class CredentialsBean implements Serializable {
      */
     public String deleteCredentials(Credentials credentials) {
         CredentialsUtil.deleteCredentials(credentials);
-        ApplicationBean.resetCredentialsProvider();
+        ApplicationBean.initLdmConnector();
         return "credentials_list?faces-redirect=true";
     }
 
@@ -244,7 +242,7 @@ public class CredentialsBean implements Serializable {
         CredentialsUtil.insertCredentials(newCredentials);
         clearNewCredentials();
         refreshCredentials();
-        ApplicationBean.resetCredentialsProvider();
+        ApplicationBean.initLdmConnector();
     }
 
     /**

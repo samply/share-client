@@ -114,7 +114,6 @@ public class ExecuteInquiryJob implements Job {
             log(EventMessageType.E_LDM_ERROR, e.getMessage());
             throw new JobExecutionException(e);
         }
-
     }
 
     /**

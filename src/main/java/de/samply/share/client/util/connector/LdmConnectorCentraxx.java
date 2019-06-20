@@ -83,7 +83,6 @@ public class LdmConnectorCentraxx extends AbstractLdmConnector<LdmClientCentraxx
         super(useCaching, maxCacheSize);
     }
 
-
     @Override
     public Logger getLogger() {
         return logger;
@@ -92,6 +91,11 @@ public class LdmConnectorCentraxx extends AbstractLdmConnector<LdmClientCentraxx
     @Override
     public boolean isLdmCentraxx() {
         return true;
+    }
+
+    @Override
+    boolean useAuthorizationForLdm() {
+        return false;
     }
 
     @Override
@@ -247,7 +251,7 @@ public class LdmConnectorCentraxx extends AbstractLdmConnector<LdmClientCentraxx
         String centraxxMappingMdrKey = ConfigurationUtil.getConfigurationElementValue(mdrKey);
         MdrIdDatatype mappingMdrItem = new MdrIdDatatype(centraxxMappingMdrKey);
         HttpGet httpGet = new HttpGet(baseUrl + "rest/teiler/mapping/" + mappingMdrItem.getLatestCentraxx());
-        httpGet.addHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
+        httpGet.setHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
 
         try (CloseableHttpResponse response = httpClient.execute(host, httpGet)) {
             HttpEntity entity = response.getEntity();
@@ -273,7 +277,7 @@ public class LdmConnectorCentraxx extends AbstractLdmConnector<LdmClientCentraxx
     public List<CxxMappingElement> getMapping() {
 
         HttpGet httpGet = new HttpGet(baseUrl + "rest/teiler/mapping");
-        httpGet.addHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
+        httpGet.setHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
 
         return getMapping(httpGet);
 

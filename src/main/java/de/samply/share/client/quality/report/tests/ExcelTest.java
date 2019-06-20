@@ -83,7 +83,7 @@ public class ExcelTest {
     }
 
     @GET
-    public String myTest(@QueryParam("fileId") String fileId) throws QualityReportFileManagerException, ExcelWorkbookFactoryException {
+    public String myTest(@QueryParam("fileId") String fileId) throws QualityReportFileManagerException {
 
 
 
@@ -112,7 +112,7 @@ public class ExcelTest {
         try {
 
             String mdrUrl = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_URL);
-            HttpConnector httpConnector = ApplicationBean.getHttpConnector();
+            HttpConnector httpConnector = ApplicationBean.createHttpConnector();
 
             return new MdrClient(mdrUrl, httpConnector.getClient(httpConnector.getHttpClient(mdrUrl)));
 

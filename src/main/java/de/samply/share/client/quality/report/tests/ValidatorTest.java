@@ -61,7 +61,7 @@ public class ValidatorTest {
     private QualityResultsValidator qualityResultsValidator;
 
 
-    public ValidatorTest() throws CentraxxMapperException, MdrConnectionFactoryException, ChainFactoryException {
+    public ValidatorTest() throws ChainFactoryException {
 
         IdPathManager_002 idPathManager = new IdPathManager_002();
         qualityFileManager = new CsvQualityReportFileManager(new QualityResultCsvLineManager_002(), idPathManager);
@@ -75,11 +75,11 @@ public class ValidatorTest {
 
 
     @GET
-    public String myTest(@QueryParam("fileId") String fileId) throws QualityReportFileManagerException, ExcelWorkbookFactoryException, QualityResultsValidatorException {
+    public String myTest(@QueryParam("fileId") String fileId) throws QualityReportFileManagerException, QualityResultsValidatorException {
 
 
         QualityResults qualityResults = qualityFileManager.readFile(fileId);
-        qualityResults = qualityResultsValidator.validate(qualityResults);
+        qualityResultsValidator.validate(qualityResults);
 
 
         return fileId;
@@ -93,7 +93,7 @@ public class ValidatorTest {
             MdrConnection mdrConnection = mdrConnectionFactory.getMdrConnection();
             return new MDRValidator(mdrConnection, ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_GRP_MDSB), ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_GRP_MDSK));
 
-        } catch (MdrConnectionException | MdrConnectionFactoryException | MdrInvalidResponseException | MdrException | ExecutionException e) {
+        } catch (MdrConnectionException | MdrInvalidResponseException | MdrException | ExecutionException e) {
             throw new ChainFactoryException(e);
         }
 

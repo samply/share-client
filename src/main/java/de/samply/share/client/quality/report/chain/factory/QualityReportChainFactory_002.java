@@ -106,7 +106,7 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
 
         LocalDataManagementRequester localDataManagementRequester = new LocalDataManagementRequesterImpl();
         QualityResultCsvLineManager_002 qualityResultCsvLineManager = new QualityResultCsvLineManager_002();
-        CsvQualityReportFileManager csvQualityReportFileManager = new CsvQualityReportFileManager (qualityResultCsvLineManager, idPathManager);
+        CsvQualityReportFileManager csvQualityReportFileManager = new CsvQualityReportFileManager<>(qualityResultCsvLineManager, idPathManager);
 
         MetadataTxtColumnManager_002 metadataTxtColumnManager = new MetadataTxtColumnManager_002();
         QualityReportMetadataFileManager qualityReportMetadataFileManager = new QualityReportMetadataFileManagerImpl<>(metadataTxtColumnManager, idPathManager);
@@ -149,7 +149,7 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
         setIgnoredElements(ignoredElements);
     }
 
-    private ChainLinkStaticStatisticsFileManager createChainLinkStaticStatisticsFileManager() throws ChainFactoryException {
+    private ChainLinkStaticStatisticsFileManager createChainLinkStaticStatisticsFileManager() {
 
         return new ChainLinkStaticStatisticsFileManager();
 
@@ -245,7 +245,7 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
 
 
 
-    private MdrConnectionFactory createMdrConnectionFactory() throws ChainFactoryException {
+    private MdrConnectionFactory createMdrConnectionFactory() {
 
         return new MdrConnectionFactory();
 
@@ -258,7 +258,7 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
             MdrConnection mdrConnection = mdrConnectionFactory.getMdrConnection();
             return new MDRValidator(mdrConnection, getMdrSourceGroups());
 
-        } catch (MdrConnectionException | MdrConnectionFactoryException | MdrInvalidResponseException | MdrException | ExecutionException e) {
+        } catch (MdrConnectionException | MdrInvalidResponseException | MdrException | ExecutionException e) {
             throw new ChainFactoryException(e);
         }
 

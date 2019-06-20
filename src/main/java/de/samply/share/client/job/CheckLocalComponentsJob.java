@@ -57,13 +57,13 @@ public class CheckLocalComponentsJob implements Job {
     }
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
         String ldmString = getLocalDatamanagementString();
         String idManagerString = getIdManagerString();
         UserAgent newUserAgent;
 
         if (userAgent == null) {
-            newUserAgent = new UserAgent(ProjectInfo.INSTANCE.getProjectName(), "Samply.Share", ProjectInfo.INSTANCE.getVersionString());
+            newUserAgent = ApplicationBean.getDefaultUserAgent();
         } else {
             newUserAgent = new UserAgent(userAgent.getProjectContext(), userAgent.getShareName(), userAgent.getShareVersion());
         }

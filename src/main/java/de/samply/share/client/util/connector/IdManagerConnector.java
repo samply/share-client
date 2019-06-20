@@ -87,15 +87,15 @@ public class IdManagerConnector {
     private final static int DEFAULT_SOCKET_TIMEOUT = 10000;
     private final static int DEFAULT_CONNECT_TIMEOUT = 10000;
     private final static int DEFAULT_CONNECTION_REQUEST_TIMEOUT = 10000;
-    private int maxNumberOfConnectionAttempts = 10;
-    private int timeToWaitInSecondsBetweenConnectionAttempts = 60;
+    private final int maxNumberOfConnectionAttempts;
+    private final int timeToWaitInSecondsBetweenConnectionAttempts;
 
     public IdManagerConnector() {
 
         try {
 
             idManagerUrl = SamplyShareUtils.stringToURL(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.ID_MANAGER_URL));
-            httpConnector = ApplicationBean.getHttpConnector();
+            httpConnector = ApplicationBean.createHttpConnector();
 
             int socketTimout = getSocketTimeout();
             int connectTimeout = getConnectTimeout();
@@ -181,6 +181,7 @@ public class IdManagerConnector {
                 e.printStackTrace();
                 sleepBetweenConnectionAttempts();
                 logger.debug("Getting export ids: Attempt "+ numberOfConnectionAttempt);
+                // TODO: Check if ++numberOfConnectionAttempt is meant
                 return getExportIds(idList, idObjectMap, numberOfConnectionAttempt++);
 
             }else{
@@ -205,9 +206,7 @@ public class IdManagerConnector {
 
             try {
                 return getExportIds_WithoutExceptionManagement(idList, idObjectMap);
-            }  catch (IOException e) {
-                throw new IdManagerConnectorException(e);
-            } catch (JSONException e) {
+            }  catch (IOException | JSONException e) {
                 throw new IdManagerConnectorException(e);
             }
 

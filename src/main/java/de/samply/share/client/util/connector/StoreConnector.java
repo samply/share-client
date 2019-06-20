@@ -4,6 +4,7 @@ import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.util.db.ConfigurationUtil;
+import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -123,9 +124,9 @@ public class StoreConnector {
     private static int getResponse(HttpUriRequest httpUriRequest, String username, String password) {
         CloseableHttpResponse response;
         try {
-            HttpConnector httpConnector = ApplicationBean.getHttpConnector();
+            HttpConnector httpConnector = ApplicationBean.createHttpConnector();
             httpConnector.addCustomHeader(
-                    "Authorization",
+                    HttpHeaders.AUTHORIZATION,
                     "Basic " + StoreConnector.getBase64Credentials(username, password));
             response = httpConnector.getHttpClient(storeUrl).execute(httpUriRequest);
             response.close();

@@ -81,10 +81,10 @@ public class MdrConnectionFactory {
         return ConfigurationUtil.getConfigurationElementValue(property.getEnumConfiguration());
     }
 
-    public MdrConnection getMdrConnection() throws MdrConnectionFactoryException {
+    public MdrConnection getMdrConnection() {
 
         String mdrUrl = getMdrUrl();
-        HttpConnector httpConnector = ApplicationBean.getHttpConnector();
+        HttpConnector httpConnector = ApplicationBean.createHttpConnector();
 
         return getMdrConnection (mdrUrl, authUserId, authKeyId, authUrl, privateKeyBase64, namespaces, httpConnector);
 

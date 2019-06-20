@@ -43,11 +43,11 @@ public class LocalDataManagementConnector {
     private int connectTimeout = 100000;
 
 
-    protected CloseableHttpResponse getResponse (String uri, HttpUriRequest request) throws IOException {
+    CloseableHttpResponse getResponse(String uri, HttpUriRequest request) throws IOException {
         return getHttpConnector().getHttpClient(uri).execute(request);
     }
 
-    protected HttpPost createHttpPost (String uri, HttpEntity httpEntity){
+    HttpPost createHttpPost(String uri, HttpEntity httpEntity){
 
         HttpPost httpPost = new HttpPost(uri);
         httpPost.setHeader("Content-Type", "application/xml");
@@ -58,7 +58,7 @@ public class LocalDataManagementConnector {
 
     }
 
-    protected HttpGet createHttpGet (String uri){
+    HttpGet createHttpGet(String uri){
 
         HttpGet httpGet = new HttpGet(uri);
         RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(socketTimeout).setConnectTimeout(connectTimeout).build();
@@ -69,10 +69,10 @@ public class LocalDataManagementConnector {
     }
 
     private HttpConnector getHttpConnector (){
-        return ApplicationBean.getHttpConnector();
+        return ApplicationBean.createHttpConnector();
     }
 
-    protected String getLocalDataManagementUrl () {
+    String getLocalDataManagementUrl() {
         return ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL);
     }
 

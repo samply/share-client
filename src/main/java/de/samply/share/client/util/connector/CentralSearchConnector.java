@@ -30,11 +30,11 @@ package de.samply.share.client.util.connector;
 
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.centralsearch.DateRestriction;
 import de.samply.share.client.model.centralsearch.PatientUploadResult;
 import de.samply.share.client.model.centralsearch.UploadStats;
-import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.TargetType;
@@ -145,11 +145,7 @@ public class CentralSearchConnector {
         }
     }
 
-    public CentralSearchConnector(Credentials credentials) {
-        this(credentials, null);
-    }
-
-    public CentralSearchConnector(Credentials credentials, Integer uploadId) {
+    private CentralSearchConnector(Credentials credentials, Integer uploadId) {
         try {
             init(credentials, uploadId);
         } catch (CentralSearchConnectorException e) {
@@ -178,7 +174,7 @@ public class CentralSearchConnector {
         this.credentials = credentials;
         this.uploadId = uploadId;
         this.anonymizedPatientPrefix = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CENTRAL_MDS_DATABASE_ANONYMIZED_PATIENTS_PREFIX);
-        httpConnector = ApplicationBean.getHttpConnector();
+        httpConnector = ApplicationBean.createHttpConnector();
         requestConfig = RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).setConnectionRequestTimeout(10000).build();
         try {
             centralSearchUrl = Utils.getCentralMdsDbURL();

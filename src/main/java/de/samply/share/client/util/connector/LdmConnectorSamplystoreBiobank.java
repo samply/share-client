@@ -46,6 +46,11 @@ public class LdmConnectorSamplystoreBiobank extends AbstractLdmConnector<LdmClie
     }
 
     @Override
+    boolean useAuthorizationForLdm() {
+        return true;
+    }
+
+    @Override
     LdmClientSamplystoreBiobank createLdmClient(CloseableHttpClient httpClient, String baseUrl, boolean useCaching) throws LdmClientException {
         return new LdmClientSamplystoreBiobank(httpClient, baseUrl, useCaching);
     }

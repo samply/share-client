@@ -41,7 +41,7 @@ public class FileDownloaderImpl implements FileDownloader{
     private String destinationFilePath;
 
 
-    public FileDownloaderImpl() {
+    FileDownloaderImpl() {
     }
 
     public FileDownloaderImpl(String sourceUrl, String destinationFilePath) {
@@ -56,9 +56,7 @@ public class FileDownloaderImpl implements FileDownloader{
 
             downloadWithoutExceptionManagement();
 
-        } catch (IOException e) {
-            throw new FileDownloaderException(e);
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new FileDownloaderException(e);
         }
 
@@ -82,7 +80,7 @@ public class FileDownloaderImpl implements FileDownloader{
 
     private CloseableHttpClient getHttpClient (URL url){
 
-        HttpConnector httpConnector = ApplicationBean.getHttpConnector();
+        HttpConnector httpConnector = ApplicationBean.createHttpConnector();
         return httpConnector.getHttpClient(url);
 
     }
@@ -118,11 +116,11 @@ public class FileDownloaderImpl implements FileDownloader{
 
     }
 
-    public void setSourceUrl(String sourceUrl) {
+    void setSourceUrl(String sourceUrl) {
         this.sourceUrl = sourceUrl;
     }
 
-    public void setDestinationFilePath(String destinationFilePath) {
+    void setDestinationFilePath(String destinationFilePath) {
         this.destinationFilePath = destinationFilePath;
     }
 

@@ -10,6 +10,7 @@ import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
+import de.samply.share.client.model.db.enums.TargetType;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorRuntimeException;
 import de.samply.share.client.util.db.ConfigurationUtil;
@@ -19,13 +20,13 @@ import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.Error;
 import de.samply.share.model.common.*;
 import de.samply.share.utils.QueryConverter;
-import org.apache.logging.log4j.Logger;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -60,6 +61,8 @@ public abstract class AbstractLdmConnector<
         init(useCaching, maxCacheSize);
     }
 
+    abstract boolean useAuthorizationForLdm();
+
     private void init(boolean useCaching) {
         initBasic();
 
@@ -83,10 +86,13 @@ public abstract class AbstractLdmConnector<
 
     private void initBasic() throws LdmConnectorRuntimeException {
         this.baseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
-        this.httpConnector = ApplicationBean.getHttpConnector();
-        if (isLdmSamplystoreBiobank()) {
-            httpConnector.addCustomHeader("Authorization", "Basic " + StoreConnector.getBase64Credentials(StoreConnector.authorizedUsername, StoreConnector.authorizedPassword));
+
+        if (useAuthorizationForLdm()) {
+            this.httpConnector = ApplicationBean.createHttpConnector(TargetType.TT_LDM);
+        } else {
+            this.httpConnector = ApplicationBean.createHttpConnector();
         }
+
         try {
             this.host = SamplyShareUtils.getAsHttpHost(baseUrl);
         } catch (MalformedURLException e) {

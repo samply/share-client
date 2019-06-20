@@ -129,10 +129,10 @@ public class BrokerConnector {
      * @param broker      the broker to connect to
      * @param credentials the credentials to authenticate with that broker
      */
-    public BrokerConnector(Broker broker, Credentials credentials) {
+    private BrokerConnector(Broker broker, Credentials credentials) {
         this.broker = broker;
         this.credentials = credentials;
-        httpConnector = ApplicationBean.getHttpConnector();
+        httpConnector = ApplicationBean.createHttpConnector();
         requestConfig = RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).setConnectionRequestTimeout(10000).build();
         try {
             httpHost = SamplyShareUtils.getAsHttpHost(broker.getAddress());
@@ -220,7 +220,7 @@ public class BrokerConnector {
         try {
             URI uri = new URI(SamplyShareUtils.addTrailingSlash(broker.getAddress()) + Constants.BANKS_PATH + credentials.getUsername());
             HttpDelete httpDelete = new HttpDelete(uri.normalize().toString());
-            httpDelete.addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpDelete.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
             httpDelete.setConfig(requestConfig);
             CloseableHttpResponse response = httpClient.execute(httpHost, httpDelete);
 
@@ -242,11 +242,7 @@ public class BrokerConnector {
         try {
             URI uri = new URI(SamplyShareUtils.addTrailingSlash(broker.getAddress()) + Constants.BANKS_PATH + credentials.getUsername());
             HttpPut httpPut = new HttpPut(uri.normalize().toString());
-            httpPut.addHeader(HttpHeaders.AUTHORIZATION, Constants.AUTH_HEADER_VALUE_REGISTRATION + " " + activationCode);
-
-//        if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("osse")) {
-//            httpPut.addHeader(ACCESSTOKEN_HEADER_KEY, Utils.getAccesstoken());
-//        }
+            httpPut.setHeader(HttpHeaders.AUTHORIZATION, Constants.AUTH_HEADER_VALUE_REGISTRATION + " " + activationCode);
 
             httpPut.setConfig(requestConfig);
             CloseableHttpResponse response = httpClient.execute(httpHost, httpPut);
@@ -280,7 +276,7 @@ public class BrokerConnector {
             URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH);
 
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
-            httpGet.addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
             httpGet.setConfig(requestConfig);
             RequestConfig.Builder requestConfig = RequestConfig.custom();
             requestConfig.setConnectTimeout(30 * 1000);
@@ -298,7 +294,7 @@ public class BrokerConnector {
             if (statusCode == HttpStatus.SC_OK) {
                 updateLastChecked();
                 Serializer serializer = new Persister();
-                Inquiries inquiries = new Inquiries();
+                Inquiries inquiries;
                 try {
                     inquiries = serializer.read(Inquiries.class, responseString);
                 } catch (Exception e) {
@@ -338,7 +334,7 @@ public class BrokerConnector {
             String path = SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.TESTINQUIRIES_PATH + "/" + 1;
             URI uri = new URI(path);
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
-            httpGet.addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
             result.getMessages().add(new Message(httpGet.getMethod() + " " + path + " " + httpGet.getProtocolVersion(),
                     "fa-long-arrow-right"));
             result.getMessages().add(new Message(httpGet.getFirstHeader(HttpHeaders.AUTHORIZATION).getName() + " " +
@@ -400,7 +396,7 @@ public class BrokerConnector {
             String path = SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.REFERENCEQUERY_PATH;
             URI uri = new URI(path);
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
-            httpGet.addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
 
             int statusCode;
             String responseString;
@@ -438,7 +434,7 @@ public class BrokerConnector {
         try {
             URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId);
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
-            httpGet.addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
 
             int statusCode;
             String responseString;
@@ -478,7 +474,7 @@ public class BrokerConnector {
         try {
             URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId + "/" + Constants.INFO_PATH);
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
-            httpGet.addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
 
             int statusCode;
             String responseString;
@@ -511,7 +507,7 @@ public class BrokerConnector {
         try {
             URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId + "/" + Constants.CONTACT_PATH);
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
-            httpGet.addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
 
             int statusCode;
             String responseString;
@@ -524,7 +520,6 @@ public class BrokerConnector {
 
             if (statusCode == HttpStatus.SC_OK) {
                 return SamplyShareUtils.unmarshal(responseString, JAXBContext.newInstance(ObjectFactory.class), Contact.class);
-//                return responseString;
             } else {
                 throw new BrokerConnectorException("Couldn't load contact - got status code " + statusCode + " from broker " + broker.getAddress());
             }
@@ -557,12 +552,7 @@ public class BrokerConnector {
             if (statusCode == HttpStatus.SC_OK) {
                 return true;
             } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
-                if (responseString != null && responseString.equals(Constants.EXPOSE_UNAVAILABLE)) {
-                    return false;
-                } else {
-                    // Broker does not support the check method. So assume it might be there.
-                    return true;
-                }
+                return responseString == null || !responseString.equals(Constants.EXPOSE_UNAVAILABLE);
             } else {
                 return false;
             }
@@ -588,7 +578,7 @@ public class BrokerConnector {
             URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquirySourceId + "/" + Constants.REPLIES_PATH
                     + "/" + credentials.getUsername());
             HttpPut httpPut = new HttpPut(uri.normalize().toString());
-            httpPut.addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpPut.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
 
 
             String replyString="";
@@ -681,8 +671,8 @@ public class BrokerConnector {
             String reportString = gson.toJson(statusReportItems);
             URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.MONITORING_PATH);
             HttpPut httpPut = new HttpPut(uri.normalize().toString());
-            httpPut.addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
-            httpPut.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+            httpPut.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpPut.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
             StringEntity entity = new StringEntity(reportString);
 
