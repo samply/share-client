@@ -490,7 +490,8 @@ public class ApplicationBean implements Serializable {
 
         List<Credentials> credentialsByTarget = CredentialsUtil.getCredentialsByTarget(TargetType.TT_LDM);
         if (credentialsByTarget.isEmpty()) {
-            throw new LdmConnectorRuntimeException("No credentials for target type '" + targetType + "' found");
+            logger.warn("No credentials for target type '" + targetType + "' found. Using default HttpConnector without credentials for '" + targetType + "'.");
+            return createHttpConnector();
         }
 
         Credentials firstCredentials = credentialsByTarget.get(0);
