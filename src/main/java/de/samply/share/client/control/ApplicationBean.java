@@ -89,6 +89,8 @@ public class ApplicationBean implements Serializable {
     private static final String COMMON_INFOS_FILENAME_SUFFIX = "_bridgehead_info.xml";
     private static final List<String> NAMESPACES = new ArrayList<>(Arrays.asList("dktk", "adt"));
 
+    private static final int TIMEOUT_IN_SECONDS = 15;
+
     private static Urls urls;
     private static Operator operator;
     private static Bridgehead infos;
@@ -478,7 +480,7 @@ public class ApplicationBean implements Serializable {
     public static HttpConnector createHttpConnector() {
         CredentialsProvider credentialsProvider = Utils.prepareCredentialsProvider();
 
-        HttpConnector httpConnector = new HttpConnector(ConfigurationUtil.getHttpConfigParams(configuration), credentialsProvider);
+        HttpConnector httpConnector = new HttpConnector(ConfigurationUtil.getHttpConfigParams(configuration), credentialsProvider, TIMEOUT_IN_SECONDS);
         httpConnector.setUserAgent(getUserAgent().toString());
         httpConnector.addCustomHeader(Constants.HEADER_XML_NAMESPACE, Constants.VALUE_XML_NAMESPACE_COMMON);
 
