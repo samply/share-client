@@ -584,21 +584,26 @@ public class BrokerConnector {
             httpPut.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
 
 
-            String replyString="";
-            JSONObject stats= new JSONObject();
-            if (ApplicationUtils.isDktk()) {
-                if (reply.getClass() == Integer.class) {
-                    replyString = Integer.toString((Integer) reply);
-                } else {
-                    replyString = reply.toString();
-                }
-            } else if (ApplicationUtils.isSamply()) {
-                BbmriResult result = (BbmriResult) reply;
+            String replyString = "";
+            JSONObject stats = new JSONObject();
+            switch (ApplicationUtils.getConnectorType()) {
+                case DKTK:
+                    if (reply.getClass() == Integer.class) {
+                        replyString = Integer.toString((Integer) reply);
+                    } else {
+                        replyString = reply.toString();
+                    }
+                    break;
 
-                stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfDonors()));
-                stats.put("sample", NumberDisguiser.getDisguisedNumber(result.getNumberOfSamples()));
-                replyString = stats.toString();
+                case SAMPLY:
+                    BbmriResult result = (BbmriResult) reply;
+
+                    stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfDonors()));
+                    stats.put("sample", NumberDisguiser.getDisguisedNumber(result.getNumberOfSamples()));
+                    replyString = stats.toString();
+                    break;
             }
+
             StringEntity entity = new StringEntity(replyString);
             httpPut.setEntity(entity);
             int statusCode;

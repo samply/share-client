@@ -55,29 +55,29 @@ import java.util.List;
 
 /**
  * This Job checks the status of the given inquiry and spawns new jobs if necessary
- *
+ * <p>
  * It is defined and scheduled by the ExecuteInquiryJob
- *
+ * <p>
  * The performed action depends on the previous state of the Inquiry
- *
+ * <p>
  * 1) If the stats were not available earlier, check if they are.
- *  a) If they are not, the job terminates this iteration and wait to be called again at the scheduled time
- *  b) If they are, and it was an error...either quit and delete the trigger if the problem can not be solved or try to
- *     fix it (remove unknown keys for example), remove this trigger and spawn a new ExecuteInquiryJob with a modified
- *     inquiry.
- *  c) If they are, and it were stats...either set everything to done (if only stats were requested or the result is 0)
- *     or reschedule this job, setting the stats done parameter to true
- *
+ * a) If they are not, the job terminates this iteration and wait to be called again at the scheduled time
+ * b) If they are, and it was an error...either quit and delete the trigger if the problem can not be solved or try to
+ * fix it (remove unknown keys for example), remove this trigger and spawn a new ExecuteInquiryJob with a modified
+ * inquiry.
+ * c) If they are, and it were stats...either set everything to done (if only stats were requested or the result is 0)
+ * or reschedule this job, setting the stats done parameter to true
+ * <p>
  * 2) If the stats were available, more than 0 were found, not only stats were requested and the first page of the
- *    result was not yet available, check if the first page is accessible
- *  a) If it is not, the job terminates this iteration and wait to be called again at the scheduled time
- *  b) If they are, set the corresponding parameter in the jobdatamap, quit this iteration and wait for the next call
- *
+ * result was not yet available, check if the first page is accessible
+ * a) If it is not, the job terminates this iteration and wait to be called again at the scheduled time
+ * b) If they are, set the corresponding parameter in the jobdatamap, quit this iteration and wait for the next call
+ * <p>
  * 3) If the stats were available, more than 0 were found, not only stats were requested, the first page of the
- *    result was already available, but the last page was not done yet...check if the last page is accessible now
- *  a) If it is not, the job terminates this iteration and wait to be called again at the scheduled time
- *  b) If it is, and it was an upload inquiry...spawn a UploadToCentralMdsDbJob and remove this job from the scheduler
- *  c) If it is, and it was not an upload inquiry...set the status to done and remove this job from the scheduler
+ * result was already available, but the last page was not done yet...check if the last page is accessible now
+ * a) If it is not, the job terminates this iteration and wait to be called again at the scheduled time
+ * b) If it is, and it was an upload inquiry...spawn a UploadToCentralMdsDbJob and remove this job from the scheduler
+ * c) If it is, and it was not an upload inquiry...set the status to done and remove this job from the scheduler
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
@@ -122,7 +122,7 @@ public class CheckInquiryStatusJob implements Job {
         } else if (!jobParams.isResultStarted()) {
             logger.debug("Stats are available, first result file was not available. Checking again.");
             try {
-                if(ldmConnector.isFirstResultPageAvailable(inquiryResult.getLocation())) {
+                if (ldmConnector.isFirstResultPageAvailable(inquiryResult.getLocation())) {
                     jobExecutionContext.getJobDetail().getJobDataMap().put(CheckInquiryStatusJobParams.STATS_DONE, true);
                     jobExecutionContext.getJobDetail().getJobDataMap().put(CheckInquiryStatusJobParams.RESULT_STARTED, true);
                 }
@@ -186,7 +186,7 @@ public class CheckInquiryStatusJob implements Job {
      * Write a message, linked with the inquiry, to the event log
      *
      * @param messageType pre-defined event type
-     * @param params parameters that will be substituted via resource bundle and messageformat
+     * @param params      parameters that will be substituted via resource bundle and messageformat
      */
     private void log(EventMessageType messageType, String... params) {
         if (jobParams.isUpload()) {
@@ -204,7 +204,7 @@ public class CheckInquiryStatusJob implements Job {
     /**
      * Handle the outcome of the call to a /stats resource on the local datamanagement
      *
-     * @param object will either be an error or a query result statistics object
+     * @param object              will either be an error or a query result statistics object
      * @param jobExecutionContext the jobExecutionContext of this job instance
      * @return true if stats were received, false if an error was received or something unexpected happened
      */
@@ -239,7 +239,7 @@ public class CheckInquiryStatusJob implements Job {
                     break;
             }
             return false;
-        } else if (object.getClass().equals(QueryResultStatistic.class)){
+        } else if (object.getClass().equals(QueryResultStatistic.class)) {
             QueryResultStatistic queryResultStatistic = (QueryResultStatistic) object;
             log(EventMessageType.E_STATISTICS_READY, Integer.toString(queryResultStatistic.getTotalSize()));
             inquiryResult.setSize(queryResultStatistic.getTotalSize());
@@ -379,7 +379,7 @@ public class CheckInquiryStatusJob implements Job {
 
     /**
      * Check if any automated replies should be sent and take care of it
-     *
+     * <p>
      * TODO: Maybe create a separate job for that?
      */
     @SuppressWarnings("ConstantConditions")
@@ -407,16 +407,21 @@ public class CheckInquiryStatusJob implements Job {
                 case RR_TOTAL_COUNT:
                     logger.info("Reporting the amount of matching datasets to the broker.");
                     BrokerConnector brokerConnector = new BrokerConnector(BrokerUtil.fetchBrokerById(brokerId));
-                    if (ApplicationUtils.isDktk()) {
-                        brokerConnector.reply(inquiryDetails, inquiryResult.getSize());
-                    } else if (ApplicationUtils.isSamply()) {
-                        try {
-                            BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
-                            brokerConnector.reply(inquiryDetails, queryResult);
-                        } catch (LDMConnectorException e) {
-                            e.printStackTrace();
-                        }
+                    switch (ApplicationUtils.getConnectorType()) {
+                        case DKTK:
+                            brokerConnector.reply(inquiryDetails, inquiryResult.getSize());
+                            break;
+
+                        case SAMPLY:
+                            try {
+                                BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
+                                brokerConnector.reply(inquiryDetails, queryResult);
+                            } catch (LDMConnectorException e) {
+                                e.printStackTrace();
+                            }
+                            break;
                     }
+
                     break;
                 case RR_NO_AUTOMATIC_ACTION:
                 default:
@@ -429,7 +434,7 @@ public class CheckInquiryStatusJob implements Job {
             logger.error("Null pointer Exception caught while trying to getPatientIds reply rules", npe);
         } catch (BrokerConnectorException e) {
             if (inquiry == null) {
-                EventLogUtil.insertEventLogEntry(EventMessageType.E_BROKER_REPLY_ERROR,e.getMessage());
+                EventLogUtil.insertEventLogEntry(EventMessageType.E_BROKER_REPLY_ERROR, e.getMessage());
             } else {
                 EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_BROKER_REPLY_ERROR, inquiry.getId(), e.getMessage());
             }

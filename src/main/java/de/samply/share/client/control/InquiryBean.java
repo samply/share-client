@@ -384,11 +384,10 @@ public class InquiryBean implements Serializable {
     /**
      * Load the result of an inquiry from local datamanagement
      */
-    @SuppressWarnings("unchecked")
     public void loadResult() {
         logger.debug("loadResult called");
         try {
-            if((latestInquiryResult!=null && !latestInquiryResult.getStatisticsOnly())) {
+            if ((latestInquiryResult != null && !latestInquiryResult.getStatisticsOnly())) {
                 if (latestInquiryResult != null && !latestInquiryResult.getIsError()
                         && latestInquiryResult.getSize() != null && latestInquiryResult.getSize() > 0) {
                     if (ldmConnector.isResultDone(latestInquiryResult.getLocation(), latestResultStatistics)) {
@@ -406,12 +405,14 @@ public class InquiryBean implements Serializable {
      */
     private void populateQueryResult() throws LDMConnectorException {
         String queryResultLocation = latestInquiryResult.getLocation();
-        // TODO other types
-        if (ApplicationUtils.isDktk()) {
-            latestQueryResult = (QueryResult) ldmConnector.getResultsFromPage(queryResultLocation, 0);
-        }
-        if (ApplicationUtils.isSamply()) {
-            latestQueryResult = (BbmriResult) ldmConnector.getResultsFromPage(queryResultLocation, 0);
+        switch (ApplicationUtils.getConnectorType()) {
+            case DKTK:
+                latestQueryResult = (QueryResult) ldmConnector.getResultsFromPage(queryResultLocation, 0);
+                break;
+
+            case SAMPLY:
+                latestQueryResult = (BbmriResult) ldmConnector.getResultsFromPage(queryResultLocation, 0);
+                break;
         }
         buildPatientPageTree(latestQueryResult);
     }
@@ -431,12 +432,14 @@ public class InquiryBean implements Serializable {
         }
 
         try {
-            // TODO other types
-            if (ApplicationUtils.isDktk()) {
-                latestQueryResult = (QueryResult) ldmConnector.getResultsFromPage(latestInquiryResult.getLocation(), page);
-            }
-            if (ApplicationUtils.isSamply()) {
-                latestQueryResult = (BbmriResult) ldmConnector.getResultsFromPage(latestInquiryResult.getLocation(), page);
+            switch (ApplicationUtils.getConnectorType()) {
+                case DKTK:
+                    latestQueryResult = (QueryResult) ldmConnector.getResultsFromPage(latestInquiryResult.getLocation(), page);
+                    break;
+
+                case SAMPLY:
+                    latestQueryResult = (BbmriResult) ldmConnector.getResultsFromPage(latestInquiryResult.getLocation(), page);
+                    break;
             }
         } catch (LDMConnectorException e) {
             logger.error("Error changing result page", e);
@@ -464,38 +467,41 @@ public class InquiryBean implements Serializable {
     private static TreeModel<Container> resultPageToTree(Result queryResultPage) {
         TreeModel<Container> containerTree = new ListTreeModel<>();
 
-        if (ApplicationUtils.isDktk()) {
-            QueryResult queryResultPageCCP = (QueryResult) queryResultPage;
-            for (de.samply.share.model.ccp.Patient patient : queryResultPageCCP.getPatient()) {
-                de.samply.share.model.ccp.Container patientContainer = new de.samply.share.model.ccp.Container();
-                patientContainer.getAttribute().addAll(patient.getAttribute());
-                patientContainer.getContainer().addAll(patient.getContainer());
-                patientContainer.setId(patient.getId());
-                de.samply.share.model.common.Container containerTmp = new de.samply.share.model.common.Container();
-                try {
-                    containerTmp = Converter.converCCPContainerToCommonContainer(patientContainer);
-                } catch (JAXBException e) {
-                    e.printStackTrace();
+        switch (ApplicationUtils.getConnectorType()) {
+            case DKTK:
+                QueryResult queryResultPageCCP = (QueryResult) queryResultPage;
+                for (de.samply.share.model.ccp.Patient patient : queryResultPageCCP.getPatient()) {
+                    de.samply.share.model.ccp.Container patientContainer = new de.samply.share.model.ccp.Container();
+                    patientContainer.getAttribute().addAll(patient.getAttribute());
+                    patientContainer.getContainer().addAll(patient.getContainer());
+                    patientContainer.setId(patient.getId());
+                    de.samply.share.model.common.Container containerTmp = new de.samply.share.model.common.Container();
+                    try {
+                        containerTmp = Converter.converCCPContainerToCommonContainer(patientContainer);
+                    } catch (JAXBException e) {
+                        e.printStackTrace();
+                    }
+                    containerTree = visitContainerNode(containerTree, containerTmp);
                 }
-                containerTree = visitContainerNode(containerTree, containerTmp);
-            }
-        }
-        if (ApplicationUtils.isSamply()) {
-            BbmriResult queryResultPageBBMRI = (BbmriResult) queryResultPage;
-            for (de.samply.share.model.osse.Patient donor : queryResultPageBBMRI.getDonors()) {
-                de.samply.share.model.osse.Container patientContainer = new de.samply.share.model.osse.Container();
-                patientContainer.getAttribute().addAll(donor.getAttribute());
-                patientContainer.getContainer().addAll(donor.getContainer());
-                patientContainer.setId(donor.getId());
-                de.samply.share.model.common.Container containerTmp = new de.samply.share.model.common.Container();
-                try {
-                    containerTmp = Converter.convertOsseContainerToCommonContainer(patientContainer);
-                } catch (JAXBException e) {
-                    e.printStackTrace();
-                }
+                break;
 
-                containerTree = visitContainerNode(containerTree, containerTmp);
-            }
+            case SAMPLY:
+                BbmriResult queryResultPageBBMRI = (BbmriResult) queryResultPage;
+                for (de.samply.share.model.osse.Patient donor : queryResultPageBBMRI.getDonors()) {
+                    de.samply.share.model.osse.Container patientContainer = new de.samply.share.model.osse.Container();
+                    patientContainer.getAttribute().addAll(donor.getAttribute());
+                    patientContainer.getContainer().addAll(donor.getContainer());
+                    patientContainer.setId(donor.getId());
+                    de.samply.share.model.common.Container containerTmp = new de.samply.share.model.common.Container();
+                    try {
+                        containerTmp = Converter.convertOsseContainerToCommonContainer(patientContainer);
+                    } catch (JAXBException e) {
+                        e.printStackTrace();
+                    }
+
+                    containerTree = visitContainerNode(containerTree, containerTmp);
+                }
+                break;
         }
         return containerTree;
     }
@@ -522,12 +528,12 @@ public class InquiryBean implements Serializable {
         return parentNode;
     }
 
-    private List<MdrIdDatatype> getExportMdrBlackList(){
+    private List<MdrIdDatatype> getExportMdrBlackList() {
 
         List<String> configurationElementValueList = ConfigurationUtil.getConfigurationElementValueList(EnumConfiguration.EXPORT_MDR_BLACKLIST);
 
         List<MdrIdDatatype> mdrIdDatatypeList = new ArrayList<>();
-        for (String sMdrId : configurationElementValueList){
+        for (String sMdrId : configurationElementValueList) {
             mdrIdDatatypeList.add(new MdrIdDatatype(sMdrId));
         }
 
@@ -549,7 +555,7 @@ public class InquiryBean implements Serializable {
                     ApplicationBean.getMDRValidator(),
                     validationHandling,
                     blacklist);
-            // TODO other types
+            // TODO Use switch statement on ApplicationUtils.getConnectorType()
             Workbook workbook = null;
             if (ApplicationUtils.isDktk()) {
                 QueryResult queryResult = (QueryResult) ldmConnector.getResults(queryResultLocation);
@@ -591,17 +597,15 @@ public class InquiryBean implements Serializable {
         }
     }
 
-    private void createTemporaryFile (ByteArrayOutputStream byteArrayOutputStream, String filename){
+    private void createTemporaryFile(ByteArrayOutputStream byteArrayOutputStream, String filename) {
 
         try {
 
             String path = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_DIRECTORY);
-            filename = path + File.separator +filename;
+            filename = path + File.separator + filename;
             FileOutputStream fileOutputStream = new FileOutputStream(filename);
             byteArrayOutputStream.writeTo(fileOutputStream);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -620,16 +624,19 @@ public class InquiryBean implements Serializable {
     public String reply() {
         try {
             BrokerConnector brokerConnector = new BrokerConnector(BrokerUtil.fetchBrokerById(inquiry.getBrokerId()));
-            if (ApplicationUtils.isDktk()) {
-                brokerConnector.reply(latestInquiryDetails, latestInquiryResult.getSize());
-            }
-            if (ApplicationUtils.isSamply()) {
-                try {
-                    BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(latestInquiryDetails.getId()).getLocation());
-                    brokerConnector.reply(latestInquiryDetails, queryResult);
-                } catch (LDMConnectorException e) {
-                    e.printStackTrace();
-                }
+            switch (ApplicationUtils.getConnectorType()) {
+                case DKTK:
+                    brokerConnector.reply(latestInquiryDetails, latestInquiryResult.getSize());
+                    break;
+
+                case SAMPLY:
+                    try {
+                        BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(latestInquiryDetails.getId()).getLocation());
+                        brokerConnector.reply(latestInquiryDetails, queryResult);
+                    } catch (LDMConnectorException e) {
+                        e.printStackTrace();
+                    }
+                    break;
             }
             return "/user/show_inquiry.xhtml?inquiryId=" + inquiry.getId() + "&faces-redirect=true";
         } catch (BrokerConnectorException e) {

@@ -116,31 +116,33 @@ public class GenerateInquiryResultStatsJob implements Job {
         AgeDistribution ageDistribution = new AgeDistribution();
         GenderDistribution genderDistribution = new GenderDistribution();
 
-        if (ApplicationUtils.isDktk()) {
-            QueryResult ccpQueryResult = (QueryResult) queryResult;
-            for (Patient patient : ccpQueryResult.getPatient()) {
-                de.samply.share.model.common.Patient patientCommon = new de.samply.share.model.common.Patient();
-                try {
-                    patientCommon = Converter.convertCCPPatientToCommonPatient(patient);
-                } catch (JAXBException e) {
-                    e.printStackTrace();
+        switch (ApplicationUtils.getConnectorType()) {
+            case DKTK:
+                QueryResult ccpQueryResult = (QueryResult) queryResult;
+                for (Patient patient : ccpQueryResult.getPatient()) {
+                    de.samply.share.model.common.Patient patientCommon = new de.samply.share.model.common.Patient();
+                    try {
+                        patientCommon = Converter.convertCCPPatientToCommonPatient(patient);
+                    } catch (JAXBException e) {
+                        e.printStackTrace();
+                    }
+                    ageDistribution.incrementCountForAge(getAge(patientCommon, "urn:dktk:dataelement:28:"));
+                    genderDistribution.increaseCountForGender(getGender(patientCommon, "urn:dktk:dataelement:1:"));
                 }
-                ageDistribution.incrementCountForAge(getAge(patientCommon,"urn:dktk:dataelement:28:"));
-                genderDistribution.increaseCountForGender(getGender(patientCommon,"urn:dktk:dataelement:1:"));
-            }
-        }
-        if (ApplicationUtils.isSamply()) {
-            for (de.samply.share.model.osse.Patient donor : ((BbmriResult) queryResult).getDonors()) {
-                de.samply.share.model.common.Patient donorCommon = new de.samply.share.model.common.Patient();
-                try {
-                    donorCommon = Converter.convertOssePatientToCommonPatient(donor);
-                } catch (JAXBException e) {
-                    e.printStackTrace();
-                }
-                ageDistribution.incrementCountForAge(getAge(donorCommon,"urn:mdr16:dataelement:22:"));
-                genderDistribution.increaseCountForGender(getGender(donorCommon,"urn:mdr16:dataelement:23:"));
-            }
+                break;
 
+            case SAMPLY:
+                for (de.samply.share.model.osse.Patient donor : ((BbmriResult) queryResult).getDonors()) {
+                    de.samply.share.model.common.Patient donorCommon = new de.samply.share.model.common.Patient();
+                    try {
+                        donorCommon = Converter.convertOssePatientToCommonPatient(donor);
+                    } catch (JAXBException e) {
+                        e.printStackTrace();
+                    }
+                    ageDistribution.incrementCountForAge(getAge(donorCommon, "urn:mdr16:dataelement:22:"));
+                    genderDistribution.increaseCountForGender(getGender(donorCommon, "urn:mdr16:dataelement:23:"));
+                }
+                break;
         }
 
         Gson gson = new Gson();
@@ -165,9 +167,9 @@ public class GenerateInquiryResultStatsJob implements Job {
             return -1;
         } else {
             try {
-                if(ApplicationUtils.isSamply()){
+                if (ApplicationUtils.isSamply()) {
                     ageString = ageString.replace("\"", "");
-                    LocalDate birthdate = new LocalDate (Integer.parseInt(ageString.split("\\.")[2]), Integer.parseInt(ageString.split("\\.")[1]), Integer.parseInt(ageString.split("\\.")[0]));
+                    LocalDate birthdate = new LocalDate(Integer.parseInt(ageString.split("\\.")[2]), Integer.parseInt(ageString.split("\\.")[1]), Integer.parseInt(ageString.split("\\.")[0]));
                     LocalDate now = new LocalDate();
                     Years age = Years.yearsBetween(birthdate, now);
                     return age.getYears();

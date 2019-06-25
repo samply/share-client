@@ -206,30 +206,33 @@ public class ApplicationBean implements Serializable {
         }
     }
 
-    // TODO: other connector implementations
     public static void initLdmConnector() {
-        if (ApplicationUtils.isSamply()) {
-            if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
-                try {
-                    int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
-                    ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true, maxCacheSize);
-                } catch (NumberFormatException e) {
-                    ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true);
+        switch (ApplicationUtils.getConnectorType()) {
+            case DKTK:
+                if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
+                    try {
+                        int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
+                        ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true, maxCacheSize);
+                    } catch (NumberFormatException e) {
+                        ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true);
+                    }
+                } else {
+                    ApplicationBean.ldmConnector = new LdmConnectorCentraxx(false);
                 }
-            } else {
-                ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(false);
-            }
-        } else if (ApplicationUtils.isDktk()) {
-            if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
-                try {
-                    int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
-                    ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true, maxCacheSize);
-                } catch (NumberFormatException e) {
-                    ApplicationBean.ldmConnector = new LdmConnectorCentraxx(true);
+                break;
+
+            case SAMPLY:
+                if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
+                    try {
+                        int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
+                        ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true, maxCacheSize);
+                    } catch (NumberFormatException e) {
+                        ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true);
+                    }
+                } else {
+                    ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(false);
                 }
-            } else {
-                ApplicationBean.ldmConnector = new LdmConnectorCentraxx(false);
-            }
+                break;
         }
     }
 
@@ -548,13 +551,7 @@ public class ApplicationBean implements Serializable {
     }
 
     public static String getDisplayName() {
-        if (ApplicationUtils.isDktk()) {
-            return "DKTK.Teiler";
-        } else if (ApplicationUtils.isSamply()) {
-            return "Connector";
-        }
-
-        return "Samply.Share";
+        return ApplicationUtils.getConnectorType().getDisplayName();
     }
 
     /**
