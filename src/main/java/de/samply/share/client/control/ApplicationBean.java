@@ -67,6 +67,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -117,7 +118,11 @@ public class ApplicationBean implements Serializable {
     private ConnectCheckResult ldmAvailability = new ConnectCheckResult();
     private ConnectCheckResult idmAvailability = new ConnectCheckResult();
 
-    static String[] fallbacks;
+    private static Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+
+    public static Locale getLocale() {
+        return locale;
+    }
 
     @PostConstruct
     public void init() {
@@ -131,12 +136,10 @@ public class ApplicationBean implements Serializable {
         // Load common-config.xml
         loadCommonConfig();
 
-        if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("dktk") || ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("samply")) {
-            loadUrls();
-            loadOperator();
-            loadBridgeheadInfo();
-            updateCommonUrls();
-        }
+        loadUrls();
+        loadOperator();
+        loadBridgeheadInfo();
+        updateCommonUrls();
 
         resetMdrContext();
         patientValidator = new PatientValidator(MdrContext.getMdrContext().getMdrClient());
@@ -205,7 +208,7 @@ public class ApplicationBean implements Serializable {
 
     // TODO: other connector implementations
     public static void initLdmConnector() {
-        if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("samply")) {
+        if (ApplicationUtils.isSamply()) {
             if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
                 try {
                     int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
@@ -216,7 +219,7 @@ public class ApplicationBean implements Serializable {
             } else {
                 ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(false);
             }
-        } else if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("dktk")) {
+        } else if (ApplicationUtils.isDktk()) {
             if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
                 try {
                     int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
@@ -343,14 +346,16 @@ public class ApplicationBean implements Serializable {
      */
     private static void updateCommonUrls() {
         if (urls != null) {
-            de.samply.share.client.model.db.tables.pojos.Configuration idmanagerConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
-            idmanagerConfigElement.setName(EnumConfiguration.ID_MANAGER_URL.name());
-            idmanagerConfigElement.setSetting(urls.getIdmanagerUrl());
-            ConfigurationUtil.insertOrUpdateConfigurationElement(idmanagerConfigElement);
+            if (ApplicationUtils.isDktk()) {
+                de.samply.share.client.model.db.tables.pojos.Configuration idmanagerConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
+                idmanagerConfigElement.setName(EnumConfiguration.ID_MANAGER_URL.name());
+                idmanagerConfigElement.setSetting(urls.getIdmanagerUrl());
+                ConfigurationUtil.insertOrUpdateConfigurationElement(idmanagerConfigElement);
+            }
 
             de.samply.share.client.model.db.tables.pojos.Configuration ldmConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
             ldmConfigElement.setName(EnumConfiguration.LDM_URL.name());
-            ldmConfigElement.setSetting(urls.getCentraxxUrl());
+            ldmConfigElement.setSetting(urls.getLdmUrl());
             ConfigurationUtil.insertOrUpdateConfigurationElement(ldmConfigElement);
 
             de.samply.share.client.model.db.tables.pojos.Configuration shareConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
@@ -478,9 +483,13 @@ public class ApplicationBean implements Serializable {
     }
 
     public static HttpConnector createHttpConnector() {
+        return createHttpConnector(TIMEOUT_IN_SECONDS);
+    }
+
+    public static HttpConnector createHttpConnector(int timeout) {
         CredentialsProvider credentialsProvider = Utils.prepareCredentialsProvider();
 
-        HttpConnector httpConnector = new HttpConnector(ConfigurationUtil.getHttpConfigParams(configuration), credentialsProvider, TIMEOUT_IN_SECONDS);
+        HttpConnector httpConnector = new HttpConnector(ConfigurationUtil.getHttpConfigParams(configuration), credentialsProvider, timeout);
         httpConnector.setUserAgent(getUserAgent().toString());
         httpConnector.addCustomHeader(Constants.HEADER_XML_NAMESPACE, Constants.VALUE_XML_NAMESPACE_COMMON);
 
@@ -488,9 +497,13 @@ public class ApplicationBean implements Serializable {
     }
 
     public static HttpConnector createHttpConnector(TargetType targetType) {
-        HttpConnector httpConnector = createHttpConnector();
+        return createHttpConnector(targetType, TIMEOUT_IN_SECONDS);
+    }
 
-        List<Credentials> credentialsByTarget = CredentialsUtil.getCredentialsByTarget(TargetType.TT_LDM);
+    public static HttpConnector createHttpConnector(TargetType targetType, int timeout) {
+        HttpConnector httpConnector = createHttpConnector(timeout);
+
+        List<Credentials> credentialsByTarget = CredentialsUtil.getCredentialsByTarget(targetType);
         if (credentialsByTarget.isEmpty()) {
             logger.warn("No credentials for target type '" + targetType + "' found. Using default HttpConnector without credentials for '" + targetType + "'.");
             return createHttpConnector();
@@ -535,15 +548,13 @@ public class ApplicationBean implements Serializable {
     }
 
     public static String getDisplayName() {
-        if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("osse")) {
-            return "OSSE.Share";
-        } else if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("dktk")) {
+        if (ApplicationUtils.isDktk()) {
             return "DKTK.Teiler";
-        } else if (ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("gbn")) {
-            return "DKTK.Teiler (GBN)";
-        } else {
-            return "Samply.Share";
+        } else if (ApplicationUtils.isSamply()) {
+            return "Connector";
         }
+
+        return "Samply.Share";
     }
 
     /**

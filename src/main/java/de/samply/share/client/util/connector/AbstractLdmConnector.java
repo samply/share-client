@@ -47,6 +47,8 @@ public abstract class AbstractLdmConnector<
         T_ERROR extends Serializable,
         T_SPECIFIC_VIEW extends Serializable> implements LdmConnector<T_RESULT> {
 
+    private static final int TIMEOUT_LDM_IN_SECONDS = 2 * 60;
+
     private T_LDM_CLIENT ldmClient;
     private transient HttpConnector httpConnector;
     CloseableHttpClient httpClient;
@@ -88,7 +90,7 @@ public abstract class AbstractLdmConnector<
         this.baseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
 
         if (useAuthorizationForLdm()) {
-            this.httpConnector = ApplicationBean.createHttpConnector(TargetType.TT_LDM);
+            this.httpConnector = ApplicationBean.createHttpConnector(TargetType.TT_LDM, TIMEOUT_LDM_IN_SECONDS);
         } else {
             this.httpConnector = ApplicationBean.createHttpConnector();
         }

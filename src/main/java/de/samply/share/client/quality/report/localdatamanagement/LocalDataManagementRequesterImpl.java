@@ -158,7 +158,7 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
 
     }
 
-    public LocalDataManagementResponse<String> getSqlMappingVersion_WithoutManagementException() throws LocalDataManagementRequesterException {
+    private LocalDataManagementResponse<String> getSqlMappingVersion_WithoutManagementException() throws LocalDataManagementRequesterException {
 
         LdmConnector ldmConnector = ApplicationBean.getLdmConnector();
         String version = ldmConnector.getMappingVersion();

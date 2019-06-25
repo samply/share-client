@@ -77,5 +77,10 @@
                 additivity="false">
             <AppenderRef ref="HOST-MANAGER"/>
         </Logger>
+        <Logger name="org.apache.http" level="warn"/>
+        <Logger name="org.jooq" level="error"/>
+        <Logger name="org.quartz" level="error"/>
+        <Logger name="org.flywaydb" level="warn"/>
+        <Logger name="de.samply.common.mdrclient" level="error"/>
     </Loggers>
 </Configuration>

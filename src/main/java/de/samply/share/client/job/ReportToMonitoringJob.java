@@ -29,6 +29,7 @@
 package de.samply.share.client.job;
 
 import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.ReportToMonitoringJobParams;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.model.db.tables.pojos.Broker;
@@ -119,7 +120,8 @@ public class ReportToMonitoringJob implements Job {
                 StatusReportItem centraxxMappingDate = getCentraxxMappingDate();
                 statusReportItems.add(centraxxMappingDate);
             }
-        }else if(ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("samply")){
+        }else if(
+                ApplicationUtils.isSamply()){
             if (jobParams.isCountTotal()) {
                 StatusReportItem totalCount = getTotalCount();
                 statusReportItems.add(totalCount);

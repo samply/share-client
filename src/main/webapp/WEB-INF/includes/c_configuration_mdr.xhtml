@@ -32,7 +32,8 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:pass="http://xmlns.jcp.org/jsf/passthrough"
-                xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client">
+                xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
+                xmlns:wu="http://share.samply.de/webutils">
 
     <fieldset class="configurationGroup">
         <legend class="scheduler-border">#{msg.configuration_mdr}</legend>
@@ -44,7 +45,7 @@
                              styleClass="form-control" pass:disabled="disabled"/>
             </f:facet>
         </sscl:formEntryElement>
-
+        <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
         <sscl:formEntryElement labelFor="mdsk" labelText="#{msg.configuration_mdrMdskGroup}" dbTooltip="true">
             <f:facet name="input">
                 <h:inputText id="mdsk" size="50"
@@ -60,6 +61,7 @@
                              styleClass="form-control" pass:disabled="disabled"/>
             </f:facet>
         </sscl:formEntryElement>
+        </ui:fragment>
     </fieldset>
 
 </ui:composition>

@@ -45,14 +45,6 @@
             </f:facet>
         </sscl:formEntryElement>
 
-        <sscl:formEntryElement labelText="#{msg.configuration_sendDktkCount}" labelFor="sendDktkCount">
-            <f:facet name="input">
-                <h:selectBooleanCheckbox id="sendDktkCount"
-                                         styleClass="form-control switch"
-                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_DKTKFLAG]}"/>
-            </f:facet>
-        </sscl:formEntryElement>
-
         <sscl:formEntryElement labelText="#{msg.configuration_sendReferenceQueryCount}"
                                labelFor="sendReferenceQueryCount">
             <f:facet name="input">
@@ -68,18 +60,25 @@
                 <h:selectBooleanCheckbox id="sendReferenceQueryTime"
                                          styleClass="form-control switch"
                                          value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_TIME_REFERENCEQUERY]}"/>
-            </f:facet>
-        </sscl:formEntryElement>
+            </f:facet></sscl:formEntryElement>
+        <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
+            <sscl:formEntryElement labelText="#{msg.configuration_sendCentraxxMappingVersion}"
+                                   labelFor="sendCentraxxMappingVersion">
+                <f:facet name="input">
+                    <h:selectBooleanCheckbox id="sendCentraxxMappingVersion"
+                                             styleClass="form-control switch"
+                                             value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_CENTRAXX_MAPPING_INFORMATION]}"/>
+                </f:facet>
+            </sscl:formEntryElement>
 
-        <sscl:formEntryElement labelText="#{msg.configuration_sendCentraxxMappingVersion}"
-                               labelFor="sendCentraxxMappingVersion">
-            <f:facet name="input">
-                <h:selectBooleanCheckbox id="sendCentraxxMappingVersion"
-                                         styleClass="form-control switch"
-                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_CENTRAXX_MAPPING_INFORMATION]}"/>
-            </f:facet>
-        </sscl:formEntryElement>
-
+            <sscl:formEntryElement labelText="#{msg.configuration_sendDktkCount}" labelFor="sendDktkCount">
+                <f:facet name="input">
+                    <h:selectBooleanCheckbox id="sendDktkCount"
+                                             styleClass="form-control switch"
+                                             value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_DKTKFLAG]}"/>
+                </f:facet>
+            </sscl:formEntryElement>
+        </ui:fragment>
 
     </fieldset>
 

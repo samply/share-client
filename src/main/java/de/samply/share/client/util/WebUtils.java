@@ -173,27 +173,6 @@ public final class WebUtils {
         return TimeZone.getDefault().getID();
     }
 
-
-    /**
-     * Checks if the element is known.
-     *
-     * @param mdrId the mdr id
-     * @return true, if is element known. Assume elements are known in other projects than osse
-     */
-//    public static boolean isElementKnown(String mdrId) {
-//    	// For now, only check this in osse
-//    	if (!ProjectInfo.INSTANCE.getProjectName().equalsIgnoreCase("osse")) {
-//    		return true;
-//    	}
-//
-//        String translation = null;
-//        try {
-//            translation = Utils.getNamespaceRepresentation(mdrId);
-//        } catch (ExecutionException e) {
-//        }
-//        return (translation != null);
-//    }
-    
     /**
      * Gets the parent node index.
      *

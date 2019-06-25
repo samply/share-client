@@ -28,10 +28,10 @@
 
 package de.samply.share.client.util;
 
-import de.samply.common.mailing.EmailBuilder;
-import de.samply.common.mailing.MailSender;
-import de.samply.common.mailing.MailSending;
-import de.samply.common.mailing.OutgoingEmail;
+import java.io.File;
+import java.util.List;
+
+import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.messages.Messages;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.db.enums.EntityType;
@@ -40,13 +40,17 @@ import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.model.db.tables.pojos.User;
 import de.samply.share.client.util.db.*;
-import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.SamplyShareUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.samply.common.mailing.EmailBuilder;
+import de.samply.common.mailing.MailSender;
+import de.samply.common.mailing.MailSending;
+import de.samply.common.mailing.OutgoingEmail;
+import de.samply.share.common.utils.ProjectInfo;
+
 import javax.servlet.ServletContext;
-import java.util.List;
 
 /**
  * Utility class to help with sending of (notification) mails
@@ -129,17 +133,13 @@ public class MailUtils {
             return false;
         }
 
-        StringBuilder mailSubject = new StringBuilder(Messages.getString("MAIL_NEW_INQUIRIES_SUBJECT"));
-        mailSubject.append(" (")
-                .append(Messages.getString(type.getLiteral()))
-                .append(")");
+        String mailSubject = Messages.getString("MAIL_NEW_INQUIRIES_SUBJECT") + " (" +  Messages.getString(type.getLiteral()) + ")";
 
-
-        email.setSubject(mailSubject.toString());
-        email.setLocale("de");
+        email.setSubject(mailSubject);
+        email.setLocale(ApplicationBean.getLocale().getLanguage());
         email.putParameter("results", generateResultsParameter(shareUrl, inquiryResults));
         String projectName = ProjectInfo.INSTANCE.getProjectName();
-        MailSending mailSending = MailSender.loadMailSendingConfig(projectName);
+        MailSending mailSending = MailSender.loadMailSendingConfig(projectName, System.getProperty("catalina.base") + File.separator + "conf", ProjectInfo.INSTANCE.getServletContext().getRealPath("/WEB-INF"));
 
         EmailBuilder builder = initializeBuilder(mailSending);
         builder.addTemplateFile("NewInquiriesContent.soy", "NewInquiriesContent");

@@ -86,12 +86,14 @@
                     </div>
                 </h:outputLink>
 
-                <h:outputLink value="qualityreport_list.xhtml">
-                    <div class="ib-content">
-                        <i class="fa fa-file-excel-o"></i>
-                        <div class="text">#{msg.dashboard_qualityReport}</div>
-                    </div>
-                </h:outputLink>
+                <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
+                    <h:outputLink value="qualityreport_list.xhtml">
+                        <div class="ib-content">
+                            <i class="fa fa-file-excel-o"></i>
+                            <div class="text">#{msg.dashboard_qualityReport}</div>
+                        </div>
+                    </h:outputLink>
+                </ui:fragment>
 
                 <h:outputLink value="event_log.xhtml">
                     <div class="ib-content">

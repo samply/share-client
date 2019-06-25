@@ -181,8 +181,7 @@ public class IdManagerConnector {
                 e.printStackTrace();
                 sleepBetweenConnectionAttempts();
                 logger.debug("Getting export ids: Attempt "+ numberOfConnectionAttempt);
-                // TODO: Check if ++numberOfConnectionAttempt is meant
-                return getExportIds(idList, idObjectMap, numberOfConnectionAttempt++);
+                return getExportIds(idList, idObjectMap, numberOfConnectionAttempt + 1);
 
             }else{
                 throw e;

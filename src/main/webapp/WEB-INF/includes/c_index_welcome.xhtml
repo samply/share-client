@@ -34,44 +34,19 @@
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client">
 
     <div class="panel panel-info">
-        <div class="panel-heading">
-            <h1 style="font-weight: bold;">Willkommen
-                <small>auf Ihrem DKTK Brückenkopf</small>
-            </h1>
+        <div class="panel-heading" >
+            <h:outputText rendered="#{wu:getProjectName() eq 'dktk'}" escape="false" style="font-weight: bold;" value="#{msg.iw_dktkTitle}" />
+            <h:outputText rendered="#{wu:getProjectName() eq 'samply'}" escape="false" style="font-weight: bold;" value="#{msg.iw_samplyTitle}" />
         </div>
         <div class="panel-body">
-            <p>Sie befinden sich auf der Einstiegsseite des Brückenkopfes am Standort
-                <i>#{applicationBean.infos.name}</i>.
-                Der Brückenkopf dient dazu, die Daten eines Standorts in ein DKTK-kompatibles Format zu überführen und
-                für die anderen Komponenten nutzbar zu machen. Er ist zwar Software des DKTK, wird jedoch unter lokaler
-                – also der in <i>#{applicationBean.infos.name}</i> – Hoheit betrieben. Weitere Informationen zum
-                Brückenkopfkonzept
-                finden Sie in den Konzepten der DKTK-Arbeitsgruppe CCP-IT, die Sie unter
-                <h:outputLink value="https://ccp-it.dktk.dkfz.de/" target="_blank">https://ccp-it.dktk.dkfz.de/
-                </h:outputLink>
-                frei herunterladen können.
-            </p>
-            <p>Diese Seite zeigt, aus welchen Softwarekomponenten Ihr Brückenkopf besteht. Mit einem Linksklick auf
-                einen Eintrag werden Sie zur entsprechenden Komponente weitergeleitet.
-                Außerdem können Sie Erreichbarkeit und Version jeder Komponente einsehen.</p>
-
-            <p>Bei Fragen wenden Sie sich an Ihren lokalen Brückenkopf-Administrator:
-                <blockquote>
-                    <strong>#{applicationBean.operator.firstName}
-                        #{applicationBean.operator.lastName}</strong>
-                    <ui:fragment rendered="#{not empty applicationBean.operator.email}">
-                        <br/>
-                        <h:outputLink value="mailto:#{applicationBean.operator.email}">
-                            <f:param name="subject" value="DKTK Brückenkopf"/>
-                            <h:outputText value="#{applicationBean.operator.email}"/>
-                        </h:outputLink>
-                    </ui:fragment>
-                    <ui:fragment rendered="#{not empty applicationBean.operator.phone}">
-                        <br/>
-                        <h:outputText value="#{applicationBean.operator.phone}"/>
-                    </ui:fragment>
-                </blockquote>
-            </p>
+            <h:outputText rendered="#{wu:getProjectName() eq 'dktk'}" escape="false" value="#{msg.iw_dktkDetails1} &lt;i&gt;#{applicationBean.infos.name}&lt;/i&gt;. #{msg.iw_dktkDetails2}  &lt;i&gt;#{applicationBean.infos.name}&lt;/i&gt; #{msg.iw_dktkDetails3}  " />
+            <h:outputText rendered="#{wu:getProjectName() eq 'samply'}" escape="false" value="#{msg.iw_samplyDetails1} &lt;i&gt;#{applicationBean.infos.name}&lt;/i&gt;. #{msg.iw_samplyDetails2}  &lt;i&gt;#{applicationBean.infos.name}&lt;/i&gt; #{msg.iw_samplyDetails3}  " />
+            <h:outputText escape="false" value="#{msg.iw_admin}" />
+            <blockquote>
+                <strong><h:outputText value="#{applicationBean.operator.firstName} #{applicationBean.operator.lastName}"/></strong>
+                <ui:fragment rendered="#{not empty applicationBean.operator.email}"> <br /> <h:outputLink value="mailto:#{applicationBean.operator.email}"> <f:param name="subject" value="DKTK Brückenkopf" /> <h:outputText value="#{applicationBean.operator.email}" /> </h:outputLink> </ui:fragment>
+                <ui:fragment rendered="#{not empty applicationBean.operator.phone}"> <br /> <h:outputText value="#{applicationBean.operator.phone}" /> </ui:fragment>
+            </blockquote>
         </div>
     </div>
 </ui:composition>

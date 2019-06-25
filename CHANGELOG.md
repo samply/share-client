@@ -4,11 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.0.0. - 2019-06-24]
+## [5.1.0 - 2019-06-24]
+### Changed
+- changed xsd form common_urls.xhtml
+- changed startpage text
+
+### Fixed
+- stop query request if LDM is not available
+
+## [5.0.0 - 2019-06-24]
 ### Changed
 - Use HttpConnector without LDM-Client credentials when credentials are missing
 - Moved functionality to superclass AbstractLdmConnector
 - Cleaner code
+
+## [4.0.0 - 2018-11-29]
+### Added
+- [Icinga](https://icinga.com/) to monitoring components
+- [FHIR](https://www.hl7.org/fhir/) support
+- [Docker](https://www.docker.com/) support
+- MDR-Url config in common_url.xhtml
+
+### Security
+- secure all APIs with basic Auth
+
+### Changed
+- Anonymization implemented in connector by adding random number and rounding up number of donors and samples plus testing
 
 ## [3.0.0 - 2018-05-30]
 ### Changed

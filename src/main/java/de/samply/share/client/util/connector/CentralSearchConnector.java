@@ -145,14 +145,6 @@ public class CentralSearchConnector {
         }
     }
 
-    private CentralSearchConnector(Credentials credentials, Integer uploadId) {
-        try {
-            init(credentials, uploadId);
-        } catch (CentralSearchConnectorException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public Credentials getCredentials() {
         return credentials;
     }

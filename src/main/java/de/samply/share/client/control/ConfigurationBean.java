@@ -78,14 +78,18 @@ public class ConfigurationBean implements Serializable {
             }
         }
     }
+
     /**
      * Load all entries defined in EnumConfigurationTimings and stores them in a Map
      */
     private void loadConfigurationTimingsMap() {
         configurationTimingsMap = new HashMap<>();
         for (EnumConfigurationTimings conf : EnumConfigurationTimings.values()) {
-            ConfigurationTimings configurationTimingsElement = ConfigurationUtil.getConfigurationTimingsElement(conf);
-            configurationTimingsMap.put(conf, configurationTimingsElement.getSetting());
+            if (ApplicationUtils.isDktk() ||
+                    (ApplicationUtils.isSamply() && !conf.name().equals("UPLOAD_RETRY_PATIENT_UPLOAD_ATTEMPTS") && !conf.name().equals("UPLOAD_RETRY_PATIENT_UPLOAD_INTERVAL"))) {
+                ConfigurationTimings configurationTimingsElement = ConfigurationUtil.getConfigurationTimingsElement(conf);
+                configurationTimingsMap.put(conf, configurationTimingsElement.getSetting());
+            }
         }
     }
 

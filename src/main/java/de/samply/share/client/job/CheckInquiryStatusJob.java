@@ -31,6 +31,7 @@ package de.samply.share.client.job;
 import com.google.common.base.Joiner;
 import de.samply.common.ldmclient.LdmClient;
 import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.*;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.db.enums.EventMessageType;
@@ -48,7 +49,6 @@ import de.samply.share.model.common.Error;
 import de.samply.share.model.common.QueryResultStatistic;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.jettison.json.JSONException;
 import org.quartz.*;
 
 import java.util.List;
@@ -407,12 +407,12 @@ public class CheckInquiryStatusJob implements Job {
                 case RR_TOTAL_COUNT:
                     logger.info("Reporting the amount of matching datasets to the broker.");
                     BrokerConnector brokerConnector = new BrokerConnector(BrokerUtil.fetchBrokerById(brokerId));
-                    if (ldmConnector instanceof LdmConnectorCentraxx) {
-                        brokerConnector.reply(inquiryDetails, inquiryResult.getSize(),ldmConnector);
-                    } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+                    if (ApplicationUtils.isDktk()) {
+                        brokerConnector.reply(inquiryDetails, inquiryResult.getSize());
+                    } else if (ApplicationUtils.isSamply()) {
                         try {
                             BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
-                            brokerConnector.reply(inquiryDetails, queryResult,ldmConnector);
+                            brokerConnector.reply(inquiryDetails, queryResult);
                         } catch (LDMConnectorException e) {
                             e.printStackTrace();
                         }

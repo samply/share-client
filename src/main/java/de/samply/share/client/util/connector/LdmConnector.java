@@ -195,7 +195,7 @@ public interface LdmConnector<T_RESULT> {
     }
 
     default boolean isLdmSamplystoreBiobank() {
-        return true;
+        return false;
     }
 
     default String getMappingVersion() {

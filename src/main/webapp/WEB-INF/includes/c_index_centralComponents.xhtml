@@ -32,17 +32,18 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:wu="http://share.samply.de/webutils"
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client">
-
-    <h:outputLink value="#{applicationBean.infos.centralsearch}" target="_blank">
-        <sscl:welcomePanel title="#{msg.configuration_centralSearch}"
-                           details="Ein zentrales Biobank - und Patientenregister"
-                           cssClass="col-lg-6 col-md-6 col-sm-6 col-xs-12"
-                           iconClass="fa-database"/>
-    </h:outputLink>
+    <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
+        <h:outputLink value="#{applicationBean.infos.centralsearch}" target="_blank">
+            <sscl:welcomePanel title="#{msg.configuration_centralSearch}"
+                               details="#{msg.icc_centralSearch_details}"
+                               cssClass="col-lg-6 col-md-6 col-sm-6 col-xs-12"
+                               iconClass="fa-database"/>
+        </h:outputLink>
+    </ui:fragment>
 
     <h:outputLink value="#{applicationBean.infos.decentralsearch}" target="_blank">
-        <sscl:welcomePanel title="Dezentrale Suche"
-                           details="Erstellen von standortübergreifenden Anfragen"
+        <sscl:welcomePanel title="#{msg.icc_decentralSearch_title}"
+                           details="#{msg.icc_decentralSearch_details}"
                            cssClass="col-lg-6 col-md-6 col-sm-6 col-xs-12"
                            iconClass="fa-sitemap"/>
     </h:outputLink>

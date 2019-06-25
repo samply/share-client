@@ -123,7 +123,4 @@ public class FileDownloaderImpl implements FileDownloader{
     void setDestinationFilePath(String destinationFilePath) {
         this.destinationFilePath = destinationFilePath;
     }
-
-
-
 }

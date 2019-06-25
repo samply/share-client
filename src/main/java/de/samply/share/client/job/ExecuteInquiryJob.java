@@ -1,11 +1,14 @@
 package de.samply.share.client.job;
 
+import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
 import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.InquiryStatusType;
+import de.samply.share.client.model.db.enums.TargetType;
 import de.samply.share.client.model.db.tables.pojos.Inquiry;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
@@ -28,8 +31,7 @@ import org.quartz.impl.matchers.KeyMatcher;
 import javax.xml.bind.JAXBException;
 import java.util.List;
 
-import static de.samply.share.client.model.db.enums.InquiryStatusType.IS_LDM_ERROR;
-import static de.samply.share.client.model.db.enums.InquiryStatusType.IS_PROCESSING;
+import static de.samply.share.client.model.db.enums.InquiryStatusType.*;
 
 /**
  * This Job posts an inquiry to the local datamanagement, stores the location and spawns a CheckInquiryStatusJob
@@ -54,6 +56,12 @@ public class ExecuteInquiryJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        if (CredentialsUtil.getCredentialsByTarget(TargetType.TT_LDM).isEmpty()) {
+            logger.warn("No credentials for target type '" + TargetType.TT_LDM + "' found. " +
+                    "Ignore job '" + getClass().getSimpleName() + "'");
+            return;
+        }
+
         jobKey = jobExecutionContext.getJobDetail().getKey();
         JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();
 
@@ -67,7 +75,7 @@ public class ExecuteInquiryJob implements Job {
 
         try {
             setInquiryDetailsStatus(IS_PROCESSING);
-            Query modifiedQuery= new Query();
+            Query modifiedQuery = new Query();
             Query originalQuery = QueryConverter.xmlToQuery(inquiryDetails.getCriteriaOriginal());
 
             // TODO remove this "temporary" workaround as soon as possible! This is linked with the age-old issue of different java date formats in some mdr elements!
@@ -81,7 +89,7 @@ public class ExecuteInquiryJob implements Job {
             }
 
             // to search the aggregated field
-            if (ldmConnector instanceof LdmConnectorCentraxx) {
+            if (ApplicationUtils.isDktk()) {
                 inquiryDetails.setCriteriaOriginal(Replace.replaceMDRKey(inquiryDetails.getCriteriaOriginal()));
                 originalQuery = QueryConverter.xmlToQuery(inquiryDetails.getCriteriaOriginal());
                 // TODO remove this "temporary" workaround as soon as possible! This is linked with the age-old issue of different java date formats in some mdr elements!
@@ -109,9 +117,11 @@ public class ExecuteInquiryJob implements Job {
             }
         } catch (JAXBException e) {
             log(EventMessageType.E_FAILED_JAXB_ERROR, e.getMessage());
+            setInquiryDetailsStatus(IS_ABANDONED);
             throw new JobExecutionException(e);
         } catch (LDMConnectorException e) {
-            log(EventMessageType.E_LDM_ERROR, e.getMessage());
+            log(EventMessageType.E_RESULT_NOT_SET_ABORTING);
+            setInquiryDetailsStatus(IS_LDM_ERROR);
             throw new JobExecutionException(e);
         }
     }
@@ -152,6 +162,18 @@ public class ExecuteInquiryJob implements Job {
     private void setInquiryDetailsStatus(InquiryStatusType status) {
         inquiryDetails.setStatus(status);
         InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+        if (status.equals(IS_LDM_ERROR)) {
+            changeStatusOfInquiryResultToError();
+        }
+    }
+
+    private void changeStatusOfInquiryResultToError() {
+        InquiryResult inquiryResult = new InquiryResult();
+        inquiryResult.setErrorCode(Integer.toString(LdmClientCentraxx.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE));
+        inquiryResult.setExecutedAt(SamplyShareUtils.getCurrentSqlTimestamp());
+        inquiryResult.setInquiryDetailsId(inquiryDetails.getId());
+        inquiryResult.setIsError(true);
+        InquiryResultUtil.insertInquiryResult(inquiryResult);
     }
 
     /**

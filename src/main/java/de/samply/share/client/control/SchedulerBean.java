@@ -4,6 +4,7 @@ import de.samply.share.client.job.params.QuartzJob;
 import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.util.db.JobScheduleUtil;
 import de.samply.share.common.utils.ProjectInfo;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.*;
@@ -40,7 +41,7 @@ public class SchedulerBean implements Serializable {
     /**
      * Load the scheduler and read all jobs
      */
-    private void init() throws SchedulerException  {
+    private void init() throws SchedulerException {
         ServletContext servletContext = (ServletContext) FacesContext
                 .getCurrentInstance().getExternalContext().getContext();
 
@@ -64,16 +65,13 @@ public class SchedulerBean implements Serializable {
                 String jobName = jobKey.getName();
                 String jobGroup = jobKey.getGroup();
                 JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-                JobDataMap jobDataMap = jobDetail.getJobDataMap();
 
                 // get job's trigger
                 List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
 
-                if (triggers == null || triggers.isEmpty()) {
-                    if (jobDetail.isDurable()) {
-                        if (jobDataMap != null && jobDataMap.getBooleanFromString("SHOW")) {
-                            jobList.add(new QuartzJob(jobKey.getName(), jobKey.getGroup(), null, null, null, "", isPaused(jobKey), jobDetail.getDescription()));
-                        }
+                if (CollectionUtils.isEmpty(triggers)) {
+                    if (shouldJobAdded(jobKey, jobDetail)) {
+                        jobList.add(new QuartzJob(jobKey.getName(), jobKey.getGroup(), null, null, null, "", isPaused(jobKey), jobDetail.getDescription()));
                     }
                 } else {
                     for (Trigger trigger : triggers) {
@@ -83,13 +81,8 @@ public class SchedulerBean implements Serializable {
                         if (trigger instanceof CronTrigger) {
                             CronTrigger cronTrigger = ((CronTrigger) trigger);
                             cronExpression = cronTrigger.getCronExpression();
-                            if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("samply") &&( jobKey.getGroup().equals("CentralSearchGroup"))) {
-                                if(!JobScheduleUtil.fetchJobScheduleByJobKey(jobKey.toString()).getPaused()) {
-                                   suspend(jobName,jobGroup);
-                                }
-                            }else {
-                                jobList.add(new QuartzJob(jobName, jobGroup, null, nextFireTime, previousFireTime, cronExpression, isPaused(jobKey), jobDetail.getDescription()));
-                            }
+                            jobList.add(new QuartzJob(jobName, jobGroup, null, nextFireTime, previousFireTime, cronExpression, isPaused(jobKey), jobDetail.getDescription()));
+
                         }
                     }
                 }
@@ -97,10 +90,24 @@ public class SchedulerBean implements Serializable {
         }
     }
 
+    private boolean shouldJobAdded(JobKey jobKey, JobDetail jobDetail) {
+        if (!jobDetail.isDurable()) {
+            return false;
+        }
+
+        JobDataMap jobDataMap = jobDetail.getJobDataMap();
+        if (jobDataMap == null || jobDataMap.getBooleanFromString("SHOW")) {
+            return false;
+        }
+
+
+        return !ApplicationUtils.isSamply() || !jobKey.getGroup().equals("CentralSearchGroup");
+    }
+
     /**
      * Attach a single-fire trigger to the job, that fires right away
      *
-     * @param jobName name of the job
+     * @param jobName  name of the job
      * @param jobGroup name of the group
      */
     public void fireNow(String jobName, String jobGroup) throws SchedulerException {
@@ -112,7 +119,7 @@ public class SchedulerBean implements Serializable {
     /**
      * Pause a job
      *
-     * @param jobName name of the job
+     * @param jobName  name of the job
      * @param jobGroup name of the group
      */
     public void suspend(String jobName, String jobGroup) throws SchedulerException {
@@ -125,7 +132,7 @@ public class SchedulerBean implements Serializable {
     /**
      * Resume a job
      *
-     * @param jobName name of the job
+     * @param jobName  name of the job
      * @param jobGroup name of the group
      */
     public void resume(String jobName, String jobGroup) throws SchedulerException {
@@ -138,7 +145,7 @@ public class SchedulerBean implements Serializable {
     /**
      * Cancel a job
      *
-     * @param jobName name of the job
+     * @param jobName  name of the job
      * @param jobGroup name of the group
      */
     public void cancel(String jobName, String jobGroup) throws SchedulerException {
@@ -168,7 +175,7 @@ public class SchedulerBean implements Serializable {
 
     /**
      * Check if the trigger assigned to the job is paused
-     *
+     * <p>
      * Iterate through all triggers with cron expressions (should be 0 or 1) assigned to a job. If any of them is paused,
      * return true. False otherwise.
      *

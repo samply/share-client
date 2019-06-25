@@ -48,6 +48,7 @@ import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
 import de.samply.share.common.model.uiquerybuilder.QueryItem;
 import de.samply.share.common.utils.MdrIdDatatype;
+import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.QueryTreeUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.bbmri.BbmriResult;
@@ -406,10 +407,10 @@ public class InquiryBean implements Serializable {
     private void populateQueryResult() throws LDMConnectorException {
         String queryResultLocation = latestInquiryResult.getLocation();
         // TODO other types
-        if (ldmConnector instanceof LdmConnectorCentraxx) {
+        if (ApplicationUtils.isDktk()) {
             latestQueryResult = (QueryResult) ldmConnector.getResultsFromPage(queryResultLocation, 0);
         }
-        if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+        if (ApplicationUtils.isSamply()) {
             latestQueryResult = (BbmriResult) ldmConnector.getResultsFromPage(queryResultLocation, 0);
         }
         buildPatientPageTree(latestQueryResult);
@@ -431,10 +432,10 @@ public class InquiryBean implements Serializable {
 
         try {
             // TODO other types
-            if (ldmConnector instanceof LdmConnectorCentraxx) {
+            if (ApplicationUtils.isDktk()) {
                 latestQueryResult = (QueryResult) ldmConnector.getResultsFromPage(latestInquiryResult.getLocation(), page);
             }
-            if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+            if (ApplicationUtils.isSamply()) {
                 latestQueryResult = (BbmriResult) ldmConnector.getResultsFromPage(latestInquiryResult.getLocation(), page);
             }
         } catch (LDMConnectorException e) {
@@ -452,7 +453,7 @@ public class InquiryBean implements Serializable {
         if (queryResultPage == null) {
             logger.error("Could not build tree. Result is null.");
         }
-        patientPageTree = resultPageToTree(queryResultPage, ldmConnector);
+        patientPageTree = resultPageToTree(queryResultPage);
     }
 
     /**
@@ -460,10 +461,10 @@ public class InquiryBean implements Serializable {
      *
      * @param queryResultPage xml list of patients
      */
-    private static TreeModel<Container> resultPageToTree(Result queryResultPage, LdmConnector ldmConnector) {
+    private static TreeModel<Container> resultPageToTree(Result queryResultPage) {
         TreeModel<Container> containerTree = new ListTreeModel<>();
 
-        if (ldmConnector instanceof LdmConnectorCentraxx) {
+        if (ApplicationUtils.isDktk()) {
             QueryResult queryResultPageCCP = (QueryResult) queryResultPage;
             for (de.samply.share.model.ccp.Patient patient : queryResultPageCCP.getPatient()) {
                 de.samply.share.model.ccp.Container patientContainer = new de.samply.share.model.ccp.Container();
@@ -479,7 +480,7 @@ public class InquiryBean implements Serializable {
                 containerTree = visitContainerNode(containerTree, containerTmp);
             }
         }
-        if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+        if (ApplicationUtils.isSamply()) {
             BbmriResult queryResultPageBBMRI = (BbmriResult) queryResultPage;
             for (de.samply.share.model.osse.Patient donor : queryResultPageBBMRI.getDonors()) {
                 de.samply.share.model.osse.Container patientContainer = new de.samply.share.model.osse.Container();
@@ -550,7 +551,7 @@ public class InquiryBean implements Serializable {
                     blacklist);
             // TODO other types
             Workbook workbook = null;
-            if (ldmConnector instanceof LdmConnectorCentraxx) {
+            if (ApplicationUtils.isDktk()) {
                 QueryResult queryResult = (QueryResult) ldmConnector.getResults(queryResultLocation);
                 logger.debug("Result completely loaded...write excel file");
                 String executionDateString = WebUtils.getExecutionDate(latestInquiryResult);
@@ -560,7 +561,7 @@ public class InquiryBean implements Serializable {
                         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.ID_MANAGER_INSTANCE_ID),
                         executionDateString
                 );
-            } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+            } else if (ApplicationUtils.isSamply()) {
                 BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(queryResultLocation);
                 logger.debug("Result completely loaded...write excel file");
                 String executionDateString = WebUtils.getExecutionDate(latestInquiryResult);
@@ -619,12 +620,13 @@ public class InquiryBean implements Serializable {
     public String reply() {
         try {
             BrokerConnector brokerConnector = new BrokerConnector(BrokerUtil.fetchBrokerById(inquiry.getBrokerId()));
-            if (ldmConnector instanceof LdmConnectorCentraxx) {
-                brokerConnector.reply(latestInquiryDetails, latestInquiryResult.getSize(),ldmConnector);
-            } else if (ldmConnector instanceof LdmConnectorSamplystoreBiobank) {
+            if (ApplicationUtils.isDktk()) {
+                brokerConnector.reply(latestInquiryDetails, latestInquiryResult.getSize());
+            }
+            if (ApplicationUtils.isSamply()) {
                 try {
                     BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(latestInquiryDetails.getId()).getLocation());
-                    brokerConnector.reply(latestInquiryDetails, queryResult,ldmConnector);
+                    brokerConnector.reply(latestInquiryDetails, queryResult);
                 } catch (LDMConnectorException e) {
                     e.printStackTrace();
                 }

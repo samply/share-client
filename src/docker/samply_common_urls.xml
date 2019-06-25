@@ -1,6 +1,6 @@
 <com:urls xmlns:com="http://schema.samply.de/common">
     <com:shareUrl>http://www.company.org/cum/sonoras</com:shareUrl>
     <com:idmanagerUrl>http://172.22.53.221:8180/ID-Manager</com:idmanagerUrl>
-    <com:centraxxUrl>{store-url}</com:centraxxUrl>
+    <com:ldmUrl>{store-url}</com:ldmUrl>
     <com:mdrUrl>{mdr-url}</com:mdrUrl>
 </com:urls>

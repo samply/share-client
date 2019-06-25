@@ -49,21 +49,21 @@
                                      details="#{msg.dashboard_userListDetails}"
                                      action="user_list?faces-redirect=true" iconClass="fa-users"/>
 
-                <div class="clearfix visible-sm-block"/>
+                <div class="clearfix visible-sm-block" />
 
                 <!--Broker List-->
                 <sscl:dashboardPanel title="#{msg.dashboard_brokerList}"
                                      details="#{wu:getBrokerCount()} #{msg.dashboard_brokerListDetails}"
                                      action="broker_list?faces-redirect=true" iconClass="fa-sitemap"/>
 
-                <div class="clearfix visible-md-block visible-lg-block"/>
+                <div class="clearfix visible-md-block visible-lg-block" />
 
                 <!--Scheduled Tasks-->
                 <sscl:dashboardPanel title="#{msg.dashboard_schedule}"
                                      details="#{msg.dashboard_scheduleDetails}"
                                      action="job_list?faces-redirect=true" iconClass="fa-tasks"/>
 
-                <div class="clearfix visible-sm-block"/>
+                <div class="clearfix visible-sm-block" />
 
                 <!--Credentials-->
                 <sscl:dashboardPanel title="#{msg.dashboard_credentials}"
@@ -74,26 +74,26 @@
                                      details="#{msg.dashboard_inquiryHandlingDetails}"
                                      action="inquiry_handling?faces-redirect=true" iconClass="fa-reply-all"/>
 
-                <div class="clearfix visible-sm-block visible-md-block visible-lg-block"/>
-
+                <div class="clearfix visible-sm-block visible-md-block visible-lg-block" />
+                <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
                 <!--Quality Report-->
                 <sscl:dashboardPanel title="#{msg.dashboard_qualityReport}"
                                      details="#{msg.dashboard_qualityReportDetails}"
                                      action="qualityreport_list?faces-redirect=true" iconClass="fa-file-excel-o"/>
+                </ui:fragment>
                 <!--Event Log-->
                 <sscl:dashboardPanel title="#{msg.dashboard_eventLog}"
                                      details="#{msg.dashboard_eventLogDetails}"
                                      action="event_log?faces-redirect=true" iconClass="fa-terminal"/>
-
-                <div class="clearfix visible-sm-block"/>
-
+                <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
+                <div class="clearfix visible-sm-block" />
                 <!--Uploads-->
                 <sscl:dashboardPanel rendered="#{wu:getProjectName() == 'dktk'}" title="#{msg.dashboard_uploads}"
                                      details="#{msg.dashboard_uploadsDetails}"
                                      action="upload_list?faces-redirect=true" iconClass="fa-upload"/>
 
-                <div class="clearfix visible-md-block visible-lg-block"/>
-
+                <div class="clearfix visible-md-block visible-lg-block" />
+                </ui:fragment>
                 <!-- Tests -->
                 <sscl:dashboardPanel title="#{msg.dashboard_tests}"
                                      details="#{msg.dashboard_testsDetails}"

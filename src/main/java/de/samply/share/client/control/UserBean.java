@@ -136,11 +136,11 @@ public class UserBean implements Serializable {
         refreshUserList();
         newUser = new User();
         newUserNotifications = new HashMap<>();
-        for (EntityType e : EntityType.values()) {
-            if (ProjectInfo.INSTANCE.getProjectName().toLowerCase().equals("samply") && e.getName().equals("UNKNOWN")) {
-                newUserNotifications.put(e, true);
+        for (EntityType entityType : EntityType.values()) {
+            if (ApplicationUtils.isSamply() && entityType == EntityType.E_BIOMATERIAL) {
+                newUserNotifications.put(entityType, true);
             }else{
-                newUserNotifications.put(e, false);
+                newUserNotifications.put(entityType, false);
             }
         }
     }
@@ -204,8 +204,8 @@ public class UserBean implements Serializable {
 
     public Map<EntityType, Boolean> getUserNotifications(User user) {
         Map<EntityType, Boolean> userNotifications = new HashMap<>();
-        for (EntityType e : EntityType.values()) {
-            userNotifications.put(e, false);
+        for (EntityType entityType : EntityType.values()) {
+            userNotifications.put(entityType, false);
         }
 
         List<RequestedEntity> userNotificationsList = getNotificationSettings(user);
@@ -223,7 +223,7 @@ public class UserBean implements Serializable {
         Map<EntityType, Boolean> userNotifications = getUserNotifications(user);
         RequestedEntity requestedEntity = RequestedEntityUtil.getRequestedEntityForValue(entity);
 
-        if (userNotifications.get(entity) == true) {
+        if (userNotifications.get(entity)) {
             UserUtil.removeNotificationEntityFromUser(user, requestedEntity);
         } else {
             UserUtil.addNotificationEntityToUser(user, requestedEntity);

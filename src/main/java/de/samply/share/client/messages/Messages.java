@@ -1,7 +1,8 @@
 package de.samply.share.client.messages;
 
+import de.samply.share.client.control.ApplicationBean;
+
 import java.text.MessageFormat;
-import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -11,7 +12,6 @@ import java.util.ResourceBundle;
 public class Messages {
 
     private static final String BUNDLE_NAME = "de.samply.share.client.messages.messages";
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, Locale.GERMAN);
 
     private Messages() {
     }
@@ -25,7 +25,7 @@ public class Messages {
      */
     public static String getString(String key) {
         try {
-            return RESOURCE_BUNDLE.getString(key);
+            return getResourceBundle().getString(key);
         } catch (MissingResourceException e) {
             return '!' + key + '!';
         }
@@ -44,9 +44,13 @@ public class Messages {
      */
     public static String getString(String key, Object... params  ) {
         try {
-            return MessageFormat.format(RESOURCE_BUNDLE.getString(key), params);
+            return MessageFormat.format(getResourceBundle().getString(key), params);
         } catch (MissingResourceException e) {
             return '!' + key + '!';
         }
+    }
+
+    private static ResourceBundle getResourceBundle() {
+        return ResourceBundle.getBundle(BUNDLE_NAME, ApplicationBean.getLocale());
     }
 }
