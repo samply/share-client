@@ -47,12 +47,12 @@ public class CheckInquiryStatusJobParams {
     public static final String IS_UPLOAD = "is_upload";
     public static final String STATS_ONLY = "stats_only";
 
-    private int inquiryResultId;
-    private boolean statsDone;
-    private boolean resultStarted;
-    private boolean resultDone;
-    private boolean isUpload;
-    private boolean statsOnly;
+    private final int inquiryResultId;
+    private final boolean statsDone;
+    private final boolean resultStarted;
+    private final boolean resultDone;
+    private final boolean isUpload;
+    private final boolean statsOnly;
 
     public CheckInquiryStatusJobParams(JobDataMap dataMap) {
         this.inquiryResultId = dataMap.getInt(INQUIRY_RESULT_ID);
@@ -67,48 +67,24 @@ public class CheckInquiryStatusJobParams {
         return inquiryResultId;
     }
 
-    public void setInquiryResultId(int inquiryResultId) {
-        this.inquiryResultId = inquiryResultId;
-    }
-
     public boolean isStatsDone() {
         return statsDone;
-    }
-
-    public void setStatsDone(boolean statsDone) {
-        this.statsDone = statsDone;
     }
 
     public boolean isResultStarted() {
         return resultStarted;
     }
 
-    public void setResultStarted(boolean resultStarted) {
-        this.resultStarted = resultStarted;
-    }
-
     public boolean isResultDone() {
         return resultDone;
-    }
-
-    public void setResultDone(boolean resultDone) {
-        this.resultDone = resultDone;
     }
 
     public boolean isUpload() {
         return isUpload;
     }
 
-    public void setUpload(boolean upload) {
-        isUpload = upload;
-    }
-
     public boolean isStatsOnly() {
         return statsOnly;
-    }
-
-    public void setStatsOnly(boolean statsOnly) {
-        this.statsOnly = statsOnly;
     }
 
     @Override

@@ -55,7 +55,7 @@ public class CheckInquiryStatusJobListener implements JobListener {
 
     private String name;
 
-    public CheckInquiryStatusJobListener(String name) {
+    CheckInquiryStatusJobListener(String name) {
         this.name = name;
     }
 
@@ -90,7 +90,7 @@ public class CheckInquiryStatusJobListener implements JobListener {
             result = new CheckInquiryStatusJobResult(false, false);
         }
 
-        if (result != null && result.isRescheduled()) {
+        if (result.isRescheduled()) {
             logger.trace("Job is rescheduled. Don't set anything to abandoned...");
             return;
         } else {

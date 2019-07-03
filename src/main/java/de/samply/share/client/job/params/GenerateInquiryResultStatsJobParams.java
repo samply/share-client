@@ -39,10 +39,9 @@ public class GenerateInquiryResultStatsJobParams {
 
     public static final String JOBGROUP = "InquiryGroup";
     public static final String JOBNAME = "GenerateInquiryResultStatsJob";
-    public static final String TRIGGERNAME = "GenerateInquiryResultStatsTrigger";
     public static final String INQUIRY_RESULT_ID = "inquiry_result_id";
 
-    private int inquiryResultId;
+    private final int inquiryResultId;
 
 
     public GenerateInquiryResultStatsJobParams(JobDataMap dataMap) {
@@ -51,10 +50,6 @@ public class GenerateInquiryResultStatsJobParams {
 
     public int getInquiryResultId() {
         return inquiryResultId;
-    }
-
-    public void setInquiryResultId(int inquiryResultId) {
-        this.inquiryResultId = inquiryResultId;
     }
 
     @Override

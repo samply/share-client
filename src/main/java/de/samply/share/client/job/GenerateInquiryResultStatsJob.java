@@ -67,13 +67,8 @@ public class GenerateInquiryResultStatsJob implements Job {
 
     private static final Logger logger = LogManager.getLogger(GenerateInquiryResultStatsJob.class);
 
-    private GenerateInquiryResultStatsJobParams jobParams;
-    private JobKey jobKey;
     private LdmConnector ldmConnector;
     private InquiryResult inquiryResult;
-    private Object queryResult;
-    private MdrIdDatatype MDR_KEY_GENDER;
-    private MdrIdDatatype MDR_KEY_AGE;
 
     public GenerateInquiryResultStatsJob() {
         this.ldmConnector = ApplicationBean.getLdmConnector();
@@ -82,22 +77,19 @@ public class GenerateInquiryResultStatsJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
 
-        jobKey = jobExecutionContext.getJobDetail().getKey();
+        JobKey jobKey = jobExecutionContext.getJobDetail().getKey();
         JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();
-        jobParams = new GenerateInquiryResultStatsJobParams(dataMap);
+        GenerateInquiryResultStatsJobParams jobParams = new GenerateInquiryResultStatsJobParams(dataMap);
 
         inquiryResult = InquiryResultUtil.fetchInquiryResultById(jobParams.getInquiryResultId());
 
         logger.debug(jobKey.toString() + " " + jobParams);
 
-        MDR_KEY_AGE = new MdrIdDatatype(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_AGE_AT_DIAGNOSIS));
-        MDR_KEY_GENDER = new MdrIdDatatype(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_GENDER));
-
         // Don't do anything if the stats are already available. Maybe add an override/force option later
         if (InquiryResultStatsUtil.getInquiryResultStatsForInquiryResultById(jobParams.getInquiryResultId()) == null) {
             logger.debug("Stats not done...calculating");
             try {
-                queryResult = ldmConnector.getResults(inquiryResult.getLocation());
+                Object queryResult = ldmConnector.getResults(inquiryResult.getLocation());
                 generateStatistics(queryResult);
             } catch (LDMConnectorException e) {
                 logger.error("Error connecting to local datamanagement");

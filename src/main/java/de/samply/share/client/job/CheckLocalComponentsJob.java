@@ -34,10 +34,11 @@ import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.common.model.dto.UserAgent;
-import de.samply.share.common.utils.ProjectInfo;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.quartz.*;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
 
 /**
  * This job checks the other local components (id manager, local datamanagement) for their version and status

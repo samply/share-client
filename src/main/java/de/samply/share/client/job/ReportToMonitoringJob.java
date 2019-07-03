@@ -38,7 +38,6 @@ import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
-import de.samply.share.common.utils.ProjectInfo;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
@@ -91,7 +90,8 @@ public class ReportToMonitoringJob implements Job {
     private List<StatusReportItem> gatherStatusReportItems(BrokerConnector brokerConnector) {
         List<StatusReportItem> statusReportItems = new ArrayList<>();
 
-        if(ProjectInfo.INSTANCE.getVersionString().toLowerCase().equals("dktk")) {
+
+        if (ApplicationUtils.isDktk()) {
             if (jobParams.isCountTotal()) {
                 StatusReportItem totalCount = getTotalCount();
                 statusReportItems.add(totalCount);
@@ -120,8 +120,9 @@ public class ReportToMonitoringJob implements Job {
                 StatusReportItem centraxxMappingDate = getCentraxxMappingDate();
                 statusReportItems.add(centraxxMappingDate);
             }
-        }else if(
-                ApplicationUtils.isSamply()){
+        }
+
+        if (ApplicationUtils.isSamply()) {
             if (jobParams.isCountTotal()) {
                 StatusReportItem totalCount = getTotalCount();
                 statusReportItems.add(totalCount);
@@ -162,7 +163,7 @@ public class ReportToMonitoringJob implements Job {
 
     /**
      * Get the total amount of patients from local datamanagement
-     *
+     * <p>
      * This will only count patients with a DKTK site pseudonym that fit the ldm-defined criteria.
      * As of now, this includes patients with a C.* or certain D.* diagnoses
      *
@@ -210,7 +211,7 @@ public class ReportToMonitoringJob implements Job {
         StatusReportItem referenceQueryCount = new StatusReportItem();
         referenceQueryCount.setParameter_name(StatusReportItem.PARAMETER_REFERENCE_QUERY_RESULTCOUNT);
 
-        if (referenceQueryCheckResult != null && referenceQueryCheckResult.getCount() >=0) {
+        if (referenceQueryCheckResult != null && referenceQueryCheckResult.getCount() >= 0) {
             referenceQueryCount.setExit_status("0");
             referenceQueryCount.setStatus_text(Integer.toString(referenceQueryCheckResult.getCount()));
         } else {
@@ -225,13 +226,13 @@ public class ReportToMonitoringJob implements Job {
      *
      * @param referenceQueryCheckResult the result that was generated while executing the reference query
      * @return a status report item, containing the time it took to execute the reference query (containing a vagueness
-     *         of 15 seconds)
+     * of 15 seconds)
      */
     private static StatusReportItem getReferenceQueryTime(ReferenceQueryCheckResult referenceQueryCheckResult) {
         StatusReportItem referenceQueryTime = new StatusReportItem();
         referenceQueryTime.setParameter_name(StatusReportItem.PARAMETER_REFERENCE_QUERY_RUNTIME);
 
-        if (referenceQueryCheckResult != null && referenceQueryCheckResult.getExecutionTimeMilis() >=0) {
+        if (referenceQueryCheckResult != null && referenceQueryCheckResult.getExecutionTimeMilis() >= 0) {
             referenceQueryTime.setExit_status("0");
             referenceQueryTime.setStatus_text(Long.toString(referenceQueryCheckResult.getExecutionTimeMilis()));
         } else {

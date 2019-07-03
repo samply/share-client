@@ -42,11 +42,11 @@ import java.util.List;
 
 /**
  * This Job checks the database for new jobs and gives them to an execution handler one by one
- *
+ * <p>
  * It is defined and scheduled in the quartz-jobs.xml
- *
+ * <p>
  * The basic steps it performs are:
- *
+ * <p>
  * 1) Get the list of new inquiries
  * 2) If there is a new inquiry, and none still processing...spawn an inquiry execution task for the new one
  */
@@ -56,27 +56,32 @@ public class ExecuteInquiriesJob implements Job {
     private static final Logger logger = LogManager.getLogger(ExecuteInquiriesJob.class);
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        // Get all new inquiries. Check if there are still processing inquiries...if not, spawn a new one
+    public void execute(JobExecutionContext jobExecutionContext) {
+        if (!InquiryDetailsUtil.getInquiryDetailsByStatus(InquiryStatusType.IS_PROCESSING).isEmpty()) {
+            return;
+        }
+
         List<InquiryDetails> inquiryDetailsList = InquiryDetailsUtil.getInquiryDetailsByStatus(InquiryStatusType.IS_NEW);
         if (inquiryDetailsList.isEmpty()) {
             return;
         }
-        if (InquiryDetailsUtil.getInquiryDetailsByStatus(InquiryStatusType.IS_PROCESSING).isEmpty()) {
-            InquiryDetails inquiryDetails = inquiryDetailsList.get(0);
-            Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
-            boolean statsOnly = !InquiryHandlingRuleUtil.requestResultsForInquiry(inquiry);
-            spawnNewInquiryExecutionJob(inquiry, inquiryDetails, statsOnly);
-        }
 
+        InquiryDetails inquiryDetails = inquiryDetailsList.get(0);
+        spawnNewInquiryExecutionJob(inquiryDetails);
+    }
+
+    private void spawnNewInquiryExecutionJob(InquiryDetails inquiryDetails) {
+        Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
+        boolean statsOnly = !InquiryHandlingRuleUtil.requestResultsForInquiry(inquiry);
+        spawnNewInquiryExecutionJob(inquiry, inquiryDetails, statsOnly);
     }
 
     /**
      * Hand over the inquiry to an ExecuteInquiryJob
      *
-     * @param inquiry the inquiry to delegate to the execute job
+     * @param inquiry        the inquiry to delegate to the execute job
      * @param inquiryDetails the corresponding inquiry details object
-     * @param statsOnly set to true if only statistics are requested and no whole result set (list of patients)
+     * @param statsOnly      set to true if only statistics are requested and no whole result set (list of patients)
      */
     private void spawnNewInquiryExecutionJob(de.samply.share.client.model.db.tables.pojos.Inquiry inquiry, InquiryDetails inquiryDetails, boolean statsOnly) {
         try {

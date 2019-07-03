@@ -52,11 +52,11 @@ public class ExecuteInquiryJobParams {
 
     public static final String SEPARATOR_UNKNOWN_KEYS = ", ";
 
-    private int inquiryId;
-    private int inquiryDetailsId;
-    private boolean statsOnly;
-    private List<String> unknownKeys;
-    private boolean isUpload;
+    private final int inquiryId;
+    private final int inquiryDetailsId;
+    private final boolean statsOnly;
+    private final List<String> unknownKeys;
+    private final boolean isUpload;
 
 
     public ExecuteInquiryJobParams(JobDataMap dataMap) {
@@ -78,40 +78,20 @@ public class ExecuteInquiryJobParams {
         return inquiryId;
     }
 
-    public void setInquiryId(int inquiryId) {
-        this.inquiryId = inquiryId;
-    }
-
     public int getInquiryDetailsId() {
         return inquiryDetailsId;
-    }
-
-    public void setInquiryDetailsId(int inquiryDetailsId) {
-        this.inquiryDetailsId = inquiryDetailsId;
     }
 
     public boolean isStatsOnly() {
         return statsOnly;
     }
 
-    public void setStatsOnly(boolean statsOnly) {
-        this.statsOnly = statsOnly;
-    }
-
     public List<String> getUnknownKeys() {
         return unknownKeys;
     }
 
-    public void setUnknownKeys(List<String> unknownKeys) {
-        this.unknownKeys = unknownKeys;
-    }
-
     public boolean isUpload() {
         return isUpload;
-    }
-
-    public void setUpload(boolean upload) {
-        isUpload = upload;
     }
 
     @Override

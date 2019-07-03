@@ -22,6 +22,7 @@ import de.samply.share.common.utils.QueryValidator;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.common.Query;
 import de.samply.share.utils.QueryConverter;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.omnifaces.model.tree.TreeModel;
@@ -42,11 +43,9 @@ import static de.samply.share.client.model.db.enums.InquiryStatusType.*;
 public class ExecuteInquiryJob implements Job {
 
     private ExecuteInquiryJobParams jobParams;
-    private JobKey jobKey;
     private LdmConnector ldmConnector;
     private Inquiry inquiry;
     private InquiryDetails inquiryDetails;
-    private List<String> unknownKeys;
 
     private static final Logger logger = LogManager.getLogger(ExecuteInquiryJob.class);
 
@@ -62,20 +61,19 @@ public class ExecuteInquiryJob implements Job {
             return;
         }
 
-        jobKey = jobExecutionContext.getJobDetail().getKey();
         JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();
 
         jobParams = new ExecuteInquiryJobParams(dataMap);
         logger.debug(jobParams);
         inquiry = InquiryUtil.fetchInquiryById(jobParams.getInquiryId());
         inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(jobParams.getInquiryDetailsId());
-        unknownKeys = jobParams.getUnknownKeys();
+        List<String> unknownKeys = jobParams.getUnknownKeys();
 
         String resultLocation;
 
         try {
             setInquiryDetailsStatus(IS_PROCESSING);
-            Query modifiedQuery = new Query();
+            Query modifiedQuery = null;
             Query originalQuery = QueryConverter.xmlToQuery(inquiryDetails.getCriteriaOriginal());
 
             // TODO remove this "temporary" workaround as soon as possible! This is linked with the age-old issue of different java date formats in some mdr elements!
@@ -100,12 +98,10 @@ public class ExecuteInquiryJob implements Job {
                     inquiryDetails.setCriteriaModified(QueryConverter.queryToXml(modifiedQuery));
                 }
             }
-            if (!SamplyShareUtils.isNullOrEmpty(unknownKeys)) {
-                resultLocation = ldmConnector.postQuery(modifiedQuery, unknownKeys, true, jobParams.isStatsOnly(), !jobParams.isUpload());
-            } else {
-                log(EventMessageType.E_START_EXECUTE_INQUIRY_JOB);
-                resultLocation = ldmConnector.postQuery(originalQuery, unknownKeys, true, jobParams.isStatsOnly(), !jobParams.isUpload());
-            }
+
+            log(EventMessageType.E_START_EXECUTE_INQUIRY_JOB);
+            Query query = ObjectUtils.defaultIfNull(modifiedQuery, originalQuery);
+            resultLocation = ldmConnector.postQuery(query, unknownKeys, true, jobParams.isStatsOnly(), !jobParams.isUpload());
 
             if (resultLocation != null && resultLocation.length() > 0) {
                 log(EventMessageType.E_INQUIRY_RESULT_AT, resultLocation);
@@ -124,70 +120,6 @@ public class ExecuteInquiryJob implements Job {
             setInquiryDetailsStatus(IS_LDM_ERROR);
             throw new JobExecutionException(e);
         }
-    }
-
-    /**
-     * Write a message, linked with the inquiry, to the event log
-     *
-     * @param message the message to log
-     */
-    private void log(String message) {
-        if (jobParams.isUpload() && inquiry.getUploadId() != null) {
-            EventLogUtil.insertEventLogEntryForUploadId(message, inquiry.getUploadId());
-        } else {
-            EventLogUtil.insertEventLogEntryForInquiryId(message, jobParams.getInquiryId());
-        }
-    }
-
-    /**
-     * Write a message, linked with the inquiry, to the event log
-     *
-     * @param messageType pre-defined event type
-     * @param params      parameters that will be substituted via resource bundle and messageformat
-     */
-    private void log(EventMessageType messageType, String... params) {
-        if (jobParams.isUpload() && inquiry.getUploadId() != null) {
-            EventLogUtil.insertEventLogEntryForUploadId(messageType, inquiry.getUploadId(), params);
-        } else {
-            EventLogUtil.insertEventLogEntryForInquiryId(messageType, jobParams.getInquiryId(), params);
-        }
-    }
-
-
-    /**
-     * Change the status of the inquiry
-     *
-     * @param status the new inquiry status
-     */
-    private void setInquiryDetailsStatus(InquiryStatusType status) {
-        inquiryDetails.setStatus(status);
-        InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
-        if (status.equals(IS_LDM_ERROR)) {
-            changeStatusOfInquiryResultToError();
-        }
-    }
-
-    private void changeStatusOfInquiryResultToError() {
-        InquiryResult inquiryResult = new InquiryResult();
-        inquiryResult.setErrorCode(Integer.toString(LdmClientCentraxx.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE));
-        inquiryResult.setExecutedAt(SamplyShareUtils.getCurrentSqlTimestamp());
-        inquiryResult.setInquiryDetailsId(inquiryDetails.getId());
-        inquiryResult.setIsError(true);
-        InquiryResultUtil.insertInquiryResult(inquiryResult);
-    }
-
-    /**
-     * Create and inquiry result entry in the database
-     *
-     * @param resultLocation the url where the result can be found
-     * @return the database id of the result
-     */
-    private int createNewInquiryResult(String resultLocation) {
-        InquiryResult inquiryResult = new InquiryResult();
-        inquiryResult.setInquiryDetailsId(inquiryDetails.getId());
-        inquiryResult.setStatisticsOnly(jobParams.isStatsOnly());
-        inquiryResult.setLocation(resultLocation);
-        return InquiryResultUtil.insertInquiryResult(inquiryResult);
     }
 
     /**
@@ -229,6 +161,42 @@ public class ExecuteInquiryJob implements Job {
     }
 
     /**
+     * Change the status of the inquiry
+     *
+     * @param status the new inquiry status
+     */
+    private void setInquiryDetailsStatus(InquiryStatusType status) {
+        inquiryDetails.setStatus(status);
+        InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+        if (status.equals(IS_LDM_ERROR)) {
+            changeStatusOfInquiryResultToError();
+        }
+    }
+
+    private void changeStatusOfInquiryResultToError() {
+        InquiryResult inquiryResult = new InquiryResult();
+        inquiryResult.setErrorCode(Integer.toString(LdmClientCentraxx.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE));
+        inquiryResult.setExecutedAt(SamplyShareUtils.getCurrentSqlTimestamp());
+        inquiryResult.setInquiryDetailsId(inquiryDetails.getId());
+        inquiryResult.setIsError(true);
+        InquiryResultUtil.insertInquiryResult(inquiryResult);
+    }
+
+    /**
+     * Create and inquiry result entry in the database
+     *
+     * @param resultLocation the url where the result can be found
+     * @return the database id of the result
+     */
+    private int createNewInquiryResult(String resultLocation) {
+        InquiryResult inquiryResult = new InquiryResult();
+        inquiryResult.setInquiryDetailsId(inquiryDetails.getId());
+        inquiryResult.setStatisticsOnly(jobParams.isStatsOnly());
+        inquiryResult.setLocation(resultLocation);
+        return InquiryResultUtil.insertInquiryResult(inquiryResult);
+    }
+
+    /**
      * Reformat date entries from the standard mdr-defined format to the format that is written to the JAVA_DATE_FORMAT
      * slot
      *
@@ -241,5 +209,13 @@ public class ExecuteInquiryJob implements Job {
         TreeModel<QueryItem> queryTree = QueryTreeUtil.queryToTree(sourceQuery);
         queryValidator.reformatDateToSlotFormat(queryTree);
         return QueryTreeUtil.treeToQuery(queryTree);
+    }
+
+    private void log(EventMessageType messageType, String... params) {
+        if (jobParams.isUpload() && inquiry.getUploadId() != null) {
+            EventLogUtil.insertEventLogEntryForUploadId(messageType, inquiry.getUploadId(), params);
+        } else {
+            EventLogUtil.insertEventLogEntryForInquiryId(messageType, jobParams.getInquiryId(), params);
+        }
     }
 }

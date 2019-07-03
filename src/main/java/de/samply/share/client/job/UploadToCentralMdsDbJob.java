@@ -106,12 +106,10 @@ public class UploadToCentralMdsDbJob implements Job {
 
     private UploadJobParams jobParams;
     private Upload upload;
-    private JobKey jobKey;
     private PatientConverter patientConverter;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        jobKey = jobExecutionContext.getJobDetail().getKey();
         JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();
 
         jobParams = new UploadJobParams(dataMap);

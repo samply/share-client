@@ -42,11 +42,11 @@ public class ReportToMonitoringJobParams {
     public static final String JOBNAME = "ReportToMonitoringJob";
     public static final String TRIGGERNAME = "ReportToMonitoringJobTrigger";
 
-    private boolean countTotal;
-    private boolean countDktkFlagged;
-    private boolean countReferenceQuery;
-    private boolean timeReferenceQuery;
-    private boolean centraxxMappingInformation;
+    private final boolean countTotal;
+    private final boolean countDktkFlagged;
+    private final boolean countReferenceQuery;
+    private final boolean timeReferenceQuery;
+    private final boolean centraxxMappingInformation;
 
     public ReportToMonitoringJobParams() {
         this.countTotal = ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.MONITORING_REPORT_COUNT_TOTAL);
@@ -60,40 +60,20 @@ public class ReportToMonitoringJobParams {
         return countTotal;
     }
 
-    public void setCountTotal(boolean countTotal) {
-        this.countTotal = countTotal;
-    }
-
     public boolean isCountDktkFlagged() {
         return countDktkFlagged;
-    }
-
-    public void setCountDktkFlagged(boolean countDktkFlagged) {
-        this.countDktkFlagged = countDktkFlagged;
     }
 
     public boolean isCountReferenceQuery() {
         return countReferenceQuery;
     }
 
-    public void setCountReferenceQuery(boolean countReferenceQuery) {
-        this.countReferenceQuery = countReferenceQuery;
-    }
-
     public boolean isTimeReferenceQuery() {
         return timeReferenceQuery;
     }
 
-    public void setTimeReferenceQuery(boolean timeReferenceQuery) {
-        this.timeReferenceQuery = timeReferenceQuery;
-    }
-
     public boolean isCentraxxMappingInformation() {
         return centraxxMappingInformation;
-    }
-
-    public void setCentraxxMappingInformation(boolean centraxxMappingInformation) {
-        this.centraxxMappingInformation = centraxxMappingInformation;
     }
 
     /**

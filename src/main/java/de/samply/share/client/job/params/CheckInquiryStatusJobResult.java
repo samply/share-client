@@ -32,13 +32,8 @@ package de.samply.share.client.job.params;
  * Used as result to be interpreted by the CheckInquiryStatusJobListener
  */
 public class CheckInquiryStatusJobResult {
-    private boolean isRescheduled;
-    private boolean resetStatusFlags;
-
-    public CheckInquiryStatusJobResult() {
-        this.isRescheduled = false;
-        this.resetStatusFlags = false;
-    }
+    private final boolean isRescheduled;
+    private final boolean resetStatusFlags;
 
     public CheckInquiryStatusJobResult(boolean isRescheduled, boolean resetStatusFlags) {
         this.isRescheduled = isRescheduled;
@@ -49,15 +44,7 @@ public class CheckInquiryStatusJobResult {
         return isRescheduled;
     }
 
-    public void setRescheduled(boolean rescheduled) {
-        isRescheduled = rescheduled;
-    }
-
     public boolean isResetStatusFlags() {
         return resetStatusFlags;
-    }
-
-    public void setResetStatusFlags(boolean resetStatusFlags) {
-        this.resetStatusFlags = resetStatusFlags;
     }
 }

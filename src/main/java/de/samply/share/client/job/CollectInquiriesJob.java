@@ -42,7 +42,7 @@ public class CollectInquiriesJob implements Job {
     private static final Logger logger = LogManager.getLogger(CollectInquiriesJob.class);
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
 
         List<Broker> brokers = BrokerUtil.fetchBrokers();
         for (Broker broker : brokers) {
@@ -57,7 +57,7 @@ public class CollectInquiriesJob implements Job {
             try {
                 Map<String, String> inquiries = brokerConnector.getInquiryList();
                 loadAndPersistInquiries(brokerConnector, inquiries);
-            } catch (JAXBException | URISyntaxException e) {
+            } catch (JAXBException e) {
                 logger.error("Error loading and/or persisting inquiries", e);
             } catch (BrokerConnectorException e) {
                 logger.warn("Could not connect to " + broker.getAddress());
@@ -71,7 +71,7 @@ public class CollectInquiriesJob implements Job {
      * @param brokerConnector      the broker
      * @param inquiryIdAndRevision the inquiry id and revision
      */
-    private void loadAndPersistInquiries(BrokerConnector brokerConnector, Map<String, String> inquiryIdAndRevision) throws BrokerConnectorException, JAXBException, URISyntaxException {
+    private void loadAndPersistInquiries(BrokerConnector brokerConnector, Map<String, String> inquiryIdAndRevision) throws BrokerConnectorException, JAXBException {
         Iterator<Map.Entry<String, String>> it = inquiryIdAndRevision.entrySet().iterator();
         Broker broker = brokerConnector.getBroker();
         int brokerId = broker.getId();
@@ -154,7 +154,7 @@ public class CollectInquiriesJob implements Job {
      * @param broker        the broker from which the inquiry was loaded
      * @return the inquiry id (as in the database)
      */
-    private int storeInquiry(Inquiry incomingInquiry, Broker broker) throws JAXBException {
+    private int storeInquiry(Inquiry incomingInquiry, Broker broker) {
         de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = new de.samply.share.client.model.db.tables.pojos.Inquiry();
         inquiry.setLabel(incomingInquiry.getLabel());
         inquiry.setDescription(incomingInquiry.getDescription());

@@ -57,7 +57,7 @@ public class DbCleanupJob implements Job {
     private static final Logger logger = LogManager.getLogger(DbCleanupJob.class);
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
         moveOldInquiries();
         checkResultAvailability();
     }
@@ -137,11 +137,8 @@ public class DbCleanupJob implements Job {
      */
 
     private boolean checkInquiryID(List<InquiryResult> inquiryResults, InquiryResult inquiryResult) {
-        for (InquiryResult inquiryResultTmp : inquiryResults) {
-            if (inquiryResultTmp.getInquiryDetailsId().equals(inquiryResult.getInquiryDetailsId()) && !inquiryResultTmp.getIsError()) {
-                return true;
-            }
-        }
-        return false;
+        return inquiryResults.stream()
+                .anyMatch(inquiryResultTmp
+                        -> inquiryResultTmp.getInquiryDetailsId().equals(inquiryResult.getInquiryDetailsId()) && !inquiryResultTmp.getIsError());
     }
 }

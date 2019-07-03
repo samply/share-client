@@ -43,13 +43,13 @@ public class UploadJobParams {
     public static final String JOBNAME_NO_DKTK = "UploadToCentralMdsDbJobNoDktkFlag";
     public static final String UPLOAD_ID = "upload_id";
     public static final String DKTK_FLAGGED = "dktk_flagged";
-    public static final String DELETE_BEFORE_UPLOAD = "delete_before_upload";
+    private static final String DELETE_BEFORE_UPLOAD = "delete_before_upload";
     public static final String STATUS = "status";
 
     private int uploadId;
-    private boolean dktkFlaggedPatients;
-    private boolean deleteBeforeUpload;
-    private UploadStatusType status;
+    private final boolean dktkFlaggedPatients;
+    private final boolean deleteBeforeUpload;
+    private final UploadStatusType status;
 
     public UploadJobParams(JobDataMap dataMap) {
         try {
@@ -57,6 +57,7 @@ public class UploadJobParams {
         } catch (Exception e) {
             this.uploadId = 0;
         }
+
         this.dktkFlaggedPatients = dataMap.getBoolean(DKTK_FLAGGED);
         this.deleteBeforeUpload = dataMap.getBoolean(DELETE_BEFORE_UPLOAD);
         this.status = UploadStatusType.valueOf(dataMap.getString(STATUS));
@@ -74,24 +75,12 @@ public class UploadJobParams {
         return dktkFlaggedPatients;
     }
 
-    public void setDktkFlaggedPatients(boolean dktkFlaggedPatients) {
-        this.dktkFlaggedPatients = dktkFlaggedPatients;
-    }
-
     public boolean isDeleteBeforeUpload() {
         return deleteBeforeUpload;
     }
 
-    public void setDeleteBeforeUpload(boolean deleteBeforeUpload) {
-        this.deleteBeforeUpload = deleteBeforeUpload;
-    }
-
     public UploadStatusType getStatus() {
         return status;
-    }
-
-    public void setStatus(UploadStatusType status) {
-        this.status = status;
     }
 
     @Override
