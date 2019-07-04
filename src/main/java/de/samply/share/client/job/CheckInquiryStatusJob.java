@@ -30,6 +30,7 @@ package de.samply.share.client.job;
 
 import com.google.common.base.Joiner;
 import de.samply.common.ldmclient.LdmClient;
+import de.samply.common.ldmclient.model.LdmQueryResult;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.*;
@@ -118,9 +119,9 @@ public class CheckInquiryStatusJob implements Job {
 
     private void checkForStatsResult(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            Object statsOrError = ldmConnector.getStatsOrError(inquiryResult.getLocation());
-            if (statsOrError != null) {
-                boolean isStats = handleStatsOrError(statsOrError, jobExecutionContext);
+            LdmQueryResult ldmQueryResult = ldmConnector.getStatsOrError(inquiryResult.getLocation());
+            if (ldmQueryResult != null) {
+                boolean isStats = handleStatsOrError(ldmQueryResult, jobExecutionContext);
                 if (isStats && jobParams.isStatsOnly()) {
                     // TODO: Check if the handling for uploads would be better in the following method
                     processReplyRules();
@@ -176,19 +177,19 @@ public class CheckInquiryStatusJob implements Job {
     /**
      * Handle the outcome of the call to a /stats resource on the local datamanagement
      *
-     * @param object              will either be an error or a query result statistics object
+     * @param ldmQueryResult      will either contain an error or a query result statistics object
      * @param jobExecutionContext the jobExecutionContext of this job instance
      * @return true if stats were received, false if an error was received or something unexpected happened
      */
-    private boolean handleStatsOrError(Object object, JobExecutionContext jobExecutionContext) throws SchedulerException {
+    private boolean handleStatsOrError(LdmQueryResult ldmQueryResult, JobExecutionContext jobExecutionContext) throws SchedulerException {
         // null is returned e.g. if the stats are not yet available
-        if (object == null) {
+        if (ldmQueryResult == null) {
             // Just continue with regular schedule
             return false;
         }
 
-        if (object.getClass().equals(Error.class)) {
-            Error error = (Error) object;
+        if (ldmQueryResult.hasError()) {
+            Error error = ldmQueryResult.getError();
 
             inquiryResult.setIsError(Boolean.TRUE);
             inquiryResult.setErrorCode(Integer.toString(error.getErrorCode()));
@@ -215,8 +216,8 @@ public class CheckInquiryStatusJob implements Job {
             return false;
         }
 
-        if (object.getClass().equals(QueryResultStatistic.class)) {
-            QueryResultStatistic queryResultStatistic = (QueryResultStatistic) object;
+        if (ldmQueryResult.hasResult()) {
+            QueryResultStatistic queryResultStatistic = ldmQueryResult.getResult();
             log(EventMessageType.E_STATISTICS_READY, Integer.toString(queryResultStatistic.getTotalSize()));
             inquiryResult.setSize(queryResultStatistic.getTotalSize());
             InquiryResultUtil.updateInquiryResult(inquiryResult);

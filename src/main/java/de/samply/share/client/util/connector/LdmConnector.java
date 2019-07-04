@@ -28,6 +28,7 @@
 
 package de.samply.share.client.util.connector;
 
+import de.samply.common.ldmclient.model.LdmQueryResult;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
@@ -113,7 +114,7 @@ public interface LdmConnector<T_RESULT> {
      * @return the stats
      * @throws LDMConnectorException
      */
-    Object getStatsOrError(String location) throws LDMConnectorException;
+    LdmQueryResult getStatsOrError(String location) throws LDMConnectorException;
 
     QueryResultStatistic getQueryResultStatistic(String location) throws LDMConnectorException;
 

@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import de.samply.common.http.HttpConnector;
 import de.samply.common.ldmclient.LdmClient;
 import de.samply.common.ldmclient.LdmClientException;
+import de.samply.common.ldmclient.model.LdmQueryResult;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.EnumConfigurationTimings;
@@ -17,8 +18,10 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.ccp.QueryResult;
-import de.samply.share.model.common.Error;
-import de.samply.share.model.common.*;
+import de.samply.share.model.common.Query;
+import de.samply.share.model.common.QueryResultStatistic;
+import de.samply.share.model.common.Result;
+import de.samply.share.model.common.View;
 import de.samply.share.utils.QueryConverter;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -189,7 +192,7 @@ public abstract class AbstractLdmConnector<
      * {@inheritDoc}
      */
     @Override
-    public Object getStatsOrError(String location) throws LDMConnectorException {
+    public LdmQueryResult getStatsOrError(String location) throws LDMConnectorException {
         try {
             return ldmClient.getStatsOrError(location);
         } catch (LdmClientException e) {
@@ -381,11 +384,11 @@ public abstract class AbstractLdmConnector<
             int retryNr = 0;
             do {
                 try {
-                    Object statsOrError = ldmClient.getStatsOrError(resultLocation);
+                    LdmQueryResult ldmQueryResult = ldmClient.getStatsOrError(resultLocation);
 
-                    if (statsOrError.getClass().equals(de.samply.share.model.common.Error.class)) {
+                    if (ldmQueryResult.hasError()) {
                         stopwatch.reset();
-                        de.samply.share.model.common.Error error = (Error) statsOrError;
+                        de.samply.share.model.common.Error error = ldmQueryResult.getError();
 
                         switch (error.getErrorCode()) {
                             case LdmClient.ERROR_CODE_DATE_PARSING_ERROR:
@@ -401,8 +404,8 @@ public abstract class AbstractLdmConnector<
                                 resultLocation = ldmClient.postView(referenceView, false);
                                 break;
                         }
-                    } else if (statsOrError.getClass().equals(QueryResultStatistic.class)) {
-                        QueryResultStatistic qrs = (QueryResultStatistic) statsOrError;
+                    } else if (ldmQueryResult.hasResult()) {
+                        QueryResultStatistic qrs = ldmQueryResult.getResult();
                         result.setCount(qrs.getTotalSize());
                         if (isResultDone(resultLocation, qrs)) {
                             stopwatch.stop();
