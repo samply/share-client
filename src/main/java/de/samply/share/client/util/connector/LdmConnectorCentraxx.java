@@ -34,6 +34,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.samply.common.ldmclient.LdmClientException;
 import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
+import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.MdrMappedElements;
@@ -45,6 +46,7 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.CredentialsUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.SamplyShareUtils;
+import de.samply.share.model.ccp.Error;
 import de.samply.share.model.ccp.ObjectFactory;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.*;
@@ -68,7 +70,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Implementation of the LdmConnector interface for centraxx backends
  */
-public class LdmConnectorCentraxx extends AbstractLdmConnector<LdmClientCentraxx, QueryResult, de.samply.common.ldmclient.centraxx.model.QueryResultStatistic, de.samply.share.model.ccp.Error, de.samply.share.model.ccp.View> {
+public class LdmConnectorCentraxx extends AbstractLdmConnectorQuery<LdmClientCentraxx, QueryResult, QueryResultStatistic, Error, de.samply.share.model.ccp.View> {
 
     private static final Logger logger = LogManager.getLogger(LdmConnectorCentraxx.class);
 

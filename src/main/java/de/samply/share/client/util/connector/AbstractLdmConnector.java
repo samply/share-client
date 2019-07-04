@@ -1,6 +1,5 @@
 package de.samply.share.client.util.connector;
 
-import com.google.common.base.Stopwatch;
 import de.samply.common.http.HttpConnector;
 import de.samply.common.ldmclient.LdmClient;
 import de.samply.common.ldmclient.LdmClientException;
@@ -10,7 +9,6 @@ import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
-import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.model.db.enums.TargetType;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorRuntimeException;
@@ -22,7 +20,6 @@ import de.samply.share.model.common.Query;
 import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.model.common.Result;
 import de.samply.share.model.common.View;
-import de.samply.share.utils.QueryConverter;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -38,21 +35,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractLdmConnector<
         T_LDM_CLIENT extends LdmClient<T_RESULT, T_RESULT_STATISTICS, T_ERROR, T_SPECIFIC_VIEW>,
+        T_QUERY,
         T_RESULT extends Result & Serializable,
         T_RESULT_STATISTICS extends Serializable,
         T_ERROR extends Serializable,
-        T_SPECIFIC_VIEW extends Serializable> implements LdmConnector<T_RESULT> {
+        T_SPECIFIC_VIEW extends Serializable> implements LdmConnector<T_QUERY, T_RESULT> {
 
     private static final int TIMEOUT_LDM_IN_SECONDS = 2 * 60;
 
-    private T_LDM_CLIENT ldmClient;
+    T_LDM_CLIENT ldmClient;
     private transient HttpConnector httpConnector;
     CloseableHttpClient httpClient;
     String baseUrl;
@@ -110,24 +107,6 @@ public abstract class AbstractLdmConnector<
      * {@inheritDoc}
      */
     @Override
-    public String postQuery(Query query,
-                            List<String> removeKeysFromView,
-                            boolean completeMdsViewFields,
-                            boolean statisticsOnly,
-                            boolean includeAdditionalViewfields) throws LDMConnectorException {
-        View view = createView(query, removeKeysFromView, completeMdsViewFields, includeAdditionalViewfields);
-
-        try {
-            return ldmClient.postView(view, statisticsOnly);
-        } catch (LdmClientException e) {
-            throw new LDMConnectorException(e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String postViewString(String view, boolean statisticsOnly) throws LDMConnectorException {
         //TODO: Use statisticsOnly also for SamplystoreBiobanks
         boolean statisticsOnlyUsed = !isLdmSamplystoreBiobank() && statisticsOnly;
@@ -135,19 +114,6 @@ public abstract class AbstractLdmConnector<
         try {
             return ldmClient.postViewString(view, statisticsOnlyUsed);
         } catch (LdmClientException e) {
-            throw new LDMConnectorException(e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String postCriteriaString(String criteria, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException {
-        try {
-            Query query = QueryConverter.xmlToQuery(criteria);
-            return postQuery(query, null, completeMdsViewFields, statisticsOnly, includeAdditionalViewfields);
-        } catch (JAXBException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -364,66 +330,6 @@ public abstract class AbstractLdmConnector<
             TimeUnit.SECONDS.sleep(secondsSleep);
         } while (++retryNr < maxAttempts);
         return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ReferenceQueryCheckResult getReferenceQueryCheckResult(Query referenceQuery) throws LDMConnectorException {
-        ReferenceQueryCheckResult result = new ReferenceQueryCheckResult();
-        try {
-            View referenceView = createReferenceViewForMonitoring(referenceQuery);
-            Stopwatch stopwatch = Stopwatch.createStarted();
-            String resultLocation = ldmClient.postView(referenceView, false);
-
-            int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
-                    EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
-            int secondsSleep = ConfigurationUtil.getConfigurationTimingsElementValue(
-                    EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_INTERVAL_SECONDS);
-            int retryNr = 0;
-            do {
-                try {
-                    LdmQueryResult ldmQueryResult = ldmClient.getStatsOrError(resultLocation);
-
-                    if (ldmQueryResult.hasError()) {
-                        stopwatch.reset();
-                        de.samply.share.model.common.Error error = ldmQueryResult.getError();
-
-                        switch (error.getErrorCode()) {
-                            case LdmClient.ERROR_CODE_DATE_PARSING_ERROR:
-                            case LdmClient.ERROR_CODE_UNIMPLEMENTED:
-                            case LdmClient.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
-                                getLogger().warn("Could not execute reference query correctly. Error: " + error.getErrorCode() + ": " + error.getDescription());
-                                return result;
-                            case LdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
-                            default:
-                                ArrayList<String> unknownKeys = new ArrayList<>(error.getMdrKey());
-                                referenceView = QueryConverter.removeAttributesFromView(referenceView, unknownKeys);
-                                stopwatch.start();
-                                resultLocation = ldmClient.postView(referenceView, false);
-                                break;
-                        }
-                    } else if (ldmQueryResult.hasResult()) {
-                        QueryResultStatistic qrs = ldmQueryResult.getResult();
-                        result.setCount(qrs.getTotalSize());
-                        if (isResultDone(resultLocation, qrs)) {
-                            stopwatch.stop();
-                            result.setExecutionTimeMilis(stopwatch.elapsed(TimeUnit.MILLISECONDS));
-                            return result;
-                        }
-                    }
-
-                    retryNr += 1;
-                    TimeUnit.SECONDS.sleep(secondsSleep);
-                } catch (InterruptedException e) {
-                    return result;
-                }
-            } while (retryNr < maxAttempts);
-        } catch (LdmClientException e) {
-            handleLdmClientException(e);
-        }
-        return result;
     }
 
     abstract T_LDM_CLIENT createLdmClient(

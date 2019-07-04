@@ -10,6 +10,7 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.model.bbmri.BbmriResult;
 import de.samply.share.model.common.*;
+import de.samply.share.model.osse.Error;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Implementation of the LdmConnector interface for samply store rest backends
  */
-public class LdmConnectorSamplystoreBiobank extends AbstractLdmConnector<LdmClientSamplystoreBiobank, BbmriResult, de.samply.share.model.osse.QueryResultStatistic, de.samply.share.model.osse.Error, de.samply.share.model.osse.View> {
+public class LdmConnectorSamplystoreBiobank extends AbstractLdmConnectorQuery<LdmClientSamplystoreBiobank, BbmriResult, de.samply.share.model.osse.QueryResultStatistic, Error, de.samply.share.model.osse.View> {
 
     private static final Logger logger = LogManager.getLogger(LdmConnectorSamplystoreBiobank.class);
 

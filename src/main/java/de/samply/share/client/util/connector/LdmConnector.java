@@ -43,9 +43,10 @@ import java.util.List;
 /**
  * An interface for a connector to local data management systems
  *
- * @param <T_RESULT> QueryResult type
+ * @param <T_QUERY> QueryResult type
+ * @param <T_RESULT> Query type
  */
-public interface LdmConnector<T_RESULT> {
+public interface LdmConnector<T_QUERY, T_RESULT> {
 
     String TEMPDIR = "javax.servlet.context.tempdir";
     String XML_SUFFIX = ".xml";
@@ -62,7 +63,7 @@ public interface LdmConnector<T_RESULT> {
      * @return the location of the result
      * @throws LDMConnectorException
      */
-    String postQuery(Query query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException;
+    String postQuery(T_QUERY query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException;
 
     /**
      * Posts an xml view to local datamanagement and returns the location of the result.
@@ -189,7 +190,7 @@ public interface LdmConnector<T_RESULT> {
      * @param referenceQuery the query to execute
      * @return amount of patients and execution time
      */
-    ReferenceQueryCheckResult getReferenceQueryCheckResult(Query referenceQuery) throws LDMConnectorException;
+    ReferenceQueryCheckResult getReferenceQueryCheckResult(T_QUERY referenceQuery) throws LDMConnectorException;
 
     default boolean isLdmCentraxx() {
         return false;
