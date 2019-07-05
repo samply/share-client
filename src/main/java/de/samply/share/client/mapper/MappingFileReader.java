@@ -1,4 +1,5 @@
-package main.java.de.samply.share.client.mapper;/*
+package de.samply.share.client.mapper;
+/*
  * Copyright (C) 2018 Medizinische Informatik in der Translationalen Onkologie,
  * Deutsches Krebsforschungszentrum in Heidelberg
  *
@@ -37,36 +38,36 @@ public class MappingFileReader {
     private String teilerBaseViewColumnsFilename = "";
 
 
-    public List<main.java.de.samply.share.client.mapper.CxxMdrCxxRepresentation> readCxxMdrCxxRepresentations() {
+    public List<CxxMdrCxxRepresentation> readCxxMdrCxxRepresentations() {
         return readFileAndGetResults(cxxMdrCxxRepresentationsFilename, new CxxMdrCxxRepresentationsLineAnalyzer());
     }
 
 
-    public List<main.java.de.samply.share.client.mapper.CxxMdrRepresentation> readCxxMdrRepresentations (){
+    public List<CxxMdrRepresentation> readCxxMdrRepresentations (){
         return readFileAndGetResults(cxxMdrRepresentationsFilename, new CxxMdrRepresentationsLineAnalyzer());
     }
 
-    public List<main.java.de.samply.share.client.mapper.TeilerBaseViewColumn> readTeilerBaseViewColumns (){
+    public List<TeilerBaseViewColumn> readTeilerBaseViewColumns (){
         return readFileAndGetResults(teilerBaseViewColumnsFilename, new TeilerBaseViewColumnsLineAnalyzer());
     }
 
     private interface LineAnalyzer{
-        public void analyzeLine (String line);
-        public List getResults();
+        void analyzeLine (String line);
+        List getResults();
     }
 
     private class CxxMdrCxxRepresentationsLineAnalyzer implements LineAnalyzer {
 
-        private List<main.java.de.samply.share.client.mapper.CxxMdrCxxRepresentation> cxxMdrCxxRepresentations = new ArrayList<>();
+        private List<CxxMdrCxxRepresentation> cxxMdrCxxRepresentations = new ArrayList<>();
         private Integer counter = 1;
 
         @Override
         public void analyzeLine(String line) {
 
             String[] split = line.split(";");
-            if (split != null && split.length >= 3){
+            if (split.length >= 3){
 
-                main.java.de.samply.share.client.mapper.CxxMdrCxxRepresentation cxxMdrCxxRepresentation = new main.java.de.samply.share.client.mapper.CxxMdrCxxRepresentation();
+                CxxMdrCxxRepresentation cxxMdrCxxRepresentation = new CxxMdrCxxRepresentation();
 
                 cxxMdrCxxRepresentation.setOid(counter++);
                 cxxMdrCxxRepresentation.setMdrRepresentationOid(getInteger(split[0]));
@@ -79,7 +80,7 @@ public class MappingFileReader {
 
         }
 
-        public List<main.java.de.samply.share.client.mapper.CxxMdrCxxRepresentation> getResults() {
+        public List<de.samply.share.client.mapper.CxxMdrCxxRepresentation> getResults() {
             return cxxMdrCxxRepresentations;
         }
 
@@ -98,15 +99,15 @@ public class MappingFileReader {
 
     private class CxxMdrRepresentationsLineAnalyzer implements LineAnalyzer {
 
-        private List<main.java.de.samply.share.client.mapper.CxxMdrRepresentation> cxxMdrRepresentations = new ArrayList<>();
+        private List<CxxMdrRepresentation> cxxMdrRepresentations = new ArrayList<>();
 
         @Override
         public void analyzeLine(String line) {
 
             String[] split = line.split(";");
-            if (split != null & split.length >= 3){
+            if (split.length >= 3){
 
-                main.java.de.samply.share.client.mapper.CxxMdrRepresentation cxxMdrRepresentation = new main.java.de.samply.share.client.mapper.CxxMdrRepresentation();
+                CxxMdrRepresentation cxxMdrRepresentation = new CxxMdrRepresentation();
 
                 cxxMdrRepresentation.setOid(getInteger(split[0]));
                 cxxMdrRepresentation.setMdrMappingOid(getInteger(split[1]));
@@ -115,7 +116,7 @@ public class MappingFileReader {
 
         }
 
-        public List<main.java.de.samply.share.client.mapper.CxxMdrRepresentation> getResults() {
+        public List<CxxMdrRepresentation> getResults() {
             return cxxMdrRepresentations;
         }
 
@@ -123,7 +124,7 @@ public class MappingFileReader {
 
     private class TeilerBaseViewColumnsLineAnalyzer implements LineAnalyzer {
 
-        private List<main.java.de.samply.share.client.mapper.TeilerBaseViewColumn> teilerBaseViewColumns = new ArrayList<>();
+        private List<TeilerBaseViewColumn> teilerBaseViewColumns = new ArrayList<>();
 
         @Override
         public void analyzeLine(String line) {
@@ -133,7 +134,7 @@ public class MappingFileReader {
             //TODO
         }
 
-        public List<main.java.de.samply.share.client.mapper.TeilerBaseViewColumn> getResults() {
+        public List<TeilerBaseViewColumn> getResults() {
             return teilerBaseViewColumns;
         }
 

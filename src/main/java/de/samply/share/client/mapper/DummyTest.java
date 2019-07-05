@@ -1,4 +1,5 @@
-package main.java.de.samply.share.client.mapper;/*
+package de.samply.share.client.mapper;
+/*
  * Copyright (C) 2018 Medizinische Informatik in der Translationalen Onkologie,
  * Deutsches Krebsforschungszentrum in Heidelberg
  *
