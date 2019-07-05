@@ -64,8 +64,6 @@ public class SchedulerBean implements Serializable {
                 String jobName = jobKey.getName();
                 String jobGroup = jobKey.getGroup();
                 JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-                JobDataMap jobDataMap = jobDetail.getJobDataMap();
-
                 // get job's trigger
                 List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
 
