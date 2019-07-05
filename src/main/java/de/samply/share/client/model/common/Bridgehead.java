@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.*;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -23,24 +23,24 @@ import javax.xml.bind.annotation.*;
  *         &lt;element name="centralsearch" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="decentralsearch" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="updateserver" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="queryLanguage" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "name",
-    "longname",
-    "dktkid",
-    "monitor",
-    "interval",
-    "centralsearch",
-    "decentralsearch",
-    "updateserver"
+        "name",
+        "longname",
+        "dktkid",
+        "monitor",
+        "interval",
+        "centralsearch",
+        "decentralsearch",
+        "updateserver",
+        "queryLanguage"
 })
 @XmlRootElement(name = "bridgehead", namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo")
 @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
@@ -70,14 +70,16 @@ public class Bridgehead {
     @XmlElement(namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo", required = true)
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String updateserver;
+    @XmlElement(namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo", required = true)
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    protected String queryLanguage;
+
 
     /**
      * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public String getName() {
@@ -86,11 +88,9 @@ public class Bridgehead {
 
     /**
      * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setName(String value) {
@@ -99,11 +99,9 @@ public class Bridgehead {
 
     /**
      * Gets the value of the longname property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public String getLongname() {
@@ -112,11 +110,9 @@ public class Bridgehead {
 
     /**
      * Sets the value of the longname property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setLongname(String value) {
@@ -125,11 +121,9 @@ public class Bridgehead {
 
     /**
      * Gets the value of the dktkid property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public String getDktkid() {
@@ -138,11 +132,9 @@ public class Bridgehead {
 
     /**
      * Sets the value of the dktkid property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setDktkid(String value) {
@@ -151,11 +143,9 @@ public class Bridgehead {
 
     /**
      * Gets the value of the monitor property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public String getMonitor() {
@@ -164,11 +154,9 @@ public class Bridgehead {
 
     /**
      * Sets the value of the monitor property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setMonitor(String value) {
@@ -177,11 +165,9 @@ public class Bridgehead {
 
     /**
      * Gets the value of the interval property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public String getInterval() {
@@ -190,11 +176,9 @@ public class Bridgehead {
 
     /**
      * Sets the value of the interval property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setInterval(String value) {
@@ -203,11 +187,9 @@ public class Bridgehead {
 
     /**
      * Gets the value of the centralsearch property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public String getCentralsearch() {
@@ -216,11 +198,9 @@ public class Bridgehead {
 
     /**
      * Sets the value of the centralsearch property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setCentralsearch(String value) {
@@ -229,11 +209,9 @@ public class Bridgehead {
 
     /**
      * Gets the value of the decentralsearch property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public String getDecentralsearch() {
@@ -242,11 +220,9 @@ public class Bridgehead {
 
     /**
      * Sets the value of the decentralsearch property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setDecentralsearch(String value) {
@@ -255,11 +231,9 @@ public class Bridgehead {
 
     /**
      * Gets the value of the updateserver property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public String getUpdateserver() {
@@ -268,15 +242,37 @@ public class Bridgehead {
 
     /**
      * Sets the value of the updateserver property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setUpdateserver(String value) {
         this.updateserver = value;
     }
+
+    /**
+     * Gets the value of the queryLanguage property.
+     *
+     * @return possible object is
+     * {@link String }
+     */
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    public String getQueryLanguage() {
+        return queryLanguage;
+    }
+
+    /**
+     * Sets the value of the queryLanguage property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    public void setQueryLanguage(String value) {
+        this.queryLanguage = value;
+    }
+
+
 
 }

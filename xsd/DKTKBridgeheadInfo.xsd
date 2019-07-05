@@ -1,18 +1,19 @@
 <xs:schema attributeFormDefault="unqualified"
-           elementFormDefault="qualified"
-           targetNamespace="http://schema.samply.de/config/DKTKBridgeheadInfo"
-           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    elementFormDefault="qualified"
+    targetNamespace="http://schema.samply.de/config/DKTKBridgeheadInfo"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:element name="bridgehead">
         <xs:complexType>
             <xs:sequence>
-                <xs:element type="xs:string" name="name"/>
-                <xs:element type="xs:string" name="longname"/>
-                <xs:element type="xs:string" name="dktkid"/>
-                <xs:element type="xs:string" name="monitor"/>
-                <xs:element type="xs:string" name="interval"/>
-                <xs:element type="xs:string" name="centralsearch"/>
-                <xs:element type="xs:string" name="decentralsearch"/>
-                <xs:element type="xs:string" name="updateserver"/>
+                <xs:element type="xs:string" name="name" />
+                <xs:element type="xs:string" name="longname" />
+                <xs:element type="xs:string" name="dktkid" />
+                <xs:element type="xs:string" name="monitor" />
+                <xs:element type="xs:string" name="interval" />
+                <xs:element type="xs:string" name="centralsearch" />
+                <xs:element type="xs:string" name="decentralsearch" />
+                <xs:element type="xs:string" name="updateserver" />
+                <xs:element type="xs:string" name="queryLanguage" minOccurs="0"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
