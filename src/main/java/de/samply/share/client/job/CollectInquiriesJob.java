@@ -225,11 +225,11 @@ public class CollectInquiriesJob implements Job {
 
     private void addInquiryCriteria(Inquiry incomingInquiry, int detailsId) throws JAXBException {
         if (ApplicationUtils.isLanguageCql()) {
-            addInquiryCriteriaQuery(incomingInquiry, detailsId);
+            addInquiryCriteriaCql(incomingInquiry, detailsId);
         }
 
         if (ApplicationUtils.isLanguageQuery()) {
-            addInquiryCriteriaCql(incomingInquiry, detailsId);
+            addInquiryCriteriaQuery(incomingInquiry, detailsId);
         }
     }
 

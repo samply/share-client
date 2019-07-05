@@ -481,9 +481,14 @@ public class ApplicationBean implements Serializable {
         return operator;
     }
 
-    public static Bridgehead getInfos() {
+    public Bridgehead getInfos() {
         return infos;
     }
+
+    public static Bridgehead getBridgeheadInfos() {
+        return infos;
+    }
+
 
     public static HttpConnector createHttpConnector() {
         return createHttpConnector(TIMEOUT_IN_SECONDS);

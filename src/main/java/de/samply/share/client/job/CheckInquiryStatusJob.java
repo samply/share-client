@@ -35,10 +35,7 @@ import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.*;
 import de.samply.share.client.model.EnumConfigurationTimings;
-import de.samply.share.client.model.db.enums.EventMessageType;
-import de.samply.share.client.model.db.enums.InquiryStatusType;
-import de.samply.share.client.model.db.enums.ReplyRuleType;
-import de.samply.share.client.model.db.enums.UploadStatusType;
+import de.samply.share.client.model.db.enums.*;
 import de.samply.share.client.model.db.tables.pojos.*;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
@@ -90,6 +87,7 @@ public class CheckInquiryStatusJob implements Job {
     private LdmConnector ldmConnector;
     private InquiryResult inquiryResult;
     private InquiryDetails inquiryDetails;
+    private InquiryCriteria inquiryCriteria;
 
     public CheckInquiryStatusJob() {
         this.ldmConnector = ApplicationBean.getLdmConnector();
@@ -104,6 +102,7 @@ public class CheckInquiryStatusJob implements Job {
 
         inquiryResult = InquiryResultUtil.fetchInquiryResultById(jobParams.getInquiryResultId());
         inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(inquiryResult.getInquiryDetailsId());
+        inquiryCriteria = InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QUERY);
 
         if (!jobParams.isStatsDone()) {
             logger.debug("Stats were not available before. Checking again.");
@@ -152,7 +151,9 @@ public class CheckInquiryStatusJob implements Job {
                     spawnGenerateStatsJob();
                 }
                 inquiryDetails.setStatus(InquiryStatusType.IS_READY);
+                inquiryCriteria.setStatus(InquiryCriteriaStatusType.IS_READY);
                 InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+                InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteria);
                 // If the inquiry belongs to an upload, also update the upload status
                 try {
                     Integer uploadId = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId()).getUploadId();
@@ -240,7 +241,9 @@ public class CheckInquiryStatusJob implements Job {
                 }
 
                 inquiryDetails.setStatus(InquiryStatusType.IS_READY);
+                inquiryCriteria.setStatus(InquiryCriteriaStatusType.IS_READY);
                 InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+                InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteria);
                 try {
                     jobExecutionContext.setResult(new CheckInquiryStatusJobResult(false, true));
                     unscheduleThisJob(jobExecutionContext);

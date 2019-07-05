@@ -26,6 +26,6 @@ public class ApplicationUtils {
     }
 
     private static QueryLanguageType getQueryLanguageType() {
-        return QueryLanguageType.valueOf(ApplicationBean.getInfos().getName());
+        return QueryLanguageType.valueOf(ApplicationBean.getBridgeheadInfos().getQueryLanguage());
     }
 }
