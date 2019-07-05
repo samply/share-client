@@ -67,7 +67,7 @@ public class SchedulerBean implements Serializable {
                 // get job's trigger
                 List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
 
-                if (triggers == null || CollectionUtils.isEmpty(triggers)) {
+                if (CollectionUtils.isEmpty(triggers)) {
                     if (shouldJobAdded(jobKey, jobDetail)) {
                         jobList.add(new QuartzJob(jobKey.getName(), jobKey.getGroup(), null, null, null, "", isPaused(jobKey), jobDetail.getDescription()));
                     }
