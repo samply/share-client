@@ -11,7 +11,7 @@
     <parent>
         <groupId>de.samply</groupId>
         <artifactId>parent</artifactId>
-        <version>10.1</version>
+        <version>10.1.2</version>
     </parent>
 
     <profiles>
@@ -62,8 +62,8 @@
         <jsf-renderer.version>2.0.0</jsf-renderer.version>
         <common-mailing.version>2.2.0</common-mailing.version>
         <common-http.version>6.1.0</common-http.version>
-        <common-ldmclient.centraxx.version>5.1.0-SNAPSHOT</common-ldmclient.centraxx.version>
-        <common-ldmclient.samplystore.biobank.version>2.1.0-SNAPSHOT</common-ldmclient.samplystore.biobank.version>
+        <common-ldmclient.centraxx.version>5.1.0</common-ldmclient.centraxx.version>
+        <common-ldmclient.samplystore.biobank.version>2.1.0</common-ldmclient.samplystore.biobank.version>
         <converter.dktk.patient.version>1.1.6</converter.dktk.patient.version> <!-- TODO: Replace release -->
 
         <!-- general dependencies -->

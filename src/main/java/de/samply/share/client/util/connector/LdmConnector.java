@@ -33,7 +33,6 @@ import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
-import de.samply.share.model.common.Query;
 import de.samply.share.model.common.QueryResultStatistic;
 
 import java.io.IOException;
