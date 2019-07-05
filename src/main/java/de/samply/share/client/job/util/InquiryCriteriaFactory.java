@@ -11,7 +11,7 @@ public class InquiryCriteriaFactory {
 
         inquiryCriteria.setDetailsId(detailsId);
         inquiryCriteria.setQueryLanguage(QueryLanguageType.QUERY);
-        inquiryCriteria.setStatus(InquiryCriteriaStatusType.IS_NEW);
+        inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_NEW);
         inquiryCriteria.setEntityType("Donor + Sample");
 
         return inquiryCriteria;
