@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.3.0 - 2019-07-05]
+### Changed
+- Introduce InquiryCriteria to allow 1-n relation for Inquiry to criteria
+
 ## [5.2.0 - 2019-07-04]
 ### Changed
 - Introduce LdmQueryResult as return value in LdmClient-API (replacing Object as return value)
