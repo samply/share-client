@@ -3,7 +3,6 @@ package de.samply.share.client.control;
 import de.samply.share.client.job.params.QuartzJob;
 import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.util.db.JobScheduleUtil;
-import de.samply.share.common.utils.ProjectInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,11 +64,12 @@ public class SchedulerBean implements Serializable {
                 String jobName = jobKey.getName();
                 String jobGroup = jobKey.getGroup();
                 JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                JobDataMap jobDataMap = jobDetail.getJobDataMap();
 
                 // get job's trigger
                 List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
 
-                if (CollectionUtils.isEmpty(triggers)) {
+                if (triggers == null || CollectionUtils.isEmpty(triggers)) {
                     if (shouldJobAdded(jobKey, jobDetail)) {
                         jobList.add(new QuartzJob(jobKey.getName(), jobKey.getGroup(), null, null, null, "", isPaused(jobKey), jobDetail.getDescription()));
                     }
@@ -94,13 +94,10 @@ public class SchedulerBean implements Serializable {
         if (!jobDetail.isDurable()) {
             return false;
         }
-
         JobDataMap jobDataMap = jobDetail.getJobDataMap();
-        if (jobDataMap == null || jobDataMap.getBooleanFromString("SHOW")) {
+        if (jobDataMap == null || !jobDataMap.getBooleanFromString("SHOW")) {
             return false;
         }
-
-
         return !ApplicationUtils.isSamply() || !jobKey.getGroup().equals("CentralSearchGroup");
     }
 
