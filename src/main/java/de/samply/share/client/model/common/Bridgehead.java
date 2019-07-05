@@ -42,35 +42,35 @@ import javax.xml.bind.annotation.*;
         "updateserver",
         "queryLanguage"
 })
-@XmlRootElement(name = "bridgehead", namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo")
+@XmlRootElement(name = "bridgehead", namespace = "http://schema.samply.de/config/BridgeheadInfo")
 @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
 public class Bridgehead {
 
-    @XmlElement(namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo", required = true)
+    @XmlElement(namespace = "http://schema.samply.de/config/BridgeheadInfo", required = true)
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String name;
-    @XmlElement(namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo", required = true)
+    @XmlElement(namespace = "http://schema.samply.de/config/BridgeheadInfo", required = true)
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String longname;
-    @XmlElement(namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo", required = true)
+    @XmlElement(namespace = "http://schema.samply.de/config/BridgeheadInfo", required = true)
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String dktkid;
-    @XmlElement(namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo", required = true)
+    @XmlElement(namespace = "http://schema.samply.de/config/BridgeheadInfo", required = true)
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String monitor;
-    @XmlElement(namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo", required = true)
+    @XmlElement(namespace = "http://schema.samply.de/config/BridgeheadInfo", required = true)
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String interval;
-    @XmlElement(namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo", required = true)
+    @XmlElement(namespace = "http://schema.samply.de/config/BridgeheadInfo", required = true)
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String centralsearch;
-    @XmlElement(namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo", required = true)
+    @XmlElement(namespace = "http://schema.samply.de/config/BridgeheadInfo", required = true)
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String decentralsearch;
-    @XmlElement(namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo", required = true)
+    @XmlElement(namespace = "http://schema.samply.de/config/BridgeheadInfo", required = true)
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String updateserver;
-    @XmlElement(namespace = "http://schema.samply.de/config/DKTKBridgeheadInfo", required = true)
+    @XmlElement(namespace = "http://schema.samply.de/config/BridgeheadInfo", required = true)
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String queryLanguage;
 
