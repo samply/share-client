@@ -33,8 +33,10 @@ import com.google.gson.JsonPrimitive;
 import de.samply.dktk.converter.PatientConverter;
 import de.samply.dktk.converter.PatientConverterUtil;
 import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
 import de.samply.share.client.job.params.UploadJobParams;
+import de.samply.share.client.job.util.InquiryCriteriaFactory;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.IdObject;
@@ -43,10 +45,7 @@ import de.samply.share.client.model.centralsearch.PatientUploadResult;
 import de.samply.share.client.model.centralsearch.QueryResultWithIdMap;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.UploadStatusType;
-import de.samply.share.client.model.db.tables.pojos.Inquiry;
-import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
-import de.samply.share.client.model.db.tables.pojos.InquiryResult;
-import de.samply.share.client.model.db.tables.pojos.Upload;
+import de.samply.share.client.model.db.tables.pojos.*;
 import de.samply.share.client.util.UploadUtils;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.CentralSearchConnector;
@@ -458,11 +457,8 @@ public class UploadToCentralMdsDbJob implements Job {
      */
     private void addInquiryDetailsAndSpawnExecutionJob(int inquiryId, DateRestriction dateRestriction) throws JAXBException {
         try {
-            String criteria = QueryConverter.queryToXml(UploadUtils.createUploadQuery(dateRestriction, jobParams.isDktkFlaggedPatients()));
-
             InquiryDetails inquiryDetails = new InquiryDetails();
             inquiryDetails.setInquiryId(inquiryId);
-            inquiryDetails.setCriteriaOriginal(criteria);
             inquiryDetails.setRevision(1);
             inquiryDetails.setStatus(IS_NEW);
 
@@ -470,11 +466,36 @@ public class UploadToCentralMdsDbJob implements Job {
             // Reload with id and received_at timestamp
             inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(inquiryDetailsId);
 
+            addInquiryCriteria(dateRestriction, inquiryDetailsId);
+
             logger.info("Spawn ExecuteInquiryJob for upload with id " + upload.getId());
             spawnNewInquiryExecutionJob(inquiryDetails);
         } catch (Exception e) {
             logger.error("Exception caught while trying to add inquiry details", e);
         }
+    }
+
+    private void addInquiryCriteria(DateRestriction dateRestriction, int detailsId) throws JAXBException {
+        if (ApplicationUtils.isLanguageCql()) {
+            addInquiryCriteriaQuery(dateRestriction, detailsId);
+        }
+
+        if (ApplicationUtils.isLanguageQuery()) {
+            addInquiryCriteriaCql(dateRestriction, detailsId);
+        }
+    }
+
+    private void addInquiryCriteriaQuery(DateRestriction dateRestriction, int detailsId) throws JAXBException {
+        InquiryCriteria inquiryCriteria = new InquiryCriteriaFactory().createForQuery(detailsId);
+
+        String criteria = QueryConverter.queryToXml(UploadUtils.createUploadQuery(dateRestriction, jobParams.isDktkFlaggedPatients()));
+        inquiryCriteria.setCriteriaOriginal(criteria);
+
+        InquiryCriteriaUtil.insertInquiryCriteria(inquiryCriteria);
+    }
+
+    private void addInquiryCriteriaCql(DateRestriction dateRestriction, int detailsId) {
+        // TODO: Implement CQL queries for Patient and Specimen
     }
 
     /**

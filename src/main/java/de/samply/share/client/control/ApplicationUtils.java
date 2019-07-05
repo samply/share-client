@@ -1,5 +1,6 @@
 package de.samply.share.client.control;
 
+import de.samply.share.client.model.db.enums.QueryLanguageType;
 import de.samply.share.common.utils.ProjectInfo;
 
 public class ApplicationUtils {
@@ -14,5 +15,17 @@ public class ApplicationUtils {
 
     public static ConnectorType getConnectorType() {
         return ConnectorType.from(ProjectInfo.INSTANCE.getProjectName());
+    }
+
+    public static boolean isLanguageQuery() {
+        return getQueryLanguageType() == QueryLanguageType.QUERY;
+    }
+
+    public static boolean isLanguageCql() {
+        return getQueryLanguageType() == QueryLanguageType.CQL;
+    }
+
+    private static QueryLanguageType getQueryLanguageType() {
+        return QueryLanguageType.valueOf(ApplicationBean.getInfos().getName());
     }
 }

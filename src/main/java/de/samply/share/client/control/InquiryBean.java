@@ -37,6 +37,7 @@ import de.samply.share.client.job.params.ExecuteInquiryJobParams;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.InquiryStatusType;
+import de.samply.share.client.model.db.enums.QueryLanguageType;
 import de.samply.share.client.model.db.tables.pojos.*;
 import de.samply.share.client.rest.Connector;
 import de.samply.share.client.util.Utils;
@@ -275,7 +276,8 @@ public class InquiryBean implements Serializable {
             latestInquiryAnswer = InquiryAnswerUtil.fetchInquiryAnswerByInquiryDetailsId(latestInquiryDetails.getId());
             inquiryResultsList = InquiryResultUtil.fetchInquiryResultsForInquiryDetailsById(latestInquiryDetails.getId());
             UserSeenInquiryUtil.setUserSeenInquiry(loginBean.getUser(), inquiry);
-            latestOriginalCriteriaTree = populateCriteriaTree(latestInquiryDetails.getCriteriaOriginal());
+            InquiryCriteria inquiryCriteria = InquiryCriteriaUtil.getFirstCriteriaOriginal(latestInquiryDetails, QueryLanguageType.QUERY);
+            latestOriginalCriteriaTree = populateCriteriaTree(inquiryCriteria.getCriteriaOriginal());
             List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
             requestedEntitiesLabelString = Connector.getLabelsFor(requestedEntities);
             selectedInquiryContact = ContactUtil.fetchContactById(latestInquiryDetails.getContactId());

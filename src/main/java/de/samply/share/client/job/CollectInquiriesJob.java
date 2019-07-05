@@ -1,5 +1,7 @@
 package de.samply.share.client.job;
 
+import de.samply.share.client.control.ApplicationUtils;
+import de.samply.share.client.job.util.InquiryCriteriaFactory;
 import de.samply.share.client.model.EnumInquiryPresent;
 import de.samply.share.client.model.db.enums.EntityType;
 import de.samply.share.client.model.db.enums.EventMessageType;
@@ -15,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.*;
 
 import javax.xml.bind.*;
-import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -197,9 +198,7 @@ public class CollectInquiriesJob implements Job {
      * @param brokerId        the broker id
      * @param inquiryDbId     if known, the inquiry id in db. -1 else
      */
-    private void addInquiryDetails(Inquiry incomingInquiry, int brokerId, int inquiryDbId, int contactId) throws JAXBException {
-        String originalCriteria = QueryConverter.queryToXml(incomingInquiry.getQuery());
-
+    private void addInquiryDetails(Inquiry incomingInquiry, int brokerId, int inquiryDbId, int contactId) {
         Date now = new Date();
         long time = now.getTime();
 
@@ -211,15 +210,39 @@ public class CollectInquiriesJob implements Job {
             InquiryDetails inquiryDetails = new InquiryDetails();
             inquiryDetails.setInquiryId(inquiryDbId);
             inquiryDetails.setContactId(contactId);
-            inquiryDetails.setCriteriaOriginal(originalCriteria);
             inquiryDetails.setExposeLocation(incomingInquiry.getExposeURL());
             inquiryDetails.setRevision(Integer.parseInt(incomingInquiry.getRevision()));
             inquiryDetails.setReceivedAt(new Timestamp(time));
             inquiryDetails.setStatus(IS_NEW);
 
-            InquiryDetailsUtil.insertInquiryDetails(inquiryDetails);
+            int detailsId = InquiryDetailsUtil.insertInquiryDetails(inquiryDetails);
+
+            addInquiryCriteria(incomingInquiry, detailsId);
         } catch (Exception e) {
             logger.error("Exception caught while trying to add inquiry details", e);
         }
+    }
+
+    private void addInquiryCriteria(Inquiry incomingInquiry, int detailsId) throws JAXBException {
+        if (ApplicationUtils.isLanguageCql()) {
+            addInquiryCriteriaQuery(incomingInquiry, detailsId);
+        }
+
+        if (ApplicationUtils.isLanguageQuery()) {
+            addInquiryCriteriaCql(incomingInquiry, detailsId);
+        }
+    }
+
+    private void addInquiryCriteriaQuery(Inquiry incomingInquiry, int detailsId) throws JAXBException {
+        InquiryCriteria inquiryCriteria = new InquiryCriteriaFactory().createForQuery(detailsId);
+
+        String originalCriteria = QueryConverter.queryToXml(incomingInquiry.getQuery());
+        inquiryCriteria.setCriteriaOriginal(originalCriteria);
+
+        InquiryCriteriaUtil.insertInquiryCriteria(inquiryCriteria);
+    }
+
+    private void addInquiryCriteriaCql(Inquiry incomingInquiry, int detailsId) {
+        // TODO: Implement CQL queries for Patient and Specimen
     }
 }

@@ -143,5 +143,4 @@ public class InquiryDetailsUtil {
                 )
                 .fetchInto(InquiryDetails.class);
     }
-
 }

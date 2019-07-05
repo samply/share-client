@@ -481,7 +481,7 @@ public class ApplicationBean implements Serializable {
         return operator;
     }
 
-    public Bridgehead getInfos() {
+    public static Bridgehead getInfos() {
         return infos;
     }
 

@@ -6,10 +6,9 @@ import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
 import de.samply.share.client.model.EnumConfigurationTimings;
-import de.samply.share.client.model.db.enums.EventMessageType;
-import de.samply.share.client.model.db.enums.InquiryStatusType;
-import de.samply.share.client.model.db.enums.TargetType;
+import de.samply.share.client.model.db.enums.*;
 import de.samply.share.client.model.db.tables.pojos.Inquiry;
+import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.util.Replace;
@@ -46,6 +45,7 @@ public class ExecuteInquiryJob implements Job {
     private LdmConnector ldmConnector;
     private Inquiry inquiry;
     private InquiryDetails inquiryDetails;
+    private InquiryCriteria inquiryCriteria;
 
     private static final Logger logger = LogManager.getLogger(ExecuteInquiryJob.class);
 
@@ -67,6 +67,7 @@ public class ExecuteInquiryJob implements Job {
         logger.debug(jobParams);
         inquiry = InquiryUtil.fetchInquiryById(jobParams.getInquiryId());
         inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(jobParams.getInquiryDetailsId());
+        inquiryCriteria = InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QUERY);
         List<String> unknownKeys = jobParams.getUnknownKeys();
 
         String resultLocation;
@@ -74,7 +75,7 @@ public class ExecuteInquiryJob implements Job {
         try {
             setInquiryDetailsStatus(IS_PROCESSING);
             Query modifiedQuery = null;
-            Query originalQuery = QueryConverter.xmlToQuery(inquiryDetails.getCriteriaOriginal());
+            Query originalQuery = QueryConverter.xmlToQuery(inquiryCriteria.getCriteriaOriginal());
 
             // TODO remove this "temporary" workaround as soon as possible! This is linked with the age-old issue of different java date formats in some mdr elements!
             originalQuery = fixDateIssues(originalQuery);
@@ -82,20 +83,20 @@ public class ExecuteInquiryJob implements Job {
             if (!SamplyShareUtils.isNullOrEmpty(unknownKeys)) {
                 log(EventMessageType.E_REPEAT_EXECUTE_INQUIRY_JOB_WITHOUT_UNKNOWN_KEYS, unknownKeys.toArray(new String[0]));
                 modifiedQuery = QueryConverter.removeAttributesFromQuery(originalQuery, unknownKeys);
-                inquiryDetails.setCriteriaModified(QueryConverter.queryToXml(modifiedQuery));
+                inquiryCriteria.setCriteriaModified(QueryConverter.queryToXml(modifiedQuery));
                 InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
             }
 
             // to search the aggregated field
             if (ApplicationUtils.isDktk()) {
-                inquiryDetails.setCriteriaOriginal(Replace.replaceMDRKey(inquiryDetails.getCriteriaOriginal()));
-                originalQuery = QueryConverter.xmlToQuery(inquiryDetails.getCriteriaOriginal());
+                inquiryCriteria.setCriteriaOriginal(Replace.replaceMDRKey(inquiryCriteria.getCriteriaOriginal()));
+                originalQuery = QueryConverter.xmlToQuery(inquiryCriteria.getCriteriaOriginal());
                 // TODO remove this "temporary" workaround as soon as possible! This is linked with the age-old issue of different java date formats in some mdr elements!
                 originalQuery = fixDateIssues(originalQuery);
                 if (!SamplyShareUtils.isNullOrEmpty(unknownKeys)) {
                     log(EventMessageType.E_REPEAT_EXECUTE_INQUIRY_JOB_WITHOUT_UNKNOWN_KEYS, unknownKeys.toArray(new String[0]));
                     modifiedQuery = QueryConverter.removeAttributesFromQuery(originalQuery, unknownKeys);
-                    inquiryDetails.setCriteriaModified(QueryConverter.queryToXml(modifiedQuery));
+                    inquiryCriteria.setCriteriaModified(QueryConverter.queryToXml(modifiedQuery));
                 }
             }
 
@@ -168,8 +169,30 @@ public class ExecuteInquiryJob implements Job {
     private void setInquiryDetailsStatus(InquiryStatusType status) {
         inquiryDetails.setStatus(status);
         InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+
+        inquiryCriteria.setStatus(getCriteriaStatus(status));
+        InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteria);
+
         if (status.equals(IS_LDM_ERROR)) {
             changeStatusOfInquiryResultToError();
+        }
+    }
+
+    private InquiryCriteriaStatusType getCriteriaStatus(InquiryStatusType status) {
+        switch (status) {
+            case IS_NEW:
+                return InquiryCriteriaStatusType.IS_NEW;
+            case IS_PROCESSING:
+                return InquiryCriteriaStatusType.IS_PROCESSING;
+            case IS_READY:
+                return InquiryCriteriaStatusType.IS_READY;
+            case IS_LDM_ERROR:
+                return InquiryCriteriaStatusType.IS_LDM_ERROR;
+            case IS_ABANDONED:
+                return InquiryCriteriaStatusType.IS_ABANDONED;
+
+            default:
+                return InquiryCriteriaStatusType.IS_LDM_ERROR;
         }
     }
 
