@@ -31,10 +31,14 @@ package de.samply.share.client.job;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
 import de.samply.share.client.model.db.enums.UploadStatusType;
 import de.samply.share.client.model.db.tables.pojos.Inquiry;
-import de.samply.share.client.util.db.*;
+import de.samply.share.client.util.db.InquiryUtil;
+import de.samply.share.client.util.db.UploadUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.quartz.*;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.JobListener;
 
 /**
  * This listener will be called when an instance of the ExecuteInquiryStatusJob is done

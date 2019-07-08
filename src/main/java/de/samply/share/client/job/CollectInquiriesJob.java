@@ -14,15 +14,18 @@ import de.samply.share.model.common.Inquiry;
 import de.samply.share.utils.QueryConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.quartz.*;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBException;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import static de.samply.share.client.model.EnumInquiryPresent.IP_DIFFERENT_REVISION;
-import static de.samply.share.client.model.EnumInquiryPresent.IP_SAME_REVISION;
-import static de.samply.share.client.model.EnumInquiryPresent.IP_UNAVAILABLE;
+import static de.samply.share.client.model.EnumInquiryPresent.*;
 import static de.samply.share.client.model.db.enums.InquiryStatusType.IS_NEW;
 
 /**

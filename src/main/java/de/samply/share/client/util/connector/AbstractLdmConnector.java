@@ -6,7 +6,6 @@ import de.samply.common.ldmclient.LdmClientException;
 import de.samply.common.ldmclient.model.LdmQueryResult;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
-import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.db.enums.TargetType;
@@ -16,10 +15,8 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.ccp.QueryResult;
-import de.samply.share.model.common.Query;
 import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.model.common.Result;
-import de.samply.share.model.common.View;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -36,8 +33,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractLdmConnector<
         T_LDM_CLIENT extends LdmClient<T_RESULT, T_RESULT_STATISTICS, T_ERROR, T_SPECIFIC_VIEW>,
@@ -107,21 +102,6 @@ public abstract class AbstractLdmConnector<
      * {@inheritDoc}
      */
     @Override
-    public String postViewString(String view, boolean statisticsOnly) throws LDMConnectorException {
-        //TODO: Use statisticsOnly also for SamplystoreBiobanks
-        boolean statisticsOnlyUsed = !isLdmSamplystoreBiobank() && statisticsOnly;
-
-        try {
-            return ldmClient.postViewString(view, statisticsOnlyUsed);
-        } catch (LdmClientException e) {
-            throw new LDMConnectorException(e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public T_RESULT getResults(String location) throws LDMConnectorException {
         try {
             return ldmClient.getResult(location);
@@ -141,19 +121,6 @@ public abstract class AbstractLdmConnector<
             throw new LDMConnectorException(e);
         }
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isQueryPresent(String location) throws LDMConnectorException {
-        try {
-            return ldmClient.isQueryPresent(location);
-        } catch (LdmClientException e) {
-            throw new LDMConnectorException(e);
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -299,50 +266,11 @@ public abstract class AbstractLdmConnector<
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getPatientCount(boolean dktkFlagged) throws LDMConnectorException, InterruptedException {
-        int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
-                EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
-        int secondsSleep = ConfigurationUtil.getConfigurationTimingsElementValue(
-                EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_INTERVAL_SECONDS);
-        int retryNr = 0;
-
-        View view = createViewForMonitoring(dktkFlagged);
-        String resultLocation = null;
-        try {
-            boolean statisticsOnly = isLdmCentraxx();
-            resultLocation = ldmClient.postView(view, statisticsOnly);
-        } catch (LdmClientException e) {
-            handleLdmClientException(e);
-        }
-        do {
-            try {
-                Integer resultCount = getResultCount(resultLocation);
-                if (resultCount != null) {
-                    return resultCount;
-                }
-            } catch (LDMConnectorException e) {
-                // Catch the exception since it might just mean the result is not ready yet
-            }
-            TimeUnit.SECONDS.sleep(secondsSleep);
-        } while (++retryNr < maxAttempts);
-        return 0;
-    }
-
     abstract T_LDM_CLIENT createLdmClient(
             CloseableHttpClient httpClient, String baseUrl, boolean useCaching) throws LdmClientException;
 
     abstract T_LDM_CLIENT createLdmClient(
             CloseableHttpClient httpClient, String baseUrl, boolean useCaching, int maxCacheSize) throws LdmClientException;
-
-    abstract View createView(Query query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean includeAdditionalViewfields) throws LDMConnectorException;
-
-    abstract View createReferenceViewForMonitoring(Query referenceQuery) throws LDMConnectorException;
-
-    abstract View createViewForMonitoring(boolean dktkFlagged) throws LDMConnectorException;
 
     abstract void marshalQueryResult(T_RESULT queryResult, File xmlFile, Marshaller marshaller) throws JAXBException;
 

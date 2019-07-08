@@ -34,7 +34,6 @@ import de.samply.share.client.model.db.tables.pojos.User;
 import de.samply.share.client.util.connector.StoreConnector;
 import de.samply.share.client.util.db.RequestedEntityUtil;
 import de.samply.share.client.util.db.UserUtil;
-import de.samply.share.common.utils.ProjectInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;

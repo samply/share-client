@@ -35,6 +35,7 @@ import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.model.db.tables.pojos.Broker;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
+import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
@@ -255,7 +256,7 @@ public class ReportToMonitoringJob implements Job {
             centraxxMappingVersion.setStatus_text("Does not apply");
         } else {
             try {
-                String mappingVersion = ldmConnector.getMappingVersion();
+                String mappingVersion = ((LdmConnectorCentraxx)ldmConnector).getMappingVersion();
                 centraxxMappingVersion.setExit_status("0");
                 centraxxMappingVersion.setStatus_text(mappingVersion);
             } catch (Exception e) {
@@ -280,7 +281,7 @@ public class ReportToMonitoringJob implements Job {
             centraxxMappingDate.setStatus_text("Does not apply");
         } else {
             try {
-                String mappingDate = ldmConnector.getMappingDate();
+                String mappingDate = ((LdmConnectorCentraxx)ldmConnector).getMappingDate();
                 centraxxMappingDate.setExit_status("0");
                 centraxxMappingDate.setStatus_text(mappingDate);
             } catch (Exception e) {

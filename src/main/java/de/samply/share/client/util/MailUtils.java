@@ -28,9 +28,10 @@
 
 package de.samply.share.client.util;
 
-import java.io.File;
-import java.util.List;
-
+import de.samply.common.mailing.EmailBuilder;
+import de.samply.common.mailing.MailSender;
+import de.samply.common.mailing.MailSending;
+import de.samply.common.mailing.OutgoingEmail;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.messages.Messages;
 import de.samply.share.client.model.EnumConfiguration;
@@ -40,17 +41,14 @@ import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.model.db.tables.pojos.User;
 import de.samply.share.client.util.db.*;
+import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.SamplyShareUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.samply.common.mailing.EmailBuilder;
-import de.samply.common.mailing.MailSender;
-import de.samply.common.mailing.MailSending;
-import de.samply.common.mailing.OutgoingEmail;
-import de.samply.share.common.utils.ProjectInfo;
-
 import javax.servlet.ServletContext;
+import java.io.File;
+import java.util.List;
 
 /**
  * Utility class to help with sending of (notification) mails

@@ -49,7 +49,6 @@ import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
 import de.samply.share.common.model.uiquerybuilder.QueryItem;
 import de.samply.share.common.utils.MdrIdDatatype;
-import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.QueryTreeUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.bbmri.BbmriResult;

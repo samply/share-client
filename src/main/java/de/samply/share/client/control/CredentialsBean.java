@@ -33,7 +33,6 @@ import de.samply.share.client.model.db.enums.TargetType;
 import de.samply.share.client.model.db.tables.pojos.Credentials;
 import de.samply.share.client.util.connector.StoreConnector;
 import de.samply.share.client.util.db.CredentialsUtil;
-import de.samply.share.common.utils.ProjectInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

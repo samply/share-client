@@ -35,8 +35,8 @@ import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.MdrIgnoredElements;
 import de.samply.share.client.quality.report.MdrMappedElements;
-import de.samply.share.client.quality.report.centraxx.CentraxxMapperException;
 import de.samply.share.client.quality.report.centraxx.CentraxxMapper;
+import de.samply.share.client.quality.report.centraxx.CentraxxMapperException;
 import de.samply.share.client.quality.report.centraxx.CentraxxMapperImpl_v2;
 import de.samply.share.client.quality.report.chain.Chain;
 import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
@@ -60,7 +60,6 @@ import de.samply.share.client.quality.report.localdatamanagement.LocalDataManage
 import de.samply.share.client.quality.report.localdatamanagement.LocalDataManagementRequesterImpl;
 import de.samply.share.client.quality.report.model.Model;
 import de.samply.share.client.quality.report.model.mdr.MdrConnectionFactory;
-import de.samply.share.client.quality.report.model.mdr.MdrConnectionFactoryException;
 import de.samply.share.client.quality.report.model.reader.ModelReader;
 import de.samply.share.client.quality.report.model.reader.QualityReportModelReaderImpl;
 import de.samply.share.client.quality.report.properties.PropertyUtils;

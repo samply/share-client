@@ -33,7 +33,6 @@ import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.*;
 import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
-import de.samply.share.client.util.connector.exception.LdmConnectorRuntimeException;
 import de.samply.share.client.util.db.*;
 import de.samply.share.common.model.dto.UserAgent;
 import de.samply.share.common.utils.Constants;

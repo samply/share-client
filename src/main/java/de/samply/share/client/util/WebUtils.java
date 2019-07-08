@@ -28,7 +28,7 @@
 package de.samply.share.client.util;
 
 import com.google.common.base.Joiner;
-import com.google.gson.*;
+import com.google.gson.Gson;
 import de.samply.share.client.messages.Messages;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.EnumInquiryStatus;

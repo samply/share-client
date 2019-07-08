@@ -70,7 +70,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Implementation of the LdmConnector interface for centraxx backends
  */
-public class LdmConnectorCentraxx extends AbstractLdmConnectorQuery<LdmClientCentraxx, QueryResult, QueryResultStatistic, Error, de.samply.share.model.ccp.View> {
+public class LdmConnectorCentraxx extends AbstractLdmConnectorQuery<LdmClientCentraxx, QueryResult, QueryResultStatistic, Error, de.samply.share.model.ccp.View> implements LdmConnectorCentraxxExtension {
 
     private static final Logger logger = LogManager.getLogger(LdmConnectorCentraxx.class);
 

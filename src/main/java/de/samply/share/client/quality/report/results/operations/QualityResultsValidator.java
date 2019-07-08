@@ -25,7 +25,6 @@ package de.samply.share.client.quality.report.results.operations;/*
 */
 
 
-
 import de.dth.mdr.validator.MDRValidator;
 import de.dth.mdr.validator.exception.ValidatorException;
 import de.samply.share.client.quality.report.results.QualityResults;

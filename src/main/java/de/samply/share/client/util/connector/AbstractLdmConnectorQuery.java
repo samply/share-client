@@ -14,7 +14,6 @@ import de.samply.share.model.common.Result;
 import de.samply.share.model.common.View;
 import de.samply.share.utils.QueryConverter;
 
-import javax.xml.bind.JAXBException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,19 +48,6 @@ public abstract class AbstractLdmConnectorQuery<
         try {
             return ldmClient.postView(view, statisticsOnly);
         } catch (LdmClientException e) {
-            throw new LDMConnectorException(e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String postCriteriaString(String criteria, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException {
-        try {
-            Query query = QueryConverter.xmlToQuery(criteria);
-            return postQuery(query, null, completeMdsViewFields, statisticsOnly, includeAdditionalViewfields);
-        } catch (JAXBException e) {
             throw new LDMConnectorException(e);
         }
     }
@@ -126,6 +112,36 @@ public abstract class AbstractLdmConnectorQuery<
         return result;
     }
 
+    @Override
+    public int getPatientCount(boolean dktkFlagged) throws LDMConnectorException, InterruptedException {
+        int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
+                EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
+        int secondsSleep = ConfigurationUtil.getConfigurationTimingsElementValue(
+                EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_INTERVAL_SECONDS);
+        int retryNr = 0;
+
+        View view = createViewForMonitoring(dktkFlagged);
+        String resultLocation = null;
+        try {
+            boolean statisticsOnly = isLdmCentraxx();
+            resultLocation = ldmClient.postView(view, statisticsOnly);
+        } catch (LdmClientException e) {
+            handleLdmClientException(e);
+        }
+        do {
+            try {
+                Integer resultCount = getResultCount(resultLocation);
+                if (resultCount != null) {
+                    return resultCount;
+                }
+            } catch (LDMConnectorException e) {
+                // Catch the exception since it might just mean the result is not ready yet
+            }
+            TimeUnit.SECONDS.sleep(secondsSleep);
+        } while (++retryNr < maxAttempts);
+        return 0;
+    }
+
     private void handleLdmClientException(LdmClientException e) throws LDMConnectorException {
         if (isLdmCentraxx()) {
             throw new LDMConnectorException(e);
@@ -133,4 +149,10 @@ public abstract class AbstractLdmConnectorQuery<
             e.printStackTrace();
         }
     }
+
+    abstract View createView(Query query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean includeAdditionalViewfields) throws LDMConnectorException;
+
+    abstract View createReferenceViewForMonitoring(Query referenceQuery) throws LDMConnectorException;
+
+    abstract View createViewForMonitoring(boolean dktkFlagged) throws LDMConnectorException;
 }

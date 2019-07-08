@@ -31,12 +31,10 @@ package de.samply.share.client.util.connector;
 import de.samply.common.ldmclient.model.LdmQueryResult;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
-import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.model.common.QueryResultStatistic;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,29 +63,6 @@ public interface LdmConnector<T_QUERY, T_RESULT> {
     String postQuery(T_QUERY query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException;
 
     /**
-     * Posts an xml view to local datamanagement and returns the location of the result.
-     *
-     * @param view           the view
-     * @param statisticsOnly if true, set a parameter to only request a count of the results, not the whole result lists
-     * @return the location of the result
-     * @throws LDMConnectorException
-     */
-    String postViewString(String view, boolean statisticsOnly) throws LDMConnectorException;
-
-    /**
-     * Posts an xml criteria snippet to local datamanagement and returns the location of the result.
-     *
-     * @param criteria                    the criteria
-     * @param completeMdsViewFields       if true, add all entries from mds-b and mds-k to viewfields
-     * @param statisticsOnly              if true, set a parameter to only request a count of the results, not the whole result lists
-     * @param includeAdditionalViewfields if true, check if there are additional viewfields to set in the database. For uploads to central
-     *                                    mds database, this should be false
-     * @return the location of the result
-     * @throws LDMConnectorException
-     */
-    String postCriteriaString(String criteria, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException;
-
-    /**
      * Gets the query result from a given query location.
      *
      * @param location the location
@@ -97,15 +72,6 @@ public interface LdmConnector<T_QUERY, T_RESULT> {
     T_RESULT getResults(String location) throws LDMConnectorException;
 
     T_RESULT getResultsFromPage(String location, int page) throws LDMConnectorException;
-
-    /**
-     * Checks if the query is present in the given location.
-     *
-     * @param location the location where the query should be available
-     * @return true, if is query present
-     * @throws LDMConnectorException
-     */
-    boolean isQueryPresent(String location) throws LDMConnectorException;
 
     /**
      * Gets the stats for a query on the given location.
@@ -198,17 +164,4 @@ public interface LdmConnector<T_QUERY, T_RESULT> {
     default boolean isLdmSamplystoreBiobank() {
         return false;
     }
-
-    default String getMappingVersion() {
-        return "undefined";
-    }
-
-    default String getMappingDate() {
-        return "undefined";
-    }
-
-    default List<CxxMappingElement> getMapping() {
-        return new ArrayList<>();
-    }
-
 }

@@ -28,6 +28,7 @@ package de.samply.share.client.quality.report.localdatamanagement;/*
 import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.util.connector.LdmConnector;
+import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.Error;
@@ -158,10 +159,10 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
 
     }
 
-    private LocalDataManagementResponse<String> getSqlMappingVersion_WithoutManagementException() throws LocalDataManagementRequesterException {
+    private LocalDataManagementResponse<String> getSqlMappingVersion_WithoutManagementException() {
 
         LdmConnector ldmConnector = ApplicationBean.getLdmConnector();
-        String version = ldmConnector.getMappingVersion();
+        String version = ((LdmConnectorCentraxx)ldmConnector).getMappingVersion();
 
         LocalDataManagementResponse<String> localDataManagementResponse = new LocalDataManagementResponse<>();
         localDataManagementResponse.setStatusCode(HttpStatus.SC_OK);

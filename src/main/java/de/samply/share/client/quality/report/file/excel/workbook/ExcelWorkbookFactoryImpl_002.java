@@ -25,7 +25,6 @@ package de.samply.share.client.quality.report.file.excel.workbook;/*
 */
 
 
-import de.samply.share.client.quality.report.MdrIgnoredElements;
 import de.samply.share.client.quality.report.MdrMappedElements;
 import de.samply.share.client.quality.report.dktk.DktkId_MdrId_Converter;
 import de.samply.share.client.quality.report.file.excel.instances.patientids.PatientDktkIdsExcelRowContextFactory;

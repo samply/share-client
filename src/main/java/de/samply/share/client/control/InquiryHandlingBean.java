@@ -28,22 +28,15 @@
 
 package de.samply.share.client.control;
 
-import com.google.gson.Gson;
-import de.samply.share.client.messages.Messages;
-import de.samply.share.client.model.db.enums.InquiryStatusType;
-import de.samply.share.client.model.db.tables.pojos.*;
-import de.samply.share.client.model.line.EventLogLine;
-import de.samply.share.client.model.line.InquiryLine;
-import de.samply.share.client.util.db.*;
-import de.samply.share.common.utils.SamplyShareUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import de.samply.share.client.model.db.tables.pojos.Broker;
+import de.samply.share.client.model.db.tables.pojos.InquiryHandlingRule;
+import de.samply.share.client.util.db.BrokerUtil;
+import de.samply.share.client.util.db.InquiryHandlingRuleUtil;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

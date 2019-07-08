@@ -25,17 +25,16 @@ package de.samply.share.client.quality.report.views.fromto;/*
 */
 
 
-
 import de.samply.share.client.model.EnumConfiguration;
+import de.samply.share.client.quality.report.MdrIdAndValidations;
 import de.samply.share.client.quality.report.MdrIgnoredElements;
 import de.samply.share.client.quality.report.MdrMappedElements;
-import de.samply.share.common.utils.MdrIdDatatype;
-import de.samply.share.model.common.*;
-import de.samply.share.client.quality.report.MdrIdAndValidations;
 import de.samply.share.client.quality.report.model.Model;
 import de.samply.share.client.quality.report.views.ViewsCreator;
 import de.samply.share.client.quality.report.views.fromto.scheduler.ViewFromToScheduler;
 import de.samply.share.client.util.db.ConfigurationUtil;
+import de.samply.share.common.utils.MdrIdDatatype;
+import de.samply.share.model.common.*;
 
 import javax.xml.bind.JAXBElement;
 import java.io.Serializable;

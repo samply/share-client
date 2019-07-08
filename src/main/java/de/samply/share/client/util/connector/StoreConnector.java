@@ -5,7 +5,10 @@ import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

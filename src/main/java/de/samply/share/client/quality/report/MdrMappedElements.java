@@ -25,6 +25,7 @@ package de.samply.share.client.quality.report;/*
  */
 
 import de.samply.share.client.util.connector.LdmConnector;
+import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
 import de.samply.share.common.utils.MdrIdDatatype;
 
@@ -46,7 +47,7 @@ public class MdrMappedElements {
 
         if (ldmConnector.isLdmCentraxx()) {
 
-            List<CxxMappingElement> mapping = ldmConnector.getMapping();
+            List<CxxMappingElement> mapping = ((LdmConnectorCentraxx)ldmConnector).getMapping();
 
             for (CxxMappingElement mappingElement : mapping) {
 

@@ -30,11 +30,11 @@ package de.samply.share.client.util.connector;
 
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
-import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.centralsearch.DateRestriction;
 import de.samply.share.client.model.centralsearch.PatientUploadResult;
 import de.samply.share.client.model.centralsearch.UploadStats;
+import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.TargetType;

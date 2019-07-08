@@ -31,7 +31,6 @@ package de.samply.share.client.control;
 import de.samply.share.client.model.db.tables.pojos.User;
 import de.samply.share.client.util.connector.StoreConnector;
 import de.samply.share.client.util.db.UserUtil;
-import de.samply.share.common.utils.ProjectInfo;
 import de.samply.share.common.utils.SamplyShareUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +38,6 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.omnifaces.context.OmniPartialViewContext;
 import org.omnifaces.util.Messages;
 
-import javax.faces.application.NavigationHandler;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;

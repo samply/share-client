@@ -1,10 +1,6 @@
 package de.samply.share.client.util.connector;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
-
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -12,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 

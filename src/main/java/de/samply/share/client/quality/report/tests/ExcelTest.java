@@ -35,7 +35,6 @@ import de.samply.share.client.quality.report.dktk.DktkId_MdrId_ConverterImpl;
 import de.samply.share.client.quality.report.file.csvline.manager.QualityResultCsvLineManager_002;
 import de.samply.share.client.quality.report.file.excel.pattern.ExcelPattern;
 import de.samply.share.client.quality.report.file.excel.pattern.ExcelPattern_002;
-import de.samply.share.client.quality.report.file.excel.workbook.ExcelWorkbookFactoryException;
 import de.samply.share.client.quality.report.file.id.path.IdPathManager_002;
 import de.samply.share.client.quality.report.file.manager.CsvQualityReportFileManager;
 import de.samply.share.client.quality.report.file.manager.ExcelQualityReportFileManager;
