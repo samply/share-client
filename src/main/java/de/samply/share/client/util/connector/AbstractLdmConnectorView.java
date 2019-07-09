@@ -1,13 +1,15 @@
 package de.samply.share.client.util.connector;
 
 import com.google.common.base.Stopwatch;
-import de.samply.common.ldmclient.LdmClient;
+import de.samply.common.ldmclient.AbstractLdmClient;
 import de.samply.common.ldmclient.LdmClientException;
+import de.samply.common.ldmclient.LdmClientView;
 import de.samply.common.ldmclient.model.LdmQueryResult;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
+import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.common.Query;
 import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.model.common.Result;
@@ -19,18 +21,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractLdmConnectorQuery<
-        T_LDM_CLIENT extends LdmClient<T_RESULT, T_RESULT_STATISTICS, T_ERROR, T_SPECIFIC_VIEW>,
+public abstract class AbstractLdmConnectorView<
+        T_LDM_CLIENT extends LdmClientView<T_RESULT, T_RESULT_STATISTICS, T_ERROR, T_SPECIFIC_VIEW>,
         T_RESULT extends Result & Serializable,
         T_RESULT_STATISTICS extends Serializable,
         T_ERROR extends Serializable,
-        T_SPECIFIC_VIEW extends Serializable> extends AbstractLdmConnector<T_LDM_CLIENT, Query, T_RESULT, T_RESULT_STATISTICS, T_ERROR, T_SPECIFIC_VIEW> {
+        T_SPECIFIC_VIEW extends Serializable> extends AbstractLdmConnector<T_LDM_CLIENT, Query, T_RESULT, T_RESULT_STATISTICS, T_ERROR> {
 
-    AbstractLdmConnectorQuery(boolean useCaching) {
+    AbstractLdmConnectorView(boolean useCaching) {
         super(useCaching);
     }
 
-    AbstractLdmConnectorQuery(boolean useCaching, int maxCacheSize) {
+    AbstractLdmConnectorView(boolean useCaching, int maxCacheSize) {
         super(useCaching, maxCacheSize);
     }
 
@@ -77,12 +79,12 @@ public abstract class AbstractLdmConnectorQuery<
                         de.samply.share.model.common.Error error = ldmQueryResult.getError();
 
                         switch (error.getErrorCode()) {
-                            case LdmClient.ERROR_CODE_DATE_PARSING_ERROR:
-                            case LdmClient.ERROR_CODE_UNIMPLEMENTED:
-                            case LdmClient.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
+                            case AbstractLdmClient.ERROR_CODE_DATE_PARSING_ERROR:
+                            case AbstractLdmClient.ERROR_CODE_UNIMPLEMENTED:
+                            case AbstractLdmClient.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
                                 getLogger().warn("Could not execute reference query correctly. Error: " + error.getErrorCode() + ": " + error.getDescription());
                                 return result;
-                            case LdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
+                            case AbstractLdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
                             default:
                                 ArrayList<String> unknownKeys = new ArrayList<>(error.getMdrKey());
                                 referenceView = QueryConverter.removeAttributesFromView(referenceView, unknownKeys);
@@ -147,6 +149,58 @@ public abstract class AbstractLdmConnectorQuery<
             throw new LDMConnectorException(e);
         } else if (isLdmSamplystoreBiobank()) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFirstResultPageAvailable(String location) throws LDMConnectorException {
+        if (SamplyShareUtils.isNullOrEmpty(location)) {
+            throw new LDMConnectorException("Location of query is empty");
+        }
+
+        // If the stats are written and the results are empty, return true
+        Integer resultCount = getResultCount(location);
+        if (resultCount != null && resultCount == 0) {
+            return true;
+        }
+
+        return ldmClient.isResultPageAvailable(location, 0);
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isResultDone(String location, QueryResultStatistic queryResultStatistic) throws LDMConnectorException {
+        if (SamplyShareUtils.isNullOrEmpty(location)) {
+            throw new LDMConnectorException("Location of query is empty");
+        }
+
+        if (queryResultStatistic != null) {
+            if (queryResultStatistic.getTotalSize() == 0) {
+                return true;
+            }
+            int lastPageIndex = queryResultStatistic.getNumberOfPages() - 1;
+            return ldmClient.isResultPageAvailable(location, lastPageIndex);
+        } else {
+            throw new LDMConnectorException("QueryResultStatistic is null.");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T_RESULT getResultsFromPage(String location, int page) throws LDMConnectorException {
+        try {
+            return ldmClient.getResultPage(location, page);
+        } catch (LdmClientException e) {
+            throw new LDMConnectorException(e);
         }
     }
 

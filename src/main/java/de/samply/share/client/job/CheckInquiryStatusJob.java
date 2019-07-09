@@ -29,7 +29,7 @@
 package de.samply.share.client.job;
 
 import com.google.common.base.Joiner;
-import de.samply.common.ldmclient.LdmClient;
+import de.samply.common.ldmclient.AbstractLdmClient;
 import de.samply.common.ldmclient.model.LdmQueryResult;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
@@ -197,15 +197,15 @@ public class CheckInquiryStatusJob implements Job {
             InquiryResultUtil.updateInquiryResult(inquiryResult);
 
             switch (error.getErrorCode()) {
-                case LdmClient.ERROR_CODE_DATE_PARSING_ERROR:
-                case LdmClient.ERROR_CODE_UNIMPLEMENTED:
-                case LdmClient.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
+                case AbstractLdmClient.ERROR_CODE_DATE_PARSING_ERROR:
+                case AbstractLdmClient.ERROR_CODE_UNIMPLEMENTED:
+                case AbstractLdmClient.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
                     log(EventMessageType.E_LDM_ERROR, "code:" + error.getErrorCode(), "description:" + error.getDescription());
                     inquiryDetails.setStatus(InquiryStatusType.IS_LDM_ERROR);
                     InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
                     unscheduleThisJob(jobExecutionContext);
                     break;
-                case LdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
+                case AbstractLdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
                     String unknownKeys = Joiner.on(ExecuteInquiryJobParams.SEPARATOR_UNKNOWN_KEYS).join(error.getMdrKey());
                     log(EventMessageType.E_LDM_ERROR, "code:" + error.getErrorCode(), "keys:" + unknownKeys);
                     spawnNewInquiryExecutionJob(unknownKeys);

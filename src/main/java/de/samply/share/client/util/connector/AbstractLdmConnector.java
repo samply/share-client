@@ -1,7 +1,7 @@
 package de.samply.share.client.util.connector;
 
 import de.samply.common.http.HttpConnector;
-import de.samply.common.ldmclient.LdmClient;
+import de.samply.common.ldmclient.AbstractLdmClient;
 import de.samply.common.ldmclient.LdmClientException;
 import de.samply.common.ldmclient.model.LdmQueryResult;
 import de.samply.share.client.control.ApplicationBean;
@@ -35,12 +35,11 @@ import java.net.MalformedURLException;
 import java.util.Date;
 
 public abstract class AbstractLdmConnector<
-        T_LDM_CLIENT extends LdmClient<T_RESULT, T_RESULT_STATISTICS, T_ERROR, T_SPECIFIC_VIEW>,
+        T_LDM_CLIENT extends AbstractLdmClient<T_RESULT, T_RESULT_STATISTICS, T_ERROR>,
         T_QUERY,
         T_RESULT extends Result & Serializable,
         T_RESULT_STATISTICS extends Serializable,
-        T_ERROR extends Serializable,
-        T_SPECIFIC_VIEW extends Serializable> implements LdmConnector<T_QUERY, T_RESULT> {
+        T_ERROR extends Serializable> implements LdmConnector<T_QUERY, T_RESULT> {
 
     private static final int TIMEOUT_LDM_IN_SECONDS = 2 * 60;
 
@@ -110,17 +109,7 @@ public abstract class AbstractLdmConnector<
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public T_RESULT getResultsFromPage(String location, int page) throws LDMConnectorException {
-        try {
-            return ldmClient.getResultPage(location, page);
-        } catch (LdmClientException e) {
-            throw new LDMConnectorException(e);
-        }
-    }
+
     /**
      * {@inheritDoc}
      */
@@ -166,44 +155,6 @@ public abstract class AbstractLdmConnector<
             return ldmClient.getQueryResultStatistic(location).getNumberOfPages();
         } catch (Exception e) {
             throw new LDMConnectorException(e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isFirstResultPageAvailable(String location) throws LDMConnectorException {
-        if (SamplyShareUtils.isNullOrEmpty(location)) {
-            throw new LDMConnectorException("Location of query is empty");
-        }
-
-        // If the stats are written and the results are empty, return true
-        Integer resultCount = getResultCount(location);
-        if (resultCount != null && resultCount == 0) {
-            return true;
-        }
-
-        return ldmClient.isResultPageAvailable(location, 0);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isResultDone(String location, QueryResultStatistic queryResultStatistic) throws LDMConnectorException {
-        if (SamplyShareUtils.isNullOrEmpty(location)) {
-            throw new LDMConnectorException("Location of query is empty");
-        }
-
-        if (queryResultStatistic != null) {
-            if (queryResultStatistic.getTotalSize() == 0) {
-                return true;
-            }
-            int lastPageIndex = queryResultStatistic.getNumberOfPages() - 1;
-            return ldmClient.isResultPageAvailable(location, lastPageIndex);
-        } else {
-            throw new LDMConnectorException("QueryResultStatistic is null.");
         }
     }
 
