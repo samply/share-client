@@ -221,15 +221,28 @@ public class ApplicationBean implements Serializable {
                 break;
 
             case SAMPLY:
-                if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
-                    try {
-                        int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
-                        ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true, maxCacheSize);
-                    } catch (NumberFormatException e) {
-                        ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true);
+                if (ApplicationUtils.isLanguageCql()) {
+                    if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
+                        try {
+                            int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
+                            ApplicationBean.ldmConnector = new LdmConnectorCql(true, maxCacheSize);
+                        } catch (NumberFormatException e) {
+                            ApplicationBean.ldmConnector = new LdmConnectorCql(true);
+                        }
+                    } else {
+                        ApplicationBean.ldmConnector = new LdmConnectorCql(false);
                     }
-                } else {
-                    ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(false);
+                }else {
+                    if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
+                        try {
+                            int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
+                            ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true, maxCacheSize);
+                        } catch (NumberFormatException e) {
+                            ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(true);
+                        }
+                    } else {
+                        ApplicationBean.ldmConnector = new LdmConnectorSamplystoreBiobank(false);
+                    }
                 }
                 break;
         }

@@ -164,4 +164,8 @@ public interface LdmConnector<T_QUERY, T_RESULT> {
     default boolean isLdmSamplystoreBiobank() {
         return false;
     }
+
+    default boolean isLdmCql(){
+        return false;
+    }
 }
