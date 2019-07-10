@@ -1,49 +1,86 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Configuration>
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration status="debug">
     <Properties>
-        <Property name="logDirLinux">/tmp/log/</Property>
-        <Property name="logDirWindows">C:/ProgramData/dktk/log/</Property>
-        <Property name="fileBaseName">samply.share.client</Property>
-        <Property name="fileNameSuffix">.log</Property>
+        <Property name="logdir">${sys:catalina.base}/logs/connector</Property>
+        <Property name="layout">%d [%t] %-5p %c- %m%n</Property>
     </Properties>
-
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="${layout}"/>
         </Console>
-
-        <RollingFile name="RollingFileLinux" fileName="${logDirLinux}${fileBaseName}${fileNameSuffix}"
-                     filePattern="${logDir}$${date:yyyy-MM}/${fileBaseName}-%d{yyyy-MM-dd}-%i${fileNameSuffix}">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy/>
-            </Policies>
+        <RollingFile name="CATALINA"
+                     fileName="${logdir}/catalina.log"
+                     filePattern="${logdir}/catalina.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${layout}"/>
+            <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${logdir}" maxDepth="1">
+                    <IfFileName glob="catalina.*.log.gz"/>
+                    <IfAccumulatedFileCount exceeds="10"/>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
-
-        <RollingFile name="RollingFileWindows" fileName="${logDirWindows}${fileBaseName}${fileNameSuffix}"
-                     filePattern="${logDir}$${date:yyyy-MM}/${fileBaseName}-%d{yyyy-MM-dd}-%i${fileNameSuffix}">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy/>
-            </Policies>
+        <RollingFile name="LOCALHOST"
+                     fileName="${logdir}/localhost.log"
+                     filePattern="${logdir}/localhost.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${layout}"/>
+            <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${logdir}" maxDepth="1">
+                    <IfFileName glob="localhost.*.log.gz"/>
+                    <IfAccumulatedFileCount exceeds="10"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        <RollingFile name="MANAGER"
+                     fileName="${logdir}/manager.log"
+                     filePattern="${logdir}/manager.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${layout}"/>
+            <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${logdir}" maxDepth="1">
+                    <IfFileName glob="manager.*.log.gz"/>
+                    <IfAccumulatedFileCount exceeds="10"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        <RollingFile name="HOST-MANAGER"
+                     fileName="${logdir}/host-manager.log"
+                     filePattern="${logdir}/host-manager.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${layout}"/>
+            <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${logdir}" maxDepth="1">
+                    <IfFileName glob="host-manager.*.log.gz"/>
+                    <IfAccumulatedFileCount exceeds="10"/>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
     </Appenders>
     <Loggers>
         <Root level="debug">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="RollingFileLinux"/>
-            <AppenderRef ref="RollingFileWindows"/>
+            <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="CATALINA"/>
         </Root>
+        <Logger name="org.apache.catalina.core.ContainerBase.[Catalina].[localhost]"
+                level="debug"
+                additivity="false">
+            <AppenderRef ref="LOCALHOST"/>
+        </Logger>
+        <Logger name="org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/manager]"
+                level="debug"
+                additivity="false">
+            <AppenderRef ref="MANAGER"/>
+        </Logger>
+        <Logger name="org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/host-manager]"
+                level="debug"
+                additivity="false">
+            <AppenderRef ref="HOST-MANAGER"/>
+        </Logger>
         <Logger name="org.apache.http" level="warn"/>
         <Logger name="org.jooq" level="error"/>
-        <Logger name="org.jooq.Constants" level="error"/>
-        <Logger name="org.quartz" level="info"/>
+        <Logger name="org.quartz" level="error"/>
         <Logger name="org.flywaydb" level="warn"/>
         <Logger name="de.samply.common.mdrclient" level="error"/>
-        <Logger name="org.jooq.tools" level="error"/>
     </Loggers>
 </Configuration>

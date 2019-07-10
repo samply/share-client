@@ -139,9 +139,6 @@ public class ExcelWorkbookFactoryImpl_002 implements ExcelWorkbookFactory {
             workbook = addPatientLocalIdsSheet(workbook, asmQualityResults);
 
         }
-        //logger.info("Adding mismatching patient dktk ids");
-        //workbook = addPatientDktkIdsSheet(workbook, asmQualityResults);
-
 
         if (isSheetSelectedToBeWritten(EnumConfiguration.QUALITY_REPORT_SHOW_STATISTICS_SHEET) && qualityResultsStatistics != null) {
 

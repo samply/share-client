@@ -58,17 +58,17 @@
         <!-- Samply dependencies -->
         <version.samply.common.config>3.1.0</version.samply.common.config>
         <share-common.version>3.1.0</share-common.version>
-        <share-dto.version>4.2.1-SNAPSHOT</share-dto.version>
+        <share-dto.version>4.1.0</share-dto.version>
         <jsf-renderer.version>2.0.0</jsf-renderer.version>
         <common-mailing.version>2.2.0</common-mailing.version>
         <common-http.version>6.1.0</common-http.version>
-        <common-ldmclient.centraxx.version>5.1.1-SNAPSHOT</common-ldmclient.centraxx.version>
-        <common-ldmclient.samplystore.biobank.version>2.1.1-SNAPSHOT</common-ldmclient.samplystore.biobank.version>
+        <common-ldmclient.centraxx.version>5.1.0</common-ldmclient.centraxx.version>
+        <common-ldmclient.samplystore.biobank.version>2.1.0</common-ldmclient.samplystore.biobank.version>
         <converter.dktk.patient.version>1.1.6</converter.dktk.patient.version> <!-- TODO: Replace release -->
 
         <!-- general dependencies -->
         <version.flyway>4.2.0</version.flyway>
-        <version.jooq>3.9.5</version.jooq>
+        <version.jooq>3.11.11</version.jooq>
         <jta.version>1.1</jta.version>
         <quartz.version>2.3.0</quartz.version>
         <log4j-api.version>2.8</log4j-api.version>
@@ -97,7 +97,6 @@
         <jqplot.version>1.0.9.d96a669-1</jqplot.version>
 
         <skipTests>false</skipTests>
-        <common-ldmclient.cql.version>1.0.0-SNAPSHOT</common-ldmclient.cql.version>
     </properties>
 
     <build>
@@ -221,7 +220,7 @@
                     </jdbc>
                     <generator>
                         <database>
-                            <name>org.jooq.util.postgres.PostgresDatabase</name>
+                            <name>org.jooq.meta.postgres.PostgresDatabase</name>
                             <includes>.*</includes>
                             <excludes>samply.schema_version</excludes>
                             <inputSchema>${database.schema}</inputSchema>
@@ -283,6 +282,30 @@
     </build>
 
     <dependencies>
+
+        <dependency>
+            <groupId>de.samply</groupId>
+            <artifactId>common-config</artifactId>
+            <version>${version.samply.common.config}</version>
+        </dependency>
+        <!-- JSF 2 -->
+        <dependency>
+            <groupId>com.sun.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.faces</groupId>
+            <artifactId>jsf-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>${jta.version}</version>
+        </dependency>
         <!-- Samply libraries-->
         <dependency>
             <groupId>de.samply</groupId>
@@ -306,26 +329,6 @@
         </dependency>
         <dependency>
             <groupId>de.samply</groupId>
-            <artifactId>common-config</artifactId>
-            <version>${version.samply.common.config}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.samply</groupId>
-            <artifactId>common-ldmclient.samplystore-biobank</artifactId>
-            <version>${common-ldmclient.samplystore.biobank.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.samply</groupId>
-            <artifactId>common-ldmclient.cql</artifactId>
-            <version>${common-ldmclient.cql.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.samply</groupId>
-            <artifactId>share-dto</artifactId>
-            <version>${share-dto.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.samply</groupId>
             <artifactId>jsf-renderer</artifactId>
             <version>${jsf-renderer.version}</version>
         </dependency>
@@ -333,25 +336,6 @@
             <groupId>de.samply</groupId>
             <artifactId>common-mailing</artifactId>
             <version>${common-mailing.version}</version>
-        </dependency>
-
-        <!-- JSF 2 -->
-        <dependency>
-            <groupId>com.sun.faces</groupId>
-            <artifactId>jsf-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.faces</groupId>
-            <artifactId>jsf-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
-            <version>${jta.version}</version>
         </dependency>
         <!-- Logging -->
         <!-- TODO: Change logging to SLF4J ??? -->
@@ -416,7 +400,6 @@
             <groupId>org.jooq</groupId>
             <artifactId>jooq-codegen-maven</artifactId>
             <version>${version.jooq}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
@@ -528,6 +511,18 @@
             <artifactId>jqplot</artifactId>
             <version>${jqplot.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.samply</groupId>
+            <artifactId>common-ldmclient.samplystore-biobank</artifactId>
+            <version>${common-ldmclient.samplystore.biobank.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.samply</groupId>
+            <artifactId>share-dto</artifactId>
+            <version>${share-dto.version}</version>
+        </dependency>
     </dependencies>
+
+
 
 </project>
