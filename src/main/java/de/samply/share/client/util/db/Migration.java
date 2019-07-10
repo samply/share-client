@@ -27,10 +27,8 @@ public class Migration {
     private static void upgradeSamply(DataSource dataSource) throws FlywayException {
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
-        flyway.setLocations("db/migration/" + ProjectInfo.INSTANCE.getProjectName());
+        flyway.setLocations("db/migration/", "db/migration_legacy/DO_NOT_CHANGE/" + ProjectInfo.INSTANCE.getProjectName());
         flyway.setSchemas("samply");
-        // TODO: Remove after cleaning init-scripts
-        flyway.setIgnoreMissingMigrations(true);
         flyway.migrate();
     }
 }

@@ -322,7 +322,7 @@ public class ApplicationBean implements Serializable {
         } catch (FileNotFoundException e) {
             logger.error("No common bridgehead info file found by using samply.common.config for project " + ProjectInfo.INSTANCE.getProjectName());
         } catch (UnmarshalException ue) {
-            throw new RuntimeException("Unable to unmarshal bridgehead_info file");
+            throw new RuntimeException("Unable to unmarshal bridgehead_info file", ue);
         } catch (SAXException | JAXBException | ParserConfigurationException e) {
             e.printStackTrace();
         }
@@ -488,7 +488,7 @@ public class ApplicationBean implements Serializable {
         return infos;
     }
 
-    public static Bridgehead getBridgeheadInfos() {
+    static Bridgehead getBridgeheadInfos() {
         return infos;
     }
 
