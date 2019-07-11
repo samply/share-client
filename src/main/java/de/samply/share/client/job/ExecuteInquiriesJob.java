@@ -87,7 +87,7 @@ public class ExecuteInquiriesJob implements Job {
      */
     private void spawnNewInquiryExecutionJob(de.samply.share.client.model.db.tables.pojos.Inquiry inquiry, InquiryDetails inquiryDetails, boolean statsOnly) {
         try {
-            JobKey jobKey = JobKey.jobKey(ExecuteInquiryJobParams.JOBNAME, ExecuteInquiryJobParams.JOBGROUP);
+            JobKey jobKey = JobKey.jobKey(ExecuteInquiryJobParams.getJobName(), ExecuteInquiryJobParams.JOBGROUP);
 
             // Fill the JobDataMap for the trigger
             JobDataMap jobDataMap = new JobDataMap();

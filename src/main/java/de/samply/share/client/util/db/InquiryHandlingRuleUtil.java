@@ -1,5 +1,6 @@
 package de.samply.share.client.util.db;
 
+import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.model.db.Tables;
 import de.samply.share.client.model.db.enums.ReplyRuleType;
 import de.samply.share.client.model.db.tables.daos.InquiryHandlingRuleDao;
@@ -89,6 +90,10 @@ public class InquiryHandlingRuleUtil {
      * @return if the results shall be generated
      */
     public static boolean requestResultsForInquiry(Inquiry inquiry) {
+        if (ApplicationUtils.isSamply()) {
+            return false;
+        }
+
         try {
             // TODO: when there are more inquiry handling rules, a more sophisticated approach is needed
             for (InquiryHandlingRule inquiryHandlingRule : InquiryHandlingRuleUtil.fetchInquiryHandlingRulesForBrokerId(inquiry.getBrokerId())) {
@@ -115,7 +120,9 @@ public class InquiryHandlingRuleUtil {
         try {
             // TODO: when there are more inquiry handling rules, a more sophisticated approach is needed
             for (InquiryHandlingRule inquiryHandlingRule : InquiryHandlingRuleUtil.fetchInquiryHandlingRulesForBrokerId(inquiry.getBrokerId())) {
-                return (inquiryHandlingRule.getAutomaticReply() == ReplyRuleType.RR_TOTAL_COUNT);
+                if (inquiryHandlingRule.getAutomaticReply() == ReplyRuleType.RR_TOTAL_COUNT) {
+                    return true;
+                }
             }
         } catch (NullPointerException npe) {
             // in case anything is null, reply false
@@ -136,7 +143,9 @@ public class InquiryHandlingRuleUtil {
         try {
             // TODO: when there are more inquiry handling rules, a more sophisticated approach is needed
             for (InquiryHandlingRule inquiryHandlingRule : InquiryHandlingRuleUtil.fetchInquiryHandlingRulesForBrokerId(inquiry.getBrokerId())) {
-                return (inquiryHandlingRule.getAutomaticReply() == ReplyRuleType.RR_DATA);
+                if (inquiryHandlingRule.getAutomaticReply() == ReplyRuleType.RR_DATA) {
+                    return true;
+                }
             }
         } catch (NullPointerException npe) {
             // in case anything is null, reply false

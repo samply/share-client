@@ -29,20 +29,18 @@
 package de.samply.share.client.job;
 
 import com.google.common.base.Joiner;
-import de.samply.common.ldmclient.LdmClient;
+import de.samply.common.ldmclient.AbstractLdmClient;
 import de.samply.common.ldmclient.model.LdmQueryResult;
 import de.samply.share.client.control.ApplicationBean;
-import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.*;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.db.enums.*;
 import de.samply.share.client.model.db.tables.pojos.*;
+import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
-import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.*;
-import de.samply.share.model.bbmri.BbmriResult;
 import de.samply.share.model.common.Error;
 import de.samply.share.model.common.QueryResultStatistic;
 import org.apache.logging.log4j.LogManager;
@@ -77,24 +75,22 @@ import java.util.List;
  * b) If it is, and it was an upload inquiry...spawn a UploadToCentralMdsDbJob and remove this job from the scheduler
  * c) If it is, and it was not an upload inquiry...set the status to done and remove this job from the scheduler
  */
-@PersistJobDataAfterExecution
-@DisallowConcurrentExecution
-public class CheckInquiryStatusJob implements Job {
+abstract class AbstractCheckInquiryStatusJob<T_LDM_CONNECTOR extends LdmConnector> implements Job {
 
-    private static final Logger logger = LogManager.getLogger(CheckInquiryStatusJob.class);
+    private static final Logger logger = LogManager.getLogger(AbstractCheckInquiryStatusJob.class);
 
-    private CheckInquiryStatusJobParams jobParams;
-    private LdmConnector ldmConnector;
-    private InquiryResult inquiryResult;
-    private InquiryDetails inquiryDetails;
-    private InquiryCriteria inquiryCriteria;
+    CheckInquiryStatusJobParams jobParams;
+    T_LDM_CONNECTOR ldmConnector;
+    InquiryResult inquiryResult;
+    InquiryDetails inquiryDetails;
+    InquiryCriteria inquiryCriteria;
 
-    public CheckInquiryStatusJob() {
-        this.ldmConnector = ApplicationBean.getLdmConnector();
+    AbstractCheckInquiryStatusJob() {
+        //noinspection unchecked
+        this.ldmConnector = (T_LDM_CONNECTOR) ApplicationBean.getLdmConnector();
     }
 
-    @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    void prepareExecute(JobExecutionContext jobExecutionContext) {
         JobKey jobKey = jobExecutionContext.getJobDetail().getKey();
         JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();
         jobParams = new CheckInquiryStatusJobParams(dataMap);
@@ -102,21 +98,12 @@ public class CheckInquiryStatusJob implements Job {
 
         inquiryResult = InquiryResultUtil.fetchInquiryResultById(jobParams.getInquiryResultId());
         inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(inquiryResult.getInquiryDetailsId());
-        inquiryCriteria = InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QUERY);
-
-        if (!jobParams.isStatsDone()) {
-            logger.debug("Stats were not available before. Checking again.");
-            checkForStatsResult(jobExecutionContext);
-        } else if (!jobParams.isResultStarted()) {
-            logger.debug("Stats are available, first result file was not available. Checking again.");
-            checkForFirstResultPage(jobExecutionContext);
-        } else if (!jobParams.isResultDone()) {
-            logger.debug("First result file available, last one not yet. Checking again.");
-            checkForLastResultPage(jobExecutionContext);
-        }
+        inquiryCriteria = getInquiryCriteria();
     }
 
-    private void checkForStatsResult(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    abstract InquiryCriteria getInquiryCriteria();
+
+    void checkForStatsResult(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             LdmQueryResult ldmQueryResult = ldmConnector.getStatsOrError(inquiryResult.getLocation());
             if (ldmQueryResult != null) {
@@ -127,50 +114,6 @@ public class CheckInquiryStatusJob implements Job {
                 }
             }
         } catch (Exception e) {
-            throw new JobExecutionException(e);
-        }
-    }
-
-    private void checkForFirstResultPage(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        try {
-            if (ldmConnector.isFirstResultPageAvailable(inquiryResult.getLocation())) {
-                jobExecutionContext.getJobDetail().getJobDataMap().put(CheckInquiryStatusJobParams.STATS_DONE, true);
-                jobExecutionContext.getJobDetail().getJobDataMap().put(CheckInquiryStatusJobParams.RESULT_STARTED, true);
-            }
-        } catch (LDMConnectorException e) {
-            throw new JobExecutionException(e);
-        }
-    }
-
-    private void checkForLastResultPage(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        try {
-            if (ldmConnector.isResultDone(inquiryResult.getLocation(), ldmConnector.getQueryResultStatistic(inquiryResult.getLocation()))) {
-                jobExecutionContext.getJobDetail().getJobDataMap().put(CheckInquiryStatusJobParams.RESULT_DONE, true);
-                if (!jobParams.isUpload()) {
-                    logger.debug("Spawn generate stats job");
-                    spawnGenerateStatsJob();
-                }
-                inquiryDetails.setStatus(InquiryStatusType.IS_READY);
-                inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_READY);
-                InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
-                InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteria);
-                // If the inquiry belongs to an upload, also update the upload status
-                try {
-                    Integer uploadId = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId()).getUploadId();
-                    if (jobParams.isUpload() && uploadId != null) {
-                        UploadUtil.setUploadStatusById(uploadId, UploadStatusType.US_QUERY_READY);
-                        spawnUploadToCentralMdsDbJob(uploadId);
-                    }
-                } catch (Exception e) {
-                    logger.error("Exception caught while trying to update upload status", e);
-                }
-                jobExecutionContext.setResult(new CheckInquiryStatusJobResult(false, true));
-                unscheduleThisJob(jobExecutionContext);
-                logger.info("CheckInquiryStatusJob completed for inquiry " + inquiryDetails.getInquiryId());
-                // TODO: Check if the handling for uploads would be better in the following method
-                processReplyRules();
-            }
-        } catch (LDMConnectorException | SchedulerException e) {
             throw new JobExecutionException(e);
         }
     }
@@ -190,77 +133,89 @@ public class CheckInquiryStatusJob implements Job {
         }
 
         if (ldmQueryResult.hasError()) {
-            Error error = ldmQueryResult.getError();
-
-            inquiryResult.setIsError(Boolean.TRUE);
-            inquiryResult.setErrorCode(Integer.toString(error.getErrorCode()));
-            InquiryResultUtil.updateInquiryResult(inquiryResult);
-
-            switch (error.getErrorCode()) {
-                case LdmClient.ERROR_CODE_DATE_PARSING_ERROR:
-                case LdmClient.ERROR_CODE_UNIMPLEMENTED:
-                case LdmClient.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
-                    log(EventMessageType.E_LDM_ERROR, "code:" + error.getErrorCode(), "description:" + error.getDescription());
-                    inquiryDetails.setStatus(InquiryStatusType.IS_LDM_ERROR);
-                    InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
-                    unscheduleThisJob(jobExecutionContext);
-                    break;
-                case LdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
-                    String unknownKeys = Joiner.on(ExecuteInquiryJobParams.SEPARATOR_UNKNOWN_KEYS).join(error.getMdrKey());
-                    log(EventMessageType.E_LDM_ERROR, "code:" + error.getErrorCode(), "keys:" + unknownKeys);
-                    spawnNewInquiryExecutionJob(unknownKeys);
-                    jobExecutionContext.setResult(new CheckInquiryStatusJobResult(true, false));
-                    unscheduleThisJob(jobExecutionContext);
-                default:
-                    break;
-            }
-            return false;
+            return handleError(ldmQueryResult, jobExecutionContext);
         }
 
         if (ldmQueryResult.hasResult()) {
-            QueryResultStatistic queryResultStatistic = ldmQueryResult.getResult();
-            log(EventMessageType.E_STATISTICS_READY, Integer.toString(queryResultStatistic.getTotalSize()));
-            inquiryResult.setSize(queryResultStatistic.getTotalSize());
-            InquiryResultUtil.updateInquiryResult(inquiryResult);
-            jobExecutionContext.getJobDetail().getJobDataMap().put(CheckInquiryStatusJobParams.STATS_DONE, true);
-            if (inquiryResult.getStatisticsOnly() || queryResultStatistic.getTotalSize() == 0) {
-                if (inquiryResult.getStatisticsOnly()) {
-                    logger.debug("Only stats were requested. And they are done. Setting Inquiry Details to done and quitting.");
-                } else {
-                    logger.debug("No results found. Setting Inquiry Details to done and quitting.");
-                }
+            return handleResult(ldmQueryResult, jobExecutionContext);
+        }
 
-                // If the inquiry belongs to an upload, also update the upload status
-                try {
-                    Integer uploadId = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId()).getUploadId();
-                    if (jobParams.isUpload() && uploadId != null) {
-                        UploadUtil.setUploadStatusById(uploadId, UploadStatusType.US_COMPLETED);
-                    }
-                } catch (Exception e) {
-                    logger.error("Exception caught while trying to update upload status", e);
-                }
+        log("Unknown object received");
+        return false;
+    }
 
-                inquiryDetails.setStatus(InquiryStatusType.IS_READY);
-                inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_READY);
-                InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
-                InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteria);
-                try {
-                    jobExecutionContext.setResult(new CheckInquiryStatusJobResult(false, true));
-                    unscheduleThisJob(jobExecutionContext);
-                    return true;
-                } catch (SchedulerException e) {
-                    e.printStackTrace();
-                }
+    private boolean handleResult(LdmQueryResult ldmQueryResult, JobExecutionContext jobExecutionContext) throws SchedulerException {
+        QueryResultStatistic queryResultStatistic = ldmQueryResult.getResult();
+        log(EventMessageType.E_STATISTICS_READY, Integer.toString(queryResultStatistic.getTotalSize()));
+        inquiryResult.setSize(queryResultStatistic.getTotalSize());
+        InquiryResultUtil.updateInquiryResult(inquiryResult);
+        jobExecutionContext.getJobDetail().getJobDataMap().put(CheckInquiryStatusJobParams.STATS_DONE, true);
+        if (inquiryResult.getStatisticsOnly() || queryResultStatistic.getTotalSize() == 0) {
+            if (inquiryResult.getStatisticsOnly()) {
+                logger.debug("Only stats were requested. And they are done. Setting Inquiry Details to done and quitting.");
             } else {
-                rescheduleCheckingForResults(jobExecutionContext);
+                logger.debug("No results found. Setting Inquiry Details to done and quitting.");
+            }
+
+            // If the inquiry belongs to an upload, also update the upload status
+            try {
+                Integer uploadId = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId()).getUploadId();
+                if (jobParams.isUpload() && uploadId != null) {
+                    UploadUtil.setUploadStatusById(uploadId, UploadStatusType.US_COMPLETED);
+                }
+            } catch (Exception e) {
+                logger.error("Exception caught while trying to update upload status", e);
+            }
+
+            handleInquiryStatusReady();
+
+            inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_READY);
+            InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+            InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteria);
+            try {
+                jobExecutionContext.setResult(new CheckInquiryStatusJobResult(false, true));
+                unscheduleThisJob(jobExecutionContext);
+                return true;
+            } catch (SchedulerException e) {
+                e.printStackTrace();
             }
         } else {
-            log("Unknown object received");
+            rescheduleCheckingForResults(jobExecutionContext);
         }
         return false;
     }
 
-    private void unscheduleThisJob(JobExecutionContext jobExecutionContext) throws SchedulerException {
+    abstract void handleInquiryStatusReady();
+
+    private boolean handleError(LdmQueryResult ldmQueryResult, JobExecutionContext jobExecutionContext) throws SchedulerException {
+        Error error = ldmQueryResult.getError();
+
+        inquiryResult.setIsError(Boolean.TRUE);
+        inquiryResult.setErrorCode(Integer.toString(error.getErrorCode()));
+        InquiryResultUtil.updateInquiryResult(inquiryResult);
+
+        switch (error.getErrorCode()) {
+            case AbstractLdmClient.ERROR_CODE_DATE_PARSING_ERROR:
+            case AbstractLdmClient.ERROR_CODE_UNIMPLEMENTED:
+            case AbstractLdmClient.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE:
+                log(EventMessageType.E_LDM_ERROR, "code:" + error.getErrorCode(), "description:" + error.getDescription());
+                Utils.setStatus(inquiryDetails, InquiryStatusType.IS_LDM_ERROR);
+                InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+                unscheduleThisJob(jobExecutionContext);
+                break;
+            case AbstractLdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
+                String unknownKeys = Joiner.on(ExecuteInquiryJobParams.SEPARATOR_UNKNOWN_KEYS).join(error.getMdrKey());
+                log(EventMessageType.E_LDM_ERROR, "code:" + error.getErrorCode(), "keys:" + unknownKeys);
+                spawnNewInquiryExecutionJob(unknownKeys);
+                jobExecutionContext.setResult(new CheckInquiryStatusJobResult(true, false));
+                unscheduleThisJob(jobExecutionContext);
+            default:
+                break;
+        }
+        return false;
+    }
+
+    void unscheduleThisJob(JobExecutionContext jobExecutionContext) throws SchedulerException {
         Trigger currentTrigger = jobExecutionContext.getTrigger();
         ApplicationBean.getScheduler().unscheduleJob(currentTrigger.getKey());
     }
@@ -299,7 +254,7 @@ public class CheckInquiryStatusJob implements Job {
      */
     private void spawnNewInquiryExecutionJob(String unknownKeys) {
         try {
-            JobKey jobKey = JobKey.jobKey(ExecuteInquiryJobParams.JOBNAME, ExecuteInquiryJobParams.JOBGROUP);
+            JobKey jobKey = JobKey.jobKey(ExecuteInquiryJobParams.getJobName(), ExecuteInquiryJobParams.JOBGROUP);
 
             // Fill the JobDataMap
             JobDataMap jobDataMap = new JobDataMap();
@@ -317,53 +272,12 @@ public class CheckInquiryStatusJob implements Job {
     }
 
     /**
-     * (Re-)spawn an upload job
-     *
-     * @param uploadId the database id of the upload
-     */
-    private void spawnUploadToCentralMdsDbJob(int uploadId) {
-        try {
-            Upload upload = UploadUtil.fetchUploadById(uploadId);
-            String jobName = upload.getDktkFlagged() ? UploadJobParams.JOBNAME_DKTK : UploadJobParams.JOBNAME_NO_DKTK;
-            JobKey newJobKey = JobKey.jobKey(jobName, UploadJobParams.JOBGROUP);
-
-            // Fill the JobDataMap
-            JobDataMap jobDataMap = new JobDataMap();
-            jobDataMap.put(UploadJobParams.UPLOAD_ID, uploadId);
-            jobDataMap.put(UploadJobParams.STATUS, UploadStatusType.US_QUERY_READY.getLiteral());
-            jobDataMap.put(UploadJobParams.DKTK_FLAGGED, upload.getDktkFlagged());
-
-            // Fire exactly once - right now
-            ApplicationBean.getScheduler().triggerJob(newJobKey, jobDataMap);
-        } catch (SchedulerException e) {
-            logger.error("Error spawning Inquiry Execution Job");
-        }
-
-    }
-
-    /**
-     * Spawn a job to generate the statistics for the query result
-     */
-    private void spawnGenerateStatsJob() {
-        try {
-            JobKey jobKey = JobKey.jobKey(GenerateInquiryResultStatsJobParams.JOBNAME, GenerateInquiryResultStatsJobParams.JOBGROUP);
-            JobDataMap jobDataMap = new JobDataMap();
-            jobDataMap.put(GenerateInquiryResultStatsJobParams.INQUIRY_RESULT_ID, inquiryResult.getId());
-
-            // Fire exactly once - right now
-            ApplicationBean.getScheduler().triggerJob(jobKey, jobDataMap);
-        } catch (SchedulerException e) {
-            logger.error("Error spawning Generate Result Stats Job", e);
-        }
-    }
-
-    /**
      * Check if any automated replies should be sent and take care of it
      * <p>
      * TODO: Maybe create a separate job for that?
      */
     @SuppressWarnings("ConstantConditions")
-    private void processReplyRules() {
+    void processReplyRules() {
         Inquiry inquiry = null;
         try {
             inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
@@ -387,20 +301,7 @@ public class CheckInquiryStatusJob implements Job {
                 case RR_TOTAL_COUNT:
                     logger.info("Reporting the amount of matching datasets to the broker.");
                     BrokerConnector brokerConnector = new BrokerConnector(BrokerUtil.fetchBrokerById(brokerId));
-                    switch (ApplicationUtils.getConnectorType()) {
-                        case DKTK:
-                            brokerConnector.reply(inquiryDetails, inquiryResult.getSize());
-                            break;
-
-                        case SAMPLY:
-                            try {
-                                BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
-                                brokerConnector.reply(inquiryDetails, queryResult);
-                            } catch (LDMConnectorException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                    }
+                    processReplyRule(brokerConnector);
 
                     break;
                 case RR_NO_AUTOMATIC_ACTION:
@@ -420,6 +321,8 @@ public class CheckInquiryStatusJob implements Job {
             }
         }
     }
+
+    abstract void processReplyRule(BrokerConnector brokerConnector) throws BrokerConnectorException;
 
     /**
      * Write a message, linked with the inquiry, to the event log

@@ -7,6 +7,7 @@ import de.samply.share.client.model.db.tables.daos.InquiryCriteriaDao;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.records.InquiryCriteriaRecord;
+import org.apache.commons.codec.binary.StringUtils;
 import org.jooq.DSLContext;
 
 import java.util.List;
@@ -65,6 +66,17 @@ public class InquiryCriteriaUtil {
         List<InquiryCriteria> inquiryCriteriaList = getInquiryCriteriaForInquiryDetails(inquiryDetails);
         Optional<InquiryCriteria> inquiryCriteria =
                 inquiryCriteriaList.stream().filter(inquiryCriteriaTemp -> inquiryCriteriaTemp.getQueryLanguage() == languageType).findFirst();
+
+        return inquiryCriteria.orElse(null);
+    }
+
+    public static InquiryCriteria getFirstCriteriaOriginal(InquiryDetails inquiryDetails, QueryLanguageType languageType, String entityType) {
+        List<InquiryCriteria> inquiryCriteriaList = getInquiryCriteriaForInquiryDetails(inquiryDetails);
+        Optional<InquiryCriteria> inquiryCriteria =
+                inquiryCriteriaList.stream().
+                        filter(inquiryCriteriaTemp -> inquiryCriteriaTemp.getQueryLanguage() == languageType).
+                        filter(inquiryCriteriaTemp -> StringUtils.equals(inquiryCriteriaTemp.getEntityType(), entityType)).
+                        findFirst();
 
         return inquiryCriteria.orElse(null);
     }

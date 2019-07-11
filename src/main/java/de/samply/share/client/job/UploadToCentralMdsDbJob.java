@@ -188,7 +188,7 @@ public class UploadToCentralMdsDbJob implements Job {
             } else {
                 addInquiryDetailsAndSpawnExecutionJob(inquiryId, dateRestriction);
             }
-        } catch (CentralSearchConnectorException | JAXBException e) {
+        } catch (CentralSearchConnectorException e) {
             throw new JobExecutionException(e);
         }
     }
@@ -437,7 +437,7 @@ public class UploadToCentralMdsDbJob implements Job {
      *
      * @return the database id of the new inquiry object
      */
-    private int createAndStoreInquiry() throws JAXBException {
+    private int createAndStoreInquiry() {
         Inquiry inquiry = new Inquiry();
         inquiry.setUploadId(upload.getId());
         inquiry.setSourceId(upload.getId()); // This is a duplication, since we basically don't have a source id for uploads but it has a not null constraint
@@ -455,7 +455,7 @@ public class UploadToCentralMdsDbJob implements Job {
      * @param inquiryId the database id of the inquiry
      * @param dateRestriction upper and lower bounds for the patients to include. may be null for no restrictions
      */
-    private void addInquiryDetailsAndSpawnExecutionJob(int inquiryId, DateRestriction dateRestriction) throws JAXBException {
+    private void addInquiryDetailsAndSpawnExecutionJob(int inquiryId, DateRestriction dateRestriction) {
         try {
             InquiryDetails inquiryDetails = new InquiryDetails();
             inquiryDetails.setInquiryId(inquiryId);
@@ -508,7 +508,7 @@ public class UploadToCentralMdsDbJob implements Job {
             Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
 
             // Get the (durable) Job from the scheduler
-            JobKey jobKey = JobKey.jobKey(ExecuteInquiryJobParams.JOBNAME, ExecuteInquiryJobParams.JOBGROUP);
+            JobKey jobKey = JobKey.jobKey(ExecuteInquiryJobParams.getJobName(), ExecuteInquiryJobParams.JOBGROUP);
 
             // Fill the JobDataMap
             JobDataMap jobDataMap = new JobDataMap();

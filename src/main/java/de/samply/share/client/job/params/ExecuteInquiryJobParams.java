@@ -29,6 +29,7 @@
 package de.samply.share.client.job.params;
 
 import com.google.common.base.Splitter;
+import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.common.utils.SamplyShareUtils;
 import org.quartz.JobDataMap;
 
@@ -43,7 +44,9 @@ import java.util.List;
 public class ExecuteInquiryJobParams {
 
     public static final String JOBGROUP = "InquiryGroup";
-    public static final String JOBNAME = "ExecuteInquiryJob";
+    private static final String JOBNAME_DKTK = "ExecuteInquiryJobCentraxx";
+    private static final String JOBNAME_SAMPLY = "ExecuteInquiryJobSamplystoreBiobanks";
+    private static final String JOBNAME_CQL = "ExecuteInquiryJobCql";
     public static final String INQUIRY_ID = "inquiry_id";
     public static final String INQUIRY_DETAILS_ID = "inquiry_details_id";
     public static final String STATS_ONLY = "stats_only";
@@ -71,6 +74,16 @@ public class ExecuteInquiryJobParams {
             this.unknownKeys = splitter.splitToList(unknownKeysConcatenated);
         } else {
             this.unknownKeys = new ArrayList<>();
+        }
+    }
+
+    public static String getJobName() {
+        if (ApplicationUtils.isDktk()) {
+            return JOBNAME_DKTK;
+        } else if (ApplicationUtils.isLanguageQuery()){
+            return JOBNAME_SAMPLY;
+        } else {
+            return JOBNAME_CQL;
         }
     }
 

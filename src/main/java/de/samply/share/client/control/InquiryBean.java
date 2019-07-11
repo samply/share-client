@@ -32,7 +32,9 @@ import com.google.common.net.HttpHeaders;
 import de.samply.dktk.converter.EnumValidationHandling;
 import de.samply.dktk.converter.PatientConverter;
 import de.samply.dktk.converter.PatientConverterUtil;
-import de.samply.share.client.job.ExecuteInquiryJob;
+import de.samply.share.client.job.ExecuteInquiryJobCql;
+import de.samply.share.client.job.ExecuteInquiryJobCentraxx;
+import de.samply.share.client.job.ExecuteInquiryJobSamplystoreBiobanks;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.db.enums.EventMessageType;
@@ -336,13 +338,23 @@ public class InquiryBean implements Serializable {
      */
     public String spawnExecuteTask(boolean statsOnly) {
         String jobGroup = inquiry.getBrokerId() + "::" + inquiry.getSourceId() + "::" + latestInquiryDetails.getRevision();
-        JobKey jobKey = JobKey.jobKey(ExecuteInquiryJobParams.JOBNAME, "job::" + jobGroup);
-        TriggerKey triggerKey = TriggerKey.triggerKey(ExecuteInquiryJobParams.JOBNAME, "trigger::" + jobGroup);
+        JobKey jobKey = JobKey.jobKey(ExecuteInquiryJobParams.getJobName(), "job::" + jobGroup);
+        TriggerKey triggerKey = TriggerKey.triggerKey(ExecuteInquiryJobParams.getJobName(), "trigger::" + jobGroup);
 
         Utils.setStatus(latestInquiryDetails, InquiryStatusType.IS_PROCESSING);
         InquiryDetailsUtil.updateInquiryDetails(latestInquiryDetails);
 
-        JobDetail inquiryExecutionJob = JobBuilder.newJob(ExecuteInquiryJob.class)
+        JobBuilder jobBuilder;
+
+        if (ApplicationUtils.isDktk()) {
+            jobBuilder = JobBuilder.newJob(ExecuteInquiryJobCentraxx.class);
+        } else if (ApplicationUtils.isLanguageQuery()) {
+            jobBuilder = JobBuilder.newJob(ExecuteInquiryJobSamplystoreBiobanks.class);
+        } else {
+            jobBuilder = JobBuilder.newJob(ExecuteInquiryJobCql.class);
+        }
+
+        JobDetail inquiryExecutionJob = jobBuilder
                 .withIdentity(jobKey)
                 .usingJobData(ExecuteInquiryJobParams.INQUIRY_ID, inquiry.getId())
                 .usingJobData(ExecuteInquiryJobParams.INQUIRY_DETAILS_ID, latestInquiryDetails.getId())
@@ -388,7 +400,7 @@ public class InquiryBean implements Serializable {
     public void loadResult() {
         logger.debug("loadResult called");
         try {
-            if (latestInquiryResult!=null
+            if (latestInquiryResult != null
                     && !latestInquiryResult.getStatisticsOnly()
                     && !latestInquiryResult.getIsError()
                     && latestInquiryResult.getSize() != null

@@ -28,6 +28,7 @@
 
 package de.samply.share.client.job.params;
 
+import de.samply.share.client.control.ApplicationUtils;
 import org.quartz.JobDataMap;
 
 /**
@@ -38,7 +39,9 @@ import org.quartz.JobDataMap;
 public class CheckInquiryStatusJobParams {
 
     public static final String JOBGROUP = "InquiryGroup";
-    public static final String JOBNAME = "CheckInquiryStatusJob";
+    private static final String JOBNAME_DKTK = "CheckInquiryStatusJobCentraxx";
+    private static final String JOBNAME_SAMPLY = "CheckInquiryStatusJobSamplystoreBiobanks";
+    private static final String JOBNAME_CQL = "CheckInquiryStatusJobCql";
     public static final String TRIGGERNAME = "CheckInquiryStatusTrigger";
     public static final String INQUIRY_RESULT_ID = "inquiry_result_id";
     public static final String STATS_DONE = "stats_done";
@@ -46,6 +49,7 @@ public class CheckInquiryStatusJobParams {
     public static final String RESULT_DONE = "result_done";
     public static final String IS_UPLOAD = "is_upload";
     public static final String STATS_ONLY = "stats_only";
+    public static final String ENTITY_TYPE = "entity_type";
 
     private final int inquiryResultId;
     private final boolean statsDone;
@@ -53,6 +57,7 @@ public class CheckInquiryStatusJobParams {
     private final boolean resultDone;
     private final boolean isUpload;
     private final boolean statsOnly;
+    private final String entityType;
 
     public CheckInquiryStatusJobParams(JobDataMap dataMap) {
         this.inquiryResultId = dataMap.getInt(INQUIRY_RESULT_ID);
@@ -61,6 +66,17 @@ public class CheckInquiryStatusJobParams {
         this.resultDone = dataMap.getBoolean(RESULT_DONE);
         this.isUpload = dataMap.getBoolean(IS_UPLOAD);
         this.statsOnly = dataMap.getBoolean(STATS_ONLY);
+        this.entityType = dataMap.getString(ENTITY_TYPE);
+    }
+
+    public static String getJobName() {
+        if (ApplicationUtils.isDktk()) {
+            return JOBNAME_DKTK;
+        } else if (ApplicationUtils.isLanguageQuery()){
+            return JOBNAME_SAMPLY;
+        } else {
+            return JOBNAME_CQL;
+        }
     }
 
     public int getInquiryResultId() {
@@ -85,6 +101,10 @@ public class CheckInquiryStatusJobParams {
 
     public boolean isStatsOnly() {
         return statsOnly;
+    }
+
+    public String getEntityType() {
+        return entityType;
     }
 
     @Override

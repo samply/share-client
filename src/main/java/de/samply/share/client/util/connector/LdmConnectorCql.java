@@ -13,6 +13,7 @@ import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.common.Error;
 import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.model.cql.CqlResult;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +24,7 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, String, CqlResult, QueryResultStatistic, Error> {
+public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, String, CqlResult, CqlResult, Error> {
 
     private static final Logger logger = LogManager.getLogger(LdmConnectorCql.class);
 
@@ -89,14 +90,11 @@ public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, String, 
 
 
     public boolean isResultDone(String location, QueryResultStatistic queryResultStatistic) throws LDMConnectorException {
-        if (SamplyShareUtils.isNullOrEmpty(location)) {
+        if (StringUtils.isEmpty(location)) {
             throw new LDMConnectorException("Location of query is empty");
         }
         if (queryResultStatistic != null) {
-            if (queryResultStatistic.getTotalSize() >= 0) {
-                return true;
-            }
-            return false;
+            return queryResultStatistic.getTotalSize() >= 0;
         } else {
             throw new LDMConnectorException("QueryResultStatistic is null.");
         }
