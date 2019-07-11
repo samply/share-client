@@ -1,33 +1,33 @@
 package de.samply.share.client.quality.report.localdatamanagement;/*
-* Copyright (C) 2017 Medizinische Informatik in der Translationalen Onkologie,
-* Deutsches Krebsforschungszentrum in Heidelberg
-*
-* This program is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Affero General Public License as published by the Free
-* Software Foundation; either version 3 of the License, or (at your option) any
-* later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program; if not, see http://www.gnu.org/licenses.
-*
-* Additional permission under GNU GPL version 3 section 7:
-*
-* If you modify this Program, or any covered work, by linking or combining it
-* with Jersey (https://jersey.java.net) (or a modified version of that
-* library), containing parts covered by the terms of the General Public
-* License, version 2.0, the licensors of this Program grant you additional
-* permission to convey the resulting work.
-*/
+ * Copyright (C) 2017 Medizinische Informatik in der Translationalen Onkologie,
+ * Deutsches Krebsforschungszentrum in Heidelberg
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses.
+ *
+ * Additional permission under GNU GPL version 3 section 7:
+ *
+ * If you modify this Program, or any covered work, by linking or combining it
+ * with Jersey (https://jersey.java.net) (or a modified version of that
+ * library), containing parts covered by the terms of the General Public
+ * License, version 2.0, the licensors of this Program grant you additional
+ * permission to convey the resulting work.
+ */
 
 
 import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
 import de.samply.share.client.control.ApplicationBean;
-import de.samply.share.client.util.connector.LdmConnector;
+import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.ccp.QueryResult;
@@ -53,9 +53,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
 
-public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnector implements LocalDataManagementRequester{
-
-
+public class LocalDataManagementRequesterImpl extends LocalDataManagementConnector implements LocalDataManagementRequester {
 
 
     @Override
@@ -79,13 +77,13 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
         }
     }
 
-    private LocalDataManagementResponse<String> postViewAndGetLocationUrlWithoutExceptions (View view, boolean statisticsOnly) throws JAXBException, UnsupportedEncodingException, LocalDataManagementRequesterException {
+    private LocalDataManagementResponse<String> postViewAndGetLocationUrlWithoutExceptions(View view, boolean statisticsOnly) throws JAXBException, UnsupportedEncodingException, LocalDataManagementRequesterException {
 
         String localDataManagementUrl = SamplyShareUtils.addTrailingSlash(getLocalDataManagementUrl());
         localDataManagementUrl += LocalDataManagementUrlSuffixAndParameters.BASE;
 
         MyUri myUri = new MyUri(localDataManagementUrl, LocalDataManagementUrlSuffixAndParameters.REQUESTS_URL_SUFFIX);
-        if (statisticsOnly){
+        if (statisticsOnly) {
             myUri.addParameter(LocalDataManagementUrlSuffixAndParameters.STATISTICS_ONLY_PARAMETER, "true");
         }
         String uri = myUri.toString();
@@ -103,7 +101,7 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
     }
 
 
-    private LocalDataManagementResponse<String> getLocationHeader(String localDataManagementUrl, HttpPost httpPost)  throws LocalDataManagementRequesterException {
+    private LocalDataManagementResponse<String> getLocationHeader(String localDataManagementUrl, HttpPost httpPost) throws LocalDataManagementRequesterException {
 
         try (CloseableHttpResponse response = getResponse(localDataManagementUrl, httpPost)) {
 
@@ -114,7 +112,7 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
             ldmResponse.setStatusCode(statusCode);
 
             Header location = response.getFirstHeader("Location");
-            if (location != null){
+            if (location != null) {
                 ldmResponse.setResponse(location.getValue());
             }
 
@@ -135,7 +133,7 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
         return getQueryResultStatistic(myUri);
     }
 
-    private LocalDataManagementResponse<QueryResultStatistic> getQueryResultStatistic (MyUri myUri) throws LocalDataManagementRequesterException {
+    private LocalDataManagementResponse<QueryResultStatistic> getQueryResultStatistic(MyUri myUri) throws LocalDataManagementRequesterException {
         return getLocalDataManagementResponse(myUri, QueryResultStatistic.class);
     }
 
@@ -153,30 +151,29 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
 
         try {
             return getSqlMappingVersion_WithoutManagementException();
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new LocalDataManagementRequesterException(e);
         }
 
     }
 
     private LocalDataManagementResponse<String> getSqlMappingVersion_WithoutManagementException() {
-
-        LdmConnector ldmConnector = ApplicationBean.getLdmConnector();
-        String version = ((LdmConnectorCentraxx)ldmConnector).getMappingVersion();
-
+        if (!ApplicationUtils.isDktk()) {
+            return null;
+        }
+        LdmConnectorCentraxx ldmConnector = (LdmConnectorCentraxx) ApplicationBean.getLdmConnector();
+        String version = ldmConnector.getMappingVersion();
         LocalDataManagementResponse<String> localDataManagementResponse = new LocalDataManagementResponse<>();
         localDataManagementResponse.setStatusCode(HttpStatus.SC_OK);
         localDataManagementResponse.setResponse(version);
-
         return localDataManagementResponse;
-
     }
 
     private LocalDataManagementResponse<QueryResult> getQueryResult(MyUri myUri) throws LocalDataManagementRequesterException {
         return getLocalDataManagementResponse(myUri, QueryResult.class);
     }
 
-    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse (MyUri myUri, Class<T> clazz) throws LocalDataManagementRequesterException {
+    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(MyUri myUri, Class<T> clazz) throws LocalDataManagementRequesterException {
 
         String uri = myUri.toString();
         HttpGet httpGet = createHttpGet(uri);
@@ -184,9 +181,9 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
         return getLocalDataManagementResponse(uri, httpGet, clazz);
     }
 
-    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse (String url, HttpGet httpGet, Class<T> clazz) throws LocalDataManagementRequesterException {
+    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(String url, HttpGet httpGet, Class<T> clazz) throws LocalDataManagementRequesterException {
 
-        try (CloseableHttpResponse response = getResponse(url, httpGet)){
+        try (CloseableHttpResponse response = getResponse(url, httpGet)) {
 
             return getLocalDataManagementResponse(response, clazz);
 
@@ -196,7 +193,7 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
 
     }
 
-    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse (CloseableHttpResponse response, Class<T> clazz) throws IOException, JAXBException {
+    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(CloseableHttpResponse response, Class<T> clazz) throws IOException, JAXBException {
 
         int statusCode = response.getStatusLine().getStatusCode();
 
@@ -223,7 +220,7 @@ public class LocalDataManagementRequesterImpl extends  LocalDataManagementConnec
 
     }
 
-    private Error createError (String ccpEntity) throws JAXBException {
+    private Error createError(String ccpEntity) throws JAXBException {
 
         de.samply.share.model.ccp.Error error = createObject(ccpEntity, de.samply.share.model.ccp.Error.class);
         return QueryConverter.convertCcpErrorToCommonError(error);
