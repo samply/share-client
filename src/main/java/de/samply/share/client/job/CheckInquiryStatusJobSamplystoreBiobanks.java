@@ -59,14 +59,6 @@ public class CheckInquiryStatusJobSamplystoreBiobanks extends AbstractCheckInqui
         if (!jobParams.isStatsDone()) {
             logger.debug("Stats were not available before. Checking again.");
             checkForStatsResult(jobExecutionContext);
-
-//      // TODO(Deniz): Diskutieren, ob das raus kann
-//        } else if (!jobParams.isResultStarted()) {
-//            logger.debug("Stats are available, first result file was not available. Checking again.");
-//            checkForFirstResultPage(jobExecutionContext);
-//        } else if (!jobParams.isResultDone()) {
-//            logger.debug("First result file available, last one not yet. Checking again.");
-//            checkForLastResultPage(jobExecutionContext);
         }
     }
 
