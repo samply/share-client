@@ -7,7 +7,7 @@ import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
 public class InquiryCriteriaFactory {
 
     public enum EntityType {
-        PATIENT("Patient"), SPECIMEN("Specimen"), UNKNOWN("Donor + Sample");
+        PATIENT("Patient"), SPECIMEN("Specimen"), ALL("Donor + Sample");
 
         private String name;
 
@@ -26,7 +26,7 @@ public class InquiryCriteriaFactory {
         inquiryCriteria.setDetailsId(detailsId);
         inquiryCriteria.setQueryLanguage(QueryLanguageType.QUERY);
         inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_NEW);
-        inquiryCriteria.setEntityType(EntityType.UNKNOWN.getName());
+        inquiryCriteria.setEntityType(EntityType.ALL.getName());
 
         return inquiryCriteria;
     }
