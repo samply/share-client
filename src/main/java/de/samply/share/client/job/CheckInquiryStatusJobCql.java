@@ -28,6 +28,8 @@
 
 package de.samply.share.client.job;
 
+import de.samply.share.client.model.db.enums.InquiryCriteriaStatusType;
+import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.enums.QueryLanguageType;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
 import de.samply.share.client.util.connector.BrokerConnector;
@@ -35,6 +37,7 @@ import de.samply.share.client.util.connector.LdmConnectorCql;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.InquiryCriteriaUtil;
+import de.samply.share.client.util.db.InquiryDetailsUtil;
 import de.samply.share.client.util.db.InquiryResultUtil;
 import de.samply.share.model.cql.CqlResult;
 import org.apache.logging.log4j.LogManager;
@@ -66,7 +69,13 @@ public class CheckInquiryStatusJobCql extends AbstractCheckInquiryStatusJob<LdmC
 
 
     void handleInquiryStatusReady() {
-        //TODO: Set status for imquiryDetails to IS_READY when sollecting results of all criteria
+        for (InquiryCriteria inquiryCriteriaTmp : InquiryCriteriaUtil.getInquiryCriteriaForInquiryDetails(inquiryDetails)) {
+            if (inquiryCriteriaTmp.getStatus() != InquiryCriteriaStatusType.ICS_READY && !inquiryCriteriaTmp.equals(inquiryCriteria)) {
+                return;
+            }
+        }
+        inquiryDetails.setStatus(InquiryStatusType.IS_READY);
+        InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
     }
 
     void processReplyRule(BrokerConnector brokerConnector) throws BrokerConnectorException {
