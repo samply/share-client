@@ -58,7 +58,7 @@
         <!-- Samply dependencies -->
         <version.samply.common.config>3.1.0</version.samply.common.config>
         <share-common.version>3.1.0</share-common.version>
-        <share-dto.version>4.4.0-SNAPSHOT</share-dto.version>
+        <share-dto.version>4.3.0</share-dto.version>
         <jsf-renderer.version>2.0.0</jsf-renderer.version>
         <common-mailing.version>2.2.0</common-mailing.version>
         <common-http.version>6.1.0</common-http.version>
@@ -145,6 +145,37 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <!-- Copy script common and project specific flyway scripts to be used for migration -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/classes/db/migration_generated/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources/db/migration</directory>
+                                    <includes>
+                                        <include>V*__common*.*</include>
+                                        <include>V*__table*.*</include>
+                                        <include>V*__${project.context}*.*</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources/db/migration_legacy/${project.context}</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Flyway Plugin - Create Database from SQL files - Always place here before JOOQ -->
             <plugin>
                 <groupId>org.flywaydb</groupId>
@@ -167,8 +198,7 @@
                         <schema>${database.schema}</schema>
                     </schemas>
                     <locations>
-                        <location>filesystem:src/main/resources/db/migration</location>
-                        <location>filesystem:src/main/resources/db/migration_legacy/DO_NOT_CHANGE/${project.context}</location>
+                        <location>filesystem:target/classes/db/migration_generated/</location>
                     </locations>
                 </configuration>
             </plugin>
