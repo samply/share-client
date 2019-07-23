@@ -11,7 +11,21 @@ To make samples easily accessible for researcher to help [making new treatments 
 
 The Connector (or "Samply Share Client" or "Teiler" ) connects [Store](https://github.com/bbmride/store) and [Searchbroker](https://github.com/bbmride/searchbroker) as part of the [GBA-Bridgehead](https://github.com/bbmride/gba-bridgehead).
 
-You can access the Connector under http://localhost:8082 and login under <http://localhost:8082/login.xhtml> (default credentials are **admin**, **adminpass**). If the Store runs while logging in the first time, the default credentials of the Store get deactivated. From now on, Connector and Store share the same credentials.
+You can access the Connector under http://localhost:8082 and login under <http://localhost:8082/login.xhtml> (default credentials are **admin**, **adminpass**).
+By default the Connector and classic Store use the same default credentials (**local_admin**, **local_admin**).
+
+To change the default credentials for Connector & Store add a new user to the Connector and add credentials satisfying 
+
+|Key|Value|
+|---|---|
+|Target| Local Datamanagement|
+|CredentialType| Basic |
+|Username| [username of new user] |
+|Password| [password of new user] |
+|Domain||
+|Workstation||
+
+If the Store runs while logging in the first time with this new user, the default credentials of the Store get deactivated. From now on, Connector and Store share the same new credentials instead of the old ones.
 
 Register a Searchbroker under <http://localhost:8082/admin/broker_list.xhtml>
 

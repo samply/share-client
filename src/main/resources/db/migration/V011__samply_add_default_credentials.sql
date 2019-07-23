@@ -1,0 +1,2 @@
+-- Add default credentials (for classic Store)
+INSERT INTO samply.credentials(auth_scheme, target, username, passcode, workstation, domain) VALUES ('AS_BASIC', 'TT_LDM', 'local_admin', 'local_admin', null, null);
