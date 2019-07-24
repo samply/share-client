@@ -46,7 +46,6 @@ import de.samply.share.client.util.db.*;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
 import de.samply.share.common.utils.Constants;
 import de.samply.share.common.utils.SamplyShareUtils;
-import de.samply.share.model.bbmri.BbmriResult;
 import de.samply.share.model.common.*;
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
@@ -589,10 +588,10 @@ public class BrokerConnector {
                     break;
 
                 case SAMPLY:
-                    BbmriResult result = (BbmriResult) reply;
+                    ISamplyResult result = (ISamplyResult) reply;
 
-                    stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfDonors()));
-                    stats.put("sample", NumberDisguiser.getDisguisedNumber(result.getNumberOfSamples()));
+                    stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfPatients()));
+                    stats.put("sample", NumberDisguiser.getDisguisedNumber(result.getNumberOfSpecimens()));
                     replyString = stats.toString();
                     break;
             }
