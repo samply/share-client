@@ -6,27 +6,24 @@ import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
 
 public class InquiryCriteriaFactory {
 
-    public enum EntityType {
-        PATIENT("Patient"), SPECIMEN("Specimen"), ALL("Donor + Sample");
-
-        private String name;
-
-        EntityType(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-
-    public InquiryCriteria createForQuery(int detailsId) {
+    public InquiryCriteria createForViewQuery(int detailsId) {
         InquiryCriteria inquiryCriteria = new InquiryCriteria();
 
         inquiryCriteria.setDetailsId(detailsId);
         inquiryCriteria.setQueryLanguage(QueryLanguageType.QL_QUERY);
         inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_NEW);
-        inquiryCriteria.setEntityType(EntityType.ALL.getName());
+        inquiryCriteria.setEntityType(InquiryCriteriaEntityType.ALL.getName());
+
+        return inquiryCriteria;
+    }
+
+    public InquiryCriteria createForCqlQuery(int detailsId, InquiryCriteriaEntityType entityType) {
+        InquiryCriteria inquiryCriteria = new InquiryCriteria();
+
+        inquiryCriteria.setDetailsId(detailsId);
+        inquiryCriteria.setQueryLanguage(QueryLanguageType.QL_CQL);
+        inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_NEW);
+        inquiryCriteria.setEntityType(entityType.getName());
 
         return inquiryCriteria;
     }

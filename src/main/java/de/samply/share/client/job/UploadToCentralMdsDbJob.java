@@ -486,7 +486,7 @@ public class UploadToCentralMdsDbJob implements Job {
     }
 
     private void addInquiryCriteriaQuery(DateRestriction dateRestriction, int detailsId) throws JAXBException {
-        InquiryCriteria inquiryCriteria = new InquiryCriteriaFactory().createForQuery(detailsId);
+        InquiryCriteria inquiryCriteria = new InquiryCriteriaFactory().createForViewQuery(detailsId);
 
         String criteria = QueryConverter.queryToXml(UploadUtils.createUploadQuery(dateRestriction, jobParams.isDktkFlaggedPatients()));
         inquiryCriteria.setCriteriaOriginal(criteria);

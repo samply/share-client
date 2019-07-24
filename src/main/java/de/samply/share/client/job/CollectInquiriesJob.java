@@ -1,17 +1,22 @@
 package de.samply.share.client.job;
 
 import de.samply.share.client.control.ApplicationUtils;
+import de.samply.share.client.job.util.InquiryCriteriaEntityType;
 import de.samply.share.client.job.util.InquiryCriteriaFactory;
 import de.samply.share.client.model.EnumInquiryPresent;
 import de.samply.share.client.model.db.enums.EntityType;
 import de.samply.share.client.model.db.enums.EventMessageType;
+import de.samply.share.client.model.db.enums.InquiryCriteriaStatusType;
+import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.tables.pojos.*;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.BrokerConnector;
+import de.samply.share.client.util.connector.InquiryUtils;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.*;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.common.Inquiry;
+import de.samply.share.model.cql.CqlQuery;
 import de.samply.share.utils.QueryConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,12 +37,12 @@ import static de.samply.share.client.model.db.enums.InquiryStatusType.IS_NEW;
  * This Job collects inquiries from all connected searchbrokers
  *
  * It is defined and scheduled in the quartz-jobs.xml
- *
+ * <p>
  * The basic steps it performs are:
- *
+ * <p>
  * 1) Get a list of inquiries and their revision numbers from each broker
  * 2) Store any new inquiries (or newer revisions of already known inquiries) in the database
- *
+ * <p>
  * Further handling of the inquiry is done in the ExecuteInquiriesJob
  */
 @DisallowConcurrentExecution
@@ -124,8 +129,8 @@ public class CollectInquiriesJob implements Job {
      * @param inquiryId the inquiry id
      * @param revision  the revision
      * @return <code>IP_SAME_REVISION</code> if the exact same inquiry is already stored
-     *         <code>IP_DIFFERENT_REVISION</code> if the inquiry is stored in a different revision
-     *         <code>IP_UNAVAILABLE</code> if the inquiry is not stored at all yet
+     * <code>IP_DIFFERENT_REVISION</code> if the inquiry is stored in a different revision
+     * <code>IP_UNAVAILABLE</code> if the inquiry is not stored at all yet
      */
     private EnumInquiryPresent isInquiryAlreadyInDb(int brokerId, int inquiryId, String revision) {
         try {
@@ -232,7 +237,7 @@ public class CollectInquiriesJob implements Job {
     }
 
     private void addInquiryCriteriaQuery(Inquiry incomingInquiry, int detailsId) throws JAXBException {
-        InquiryCriteria inquiryCriteria = new InquiryCriteriaFactory().createForQuery(detailsId);
+        InquiryCriteria inquiryCriteria = new InquiryCriteriaFactory().createForViewQuery(detailsId);
 
         String originalCriteria = QueryConverter.queryToXml(incomingInquiry.getQuery());
         inquiryCriteria.setCriteriaOriginal(originalCriteria);
@@ -241,6 +246,37 @@ public class CollectInquiriesJob implements Job {
     }
 
     private void addInquiryCriteriaCql(Inquiry incomingInquiry, int detailsId) {
-        // TODO: Implement CQL queries for Patient and Specimen
+        boolean entityTypeError = false;
+
+        for (CqlQuery cqlQuery : incomingInquiry.getCqlQueryList().getQueries()) {
+            InquiryCriteriaEntityType entityType;
+
+            entityType = InquiryCriteriaEntityType.readFrom(cqlQuery.getEntityType());
+            if (entityType == InquiryCriteriaEntityType.ERROR) {
+                logger.warn("No entity type '" + cqlQuery.getEntityType() + "' could be found");
+                entityTypeError = true;
+            }
+
+            InquiryCriteria inquiryCriteria = new InquiryCriteriaFactory().createForCqlQuery(detailsId, entityType);
+            inquiryCriteria.setCriteriaOriginal(cqlQuery.getCql());
+            InquiryCriteriaUtil.insertInquiryCriteria(inquiryCriteria);
+        }
+
+        if (entityTypeError) {
+            handleEntityTypeError(detailsId);
+        }
+    }
+
+    private void handleEntityTypeError(int detailsId) {
+        InquiryDetails inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(detailsId);
+        Utils.setStatus(inquiryDetails, InquiryStatusType.IS_ABANDONED);
+        InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+
+        for (InquiryCriteria inquiryCriteriaTemp : InquiryCriteriaUtil.getInquiryCriteriaForInquiryDetails(inquiryDetails)) {
+            inquiryCriteriaTemp.setStatus(InquiryCriteriaStatusType.ICS_ABANDONED);
+            InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteriaTemp);
+        }
+
+        new InquiryUtils().changeStatusOfInquiryResultToError(inquiryDetails);
     }
 }

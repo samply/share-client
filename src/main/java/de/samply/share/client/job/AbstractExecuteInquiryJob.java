@@ -12,12 +12,12 @@ import de.samply.share.client.model.db.tables.pojos.Inquiry;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.util.Utils;
+import de.samply.share.client.util.connector.InquiryUtils;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.db.*;
 import de.samply.share.common.model.uiquerybuilder.QueryItem;
 import de.samply.share.common.utils.QueryTreeUtil;
 import de.samply.share.common.utils.QueryValidator;
-import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.common.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,7 +76,7 @@ public abstract class AbstractExecuteInquiryJob<T_LDM_CONNECTOR extends LdmConne
         Utils.setStatus(inquiryDetails, status);
         InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
         if (status.equals(IS_LDM_ERROR)) {
-            changeStatusOfInquiryResultToError();
+            new InquiryUtils().changeStatusOfInquiryResultToError(inquiryDetails);
         }
     }
 
@@ -117,15 +117,6 @@ public abstract class AbstractExecuteInquiryJob<T_LDM_CONNECTOR extends LdmConne
         } catch (SchedulerException e) {
             logger.error("Error spawning Check Inquiry Status Job", e);
         }
-    }
-
-    private void changeStatusOfInquiryResultToError() {
-        InquiryResult inquiryResult = new InquiryResult();
-        inquiryResult.setErrorCode(Integer.toString(LdmClientCentraxx.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE));
-        inquiryResult.setExecutedAt(SamplyShareUtils.getCurrentSqlTimestamp());
-        inquiryResult.setInquiryDetailsId(inquiryDetails.getId());
-        inquiryResult.setIsError(true);
-        InquiryResultUtil.insertInquiryResult(inquiryResult);
     }
 
     /**
