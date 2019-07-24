@@ -18,11 +18,11 @@ public class ApplicationUtils {
     }
 
     public static boolean isLanguageQuery() {
-        return getQueryLanguageType() == QueryLanguageType.QUERY;
+        return getQueryLanguageType() == QueryLanguageType.QL_QUERY;
     }
 
     public static boolean isLanguageCql() {
-        return getQueryLanguageType() == QueryLanguageType.CQL;
+        return getQueryLanguageType() == QueryLanguageType.QL_CQL;
     }
 
     private static QueryLanguageType getQueryLanguageType() {

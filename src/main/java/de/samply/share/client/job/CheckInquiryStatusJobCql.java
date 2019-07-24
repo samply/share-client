@@ -64,7 +64,7 @@ public class CheckInquiryStatusJobCql extends AbstractCheckInquiryStatusJob<LdmC
     }
 
     InquiryCriteria getInquiryCriteria() {
-        return InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.CQL, jobParams.getEntityType());
+        return InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QL_CQL, jobParams.getEntityType());
     }
 
 

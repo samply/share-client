@@ -1,12 +1,11 @@
 package de.samply.share.client.job;
 
+import de.samply.share.client.control.ApplicationUtils;
+import de.samply.share.client.job.util.InquiryCriteriaFactory;
 import de.samply.share.client.model.EnumInquiryPresent;
 import de.samply.share.client.model.db.enums.EntityType;
 import de.samply.share.client.model.db.enums.EventMessageType;
-import de.samply.share.client.model.db.tables.pojos.Broker;
-import de.samply.share.client.model.db.tables.pojos.Credentials;
-import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
-import de.samply.share.client.model.db.tables.pojos.RequestedEntity;
+import de.samply.share.client.model.db.tables.pojos.*;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
@@ -19,13 +18,10 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 import javax.xml.bind.JAXBException;
-import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +46,7 @@ public class CollectInquiriesJob implements Job {
     private static final Logger logger = LogManager.getLogger(CollectInquiriesJob.class);
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
 
         List<Broker> brokers = BrokerUtil.fetchBrokers();
         for (Broker broker : brokers) {
@@ -65,8 +61,6 @@ public class CollectInquiriesJob implements Job {
             try {
                 Map<String, String> inquiries = brokerConnector.getInquiryList();
                 loadAndPersistInquiries(brokerConnector, inquiries);
-            } catch (JAXBException | URISyntaxException e) {
-                logger.error("Error loading and/or persisting inquiries", e);
             } catch (BrokerConnectorException e) {
                 logger.warn("Could not connect to " + broker.getAddress());
             }
@@ -76,17 +70,14 @@ public class CollectInquiriesJob implements Job {
     /**
      * Load and persist inquiries for a given searchbroker.
      *
-     * @param broker               the broker
+     * @param brokerConnector      the broker
      * @param inquiryIdAndRevision the inquiry id and revision
-     * @return true, if successful
      */
-    private boolean loadAndPersistInquiries(BrokerConnector brokerConnector, Map<String, String> inquiryIdAndRevision) throws BrokerConnectorException, JAXBException, URISyntaxException {
-        Iterator<Map.Entry<String, String>> it = inquiryIdAndRevision.entrySet().iterator();
+    private void loadAndPersistInquiries(BrokerConnector brokerConnector, Map<String, String> inquiryIdAndRevision) throws BrokerConnectorException {
         Broker broker = brokerConnector.getBroker();
         int brokerId = broker.getId();
 
-        while (it.hasNext()) {
-            Map.Entry pairs = it.next();
+        for (Map.Entry pairs : inquiryIdAndRevision.entrySet()) {
             String inquiryIdString = pairs.getKey().toString();
             String revision = pairs.getValue().toString();
             Inquiry inquiry;
@@ -123,9 +114,7 @@ public class CollectInquiriesJob implements Job {
                 default:
                     break;
             }
-            it.remove();
         }
-        return true;
     }
 
     /**
@@ -164,7 +153,7 @@ public class CollectInquiriesJob implements Job {
      * @param broker        the broker from which the inquiry was loaded
      * @return the inquiry id (as in the database)
      */
-    private int storeInquiry(Inquiry incomingInquiry, Broker broker) throws JAXBException {
+    private int storeInquiry(Inquiry incomingInquiry, Broker broker) {
         de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = new de.samply.share.client.model.db.tables.pojos.Inquiry();
         inquiry.setLabel(incomingInquiry.getLabel());
         inquiry.setDescription(incomingInquiry.getDescription());
@@ -174,7 +163,7 @@ public class CollectInquiriesJob implements Job {
         int inquiryId = InquiryUtil.insertInquiry(inquiry);
 
         for (String requestedEntity : incomingInquiry.getSearchFor()) {
-            RequestedEntity re = null;
+            RequestedEntity re;
             String reLower = requestedEntity.toLowerCase();
             if (reLower.contains("biomaterial")) {
                 re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.E_BIOMATERIAL);
@@ -184,9 +173,11 @@ public class CollectInquiriesJob implements Job {
                 re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.E_PATIENT_FOR_STUDY);
             } else if (SamplyShareUtils.isNullOrEmpty(reLower)) {
                 logger.debug("No specific entity requested");
-                re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.UNKNOWN);
+                re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.E_BIOMATERIAL);
             } else {
                 logger.warn("Unknown requested entity: " + requestedEntity);
+                //TODO: Check if UNKNOWN should be default
+                re = RequestedEntityUtil.getRequestedEntityForValue(EntityType.UNKNOWN);
             }
             if (re != null) {
                 RequestedEntityUtil.insertInquiryIdRequestedEntity(inquiryId, re);
@@ -205,9 +196,7 @@ public class CollectInquiriesJob implements Job {
      * @param brokerId        the broker id
      * @param inquiryDbId     if known, the inquiry id in db. -1 else
      */
-    private void addInquiryDetails(Inquiry incomingInquiry, int brokerId, int inquiryDbId, int contactId) throws JAXBException {
-        String originalCriteria = QueryConverter.queryToXml(incomingInquiry.getQuery());
-
+    private void addInquiryDetails(Inquiry incomingInquiry, int brokerId, int inquiryDbId, int contactId) {
         Date now = new Date();
         long time = now.getTime();
 
@@ -219,16 +208,39 @@ public class CollectInquiriesJob implements Job {
             InquiryDetails inquiryDetails = new InquiryDetails();
             inquiryDetails.setInquiryId(inquiryDbId);
             inquiryDetails.setContactId(contactId);
-            inquiryDetails.setCriteriaOriginal(originalCriteria);
             inquiryDetails.setExposeLocation(incomingInquiry.getExposeURL());
             inquiryDetails.setRevision(Integer.parseInt(incomingInquiry.getRevision()));
             inquiryDetails.setReceivedAt(new Timestamp(time));
             Utils.setStatus(inquiryDetails, IS_NEW);
 
-            InquiryDetailsUtil.insertInquiryDetails(inquiryDetails);
+            int detailsId = InquiryDetailsUtil.insertInquiryDetails(inquiryDetails);
+
+            addInquiryCriteria(incomingInquiry, detailsId);
         } catch (Exception e) {
             logger.error("Exception caught while trying to add inquiry details", e);
         }
     }
 
+    private void addInquiryCriteria(Inquiry incomingInquiry, int detailsId) throws JAXBException {
+        if (ApplicationUtils.isLanguageCql()) {
+            addInquiryCriteriaCql(incomingInquiry, detailsId);
+        }
+
+        if (ApplicationUtils.isLanguageQuery()) {
+            addInquiryCriteriaQuery(incomingInquiry, detailsId);
+        }
+    }
+
+    private void addInquiryCriteriaQuery(Inquiry incomingInquiry, int detailsId) throws JAXBException {
+        InquiryCriteria inquiryCriteria = new InquiryCriteriaFactory().createForQuery(detailsId);
+
+        String originalCriteria = QueryConverter.queryToXml(incomingInquiry.getQuery());
+        inquiryCriteria.setCriteriaOriginal(originalCriteria);
+
+        InquiryCriteriaUtil.insertInquiryCriteria(inquiryCriteria);
+    }
+
+    private void addInquiryCriteriaCql(Inquiry incomingInquiry, int detailsId) {
+        // TODO: Implement CQL queries for Patient and Specimen
+    }
 }

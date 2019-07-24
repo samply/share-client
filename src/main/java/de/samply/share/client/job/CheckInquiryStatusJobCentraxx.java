@@ -75,7 +75,7 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
     }
 
     InquiryCriteria getInquiryCriteria() {
-        return InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QUERY);
+        return InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QL_QUERY);
     }
 
     private void checkForFirstResultPage(JobExecutionContext jobExecutionContext) throws JobExecutionException {

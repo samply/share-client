@@ -24,7 +24,7 @@ public class InquiryCriteriaFactory {
         InquiryCriteria inquiryCriteria = new InquiryCriteria();
 
         inquiryCriteria.setDetailsId(detailsId);
-        inquiryCriteria.setQueryLanguage(QueryLanguageType.QUERY);
+        inquiryCriteria.setQueryLanguage(QueryLanguageType.QL_QUERY);
         inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_NEW);
         inquiryCriteria.setEntityType(EntityType.ALL.getName());
 

@@ -11,8 +11,8 @@ CREATE TYPE inquiry_criteria_status_type AS ENUM (
 );
 
 CREATE TYPE query_language_type AS ENUM (
-	'QUERY',
-	'CQL'
+	'QL_QUERY',
+	'QL_CQL'
 );
 
 ----------------------------------------

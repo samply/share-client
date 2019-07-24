@@ -177,11 +177,6 @@ public class BrokerConnector {
         return broker.getAddress();
     }
 
-//    public BrokerStatusType getStatus() {
-//        // TODO: do we need this with frequent polling?
-//        return BrokerStatusType.BS_OK;
-//    }
-
     /**
      * Register with this broker
      *

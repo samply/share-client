@@ -28,7 +28,7 @@ import static de.samply.share.client.model.db.enums.InquiryStatusType.*;
 public class ExecuteInquiryJobCentraxx extends AbstractExecuteInquiryJob<LdmConnectorCentraxx> {
 
     void execute() throws JobExecutionException {
-        InquiryCriteria inquiryCriteria = InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QUERY);
+        InquiryCriteria inquiryCriteria = InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QL_QUERY);
 
         executeOneCriteria(inquiryCriteria);
     }

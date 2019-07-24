@@ -63,7 +63,7 @@ public class CheckInquiryStatusJobSamplystoreBiobanks extends AbstractCheckInqui
     }
 
     InquiryCriteria getInquiryCriteria() {
-        return InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QUERY);
+        return InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QL_QUERY);
     }
 
     void handleInquiryStatusReady() {

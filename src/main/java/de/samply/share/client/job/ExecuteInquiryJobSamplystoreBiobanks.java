@@ -27,7 +27,7 @@ import static de.samply.share.client.model.db.enums.InquiryStatusType.*;
 public class ExecuteInquiryJobSamplystoreBiobanks extends AbstractExecuteInquiryJob<LdmConnectorSamplystoreBiobank> {
 
     void execute() throws JobExecutionException {
-        InquiryCriteria inquiryCriteria = InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QUERY);
+        InquiryCriteria inquiryCriteria = InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QL_QUERY);
 
         executeOneCriteria(inquiryCriteria);
     }
