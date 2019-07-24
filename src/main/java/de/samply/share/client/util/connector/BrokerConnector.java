@@ -31,7 +31,6 @@ package de.samply.share.client.util.connector;
 import com.google.gson.Gson;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
-import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.model.Inquiries;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
@@ -563,60 +562,67 @@ public class BrokerConnector {
      * Currently, the format of the reply is not defined. It might just be an integer...or some xml representation of a result set
      *
      * @param inquiryDetails the inquiry details object
-     * @param reply          the reply to submit to the broker
+     * @param result         the reply to submit to the broker
      */
-    public void reply(InquiryDetails inquiryDetails, Object reply) throws BrokerConnectorException {
+    public void reply(InquiryDetails inquiryDetails, Integer result) throws BrokerConnectorException {
         try {
-            de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
-            int inquirySourceId = inquiry.getSourceId();
+            String replyString = Integer.toString(result);
 
-            URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquirySourceId + "/" + Constants.REPLIES_PATH
-                    + "/" + credentials.getUsername());
-            HttpPut httpPut = new HttpPut(uri.normalize().toString());
-            httpPut.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
-
-
-            String replyString = "";
-            JSONObject stats = new JSONObject();
-            switch (ApplicationUtils.getConnectorType()) {
-                case DKTK:
-                    if (reply.getClass() == Integer.class) {
-                        replyString = Integer.toString((Integer) reply);
-                    } else {
-                        replyString = reply.toString();
-                    }
-                    break;
-
-                case SAMPLY:
-                    ISamplyResult result = (ISamplyResult) reply;
-
-                    stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfPatients()));
-                    stats.put("sample", NumberDisguiser.getDisguisedNumber(result.getNumberOfSpecimens()));
-                    replyString = stats.toString();
-                    break;
-            }
-
-            StringEntity entity = new StringEntity(replyString);
-            httpPut.setEntity(entity);
-            int statusCode;
-            try (CloseableHttpResponse response = httpClient.execute(httpHost, httpPut)) {
-                statusCode = response.getStatusLine().getStatusCode();
-                HttpEntity rEntity = response.getEntity();
-                EntityUtils.consume(rEntity);
-                logger.debug("Sending reply got us: " + statusCode);
-                EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_REPLY_SENT_TO_BROKER,
-                        inquiryDetails.getInquiryId(), Integer.toString(statusCode));
-            }
-
-            InquiryAnswer inquiryAnswer = new InquiryAnswer();
-            inquiryAnswer.setInquiryDetailsId(inquiryDetails.getId());
-            // TODO: With more ways to answer to an inquiry, this must be changed
-            inquiryAnswer.setContent(replyString);
-            InquiryAnswerUtil.insertInquiryAnswer(inquiryAnswer);
-
+            reply(inquiryDetails, replyString);
         } catch (IOException | URISyntaxException e) {
             throw new BrokerConnectorException(e);
         }
+    }
+
+    /**
+     * Send a (disguised) reply to the broker.
+     * <p>
+     * Currently, the format of the reply is not defined. It might just be an integer...or some xml representation of a result set
+     *
+     * @param inquiryDetails the inquiry details object
+     * @param result         the reply to submit to the broker
+     */
+    public void reply(InquiryDetails inquiryDetails, ISamplyResult result) throws BrokerConnectorException {
+
+        JSONObject stats = new JSONObject();
+
+        stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfPatients()));
+        stats.put("sample", NumberDisguiser.getDisguisedNumber(result.getNumberOfSpecimens()));
+        String replyString = stats.toString();
+
+        try {
+            reply(inquiryDetails, replyString);
+        } catch (URISyntaxException | IOException e) {
+            throw new BrokerConnectorException(e);
+        }
+    }
+
+    private void reply(InquiryDetails inquiryDetails, String replyString) throws URISyntaxException, IOException {
+        de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
+        int inquirySourceId = inquiry.getSourceId();
+
+        URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquirySourceId + "/" + Constants.REPLIES_PATH
+                + "/" + credentials.getUsername());
+        HttpPut httpPut = new HttpPut(uri.normalize().toString());
+        httpPut.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+
+
+        StringEntity entity = new StringEntity(replyString);
+        httpPut.setEntity(entity);
+        int statusCode;
+        try (CloseableHttpResponse response = httpClient.execute(httpHost, httpPut)) {
+            statusCode = response.getStatusLine().getStatusCode();
+            HttpEntity rEntity = response.getEntity();
+            EntityUtils.consume(rEntity);
+            logger.debug("Sending reply got us: " + statusCode);
+            EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_REPLY_SENT_TO_BROKER,
+                    inquiryDetails.getInquiryId(), Integer.toString(statusCode));
+        }
+
+        InquiryAnswer inquiryAnswer = new InquiryAnswer();
+        inquiryAnswer.setInquiryDetailsId(inquiryDetails.getId());
+        inquiryAnswer.setContent(replyString);
+        InquiryAnswerUtil.insertInquiryAnswer(inquiryAnswer);
     }
 
 
