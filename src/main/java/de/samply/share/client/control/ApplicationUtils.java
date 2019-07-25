@@ -5,7 +5,7 @@ import de.samply.share.common.utils.ProjectInfo;
 
 public class ApplicationUtils {
 
-    private static final String PREFIX_QUERY_LANGUAGE_TYPE = "QL_";
+    private static final String PREFIX_QUERY_LANGUAGE = "QL_";
 
     public static boolean isDktk() {
         return getConnectorType() == ConnectorType.DKTK;
@@ -28,8 +28,6 @@ public class ApplicationUtils {
     }
 
     private static QueryLanguageType getQueryLanguageType() {
-        String queryLanguage = ApplicationBean.getBridgeheadInfos().getQueryLanguage();
-
-        return QueryLanguageType.valueOf(PREFIX_QUERY_LANGUAGE_TYPE + queryLanguage);
+        return QueryLanguageType.valueOf(PREFIX_QUERY_LANGUAGE + ApplicationBean.getBridgeheadInfos().getQueryLanguage());
     }
 }
