@@ -45,6 +45,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
 
+import java.util.function.Consumer;
+
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class CheckInquiryStatusJobCql extends AbstractCheckInquiryStatusJob<LdmConnectorCql> {
@@ -76,12 +78,17 @@ public class CheckInquiryStatusJobCql extends AbstractCheckInquiryStatusJob<LdmC
         CheckInquiryStatusReadyForMultipleCriteriaJob.spawnNewJob(inquiryDetails);
     }
 
-    void processReplyRule(BrokerConnector brokerConnector) throws BrokerConnectorException {
-        try {
-            CqlResult queryResult = ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
-            brokerConnector.reply(inquiryDetails, queryResult);
-        } catch (LDMConnectorException e) {
-            e.printStackTrace();
-        }
+    @Override
+    Consumer<BrokerConnector> getProcessReplyRuleMethod() {
+        return brokerConnector -> {
+            try {
+                CqlResult queryResult = ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
+                brokerConnector.reply(inquiryDetails, queryResult);
+            } catch (LDMConnectorException e) {
+                e.printStackTrace();
+            } catch (BrokerConnectorException e) {
+                handleBrokerConnectorException(e);
+            }
+        };
     }
 }

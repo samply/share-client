@@ -32,10 +32,19 @@ import com.google.common.base.Joiner;
 import de.samply.common.ldmclient.AbstractLdmClient;
 import de.samply.common.ldmclient.model.LdmQueryResult;
 import de.samply.share.client.control.ApplicationBean;
-import de.samply.share.client.job.params.*;
+import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
+import de.samply.share.client.job.params.CheckInquiryStatusJobResult;
+import de.samply.share.client.job.params.ExecuteInquiryJobParams;
+import de.samply.share.client.job.util.ReplyRulesUtil;
 import de.samply.share.client.model.EnumConfigurationTimings;
-import de.samply.share.client.model.db.enums.*;
-import de.samply.share.client.model.db.tables.pojos.*;
+import de.samply.share.client.model.db.enums.EventMessageType;
+import de.samply.share.client.model.db.enums.InquiryCriteriaStatusType;
+import de.samply.share.client.model.db.enums.InquiryStatusType;
+import de.samply.share.client.model.db.enums.UploadStatusType;
+import de.samply.share.client.model.db.tables.pojos.Inquiry;
+import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
+import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
+import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
@@ -47,7 +56,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.*;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This Job checks the status of the given inquiry and spawns new jobs if necessary
@@ -119,6 +128,22 @@ abstract class AbstractCheckInquiryStatusJob<T_LDM_CONNECTOR extends LdmConnecto
     }
 
     abstract boolean applyReplyRulesImmediately(boolean isStats);
+
+    void processReplyRules() {
+        new ReplyRulesUtil(getProcessReplyRuleMethod()).processReplyRules(inquiryDetails);
+    }
+
+    abstract Consumer<BrokerConnector> getProcessReplyRuleMethod();
+
+    void handleBrokerConnectorException(BrokerConnectorException e) {
+        Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
+
+        if (inquiry == null) {
+            EventLogUtil.insertEventLogEntry(EventMessageType.E_BROKER_REPLY_ERROR, e.getMessage());
+        } else {
+            EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_BROKER_REPLY_ERROR, inquiry.getId(), e.getMessage());
+        }
+    }
 
     /**
      * Handle the outcome of the call to a /stats resource on the local datamanagement
@@ -272,59 +297,6 @@ abstract class AbstractCheckInquiryStatusJob<T_LDM_CONNECTOR extends LdmConnecto
             logger.error("Error spawning Inquiry Execution Job");
         }
     }
-
-    /**
-     * Check if any automated replies should be sent and take care of it
-     * <p>
-     * TODO: Maybe create a separate job for that?
-     */
-    @SuppressWarnings("ConstantConditions")
-    void processReplyRules() {
-        Inquiry inquiry = null;
-        try {
-            inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
-            Integer brokerId = inquiry.getBrokerId();
-            if (brokerId == null) {
-                // If the broker Id is null, this is from an upload, not an inquiry. For now, return here. Maybe use this to handle the upload itself?
-                return;
-            }
-            List<InquiryHandlingRule> inquiryHandlingRules = InquiryHandlingRuleUtil.fetchInquiryHandlingRulesForBrokerId(brokerId);
-            // TODO: if more reply rules are defined, this has to be smarter. for now just check if any auto reply is defined for the broker
-            ReplyRuleType replyRule = null;
-            for (InquiryHandlingRule inquiryHandlingRule : inquiryHandlingRules) {
-                replyRule = inquiryHandlingRule.getAutomaticReply();
-            }
-
-            logger.debug("Automatic reply is set to: " + replyRule);
-            switch (replyRule) {
-                case RR_DATA:
-                    logger.info("Full dataset shall be sent. Not yet implemented.");
-                    break;
-                case RR_TOTAL_COUNT:
-                    logger.info("Reporting the amount of matching datasets to the broker.");
-                    BrokerConnector brokerConnector = new BrokerConnector(BrokerUtil.fetchBrokerById(brokerId));
-                    processReplyRule(brokerConnector);
-
-                    break;
-                case RR_NO_AUTOMATIC_ACTION:
-                default:
-                    logger.info("No automatic replies configured for this broker.");
-                    break;
-            }
-
-        } catch (NullPointerException npe) {
-            // Just catch any Null Pointer exceptions for now
-            logger.error("Null pointer Exception caught while trying to getPatientIds reply rules", npe);
-        } catch (BrokerConnectorException e) {
-            if (inquiry == null) {
-                EventLogUtil.insertEventLogEntry(EventMessageType.E_BROKER_REPLY_ERROR, e.getMessage());
-            } else {
-                EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_BROKER_REPLY_ERROR, inquiry.getId(), e.getMessage());
-            }
-        }
-    }
-
-    abstract void processReplyRule(BrokerConnector brokerConnector) throws BrokerConnectorException;
 
     /**
      * Write a message, linked with the inquiry, to the event log

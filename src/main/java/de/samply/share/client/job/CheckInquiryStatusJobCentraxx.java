@@ -52,6 +52,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.*;
 
+import java.util.function.Consumer;
+
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob<LdmConnectorCentraxx> {
@@ -171,7 +173,14 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
         }
     }
 
-    void processReplyRule(BrokerConnector brokerConnector) throws BrokerConnectorException {
-        brokerConnector.reply(inquiryDetails, inquiryResult.getSize());
+    @Override
+    Consumer<BrokerConnector> getProcessReplyRuleMethod() {
+        return brokerConnector -> {
+            try {
+                brokerConnector.reply(inquiryDetails, inquiryResult.getSize());
+            } catch (BrokerConnectorException e) {
+                handleBrokerConnectorException(e);
+            }
+        };
     }
 }

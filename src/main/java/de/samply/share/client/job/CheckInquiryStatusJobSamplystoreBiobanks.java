@@ -46,6 +46,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
 
+import java.util.function.Consumer;
+
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class CheckInquiryStatusJobSamplystoreBiobanks extends AbstractCheckInquiryStatusJob<LdmConnectorSamplystoreBiobank> {
@@ -74,12 +76,17 @@ public class CheckInquiryStatusJobSamplystoreBiobanks extends AbstractCheckInqui
         Utils.setStatus(inquiryDetails, InquiryStatusType.IS_READY);
     }
 
-    void processReplyRule(BrokerConnector brokerConnector) throws BrokerConnectorException {
-        try {
-            BbmriResult queryResult = ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
-            brokerConnector.reply(inquiryDetails, queryResult);
-        } catch (LDMConnectorException e) {
-            e.printStackTrace();
-        }
+    @Override
+    Consumer<BrokerConnector> getProcessReplyRuleMethod() {
+        return brokerConnector -> {
+            try {
+                BbmriResult queryResult = ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
+                brokerConnector.reply(inquiryDetails, queryResult);
+            } catch (LDMConnectorException e) {
+                e.printStackTrace();
+            } catch (BrokerConnectorException e) {
+                handleBrokerConnectorException(e);
+            }
+        };
     }
 }
