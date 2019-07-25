@@ -106,7 +106,7 @@ abstract class AbstractCheckInquiryStatusJob<T_LDM_CONNECTOR extends LdmConnecto
     void checkForStatsResult(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             LdmQueryResult ldmQueryResult = ldmConnector.getStatsOrError(inquiryResult.getLocation());
-            if (ldmQueryResult.isEmpty()) {
+            if (!ldmQueryResult.isEmpty()) {
                 boolean isStats = handleStatsOrError(ldmQueryResult, jobExecutionContext);
                 if (isStats && jobParams.isStatsOnly()) {
                     // TODO: Check if the handling for uploads would be better in the following method
