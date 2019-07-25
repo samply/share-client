@@ -241,10 +241,10 @@
 
     <schedule>
         <job>
-            <name>CheckInquiryStatusReadyForMultipleCriteria</name>
+            <name>CheckInquiryStatusReadyForMultipleCriteriaCql</name>
             <group>InquiryCriteriaGroup</group>
             <description>This Job checks the status of all associated inquiry criteria and spawns new jobs if necessary</description>
-            <job-class>de.samply.share.client.job.CheckInquiryStatusReadyForMultipleCriteriaJob</job-class>
+            <job-class>de.samply.share.client.job.CheckInquiryStatusReadyForMultipleCriteriaJobCql</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>

@@ -75,7 +75,7 @@ public class CheckInquiryStatusJobCql extends AbstractCheckInquiryStatusJob<LdmC
     void handleInquiryStatusReady() {
         inquiryDetails.setStatus(InquiryStatusType.IS_PARTIALLY_READY);
 
-        CheckInquiryStatusReadyForMultipleCriteriaJob.spawnNewJob(inquiryDetails);
+        CheckInquiryStatusReadyForMultipleCriteriaJobCql.spawnNewJob(inquiryDetails);
     }
 
     @Override

@@ -5,7 +5,7 @@ import org.quartz.JobDataMap;
 public class CheckInquiryStatusReadyForMultipleCriteriaJobParams {
 
     public static final String JOBGROUP = "InquiryCriteriaGroup";
-    public static final String JOBNAME = "CheckInquiryStatusReadyForMultipleCriteria";
+    public static final String JOBNAME_CQL = "CheckInquiryStatusReadyForMultipleCriteriaCql";
     public static final String INQUIRY_DETAILS_ID = "inquiry_details_id";
 
     private final int inquiryDetailsId;

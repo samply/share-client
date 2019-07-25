@@ -36,6 +36,7 @@ import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.job.params.CheckInquiryStatusJobResult;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
 import de.samply.share.client.job.util.ReplyRulesApplier;
+import de.samply.share.client.job.util.ReplyRulesApplierUtil;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.InquiryCriteriaStatusType;
@@ -136,13 +137,7 @@ abstract class AbstractCheckInquiryStatusJob<T_LDM_CONNECTOR extends LdmConnecto
     abstract Consumer<BrokerConnector> getProcessReplyRuleMethod();
 
     void handleBrokerConnectorException(BrokerConnectorException e) {
-        Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
-
-        if (inquiry == null) {
-            EventLogUtil.insertEventLogEntry(EventMessageType.E_BROKER_REPLY_ERROR, e.getMessage());
-        } else {
-            EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_BROKER_REPLY_ERROR, inquiry.getId(), e.getMessage());
-        }
+        ReplyRulesApplierUtil.handleBrokerConnectorException(e, inquiryDetails.getId());
     }
 
     /**
