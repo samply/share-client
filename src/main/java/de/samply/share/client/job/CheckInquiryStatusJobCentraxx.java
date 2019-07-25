@@ -74,6 +74,10 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
         }
     }
 
+    boolean applyReplyRulesImmediately(boolean isStats) {
+        return isStats && jobParams.isStatsOnly();
+    }
+
     InquiryCriteria getInquiryCriteria() {
         return InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QL_QUERY);
     }

@@ -241,6 +241,17 @@
 
     <schedule>
         <job>
+            <name>CheckInquiryStatusReadyForMultipleCriteria</name>
+            <group>InquiryCriteriaGroup</group>
+            <description>This Job checks the status of all associated inquiry criteria and spawns new jobs if necessary</description>
+            <job-class>de.samply.share.client.job.CheckInquiryStatusReadyForMultipleCriteriaJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+    </schedule>
+
+    <schedule>
+        <job>
             <name>GenerateInquiryResultStatsJob</name>
             <group>InquiryGroup</group>
             <description>This Job generates statistics (by gender and by age) for an inquiry result</description>

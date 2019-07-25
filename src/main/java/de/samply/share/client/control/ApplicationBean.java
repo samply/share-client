@@ -18,11 +18,9 @@ import de.samply.share.client.model.check.ConnectCheckResult;
 import de.samply.share.client.model.common.Bridgehead;
 import de.samply.share.client.model.common.Operator;
 import de.samply.share.client.model.common.Urls;
-import de.samply.share.client.model.db.enums.EventMessageType;
-import de.samply.share.client.model.db.enums.InquiryStatusType;
-import de.samply.share.client.model.db.enums.ReplyRuleType;
-import de.samply.share.client.model.db.enums.TargetType;
+import de.samply.share.client.model.db.enums.*;
 import de.samply.share.client.model.db.tables.pojos.Credentials;
+import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.quality.report.chain.finalizer.ChainFinalizer;
@@ -162,6 +160,15 @@ public class ApplicationBean implements Serializable {
         for (InquiryDetails inquiryDetails : inquiryDetailsList) {
             inquiryDetails.setStatus(InquiryStatusType.IS_NEW);
             InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+
+            setInquiryCriteriaStatusNew(inquiryDetails);
+        }
+    }
+
+    private void setInquiryCriteriaStatusNew(InquiryDetails inquiryDetails) {
+        for (InquiryCriteria inquiryCriteria : InquiryCriteriaUtil.getInquiryCriteriaForInquiryDetails(inquiryDetails)) {
+            inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_NEW);
+            InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteria);
         }
     }
 
