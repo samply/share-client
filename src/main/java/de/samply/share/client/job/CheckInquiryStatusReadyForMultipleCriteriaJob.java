@@ -56,11 +56,11 @@ public class CheckInquiryStatusReadyForMultipleCriteriaJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
+        prepareExecute(jobExecutionContext);
+
         if (inquiryDetails.getStatus() == InquiryStatusType.IS_READY) {
             return;
         }
-
-        prepareExecute(jobExecutionContext);
 
         for (InquiryCriteria inquiryCriteria : InquiryCriteriaUtil.getInquiryCriteriaForInquiryDetails(inquiryDetails)) {
             if (inquiryCriteria.getStatus() != InquiryCriteriaStatusType.ICS_READY) {

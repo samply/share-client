@@ -1,0 +1,1 @@
+ALTER TYPE samply.inquiry_status_type add VALUE 'IS_PARTIALLY_READY';

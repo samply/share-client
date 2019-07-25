@@ -42,7 +42,6 @@ public class CheckInquiryStatusJobParams {
     private static final String JOBNAME_DKTK = "CheckInquiryStatusJobCentraxx";
     private static final String JOBNAME_SAMPLY = "CheckInquiryStatusJobSamplystoreBiobanks";
     private static final String JOBNAME_CQL = "CheckInquiryStatusJobCql";
-    public static final String TRIGGERNAME = "CheckInquiryStatusTrigger";
     public static final String INQUIRY_RESULT_ID = "inquiry_result_id";
     public static final String STATS_DONE = "stats_done";
     public static final String RESULT_STARTED = "result_started";

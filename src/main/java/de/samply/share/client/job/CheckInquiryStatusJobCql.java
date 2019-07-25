@@ -28,6 +28,7 @@
 
 package de.samply.share.client.job;
 
+import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.enums.QueryLanguageType;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
 import de.samply.share.client.util.connector.BrokerConnector;
@@ -70,6 +71,8 @@ public class CheckInquiryStatusJobCql extends AbstractCheckInquiryStatusJob<LdmC
 
 
     void handleInquiryStatusReady() {
+        inquiryDetails.setStatus(InquiryStatusType.IS_PARTIALLY_READY);
+
         CheckInquiryStatusReadyForMultipleCriteriaJob.spawnNewJob(inquiryDetails);
     }
 

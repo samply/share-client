@@ -88,7 +88,6 @@ public abstract class AbstractExecuteInquiryJob<T_LDM_CONNECTOR extends LdmConne
     void spawnNewCheckInquiryStatusJob(int inquiryResultId, String entityType) {
         try {
             JobKey jobKey = JobKey.jobKey(CheckInquiryStatusJobParams.getJobName(), CheckInquiryStatusJobParams.JOBGROUP);
-            TriggerKey triggerKey = TriggerKey.triggerKey(CheckInquiryStatusJobParams.TRIGGERNAME, CheckInquiryStatusJobParams.JOBGROUP);
             JobDataMap jobDataMap = new JobDataMap();
             jobDataMap.put(CheckInquiryStatusJobParams.INQUIRY_RESULT_ID, inquiryResultId);
             jobDataMap.put(CheckInquiryStatusJobParams.IS_UPLOAD, jobParams.isUpload());
@@ -101,7 +100,6 @@ public abstract class AbstractExecuteInquiryJob<T_LDM_CONNECTOR extends LdmConne
             int initialDelay = ConfigurationUtil.getConfigurationTimingsElementValue(EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_INITIAL_DELAY_SECONDS);
 
             Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity(triggerKey)
                     .startAt(DateBuilder.futureDate(initialDelay, DateBuilder.IntervalUnit.SECOND))
                     .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                             .withIntervalInSeconds(retryInterval)
