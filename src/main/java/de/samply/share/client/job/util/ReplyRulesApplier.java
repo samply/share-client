@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class ReplyRulesUtil {
+public class ReplyRulesApplier {
 
-    private static final Logger logger = LogManager.getLogger(ReplyRulesUtil.class);
+    private static final Logger logger = LogManager.getLogger(ReplyRulesApplier.class);
 
     private final Consumer<BrokerConnector> processReplyMethod;
 
-    public ReplyRulesUtil(Consumer<BrokerConnector> processReplyMethod) {
+    public ReplyRulesApplier(Consumer<BrokerConnector> processReplyMethod) {
         this.processReplyMethod = processReplyMethod;
     }
 

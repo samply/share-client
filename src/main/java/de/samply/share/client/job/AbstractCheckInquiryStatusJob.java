@@ -35,7 +35,7 @@ import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.job.params.CheckInquiryStatusJobResult;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
-import de.samply.share.client.job.util.ReplyRulesUtil;
+import de.samply.share.client.job.util.ReplyRulesApplier;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.InquiryCriteriaStatusType;
@@ -130,7 +130,7 @@ abstract class AbstractCheckInquiryStatusJob<T_LDM_CONNECTOR extends LdmConnecto
     abstract boolean applyReplyRulesImmediately(boolean isStats);
 
     void processReplyRules() {
-        new ReplyRulesUtil(getProcessReplyRuleMethod()).processReplyRules(inquiryDetails);
+        new ReplyRulesApplier(getProcessReplyRuleMethod()).processReplyRules(inquiryDetails);
     }
 
     abstract Consumer<BrokerConnector> getProcessReplyRuleMethod();
