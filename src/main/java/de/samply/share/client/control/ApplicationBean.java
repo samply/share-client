@@ -488,7 +488,7 @@ public class ApplicationBean implements Serializable {
         return infos;
     }
 
-    static Bridgehead getBridgeheadInfos() {
+    public static Bridgehead getBridgeheadInfos() {
         return infos;
     }
 
