@@ -44,10 +44,8 @@ import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
-import de.samply.share.client.util.db.InquiryCriteriaUtil;
-import de.samply.share.client.util.db.InquiryDetailsUtil;
-import de.samply.share.client.util.db.InquiryUtil;
-import de.samply.share.client.util.db.UploadUtil;
+import de.samply.share.client.util.db.*;
+import de.samply.share.model.common.QueryResultStatistic;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.*;
@@ -97,16 +95,20 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
 
     private void checkForLastResultPage(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            if (ldmConnector.isResultDone(inquiryResult.getLocation(), ldmConnector.getQueryResultStatistic(inquiryResult.getLocation()))) {
+
+            String location = inquiryResult.getLocation();
+            QueryResultStatistic queryResultStatistic = ldmConnector.getQueryResultStatistic(location);
+            if (ldmConnector.isResultDone(location, queryResultStatistic)) {
                 jobExecutionContext.getJobDetail().getJobDataMap().put(CheckInquiryStatusJobParams.RESULT_DONE, true);
                 if (!jobParams.isUpload()) {
                     logger.debug("Spawn generate stats job");
                     spawnGenerateStatsJob();
                 }
+
                 Utils.setStatus(inquiryDetails, InquiryStatusType.IS_READY);
                 inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_READY);
-                InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
-                InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteria);
+                updateInquiry(queryResultStatistic);
+
                 // If the inquiry belongs to an upload, also update the upload status
                 try {
                     Integer uploadId = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId()).getUploadId();
@@ -126,6 +128,24 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
         } catch (LDMConnectorException | SchedulerException e) {
             throw new JobExecutionException(e);
         }
+    }
+
+    private void updateInquiry(QueryResultStatistic queryResultStatistic){
+
+        InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+        InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteria);
+        updateInquiryResults(queryResultStatistic);
+
+    }
+
+    private void updateInquiryResults (QueryResultStatistic queryResultStatistic){
+
+        if (queryResultStatistic != null) {
+            int totalSize = queryResultStatistic.getTotalSize();
+            inquiryResult.setSize(totalSize);
+            InquiryResultUtil.updateInquiryResult(inquiryResult);
+        }
+
     }
 
     void handleInquiryStatusReady() {

@@ -106,7 +106,7 @@ public class Connector {
 
     private boolean authorize(String base64) {
         if (!StringUtils.startsWith(base64, "Basic")) {
-            logger.debug ("auth1"+ base64);
+            //logger.debug ("auth1"+ base64);
             return false;
         }
         String base64Credentials = base64.substring("Basic".length()).trim();
@@ -116,18 +116,18 @@ public class Connector {
                         Charset.forName("UTF-8"));
         final String[] values = credentials.split(":", 2);
         if (values.length != 2) {
-            logger.debug ("auth2");
+            //logger.debug ("auth2");
             return false;
         }
         if (!StringUtils.equals(StoreConnector.authorizedUsername, values[0])) {
-            logger.debug ("auth3");
+            //logger.debug ("auth3");
             return false;
         }
         if (!StringUtils.equals(StoreConnector.authorizedPassword, values[1])) {
-            logger.debug ("auth4");
+            //logger.debug ("auth4");
             return false;
         }
-        logger.debug ("auth5");
+        //logger.debug ("auth5");
         return true;
     }
 
