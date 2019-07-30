@@ -90,7 +90,8 @@
                             <ui:param name="disableExport" value="#{not inquiryBean.resultsReady
                                 or inquiryBean.latestInquiryResult.statisticsOnly
                                 or inquiryBean.latestInquiryResult.isError
-                                or inquiryBean.latestInquiryResult.size lt 1}" />
+                                or inquiryBean.latestInquiryResult.size lt 1
+                                or not inquiryBean.latestInquiryResultHasStats()}"/>
 
                             <ui:param name="disableExecute"
                                       value="#{inquiryBean.latestInquiryDetails.status eq InquiryStatusType.IS_PROCESSING
