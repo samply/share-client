@@ -38,6 +38,7 @@ import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.enums.QueryLanguageType;
 import de.samply.share.client.model.db.enums.UploadStatusType;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
+import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.model.db.tables.pojos.Upload;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.BrokerConnector;
@@ -96,8 +97,9 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
     private void checkForLastResultPage(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
 
-            String location = inquiryResult.getLocation();
-            QueryResultStatistic queryResultStatistic = ldmConnector.getQueryResultStatistic(location);
+            String location = getLocation(inquiryResult);
+            QueryResultStatistic queryResultStatistic = getQueryResultStatistic(location);
+
             if (ldmConnector.isResultDone(location, queryResultStatistic)) {
                 jobExecutionContext.getJobDetail().getJobDataMap().put(CheckInquiryStatusJobParams.RESULT_DONE, true);
                 if (!jobParams.isUpload()) {
@@ -127,6 +129,34 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
             }
         } catch (LDMConnectorException | SchedulerException e) {
             throw new JobExecutionException(e);
+        }
+    }
+
+    private String getLocation (InquiryResult inquiryResult){
+
+        try{
+
+            return (inquiryResult != null) ? inquiryResult.getLocation() : null;
+
+        } catch (Exception e){
+
+            logger.debug("Location not found for inquiry result "+ inquiryResult.getId());
+            return null;
+
+        }
+
+    }
+
+    private QueryResultStatistic getQueryResultStatistic (String location){
+
+        try{
+
+            return (location != null) ? ldmConnector.getQueryResultStatistic(location) : null;
+
+        }catch (Exception e){
+
+            logger.debug("Exception getting query result statistic");
+            return null;
         }
     }
 
