@@ -28,13 +28,13 @@
 
 package de.samply.share.client.job;
 
+import de.samply.share.client.job.util.InquiryCriteriaEntityType;
 import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.enums.QueryLanguageType;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnectorCql;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
-import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.InquiryCriteriaUtil;
 import de.samply.share.client.util.db.InquiryResultUtil;
 import de.samply.share.model.cql.CqlResult;
@@ -45,6 +45,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 @PersistJobDataAfterExecution
@@ -82,13 +83,28 @@ public class CheckInquiryStatusJobCql extends AbstractCheckInquiryStatusJob<LdmC
     Consumer<BrokerConnector> getProcessReplyRuleMethod() {
         return brokerConnector -> {
             try {
-                CqlResult queryResult = ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
+                CqlResult queryResult = createCqlResult();
                 brokerConnector.reply(inquiryDetails, queryResult);
-            } catch (LDMConnectorException e) {
-                e.printStackTrace();
             } catch (BrokerConnectorException e) {
                 handleBrokerConnectorException(e);
             }
         };
+    }
+
+    private CqlResult createCqlResult() {
+        List<InquiryCriteria> inquiryCriteriaList = InquiryCriteriaUtil.getInquiryCriteriaForInquiryDetails(inquiryDetails);
+        int patientCount = 0;
+        int specimenCount = 0;
+        for (InquiryCriteria inquiryCriteria : inquiryCriteriaList) {
+            if (InquiryCriteriaEntityType.PATIENT.getName().equals(inquiryCriteria.getEntityType())) {
+                patientCount = InquiryResultUtil.fetchLatestInquiryResultForInquiryCriteriaById(inquiryCriteria.getId()).getSize();
+            } else if (InquiryCriteriaEntityType.SPECIMEN.getName().equals(inquiryCriteria.getEntityType())) {
+                specimenCount = InquiryResultUtil.fetchLatestInquiryResultForInquiryCriteriaById(inquiryCriteria.getId()).getSize();
+            }
+        }
+        CqlResult queryResult = new CqlResult();
+        queryResult.setNumberOfPatients(patientCount);
+        queryResult.setNumberOfSpecimens(specimenCount);
+        return queryResult;
     }
 }

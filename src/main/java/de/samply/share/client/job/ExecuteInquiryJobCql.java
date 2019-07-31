@@ -40,7 +40,7 @@ public class ExecuteInquiryJobCql extends AbstractExecuteInquiryJob<LdmConnector
 
             if (resultLocation != null && resultLocation.length() > 0) {
                 log(EventMessageType.E_INQUIRY_RESULT_AT, resultLocation);
-                int inquiryResultId = createNewInquiryResult(resultLocation);
+                int inquiryResultId = createNewInquiryResult(resultLocation, inquiryCriteria.getId());
                 spawnNewCheckInquiryStatusJob(inquiryResultId, inquiryCriteria.getEntityType());
             } else {
                 log(EventMessageType.E_RESULT_NOT_SET_ABORTING);

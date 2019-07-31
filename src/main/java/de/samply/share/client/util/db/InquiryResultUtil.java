@@ -96,6 +96,20 @@ public class InquiryResultUtil {
         return inquiryResultDao.fetchOneById(inquiryResultId);
     }
 
+    public static InquiryResult fetchLatestInquiryResultForInquiryCriteriaById(int inquiryCriteriaId){
+        DSLContext dslContext = ResourceManager.getDSLContext();
+        return dslContext
+                .selectFrom(Tables.INQUIRY_RESULT)
+                .where(Tables.INQUIRY_RESULT.INQUIRY_CRITERIA_ID.equal(inquiryCriteriaId))
+                .and(Tables.INQUIRY_RESULT.EXECUTED_AT.equal(
+                        dslContext
+                                .select(DSL.max(Tables.INQUIRY_RESULT.EXECUTED_AT))
+                                .from(Tables.INQUIRY_RESULT)
+                                .where(Tables.INQUIRY_RESULT.INQUIRY_CRITERIA_ID.equal(inquiryCriteriaId))
+                ))
+                .fetchOneInto(InquiryResult.class);
+    }
+
     /**
      * Get the latest inquiry result for certain inquiry details
      *

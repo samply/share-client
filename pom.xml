@@ -64,7 +64,7 @@
         <common-http.version>6.1.0</common-http.version>
         <common-ldmclient.centraxx.version>5.1.1-SNAPSHOT</common-ldmclient.centraxx.version>
         <common-ldmclient.samplystore.biobank.version>2.1.1-SNAPSHOT</common-ldmclient.samplystore.biobank.version>
-        <common-ldmclient.cql.version>1.0.0-SNAPSHOT</common-ldmclient.cql.version>
+        <common-ldmclient.cql.version>1.1.0-SNAPSHOT</common-ldmclient.cql.version>
         <converter.dktk.patient.version>1.1.6</converter.dktk.patient.version> <!-- TODO: Replace release -->
 
         <!-- general dependencies -->

@@ -123,11 +123,12 @@ public abstract class AbstractExecuteInquiryJob<T_LDM_CONNECTOR extends LdmConne
      * @param resultLocation the url where the result can be found
      * @return the database id of the result
      */
-    int createNewInquiryResult(String resultLocation) {
+    int createNewInquiryResult(String resultLocation, int inquiryCriteriaId) {
         InquiryResult inquiryResult = new InquiryResult();
         inquiryResult.setInquiryDetailsId(inquiryDetails.getId());
         inquiryResult.setStatisticsOnly(jobParams.isStatsOnly());
         inquiryResult.setLocation(resultLocation);
+        inquiryResult.setInquiryCriteriaId(inquiryCriteriaId);
         return InquiryResultUtil.insertInquiryResult(inquiryResult);
     }
 

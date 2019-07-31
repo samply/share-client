@@ -278,7 +278,12 @@ public class InquiryBean implements Serializable {
             inquiryResultsList = InquiryResultUtil.fetchInquiryResultsForInquiryDetailsById(latestInquiryDetails.getId());
             UserSeenInquiryUtil.setUserSeenInquiry(loginBean.getUser(), inquiry);
             InquiryCriteria inquiryCriteria = InquiryCriteriaUtil.getFirstCriteriaOriginal(latestInquiryDetails, QueryLanguageType.QL_QUERY);
-            latestOriginalCriteriaTree = populateCriteriaTree(inquiryCriteria.getCriteriaOriginal());
+            //TODO create criteriaTree with cql query
+            if(ApplicationUtils.isLanguageQuery()) {
+                latestOriginalCriteriaTree = populateCriteriaTree(inquiryCriteria.getCriteriaOriginal());
+            }else {
+                latestOriginalCriteriaTree= new ListTreeModel<>();
+            }
 
             List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
             requestedEntitiesLabelString = Connector.getLabelsFor(requestedEntities);
