@@ -157,6 +157,7 @@ public class ApplicationBean implements Serializable {
 
     private void checkProcessingInquiries() {
         List<InquiryDetails> inquiryDetailsList = InquiryDetailsUtil.getInquiryDetailsByStatus(InquiryStatusType.IS_PROCESSING);
+        inquiryDetailsList.addAll((InquiryDetailsUtil.getInquiryDetailsByStatus(InquiryStatusType.IS_PARTIALLY_READY)));
         for (InquiryDetails inquiryDetails : inquiryDetailsList) {
             inquiryDetails.setStatus(InquiryStatusType.IS_NEW);
             InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
