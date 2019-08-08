@@ -342,19 +342,6 @@ public class InquiryBean implements Serializable {
         return "inquiries_archive?faces-redirect=true";
     }
 
-    private void resetInquiries(){
-
-        //latestInquiryAnswer = null;
-        //latestInquiryDetails = null;
-        latestInquiryResult = null;
-        latestOriginalCriteriaTree = null;
-        //latestQueryResult = null;
-        latestResultStatistics = null;
-        latestInquiryResultStats = null;
-
-
-    }
-
     /**
      * Attach a single-fire trigger to the execute inquiry job
      *
@@ -396,7 +383,6 @@ public class InquiryBean implements Serializable {
         try {
             logger.info("Give Execute Job to scheduler for inquiry with id " + inquiry.getId());
 
-            resetInquiries();
             ApplicationBean.getScheduler().scheduleJob(inquiryExecutionJob, trigger);
 
             Messages.create("Inquiry Execution Job spawned")
