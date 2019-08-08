@@ -379,4 +379,33 @@ public final class Utils {
 
     }
 
+    public static Boolean getASBoolean (String booleanElement){
+
+        try{
+            return (booleanElement != null ) ? new Boolean(booleanElement) : null;
+        } catch (Exception e){
+            return null;
+        }
+    }
+
+    public static String extendUrl (String basicUrl, String extension){
+
+        if (basicUrl != null && extension != null){
+
+            StringBuilder stringBuilder = new StringBuilder(basicUrl);
+
+            int lastIndex = basicUrl.length() - 1;
+            if (!basicUrl.substring(lastIndex).equals("/")){
+                stringBuilder.append('/');
+            }
+
+            stringBuilder.append(extension);
+
+            basicUrl = stringBuilder.toString();
+        }
+
+        return basicUrl;
+
+    }
+
 }

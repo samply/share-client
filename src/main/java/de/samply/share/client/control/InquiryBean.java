@@ -32,8 +32,8 @@ import com.google.common.net.HttpHeaders;
 import de.samply.dktk.converter.EnumValidationHandling;
 import de.samply.dktk.converter.PatientConverter;
 import de.samply.dktk.converter.PatientConverterUtil;
-import de.samply.share.client.job.ExecuteInquiryJobCql;
 import de.samply.share.client.job.ExecuteInquiryJobCentraxx;
+import de.samply.share.client.job.ExecuteInquiryJobCql;
 import de.samply.share.client.job.ExecuteInquiryJobSamplystoreBiobanks;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
 import de.samply.share.client.model.EnumConfiguration;
@@ -74,7 +74,10 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import javax.xml.bind.JAXBException;
 import java.io.*;
@@ -82,6 +85,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ViewScoped backing bean, used for pages that deal with inquiries
@@ -303,7 +307,8 @@ public class InquiryBean implements Serializable {
                 latestInquiryResultStats = InquiryResultStatsUtil.getInquiryResultStatsForInquiryResultById(latestInquiryResult.getId());
             }
         } catch (NullPointerException npe) {
-            throw new RuntimeException("Could not load inquiry, inquirydetails or inquiry answer.");
+            //throw new RuntimeException("Could not load inquiry, inquirydetails or inquiry answer.");
+            logger.error(npe);
         }
     }
 
@@ -337,6 +342,19 @@ public class InquiryBean implements Serializable {
         return "inquiries_archive?faces-redirect=true";
     }
 
+    private void resetInquiries(){
+
+        //latestInquiryAnswer = null;
+        //latestInquiryDetails = null;
+        latestInquiryResult = null;
+        latestOriginalCriteriaTree = null;
+        //latestQueryResult = null;
+        latestResultStatistics = null;
+        latestInquiryResultStats = null;
+
+
+    }
+
     /**
      * Attach a single-fire trigger to the execute inquiry job
      *
@@ -344,6 +362,7 @@ public class InquiryBean implements Serializable {
      * @return navigation information
      */
     public String spawnExecuteTask(boolean statsOnly) {
+
         String jobGroup = inquiry.getBrokerId() + "::" + inquiry.getSourceId() + "::" + latestInquiryDetails.getRevision();
         JobKey jobKey = JobKey.jobKey(ExecuteInquiryJobParams.getJobName(), "job::" + jobGroup);
         TriggerKey triggerKey = TriggerKey.triggerKey(ExecuteInquiryJobParams.getJobName(), "trigger::" + jobGroup);
@@ -376,6 +395,8 @@ public class InquiryBean implements Serializable {
 
         try {
             logger.info("Give Execute Job to scheduler for inquiry with id " + inquiry.getId());
+
+            resetInquiries();
             ApplicationBean.getScheduler().scheduleJob(inquiryExecutionJob, trigger);
 
             Messages.create("Inquiry Execution Job spawned")
@@ -765,5 +786,51 @@ public class InquiryBean implements Serializable {
     public String getResultCountByIdGroupedByGender() {
         return latestInquiryResultStats.getStatsGender();
     }
+
+    public void reloadStatistics(){
+
+        Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        String parameterStatsReady = requestParameterMap.get("statisticsForm:statsReadyCondition");
+        Boolean oldStatsReady = Utils.getASBoolean(parameterStatsReady);
+        boolean newStatsReady = latestInquiryResultHasStats();
+
+        if (oldStatsReady != null && oldStatsReady == false && newStatsReady == true ){
+            reloadPage();
+        }
+
+    }
+
+    private void reloadPage() {
+        try {
+            reloadPageWithoutExceptionManagement();
+        } catch (IOException e) {
+            logger.error(e);
+        }
+    }
+
+    private void reloadPageWithoutExceptionManagement () throws IOException {
+
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        HttpServletRequest request = (HttpServletRequest) ec.getRequest();
+        String redirectURI = getRedirectURI(request);
+
+        ec.redirect(redirectURI);
+
+    }
+
+    private String getRedirectURI (HttpServletRequest request){
+
+        //TODO: Please refactor me! I am so ugly :(
+        StringBuffer stringBuffer = new StringBuffer(request.getRequestURI());
+        stringBuffer.append('?');
+        stringBuffer.append("inquiryId=");
+        stringBuffer.append(selectedInquiryId);
+        stringBuffer.append("&faces-redirect=true");
+
+        return stringBuffer.toString();
+
+    }
+
+
 
 }
