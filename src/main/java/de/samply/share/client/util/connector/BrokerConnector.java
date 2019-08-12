@@ -31,7 +31,6 @@ package de.samply.share.client.util.connector;
 import com.google.gson.Gson;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
-import de.samply.share.client.model.Inquiries;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.db.enums.BrokerStatusType;
@@ -58,14 +57,14 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.tools.json.JSONObject;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.StringReader;
@@ -274,7 +273,7 @@ public class BrokerConnector {
 
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
             httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
-            httpGet.setConfig(requestConfig);
+
             RequestConfig.Builder requestConfig = RequestConfig.custom();
             requestConfig.setConnectTimeout(30 * 1000);
             requestConfig.setConnectionRequestTimeout(60 * 1000);
@@ -290,19 +289,23 @@ public class BrokerConnector {
             }
             if (statusCode == HttpStatus.SC_OK) {
                 updateLastChecked();
-                Serializer serializer = new Persister();
-                Inquiries inquiries;
+                InquiriesIdList inquiriesIdList;
                 try {
-                    inquiries = serializer.read(Inquiries.class, responseString);
+                    JAXBContext jaxbContext = JAXBContext.newInstance(InquiriesIdList.class);
+                    Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                    XMLInputFactory factory = XMLInputFactory.newInstance();
+                    XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(responseString));
+                    inquiriesIdList = unmarshaller.unmarshal(reader, InquiriesIdList.class).getValue();
                 } catch (Exception e) {
                     throw new BrokerConnectorException("Error reading inquiries", e);
                 }
-                if (SamplyShareUtils.isNullOrEmpty(inquiries.getInquiries())) {
+
+                if (SamplyShareUtils.isNullOrEmpty(inquiriesIdList.getInquiries())) {
                     return new HashMap<>();
                 }
 
                 Map<String, String> queryIds = new HashMap<>();
-                for (de.samply.share.client.model.Inquiries.Inquiry inquiry : inquiries.getInquiries()) {
+                for (InquiriesIdList.Inquiry inquiry : inquiriesIdList.getInquiries()) {
                     queryIds.put(inquiry.getId(), inquiry.getRevision());
                 }
                 return queryIds;
@@ -485,7 +488,6 @@ public class BrokerConnector {
 
             if (statusCode == HttpStatus.SC_OK) {
                 return SamplyShareUtils.unmarshal(responseString, JAXBContext.newInstance(de.samply.share.model.ccp.ObjectFactory.class), Info.class);
-//                return responseString;
             } else {
                 throw new BrokerConnectorException("Couldn't load info - got status code " + statusCode + " from broker " + broker.getAddress());
             }
