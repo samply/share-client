@@ -116,7 +116,7 @@ public final class Utils {
                 apacheCredentials = new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPasscode());
                 break;
             default:
-                logger.info("AuthScheme " + authScheme + ". Don't add to credentials provider.");
+                //logger.debug("AuthScheme " + authScheme + ". Don't add to credentials provider.");
                 authSchemeName = null;
                 break;
         }
