@@ -55,6 +55,10 @@ public class DktkId_MdrId_ConverterImpl implements DktkId_MdrId_Converter {
         if (dktkId == null){
 
             dktkId = requestDktkId(mdrId);
+
+            if (dktkId == null){
+                dktkId = mdrId.getNamespace()+"-"+mdrId.getId();
+            }
             dktkIds.put(mdrId, dktkId);
 
         }
@@ -72,12 +76,14 @@ public class DktkId_MdrId_ConverterImpl implements DktkId_MdrId_Converter {
 
     private String getDktkId (List<Slot> slots){
 
-        for (Slot slot : slots){
+        if (slots != null) {
+            for (Slot slot : slots) {
 
-            if (isSlotOfType(slot, DKTK_ID) || isSlotOfType(slot, ADT_ID)){
-                return slot.getSlotValue();
+                if (isSlotOfType(slot, DKTK_ID) || isSlotOfType(slot, ADT_ID)) {
+                    return slot.getSlotValue();
+                }
+
             }
-
         }
 
         return null;
