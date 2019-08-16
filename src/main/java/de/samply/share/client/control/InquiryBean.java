@@ -36,6 +36,7 @@ import de.samply.share.client.job.ExecuteInquiryJobCentraxx;
 import de.samply.share.client.job.ExecuteInquiryJobCql;
 import de.samply.share.client.job.ExecuteInquiryJobSamplystoreBiobanks;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
+import de.samply.share.client.job.util.CqlResultFactory;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.InquiryStatusType;
@@ -58,6 +59,7 @@ import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.Container;
 import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.model.common.Result;
+import de.samply.share.model.cql.CqlResult;
 import de.samply.share.utils.Converter;
 import de.samply.web.mdrFaces.MdrContext;
 import org.apache.logging.log4j.LogManager;
@@ -283,10 +285,10 @@ public class InquiryBean implements Serializable {
             UserSeenInquiryUtil.setUserSeenInquiry(loginBean.getUser(), inquiry);
             InquiryCriteria inquiryCriteria = InquiryCriteriaUtil.getFirstCriteriaOriginal(latestInquiryDetails, QueryLanguageType.QL_QUERY);
             //TODO create criteriaTree with cql query
-            if(ApplicationUtils.isLanguageQuery()) {
+            if (ApplicationUtils.isLanguageQuery()) {
                 latestOriginalCriteriaTree = populateCriteriaTree(inquiryCriteria.getCriteriaOriginal());
-            }else {
-                latestOriginalCriteriaTree= new ListTreeModel<>();
+            } else {
+                latestOriginalCriteriaTree = new ListTreeModel<>();
             }
 
             List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
@@ -659,11 +661,16 @@ public class InquiryBean implements Serializable {
                     break;
 
                 case SAMPLY:
-                    try {
-                        BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(latestInquiryDetails.getId()).getLocation());
+                    if (ApplicationUtils.isLanguageQuery()) {
+                        try {
+                            BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(latestInquiryDetails.getId()).getLocation());
+                            brokerConnector.reply(latestInquiryDetails, queryResult);
+                        } catch (LDMConnectorException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (ApplicationUtils.isLanguageCql()) {
+                        CqlResult queryResult = new CqlResultFactory(latestInquiryDetails).createCqlResult();
                         brokerConnector.reply(latestInquiryDetails, queryResult);
-                    } catch (LDMConnectorException e) {
-                        e.printStackTrace();
                     }
                     break;
             }
@@ -773,14 +780,14 @@ public class InquiryBean implements Serializable {
         return latestInquiryResultStats.getStatsGender();
     }
 
-    public void reloadStatistics(){
+    public void reloadStatistics() {
 
         Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         String parameterStatsReady = requestParameterMap.get("statisticsForm:statsReadyCondition");
         Boolean oldStatsReady = Utils.getASBoolean(parameterStatsReady);
         boolean newStatsReady = latestInquiryResultHasStats();
 
-        if (oldStatsReady != null && oldStatsReady == false && newStatsReady == true ){
+        if (oldStatsReady != null && oldStatsReady == false && newStatsReady == true) {
             reloadPage();
         }
 
@@ -794,7 +801,7 @@ public class InquiryBean implements Serializable {
         }
     }
 
-    private void reloadPageWithoutExceptionManagement () throws IOException {
+    private void reloadPageWithoutExceptionManagement() throws IOException {
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         HttpServletRequest request = (HttpServletRequest) ec.getRequest();
@@ -804,7 +811,7 @@ public class InquiryBean implements Serializable {
 
     }
 
-    private String getRedirectURI (HttpServletRequest request){
+    private String getRedirectURI(HttpServletRequest request) {
 
         //TODO: Please refactor me! I am so ugly :(
         StringBuffer stringBuffer = new StringBuffer(request.getRequestURI());
@@ -816,7 +823,6 @@ public class InquiryBean implements Serializable {
         return stringBuffer.toString();
 
     }
-
 
 
 }

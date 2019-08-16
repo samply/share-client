@@ -3,6 +3,7 @@ package de.samply.share.client.job;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.CheckInquiryStatusReadyForMultipleCriteriaJobParams;
+import de.samply.share.client.job.util.CqlResultFactory;
 import de.samply.share.client.job.util.ReplyRulesApplier;
 import de.samply.share.client.job.util.ReplyRulesApplierUtil;
 import de.samply.share.client.model.db.enums.InquiryCriteriaStatusType;
@@ -11,12 +12,9 @@ import de.samply.share.client.model.db.tables.pojos.Inquiry;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.util.connector.BrokerConnector;
-import de.samply.share.client.util.connector.LdmConnectorCql;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
-import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.InquiryCriteriaUtil;
 import de.samply.share.client.util.db.InquiryDetailsUtil;
-import de.samply.share.client.util.db.InquiryResultUtil;
 import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.model.cql.CqlResult;
 import org.apache.logging.log4j.LogManager;
@@ -88,17 +86,14 @@ public class CheckInquiryStatusReadyForMultipleCriteriaJobCql implements Job {
 
     private Consumer<BrokerConnector> getProcessReplyRuleMethod() {
         return brokerConnector -> {
-            if (!ApplicationUtils.isLanguageQuery() || !ApplicationUtils.isSamply()) {
+            if (!ApplicationUtils.isLanguageCql() || !ApplicationUtils.isSamply()) {
                 logger.error("Job " + getClass().getSimpleName() + " can only be applied in the context of CQL and Samply");
                 return;
             }
 
-            LdmConnectorCql ldmConnector = (LdmConnectorCql) ApplicationBean.getLdmConnector();
             try {
-                CqlResult queryResult = ldmConnector.getResults(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()).getLocation());
+                CqlResult queryResult = new CqlResultFactory(inquiryDetails).createCqlResult();
                 brokerConnector.reply(inquiryDetails, queryResult);
-            } catch (LDMConnectorException e) {
-                e.printStackTrace();
             } catch (BrokerConnectorException e) {
                 ReplyRulesApplierUtil.handleBrokerConnectorException(e, inquiryDetails.getId());
             }
