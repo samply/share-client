@@ -85,9 +85,6 @@ import static de.samply.share.common.utils.Constants.AUTH_HEADER_VALUE_SAMPLY;
  */
 public class BrokerConnector {
 
-    // TODO: Move to share-common class Constants
-    private static final String QUERY_LANGUAGE = "query-language";
-
     private static final Logger logger = LogManager.getLogger(BrokerConnector.class);
     private transient HttpConnector httpConnector;
     private Broker broker;
@@ -435,7 +432,7 @@ public class BrokerConnector {
             URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId);
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
             httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
-            httpGet.addHeader(QUERY_LANGUAGE, ApplicationBean.getBridgeheadInfos().getQueryLanguage());
+            httpGet.addHeader(Constants.HEADER_KEY_QUERY_LANGUAGE, ApplicationBean.getBridgeheadInfos().getQueryLanguage());
 
             int statusCode;
             String responseString;
