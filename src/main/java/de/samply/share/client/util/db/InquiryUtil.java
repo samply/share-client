@@ -106,7 +106,7 @@ public class InquiryUtil {
      * @param uploadId the id of the upload for which the inquiries are wanted
      * @return the list of inquiries associated with the given upload
      */
-    public static List<Inquiry> fetchInquiriesForUploadId(int uploadId) {
+    private static List<Inquiry> fetchInquiriesForUploadId(int uploadId) {
         return inquiryDao.fetchByUploadId(uploadId);
     }
 
@@ -126,7 +126,7 @@ public class InquiryUtil {
      * @param uploadId the id of the upload for which the inquiries are wanted
      * @return the latest inquiry associated with the given upload
      */
-    public static Inquiry fetchLatestInquiryForUploadId(int uploadId) {
+    private static Inquiry fetchLatestInquiryForUploadId(int uploadId) {
         List<Inquiry> inquiries = fetchInquiriesForUploadId(uploadId);
         if (inquiries.isEmpty()) {
             return null;
@@ -134,24 +134,6 @@ public class InquiryUtil {
             return inquiries.get(inquiries.size() - 1);
         }
     }
-
-//    public static List<Inquiry> fetchInquiriesOrderByReceivedAt() {
-//            DSLContext dslContext = ResourceManager.getDSLContext();
-//
-//            List<Inquiry> inquiries =  dslContext
-//                    .select()
-//                    .from(Tables.INQUIRY)
-//                    .join(Tables.INQUIRY_DETAILS)
-//                    .on(Tables.INQUIRY.LATEST_DETAILS_ID.equal(Tables.INQUIRY_DETAILS.ID))
-//                    .where(Tables.INQUIRY_DETAILS.STATUS.in(
-//                            InquiryStatusType.IS_NEW,
-//                            InquiryStatusType.IS_PROCESSING,
-//                            InquiryStatusType.IS_READY
-//                    ))
-//                    .orderBy(Tables.INQUIRY_DETAILS.RECEIVED_AT)
-//                    .fetchInto(Inquiry.class);
-//            return inquiries;
-//    }
 
     /**
      * Get a list of inquiries with a certain status, ordered by the date they were received
