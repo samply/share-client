@@ -7,5 +7,5 @@
     <bi:centralsearch>string</bi:centralsearch>
     <bi:decentralsearch>string</bi:decentralsearch>
     <bi:updateserver>string</bi:updateserver>
-    <bi:queryLanguage>string</bi:queryLanguage>
+    <bi:queryLanguage>{query-language}</bi:queryLanguage>
 </bi:bridgehead>
