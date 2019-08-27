@@ -3,10 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>share-client</artifactId>
-    <version>5.5.0-SNAPSHOT</version>
     <packaging>war</packaging>
+    <artifactId>share-client</artifactId>
+    <name>Connector</name>
+    <version>5.5.1-SNAPSHOT</version>
 
     <parent>
         <groupId>de.samply</groupId>
@@ -20,7 +20,6 @@
             <id>samply</id>
             <properties>
                 <project.context>samply</project.context>
-                <project.basename>Samply.Connector</project.basename>
                 <!-- Postgres settings -->
                 <database.username>${project.context}</database.username>
                 <database.password>${project.context}</database.password>
