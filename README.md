@@ -21,17 +21,6 @@ If the Store runs while logging in the first time with this new user, the defaul
 
 To register a Searchbroker, see [Bridgehead-Deployment](https://github.com/samply/bridgehead-deployment#connect-sample-locator).
 
-------
-|          Thanks to the commits of these developers:          |
-| :----------------------------------------------------------: |
-|                         Michael Folz                         |
-|                         David Juárez                         |
-|                          Deniz Tas                           |
-|                         Martin Breu                          |
-|                          Jori Kern                           |
-|                       Christoph Dolch                        |
-------
-
 [Manifest](https://samply.github.io/manifest)
 
 ## Build
@@ -45,7 +34,7 @@ Requirements:
 ```
 git clone ssh://git@code.mitro.dkfz.de:7999/shar/samply.share.client.v2.git
 cd samply.share.client.v2
-mvn install -Psamply
+mvn clean install -Psamply
 ```
 
 
@@ -65,6 +54,7 @@ If postgres connection errors occur, try your ip for POSTGRES_HOST. For all Envi
 
     docker network create gba
     
+    
     docker rm pg-connector
     
     docker run \
@@ -72,15 +62,14 @@ If postgres connection errors occur, try your ip for POSTGRES_HOST. For all Envi
         --network=gba \
         -e POSTGRES_USER=samply \
         -e POSTGRES_DB=samply.connector \
-        -e POSTGRES_PASSWORD=ChangeMe \
+        -e POSTGRES_PASSWORD=samply \
         -p 5432:5432 \
     postgres:9.6
     
-    docker build . -t connector:latest
     
-    docker kill connector
-
     docker rm connector
+    
+    docker build . -t connector:latest
     
     docker run \
         --name=connector \
@@ -89,9 +78,10 @@ If postgres connection errors occur, try your ip for POSTGRES_HOST. For all Envi
         -e POSTGRES_HOST='pg-connector' \
         -e POSTGRES_DB='samply.connector' \
         -e POSTGRES_USER='samply' \
-        -e POSTGRES_PASS='ChangeMe' \
+        -e POSTGRES_PASS='samply' \
         -e MDR_URL='https://mdr.germanbiobanknode.de/v3/api/mdr' \
-        -e STORE_URL='http://store:8080'
+        -e STORE_URL='http://store:8080' \
+        -e QUERY_LANGUAGE='CQL' \
         -e CATALINA_OPTS='"-Xmx2g"' \
     connector:latest
 
@@ -215,14 +205,20 @@ src/main/java/webapp/META-INF/
 (context.xml)
 ```
 
-The context.xml will be auto-copied by tomcat at startup to ${tomcat.base}/conf/Catalina/localhost/ROOT.xml.
+The `context.xml` will be auto-copied by tomcat at startup to `${tomcat.base}/conf/Catalina/localhost/ROOT.xml`.
 This file will not be overwritten by updating the WAR file due to tomcat settings.
 
-All files under WEB-INF/conf will always be found from FileFinder as ultimate fallback.
+All files under `WEB-INF/conf` will always be found from FileFinder as ultimate fallback.
 
-If you want to save your configurations, copy all files under WEB-INF/conf (tomcat or code source) to ${tomcat.base}/conf.
+If you want to save your configurations, copy all files under `WEB-INF/conf` (tomcat or code source) to `${tomcat.base}/conf`.
 
-According to the predefinded log4j2.xml, all logs can be found in ${tomcat.base}/logs/connector.
+**IntelliJ** creates a *tomcat.base* directory for every startup of the application. So save your configuration files to *tomcat.home* and it will copy these files and logs every time to *tomcat.base*. You will see the paths at startup in the first lines of the console output.
+
+According to the `log4j2.xml`, all logs can be found in ${tomcat.base}/logs/connector.
+
+To use a **proxy**, set your url in file **samply_common_config.xml**.
+
+#### Configuration files
 
 bridgehead_info.xml:
 ```
@@ -280,15 +276,7 @@ common_config.xml
 </Configuration>
 ```
 
-**IntelliJ** creates a *tomcat.base* directory for every startup of the application. So save your configuration files to *tomcat.home* and it will copy these files and logs every time to *tomcat.base*. You will see the paths at startup in the first lines of the console output.
-
-
-
 ### Connections
-
-To use a **proxy**, set your url in file **samply_common_config.xml**.
-
-
 
 Ingoing (secured with basic auth):
 
