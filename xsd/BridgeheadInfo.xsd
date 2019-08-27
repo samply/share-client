@@ -6,13 +6,8 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element type="xs:string" name="name" />
-                <xs:element type="xs:string" name="longname"/>
-                <xs:element type="xs:string" name="dktkid"  minOccurs="0" />
-                <xs:element type="xs:string" name="monitor"  minOccurs="0" />
-                <xs:element type="xs:string" name="interval"  minOccurs="0" />
                 <xs:element type="xs:string" name="centralsearch"  minOccurs="0" />
                 <xs:element type="xs:string" name="decentralsearch" />
-                <xs:element type="xs:string" name="updateserver"  minOccurs="0" />
                 <xs:element type="xs:string" name="queryLanguage"/>
             </xs:sequence>
         </xs:complexType>

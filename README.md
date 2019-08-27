@@ -224,6 +224,62 @@ If you want to save your configurations, copy all files under WEB-INF/conf (tomc
 
 According to the predefinded log4j2.xml, all logs can be found in ${tomcat.base}/logs/connector.
 
+bridgehead_info.xml:
+```
+<bi:bridgehead xmlns:bi="http://schema.samply.de/config/BridgeheadInfo">
+    <bi:name>name of the bridgehead</bi:name>
+    <bi:centralsearch>url of the centralsearch server (only for dktk)</bi:centralsearch>
+    <bi:decentralsearch>url of the decentrealsearch server</bi:decentralsearch>
+    <bi:queryLanguage>name of the querylanguage (CQL or QUERY)</bi:queryLanguage>
+</bi:bridgehead>
+```
+common_urls.xml:
+```
+<com:urls xmlns:com="http://schema.samply.de/common">
+    <com:shareUrl>Ip of the connector</com:shareUrl>
+    <com:idmanagerUrl>url of the id-manager (only for dktk necessary)</com:idmanagerUrl>
+    <com:ldmUrl>url of the local data management</com:ldmUrl>
+    <com:mdrUrl>url of the mdr server</com:mdrUrl>
+</com:urls>
+```
+common_operator.xml:
+```
+<com:operator xmlns:com="http://schema.samply.de/common">
+    <!--Optional:-->
+    <com:firstName>first name from the bridgehead admin</com:firstName>
+    <!--Optional:-->
+    <com:lastName>last name from the bridgehead admin</com:lastName>
+    <!--Optional:-->
+    <com:email>email from the bridgehead admin</com:email>
+    <!--Optional:-->
+    <com:phone>phone number from the bridgehead admin</com:phone>
+</com:operator>
+```
+
+common_config.xml
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.samply.de/common"
+               xsi:schemaLocation="http://schema.samply.de/common http://schema.samply.de/config/Common.Config.xsd ">
+    <Proxy>
+        <HTTP>
+            <Url>url of the proxy server</Url>
+            <Username>username for the proxy server</Username>
+            <Password>password for the proxy server</Password>
+        </HTTP>
+        <HTTPS>
+            <Url>url of the proxy server</Url>
+            <Username>username for the proxy server</Username>
+            <Password>password for the proxy server</Password>
+        </HTTPS>
+        <Realm/>
+        <NoProxyHosts>
+            <Host>hosts where the proxy should not be used<Host>
+        </NoProxyHosts>
+    </Proxy>
+</Configuration>
+```
+
 **IntelliJ** creates a *tomcat.base* directory for every startup of the application. So save your configuration files to *tomcat.home* and it will copy these files and logs every time to *tomcat.base*. You will see the paths at startup in the first lines of the console output.
 
 
