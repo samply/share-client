@@ -18,6 +18,9 @@
         <!-- ${project.context} also defines the folder where flyway looks for sql files -->
         <profile>
             <id>samply</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <project.context>samply</project.context>
                 <!-- Postgres settings -->
