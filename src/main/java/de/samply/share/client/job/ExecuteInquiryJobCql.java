@@ -3,6 +3,7 @@ package de.samply.share.client.job;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
 import de.samply.share.client.util.connector.LdmConnectorCql;
+import de.samply.share.client.util.connector.LdmPostQueryParameterCql;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.InquiryCriteriaUtil;
 import org.quartz.JobExecutionException;
@@ -36,7 +37,8 @@ public class ExecuteInquiryJobCql extends AbstractExecuteInquiryJob<LdmConnector
             String query = inquiryCriteria.getCriteriaOriginal();
 
             log(EventMessageType.E_START_EXECUTE_INQUIRY_JOB);
-            String resultLocation = ldmConnector.postQuery(query, inquiryCriteria.getEntityType(), unknownKeys, true, jobParams.isStatsOnly(), !jobParams.isUpload());
+            LdmPostQueryParameterCql parameter = new LdmPostQueryParameterCql(jobParams.isStatsOnly(), inquiryCriteria.getEntityType());
+            String resultLocation = ldmConnector.postQuery(query, parameter);
 
             if (resultLocation != null && resultLocation.length() > 0) {
                 log(EventMessageType.E_INQUIRY_RESULT_AT, resultLocation);

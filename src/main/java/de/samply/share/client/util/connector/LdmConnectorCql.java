@@ -21,10 +21,9 @@ import org.apache.logging.log4j.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.File;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, String, CqlResult, CqlResult, Error> {
+public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, LdmPostQueryParameterCql, String, CqlResult, CqlResult, Error> {
 
     private static final Logger logger = LogManager.getLogger(LdmConnectorCql.class);
 
@@ -68,9 +67,9 @@ public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, String, 
     }
 
     @Override
-    public String postQuery(String query, String entityType, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException {
+    public String postQuery(String query, LdmPostQueryParameterCql parameter) throws LDMConnectorException {
         try {
-            return ldmClient.postQuery(query, entityType, statisticsOnly);
+            return ldmClient.postQuery(query, parameter.getEntityType(), parameter.isStatisticsOnly());
         } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }

@@ -35,7 +35,7 @@ import java.util.Map;
 
 public class MdrMappedElements {
 
-    Map<MdrIdDatatype, CxxMappingElement> mdrId_cxxMappingElement_Map = new HashMap<>();
+    private Map<MdrIdDatatype, CxxMappingElement> mdrId_cxxMappingElement_Map = new HashMap<>();
 
     public MdrMappedElements(LdmConnector ldmConnector) {
 
@@ -43,13 +43,13 @@ public class MdrMappedElements {
 
     }
 
-    private void addMappedElements(LdmConnector ldmConnector){
+    private void addMappedElements(LdmConnector<?, ?, ?> ldmConnector) {
 
-        if (ldmConnector instanceof LdmConnectorCentraxx){
+        if (ldmConnector.isLdmCentraxx()) {
 
-            List<CxxMappingElement> mapping = ((LdmConnectorCentraxx) ldmConnector).getMapping();
+            List<CxxMappingElement> mapping = ((LdmConnectorCentraxx)ldmConnector).getMapping();
 
-            for (CxxMappingElement mappingElement : mapping){
+            for (CxxMappingElement mappingElement : mapping) {
 
                 MdrIdDatatype mdrId = mappingElement.getMdrId();
                 MdrIdDatatype basicMdrId = getBasicMdrIdDataType(mdrId);

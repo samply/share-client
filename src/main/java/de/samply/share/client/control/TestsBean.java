@@ -29,7 +29,6 @@
 package de.samply.share.client.control;
 
 import de.samply.share.client.job.UploadToCentralMdsDbJob;
-import de.samply.share.client.job.util.InquiryCriteriaEntityType;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.IdObject;
 import de.samply.share.client.model.centralsearch.PatientUploadResult;
@@ -37,10 +36,7 @@ import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.db.tables.pojos.Broker;
 import de.samply.share.client.util.Utils;
-import de.samply.share.client.util.connector.BrokerConnector;
-import de.samply.share.client.util.connector.CentralSearchConnector;
-import de.samply.share.client.util.connector.IdManagerConnector;
-import de.samply.share.client.util.connector.LdmConnector;
+import de.samply.share.client.util.connector.*;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.CentralSearchConnectorException;
 import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
@@ -226,10 +222,11 @@ public class TestsBean implements Serializable {
             return;
         }
 
-        LdmConnector ldmConnector = ApplicationBean.getLdmConnector();
+        AbstractLdmConnectorView<?, ?, ?, ?, ?> ldmConnector = (AbstractLdmConnectorView<?, ?, ?, ?, ?>) ApplicationBean.getLdmConnector();
         String location;
         try {
-            location = ldmConnector.postQuery(testInquiry.getQuery(), InquiryCriteriaEntityType.PATIENT.getName(), null, true, true, true);
+            LdmPostQueryParameterView parameter = new LdmPostQueryParameterView(true, null, true, true);
+            location = ldmConnector.postQuery(testInquiry.getQuery(), parameter);
         } catch (Exception e) {
             checkResult.setSuccess(false);
             checkResult.getMessages().add(new Message("Exception caught while trying to post to local datamanagement: " + e.getMessage(), "fa-bolt"));

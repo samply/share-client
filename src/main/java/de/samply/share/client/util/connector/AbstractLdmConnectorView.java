@@ -26,7 +26,7 @@ public abstract class AbstractLdmConnectorView<
         T_RESULT extends Result & Serializable,
         T_RESULT_STATISTICS extends Serializable,
         T_ERROR extends Serializable,
-        T_SPECIFIC_VIEW extends Serializable> extends AbstractLdmConnector<T_LDM_CLIENT, Query, T_RESULT, T_RESULT_STATISTICS, T_ERROR> {
+        T_SPECIFIC_VIEW extends Serializable> extends AbstractLdmConnector<T_LDM_CLIENT, LdmPostQueryParameterView, Query, T_RESULT, T_RESULT_STATISTICS, T_ERROR> {
 
     AbstractLdmConnectorView(boolean useCaching) {
         super(useCaching);
@@ -40,15 +40,11 @@ public abstract class AbstractLdmConnectorView<
      * {@inheritDoc}
      */
     @Override
-    public String postQuery(Query query,
-                            String entityType, List<String> removeKeysFromView,
-                            boolean completeMdsViewFields,
-                            boolean statisticsOnly,
-                            boolean includeAdditionalViewfields) throws LDMConnectorException {
-        View view = createView(query, removeKeysFromView, completeMdsViewFields, includeAdditionalViewfields);
+    public String postQuery(Query query, LdmPostQueryParameterView parameter) throws LDMConnectorException {
+        View view = createView(query, parameter.getRemoveKeysFromView(), parameter.isCompleteMdsViewFields(), parameter.isIncludeAdditionalViewfields());
 
         try {
-            return ldmClient.postView(view, statisticsOnly);
+            return ldmClient.postView(view, parameter.isStatisticsOnly());
         } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }

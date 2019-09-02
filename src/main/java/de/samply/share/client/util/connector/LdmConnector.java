@@ -35,15 +35,15 @@ import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.model.common.QueryResultStatistic;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * An interface for a connector to local data management systems
  *
- * @param <T_QUERY> QueryResult type
- * @param <T_RESULT> Query type
+ * @param <T_QUERY>             QueryResult type
+ * @param <T_POST_PARAMETER>    postQuery parameter type
+ * @param <T_RESULT>            Query type
  */
-public interface LdmConnector<T_QUERY, T_RESULT> {
+public interface LdmConnector<T_QUERY, T_POST_PARAMETER extends AbstractLdmPostQueryParameter, T_RESULT> {
 
     String TEMPDIR = "javax.servlet.context.tempdir";
     String XML_SUFFIX = ".xml";
@@ -51,17 +51,12 @@ public interface LdmConnector<T_QUERY, T_RESULT> {
     /**
      * Posts a query to local datamanagement and returns the location of the result.
      *
-     * @param query                       the query
-     * @param entityType                  type of entity to be counted
-     * @param removeKeysFromView          A list of keys to be removed from the query (and viewfields)
-     * @param completeMdsViewFields       if true, add all entries from mds-b and mds-k to viewfields
-     * @param statisticsOnly              if true, set a parameter to only request a count of the results, not the whole result lists
-     * @param includeAdditionalViewfields if true, check if there are additional viewfields to set in the database. For uploads to central
-     *                                    mds database, this should be false
-     * @return the location of the result
-     * @throws LDMConnectorException
+     * @param query         the query
+     * @param parameter     combines parameters for posting a query
+     * @return              the location of the result
+     * @throws              LDMConnectorException
      */
-    String postQuery(T_QUERY query, String entityType, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException;
+    String postQuery(T_QUERY query, T_POST_PARAMETER parameter) throws LDMConnectorException;
 
     /**
      * Gets the query result from a given query location.

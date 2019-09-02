@@ -36,10 +36,11 @@ import java.util.Date;
 
 public abstract class AbstractLdmConnector<
         T_LDM_CLIENT extends AbstractLdmClient<T_RESULT, T_RESULT_STATISTICS, T_ERROR>,
+        T_POST_PARAMETER extends AbstractLdmPostQueryParameter,
         T_QUERY,
         T_RESULT extends Result & Serializable,
         T_RESULT_STATISTICS extends Serializable,
-        T_ERROR extends Serializable> implements LdmConnector<T_QUERY, T_RESULT> {
+        T_ERROR extends Serializable> implements LdmConnector<T_QUERY, T_POST_PARAMETER, T_RESULT> {
 
     private static final int TIMEOUT_LDM_IN_SECONDS = 2 * 60;
 
