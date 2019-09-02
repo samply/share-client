@@ -41,7 +41,7 @@ public abstract class AbstractLdmConnectorView<
      */
     @Override
     public String postQuery(Query query,
-                            List<String> removeKeysFromView,
+                            String entityType, List<String> removeKeysFromView,
                             boolean completeMdsViewFields,
                             boolean statisticsOnly,
                             boolean includeAdditionalViewfields) throws LDMConnectorException {

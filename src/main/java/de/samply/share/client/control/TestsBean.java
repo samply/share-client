@@ -29,6 +29,7 @@
 package de.samply.share.client.control;
 
 import de.samply.share.client.job.UploadToCentralMdsDbJob;
+import de.samply.share.client.job.util.InquiryCriteriaEntityType;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.IdObject;
 import de.samply.share.client.model.centralsearch.PatientUploadResult;
@@ -228,7 +229,7 @@ public class TestsBean implements Serializable {
         LdmConnector ldmConnector = ApplicationBean.getLdmConnector();
         String location;
         try {
-            location = ldmConnector.postQuery(testInquiry.getQuery(), null, true, true, true);
+            location = ldmConnector.postQuery(testInquiry.getQuery(), InquiryCriteriaEntityType.PATIENT.getName(), null, true, true, true);
         } catch (Exception e) {
             checkResult.setSuccess(false);
             checkResult.getMessages().add(new Message("Exception caught while trying to post to local datamanagement: " + e.getMessage(), "fa-bolt"));

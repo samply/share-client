@@ -1,5 +1,6 @@
 package de.samply.share.client.job;
 
+import de.samply.share.client.job.util.InquiryCriteriaEntityType;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.QueryLanguageType;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
@@ -65,7 +66,7 @@ public class ExecuteInquiryJobCentraxx extends AbstractExecuteInquiryJob<LdmConn
 
             log(EventMessageType.E_START_EXECUTE_INQUIRY_JOB);
             Query query = ObjectUtils.defaultIfNull(modifiedQuery, originalQuery);
-            resultLocation = ldmConnector.postQuery(query, unknownKeys, true, jobParams.isStatsOnly(), !jobParams.isUpload());
+            resultLocation = ldmConnector.postQuery(query, InquiryCriteriaEntityType.ALL.getName(), unknownKeys, true, jobParams.isStatsOnly(), !jobParams.isUpload());
 
             if (resultLocation != null && resultLocation.length() > 0) {
                 log(EventMessageType.E_INQUIRY_RESULT_AT, resultLocation);

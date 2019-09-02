@@ -36,7 +36,7 @@ public class ExecuteInquiryJobCql extends AbstractExecuteInquiryJob<LdmConnector
             String query = inquiryCriteria.getCriteriaOriginal();
 
             log(EventMessageType.E_START_EXECUTE_INQUIRY_JOB);
-            String resultLocation = ldmConnector.postQuery(query, unknownKeys, true, jobParams.isStatsOnly(), !jobParams.isUpload());
+            String resultLocation = ldmConnector.postQuery(query, inquiryCriteria.getEntityType(), unknownKeys, true, jobParams.isStatsOnly(), !jobParams.isUpload());
 
             if (resultLocation != null && resultLocation.length() > 0) {
                 log(EventMessageType.E_INQUIRY_RESULT_AT, resultLocation);

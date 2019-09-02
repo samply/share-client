@@ -52,6 +52,7 @@ public interface LdmConnector<T_QUERY, T_RESULT> {
      * Posts a query to local datamanagement and returns the location of the result.
      *
      * @param query                       the query
+     * @param entityType                  type of entity to be counted
      * @param removeKeysFromView          A list of keys to be removed from the query (and viewfields)
      * @param completeMdsViewFields       if true, add all entries from mds-b and mds-k to viewfields
      * @param statisticsOnly              if true, set a parameter to only request a count of the results, not the whole result lists
@@ -60,7 +61,7 @@ public interface LdmConnector<T_QUERY, T_RESULT> {
      * @return the location of the result
      * @throws LDMConnectorException
      */
-    String postQuery(T_QUERY query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException;
+    String postQuery(T_QUERY query, String entityType, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException;
 
     /**
      * Gets the query result from a given query location.

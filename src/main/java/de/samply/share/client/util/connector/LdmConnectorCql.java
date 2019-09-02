@@ -5,11 +5,11 @@ import de.samply.common.ldmclient.AbstractLdmClient;
 import de.samply.common.ldmclient.LdmClientException;
 import de.samply.common.ldmclient.cql.LdmClientCql;
 import de.samply.common.ldmclient.model.LdmQueryResult;
+import de.samply.share.client.job.util.InquiryCriteriaEntityType;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
-import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.common.Error;
 import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.model.cql.CqlResult;
@@ -68,9 +68,9 @@ public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, String, 
     }
 
     @Override
-    public String postQuery(String query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException {
+    public String postQuery(String query, String entityType, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean statisticsOnly, boolean includeAdditionalViewfields) throws LDMConnectorException {
         try {
-            return ldmClient.postQuery(query, statisticsOnly);
+            return ldmClient.postQuery(query, entityType, statisticsOnly);
         } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
@@ -111,7 +111,7 @@ public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, String, 
         String query = createQueryForMonitoring();
         String resultLocation;
         try {
-            resultLocation = ldmClient.postQuery(query, true);
+            resultLocation = ldmClient.postQuery(query, InquiryCriteriaEntityType.PATIENT.getName(), true);
         } catch (LdmClientException e) {
             throw new LDMConnectorException(e);
         }
@@ -134,7 +134,7 @@ public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, String, 
         ReferenceQueryCheckResult result = new ReferenceQueryCheckResult();
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
-            String resultLocation = ldmClient.postQuery(referenceQuery, false);
+            String resultLocation = ldmClient.postQuery(referenceQuery, InquiryCriteriaEntityType.PATIENT.getName(), false);
 
             int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
                     EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
@@ -158,7 +158,7 @@ public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, String, 
                             case AbstractLdmClient.ERROR_CODE_UNKNOWN_MDRKEYS:
                             default:
                                 stopwatch.start();
-                                resultLocation = ldmClient.postQuery(referenceQuery, false);
+                                resultLocation = ldmClient.postQuery(referenceQuery, InquiryCriteriaEntityType.PATIENT.getName(), false);
                                 break;
                         }
                     } else if (ldmQueryResult.hasResult()) {
