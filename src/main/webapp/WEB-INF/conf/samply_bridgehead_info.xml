@@ -2,5 +2,5 @@
     <bi:name>string</bi:name>
     <bi:centralsearch>string</bi:centralsearch>
     <bi:decentralsearch>string</bi:decentralsearch>
-    <bi:queryLanguage>string</bi:queryLanguage>
+    <bi:queryLanguage>QUERY</bi:queryLanguage>
 </bi:bridgehead>
