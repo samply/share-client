@@ -64,9 +64,9 @@
         <jsf-renderer.version>2.0.0</jsf-renderer.version>
         <common-mailing.version>2.2.0</common-mailing.version>
         <common-http.version>6.1.1</common-http.version>
-        <common-ldmclient.centraxx.version>5.3.0-SNAPSHOT</common-ldmclient.centraxx.version>
-        <common-ldmclient.samplystore.biobank.version>2.3.0-SNAPSHOT</common-ldmclient.samplystore.biobank.version>
-        <common-ldmclient.cql.version>1.2.0-SNAPSHOT</common-ldmclient.cql.version>
+        <common-ldmclient.centraxx.version>5.3.0</common-ldmclient.centraxx.version>
+        <common-ldmclient.samplystore.biobank.version>2.3.0</common-ldmclient.samplystore.biobank.version>
+        <common-ldmclient.cql.version>1.2.0</common-ldmclient.cql.version>
         <converter.dktk.patient.version>1.1.6</converter.dktk.patient.version> <!-- TODO: Replace release -->
 
         <!-- general dependencies -->
