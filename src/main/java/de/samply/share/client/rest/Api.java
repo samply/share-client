@@ -1,6 +1,5 @@
 package de.samply.share.client.rest;
 
-import de.samply.share.client.fhir.FHIRResource;
 import de.samply.share.client.util.connector.CTSConnector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,9 +20,9 @@ public class Api {
             CTSConnector ctsConnector = new CTSConnector();
             ctsConnector.postPseudonmToCTS(bundle);
             return Response.ok().build();
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return Response.status(400).entity(e.getMessage()).build();
-        }catch (Exception e){
+        } catch (Exception e) {
             return Response.serverError().build();
         }
     }

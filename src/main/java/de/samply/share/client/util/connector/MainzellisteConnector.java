@@ -52,34 +52,35 @@ public class MainzellisteConnector {
 
     /**
      * pseudonymise a patient
+     *
      * @param bundle the patient bundle
      * @return the pseudonymized patient
      * @throws IllegalArgumentException
      * @throws IOException
      */
-    public String getPatientPseudonym(Bundle bundle) throws IllegalArgumentException, IOException {
+    public Bundle getPatientPseudonym(Bundle bundle) throws IllegalArgumentException, IOException {
         for (int i = 0; i < bundle.getEntry().size(); i++) {
             Resource resource = bundle.getEntry().get(i).getResource();
             if (resource.fhirType().equals("Patient")) {
                 JSONObject patient = createJSONPatient((Patient) resource);
-                Patient orginal = (Patient) resource;
+                Patient original = (Patient) resource;
                 JSONObject encryptedID = getPseudonymFromMainzelliste(patient);
-                Patient patientNew= createPseudonymziedPatient(orginal,encryptedID);
-                System.out.println(patientNew.toString());
+                Patient patientNew = createPseudonymziedPatient(original, encryptedID);
                 bundle.getEntry().get(i).setResource(patientNew);
             }
         }
-        return "";
+        return bundle;
     }
 
 
     /**
      * Create a new patient and add only the necessary attributes for a pseudonymized patient
+     *
      * @param orginal
      * @param encryptedID
      * @return the pseudonymized patient
      */
-    private Patient createPseudonymziedPatient(Patient orginal, JSONObject encryptedID){
+    private Patient createPseudonymziedPatient(Patient orginal, JSONObject encryptedID) {
         Patient patientNew = new Patient();
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
@@ -88,8 +89,8 @@ public class MainzellisteConnector {
         patientNew.setBirthDate(calendar.getTime());
         patientNew.setBirthDateElement(date);
         patientNew.setGender(orginal.getGender());
-        List<Identifier> identifierList= new ArrayList<>();
-        Identifier identifier= new Identifier();
+        List<Identifier> identifierList = new ArrayList<>();
+        Identifier identifier = new Identifier();
         identifier.setValue(encryptedID.get("EncID").toString());
         identifierList.add(identifier);
         patientNew.setIdentifier(identifierList);
@@ -97,7 +98,7 @@ public class MainzellisteConnector {
         patientNew.setId(orginal.getId());
         Meta meta = new Meta();
         meta.addProfile(
-                "http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/patient"//"http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert/0.1"
+                "http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert/0.1"
         );
         patientNew.setMeta(meta);
         return patientNew;
@@ -106,6 +107,7 @@ public class MainzellisteConnector {
 
     /**
      * Extract from the patient only the necessary attributes for the Mainzelliste
+     *
      * @param patient
      * @return A patient with the attributes from the original patient
      * @throws NullPointerException
@@ -116,8 +118,18 @@ public class MainzellisteConnector {
             patientPs.put("vorname", checkIfAttributeExist(patient.getNameFirstRep().getGivenAsSingleString(), "vorname"));
             patientPs.put("nachname", checkIfAttributeExist(patient.getNameFirstRep().getFamily(), "nachname"));
             patientPs.put("geburtsname", ""); //TODO: Resource erweitern
-            patientPs.put("geburtstag", checkIfAttributeExist(patient.getBirthDateElement().getDay().toString(), "geburtstag"));
-            patientPs.put("geburtsmonat", checkIfAttributeExist(patient.getBirthDateElement().getMonth().toString(), "geburtsmonat"));
+            int birthDay = patient.getBirthDateElement().getDay();
+            int birthMonth = patient.getBirthDateElement().getMonth();
+            String day = String.valueOf(birthDay);
+            String month = String.valueOf(birthMonth);
+            if (birthDay < 10) {
+                day = String.format("%02d", birthDay);
+            }
+            if (birthMonth < 10) {
+                month = String.format("%02d", birthMonth);
+            }
+            patientPs.put("geburtstag", checkIfAttributeExist(day, "geburtstag"));
+            patientPs.put("geburtsmonat", checkIfAttributeExist(month, "geburtsmonat"));
             patientPs.put("geburtsjahr", checkIfAttributeExist(patient.getBirthDateElement().getYear().toString(), "geburtsjahr"));
             patientPs.put("plz", checkIfAttributeExist(patient.getAddressFirstRep().getPostalCode(), "plz"));
             patientPs.put("ort", checkIfAttributeExist(patient.getAddressFirstRep().getCity(), "ort"));
@@ -130,6 +142,7 @@ public class MainzellisteConnector {
 
     /**
      * Check if an attribute is empty
+     *
      * @param attribute
      * @param attributeName
      * @return the attribute if its not empty
@@ -145,6 +158,7 @@ public class MainzellisteConnector {
 
     /**
      * Post the original patient to the Mainzelliste and get an encrypted ID
+     *
      * @param patient
      * @return an encrypted ID
      * @throws IOException
@@ -154,7 +168,7 @@ public class MainzellisteConnector {
         HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
         httpPost.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-        httpPost.setHeader("apiKey", "test1234");
+        httpPost.setHeader("apiKey", "nngmTestKey?[8574]");
         httpPost.setEntity(entity);
         CloseableHttpResponse response;
         JSONObject encryptedID = new JSONObject();
