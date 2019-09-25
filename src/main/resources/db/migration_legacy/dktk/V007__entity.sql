@@ -1,1 +1,1 @@
-ALTER TYPE samply.entity_type add VALUE 'E_BIOLOGICAL_SAMPLES';
+ALTER TYPE samply.entity_type add VALUE 'UNKNOWN';

@@ -3,12 +3,12 @@
                xsi:schemaLocation="http://schema.samply.de/common http://schema.samply.de/config/Common.Config.xsd ">
     <Proxy>
         <HTTP>
-            <Url/>
+            <Url>193.174.53.221:3128</Url>
             <Username/>
             <Password/>
         </HTTP>
         <HTTPS>
-            <Url/>
+            <Url>193.174.53.221:3128</Url>
             <Username/>
             <Password/>
         </HTTPS>

@@ -42,7 +42,7 @@ public class MainzellisteConnector {
     private void init() {
         try {
             this.mainzellisteBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MAINZELLISTE_URL));
-            httpConnector = ApplicationBean.getHttpConnector();
+            httpConnector = ApplicationBean.createHttpConnector();
             this.mainzellisteHost = SamplyShareUtils.getAsHttpHost(mainzellisteBaseUrl);
             httpClient = httpConnector.getHttpClient(mainzellisteHost);
         } catch (MalformedURLException e) {
@@ -97,7 +97,7 @@ public class MainzellisteConnector {
         patientNew.setId(orginal.getId());
         Meta meta = new Meta();
         meta.addProfile(
-                "http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert/0.1"
+                "http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/patient"//"http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert/0.1"
         );
         patientNew.setMeta(meta);
         return patientNew;

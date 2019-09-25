@@ -27,7 +27,7 @@ public class CTSConnector {
     private void init() {
         try {
             this.ctsBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL));
-            httpConnector = ApplicationBean.getHttpConnector();
+            httpConnector = ApplicationBean.createHttpConnector();
             this.ctsHost = SamplyShareUtils.getAsHttpHost(ctsBaseUrl);
             httpClient = httpConnector.getHttpClient(ctsHost);
         } catch (MalformedURLException e) {
@@ -41,5 +41,10 @@ public class CTSConnector {
         MainzellisteConnector mainzellisteConnector = new MainzellisteConnector();
         String pseudonym = mainzellisteConnector.getPatientPseudonym(bundle);
         return bundleString;
+    }
+
+    public void postBundleToCTS(Bundle bundle){
+        CTSConnector connector= new CTSConnector();
+        connector.postBundleToCTS(bundle);
     }
 }

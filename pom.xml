@@ -547,6 +547,17 @@
             <artifactId>hapi-fhir-structures-dstu3</artifactId>
             <version>${hapi.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId><!--org.hl7.fhir.dstu3.hapi.validation-->
+            <artifactId>hapi-fhir-validation</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-validation-resources-dstu3</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
 
 </project>

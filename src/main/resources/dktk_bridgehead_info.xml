@@ -1,10 +1,11 @@
-<dkt:bridgehead xmlns:dkt="http://schema.samply.de/config/DKTKBridgeheadInfo">
-    <dkt:name>string</dkt:name>
-    <dkt:longname>string</dkt:longname>
-    <dkt:dktkid>string</dkt:dktkid>
-    <dkt:monitor>string</dkt:monitor>
-    <dkt:interval>string</dkt:interval>
-    <dkt:centralsearch>string</dkt:centralsearch>
-    <dkt:decentralsearch>string</dkt:decentralsearch>
-    <dkt:updateserver>string</dkt:updateserver>
-</dkt:bridgehead>
+<bi:bridgehead xmlns:bi="http://schema.samply.de/config/BridgeheadInfo">
+    <bi:name>string</bi:name>
+    <bi:longname>string</bi:longname>
+    <bi:dktkid>string</bi:dktkid>
+    <bi:monitor>string</bi:monitor>
+    <bi:interval>string</bi:interval>
+    <bi:centralsearch>string</bi:centralsearch>
+    <bi:decentralsearch>string</bi:decentralsearch>
+    <bi:updateserver>string</bi:updateserver>
+    <bi:queryLanguage>Query</bi:queryLanguage>
+</bi:bridgehead>
