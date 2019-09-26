@@ -45,6 +45,7 @@ import de.samply.share.common.model.dto.monitoring.StatusReportItem;
 import de.samply.share.common.utils.Constants;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.common.*;
+import de.samply.share.model.common.inquiry.InquiriesIdList;
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
