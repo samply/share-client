@@ -477,11 +477,11 @@ public class UploadToCentralMdsDbJob implements Job {
 
     private void addInquiryCriteria(DateRestriction dateRestriction, int detailsId) throws JAXBException {
         if (ApplicationUtils.isLanguageCql()) {
-            addInquiryCriteriaQuery(dateRestriction, detailsId);
+            addInquiryCriteriaCql(dateRestriction, detailsId);
         }
 
         if (ApplicationUtils.isLanguageQuery()) {
-            addInquiryCriteriaCql(dateRestriction, detailsId);
+            addInquiryCriteriaQuery(dateRestriction, detailsId);
         }
     }
 
