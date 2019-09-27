@@ -298,12 +298,12 @@ public class BrokerConnector {
                     throw new BrokerConnectorException("Error reading inquiries", e);
                 }
 
-                if (SamplyShareUtils.isNullOrEmpty(inquiriesIdList.getInquiries())) {
+                if (SamplyShareUtils.isNullOrEmpty(inquiriesIdList.getInquiryIds())) {
                     return new HashMap<>();
                 }
 
                 Map<String, String> queryIds = new HashMap<>();
-                for (InquiriesIdList.Inquiry inquiry : inquiriesIdList.getInquiries()) {
+                for (InquiriesIdList.InquiryId inquiry : inquiriesIdList.getInquiryIds()) {
                     queryIds.put(inquiry.getId(), inquiry.getRevision());
                 }
                 return queryIds;
