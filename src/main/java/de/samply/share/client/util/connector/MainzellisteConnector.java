@@ -2,11 +2,10 @@ package de.samply.share.client.util.connector;
 
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
-import com.mchange.rmi.NotAuthorizedException;
-import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
+import de.samply.share.client.util.connector.exception.MainzellisteConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import org.apache.http.Consts;
@@ -19,10 +18,12 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.dstu3.model.*;
 import org.jooq.tools.json.JSONObject;
 import org.jooq.tools.json.JSONParser;
 import org.jooq.tools.json.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -31,24 +32,12 @@ import java.util.Calendar;
 import java.util.List;
 
 public class MainzellisteConnector {
-    public static final String FHIR_RESOURCE_PATIENT = "patient";
-    public static final String MAINZELLISTE_IDTYPE_ENC_ID = "EncID";
-    public static final String IDAT_VORNAME = "vorname";
-    public static final String IDAT_NACHNAME = "nachname";
-    public static final String IDAT_GEBURTSDATUM = "Geburtsdatum";
-    public static final String IDAT_GEBURTSTAG = "geburtstag";
-    public static final String IDAT_GEBURTSMONAT = "geburtsmonat";
-    public static final String IDAT_GEBURTSJAHR = "geburtsjahr";
-    public static final String IDAT_ADRESSE_STADT = "adresse.stadt";
-    public static final String IDAT_ADRESSE_PLZ = "adresse.plz";
-    public static final String IDAT_ADRESSE_STRASSE = "adresse.strasse";
-    public static final String IDAT_REQUESTED_ID_TYPE = "requestedIdType";
-    public static final String IDAT_CTSID = "ctsid";
     private transient HttpConnector httpConnector;
     private CloseableHttpClient httpClient;
     private String mainzellisteBaseUrl;
     private HttpHost mainzellisteHost;
     private final String GET_ENCRYPTID_URL = "/paths/getEncryptId";
+    private static final Logger logger = LogManager.getLogger(MainzellisteConnector.class);
 
     public MainzellisteConnector() {
         init();
@@ -56,7 +45,7 @@ public class MainzellisteConnector {
 
     private void init() {
         try {
-            this.mainzellisteBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_URL));
+            this.mainzellisteBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MAINZELLISTE_URL));
             httpConnector = ApplicationBean.createHttpConnector();
             this.mainzellisteHost = SamplyShareUtils.getAsHttpHost(mainzellisteBaseUrl);
             httpClient = httpConnector.getHttpClient(mainzellisteHost);
@@ -73,10 +62,10 @@ public class MainzellisteConnector {
      * @throws IllegalArgumentException
      * @throws IOException
      */
-    public Bundle getPatientPseudonym(Bundle bundle) throws IllegalArgumentException, NotFoundException, IOException, NotAuthorizedException {
+    public Bundle getPatientPseudonym(Bundle bundle) throws IllegalArgumentException, MainzellisteConnectorException, IOException {
         for (int i = 0; i < bundle.getEntry().size(); i++) {
             Resource resource = bundle.getEntry().get(i).getResource();
-            if (resource.fhirType().equalsIgnoreCase(FHIR_RESOURCE_PATIENT)) {
+            if (resource.fhirType().equals("Patient")) {
                 JSONObject patient = createJSONPatient((Patient) resource);
                 Patient original = (Patient) resource;
                 JSONObject encryptedID = getPseudonymFromMainzelliste(patient);
@@ -106,14 +95,15 @@ public class MainzellisteConnector {
         patientNew.setGender(orginal.getGender());
         List<Identifier> identifierList = new ArrayList<>();
         Identifier identifier = new Identifier();
-        identifier.setValue(encryptedID.get(MAINZELLISTE_IDTYPE_ENC_ID).toString());
+        identifier.setValue(encryptedID.get("EncID").toString());
         identifierList.add(identifier);
         patientNew.setIdentifier(identifierList);
         patientNew.setDeceased(orginal.getDeceased());
         patientNew.setId(orginal.getId());
-        String profile = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PROFILE);
         Meta meta = new Meta();
-        meta.addProfile(profile);
+        meta.addProfile(
+                "http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert/0.1"
+        );
         patientNew.setMeta(meta);
         return patientNew;
     }
@@ -129,13 +119,11 @@ public class MainzellisteConnector {
     private JSONObject createJSONPatient(Patient patient) throws NullPointerException {
         JSONObject patientPs = new JSONObject();
         try {
-            patientPs.put(IDAT_VORNAME, checkIfAttributeExist(patient.getNameFirstRep().getGivenAsSingleString(), IDAT_VORNAME));
-            patientPs.put(IDAT_NACHNAME, checkIfAttributeExist(patient.getNameFirstRep().getFamily(), IDAT_NACHNAME));
-            DateType birthDateElement = patient.getBirthDateElement();
-            checkIfAttributeExist(birthDateElement.asStringValue(), IDAT_GEBURTSDATUM);
-            int birthDay = birthDateElement.getDay();
-            int birthMonth = birthDateElement.getMonth();
-            birthMonth += 1;// +1 because Hapi returns the month with 0-index, e.g. 0=January
+            patientPs.put("vorname", checkIfAttributeExist(patient.getNameFirstRep().getGivenAsSingleString(), "vorname"));
+            patientPs.put("nachname", checkIfAttributeExist(patient.getNameFirstRep().getFamily(), "nachname"));
+            patientPs.put("geburtsname", ""); //TODO: Resource erweitern
+            int birthDay = patient.getBirthDateElement().getDay();
+            int birthMonth = patient.getBirthDateElement().getMonth();
             String day = String.valueOf(birthDay);
             String month = String.valueOf(birthMonth);
             if (birthDay < 10) {
@@ -144,22 +132,12 @@ public class MainzellisteConnector {
             if (birthMonth < 10) {
                 month = String.format("%02d", birthMonth);
             }
-            patientPs.put(IDAT_GEBURTSTAG, checkIfAttributeExist(day, IDAT_GEBURTSTAG));
-            patientPs.put(IDAT_GEBURTSMONAT, checkIfAttributeExist(month, IDAT_GEBURTSMONAT));
-            patientPs.put(IDAT_GEBURTSJAHR, checkIfAttributeExist(birthDateElement.getYear().toString(), IDAT_GEBURTSJAHR));
-            if (!patient.getAddressFirstRep().isEmpty()) {
-                if (patient.getAddressFirstRep().hasCity())
-                    patientPs.put(IDAT_ADRESSE_STADT, patient.getAddressFirstRep().getCity());
-                if (patient.getAddressFirstRep().hasPostalCode())
-                    patientPs.put(IDAT_ADRESSE_PLZ, patient.getAddressFirstRep().getPostalCode());
-                if (patient.getAddressFirstRep().hasLine())
-                    patientPs.put(IDAT_ADRESSE_STRASSE, patient.getAddressFirstRep().getLine().get(0).getValue());
-            }
-            patientPs.put(IDAT_REQUESTED_ID_TYPE, IDAT_CTSID);
-            // @TODO next version add the Versichertennummer
-            //if(coverage!=null&&coverage.hasIdentifier()){
-            //patientPs.put("versicherungsnummer",coverage.getIdentifierFirstRep().getValue());
-            //}
+            patientPs.put("geburtstag", checkIfAttributeExist(day, "geburtstag"));
+            patientPs.put("geburtsmonat", checkIfAttributeExist(month, "geburtsmonat"));
+            patientPs.put("geburtsjahr", checkIfAttributeExist(patient.getBirthDateElement().getYear().toString(), "geburtsjahr"));
+            patientPs.put("plz", checkIfAttributeExist(patient.getAddressFirstRep().getPostalCode(), "plz"));
+            patientPs.put("ort", checkIfAttributeExist(patient.getAddressFirstRep().getCity(), "ort"));
+            patientPs.put("requestedIdType", "ctsid");
         } catch (NullPointerException e) {
             throw new NullPointerException("Error at patient (ID: " + patient.getId() + "). " + e.getMessage());
         }
@@ -175,8 +153,8 @@ public class MainzellisteConnector {
      * @throws NullPointerException
      */
     private String checkIfAttributeExist(String attribute, String attributeName) throws NullPointerException {
-        if (attribute == null || attribute.isEmpty()) {
-            throw new NullPointerException("The mandatory attribute " + attributeName + " was empty");
+        if (attribute == null) {
+            throw new NullPointerException("The attribute " + attributeName + " was empty");
         } else {
             return attribute;
         }
@@ -189,37 +167,29 @@ public class MainzellisteConnector {
      * @return an encrypted ID
      * @throws IOException
      */
-    private JSONObject getPseudonymFromMainzelliste(JSONObject patient) throws IOException, IllegalArgumentException, NotFoundException, NotAuthorizedException {
-        HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_URL) + GET_ENCRYPTID_URL));
+    private JSONObject getPseudonymFromMainzelliste(JSONObject patient) throws MainzellisteConnectorException, IOException {//// @TODO throw new IdManagerConnectorException(e);
+        HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MAINZELLISTE_URL) + GET_ENCRYPTID_URL));
         HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
         httpPost.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-        httpPost.setHeader("apiKey", ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_API_KEY));
+        httpPost.setHeader("apiKey", "nngmTestKey?[8574]");
         httpPost.setEntity(entity);
         CloseableHttpResponse response;
         JSONObject encryptedID = new JSONObject();
         try {
             response = httpClient.execute(httpPost);
+
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode >= 500 && statusCode < 600) {
-                throw new IOException("Mainzelliste server not responding");
-            }
-            if (statusCode == 401) {
-                throw new NotAuthorizedException();
+            if (statusCode >= 400) {
+                throw new MainzellisteConnectorException("Got an error from Mainzeliste server: " + response.getStatusLine());
             }
 
-            if (statusCode == 404) {
-                throw new NotFoundException("Mainzelliste Url not found");
-            }
-            if (statusCode >= 400 && statusCode < 500) {
-                throw new IllegalArgumentException("Invalid patient bundle posted to Mainzelliste");
-            }
             String encryptedIDString = EntityUtils.toString(response.getEntity());
             JSONParser parser = new JSONParser();
             encryptedID = (JSONObject) parser.parse(encryptedIDString);
             response.close();
         } catch (IOException e) {
-            throw new IOException(e);
+            throw new IOException(e); // @TODO throw new IdManagerConnectorException(e);
         } catch (ParseException e) {
             e.printStackTrace();
         }
