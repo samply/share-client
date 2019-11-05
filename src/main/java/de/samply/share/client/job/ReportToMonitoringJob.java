@@ -196,9 +196,13 @@ public class ReportToMonitoringJob implements Job {
      * @return patient count and the execution time
      */
     private ReferenceQueryCheckResult getReferenceQueryResult(BrokerConnector brokerConnector) {
-        ReferenceQueryCheckResult referenceQueryCheckResult;
+        ReferenceQueryCheckResult referenceQueryCheckResult = null;
         try {
-            referenceQueryCheckResult = ldmConnector.getReferenceQueryCheckResult(brokerConnector.getReferenceQuery());
+            if(ApplicationUtils.isLanguageQuery()) {
+                referenceQueryCheckResult = ldmConnector.getReferenceQueryCheckResult(brokerConnector.getReferenceQuery());
+            }else if(ApplicationUtils.isLanguageCql()){
+                referenceQueryCheckResult= ldmConnector.getReferenceQueryCheckResult(brokerConnector.getReferenceQueryCql());
+            }
         } catch (Exception e) {
             referenceQueryCheckResult = new ReferenceQueryCheckResult();
         }

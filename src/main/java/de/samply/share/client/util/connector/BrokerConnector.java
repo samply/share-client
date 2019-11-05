@@ -378,6 +378,35 @@ public class BrokerConnector {
         }
     }
 
+    public String getReferenceQueryCql() throws BrokerConnectorException {
+        if (credentials == null) {
+            String message = "No credentials provided for broker " + broker.getId();
+            throw new BrokerConnectorException(message);
+        }
+        try {
+            String path = SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.REFERENCEQUERY_PATH;
+            URI uri = new URI(path);
+            HttpGet httpGet = new HttpGet(uri.normalize().toString());
+            httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpGet.addHeader(Constants.HEADER_KEY_QUERY_LANGUAGE, ApplicationBean.getBridgeheadInfos().getQueryLanguage());
+            int statusCode;
+            String responseString;
+            try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {
+                statusCode = response.getStatusLine().getStatusCode();
+                HttpEntity entity = response.getEntity();
+                responseString = EntityUtils.toString(entity, Consts.UTF_8);
+                EntityUtils.consume(entity);
+            }
+            if (statusCode == HttpStatus.SC_OK) {
+                return responseString;
+            }
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     /**
      * Retrieve a reference query from the broker
      * <p>
@@ -395,7 +424,7 @@ public class BrokerConnector {
             URI uri = new URI(path);
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
             httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
-
+            httpGet.addHeader(Constants.HEADER_KEY_QUERY_LANGUAGE, ApplicationBean.getBridgeheadInfos().getQueryLanguage());
             int statusCode;
             String responseString;
             try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {

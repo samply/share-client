@@ -133,7 +133,7 @@ public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, LdmPostQ
         ReferenceQueryCheckResult result = new ReferenceQueryCheckResult();
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
-            String resultLocation = ldmClient.postQuery(referenceQuery, InquiryCriteriaEntityType.PATIENT.getName(), false);
+            String resultLocation = ldmClient.postQuery(referenceQuery, InquiryCriteriaEntityType.PATIENT.getName(), true);
 
             int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
                     EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
@@ -183,7 +183,11 @@ public class LdmConnectorCql extends AbstractLdmConnector<LdmClientCql, LdmPostQ
     }
 
     private String createQueryForMonitoring() {
-        return "";
+        return "library Retrieve\n" +
+                "using FHIR version '4.0.0'\n" +
+                "\n" +
+                "define InInitialPopulation:\n" +
+                "  true";
     }
 
 }
