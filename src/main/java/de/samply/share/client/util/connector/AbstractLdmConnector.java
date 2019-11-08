@@ -82,7 +82,9 @@ public abstract class AbstractLdmConnector<
     }
 
     private void initBasic() throws LdmConnectorRuntimeException {
+
         this.baseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL));
+
 
         if (useAuthorizationForLdm()) {
             this.httpConnector = ApplicationBean.createHttpConnector(TargetType.TT_LDM, TIMEOUT_LDM_IN_SECONDS);

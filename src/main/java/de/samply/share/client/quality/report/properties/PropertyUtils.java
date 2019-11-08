@@ -45,7 +45,7 @@ public class PropertyUtils {
 
         List<String> properties = new ArrayList<>();
 
-        if (propertiesList != null){
+        if (propertiesList != null && propertiesList.length() > 0){
 
             String separator = getSeparator(propertiesList);
             if (separator == null){

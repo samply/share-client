@@ -28,7 +28,9 @@ import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.util.db.ConfigurationUtil;
+import de.samply.share.client.util.db.CredentialsUtil;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -44,7 +46,10 @@ public class LocalDataManagementConnector {
 
 
     CloseableHttpResponse getResponse(String uri, HttpUriRequest request) throws IOException {
+
+        request.setHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
         return getHttpConnector().getHttpClient(uri).execute(request);
+
     }
 
     HttpPost createHttpPost(String uri, HttpEntity httpEntity){
@@ -61,6 +66,8 @@ public class LocalDataManagementConnector {
     HttpGet createHttpGet(String uri){
 
         HttpGet httpGet = new HttpGet(uri);
+        httpGet.setHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
+
         RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(socketTimeout).setConnectTimeout(connectTimeout).build();
         httpGet.setConfig(requestConfig);
 
@@ -72,9 +79,14 @@ public class LocalDataManagementConnector {
         return ApplicationBean.createHttpConnector();
     }
 
-    String getLocalDataManagementUrl() {
+    public String getLocalDataManagementUrl() {
         return ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL);
     }
+
+    public String getLocalDataManagementURLBase(){
+        return ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL_BASE);
+    }
+
 
 
     public void setSocketTimeout(int socketTimeout) {

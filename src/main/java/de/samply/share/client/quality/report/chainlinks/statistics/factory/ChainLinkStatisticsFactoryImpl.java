@@ -52,7 +52,7 @@ public class ChainLinkStatisticsFactoryImpl implements ChainLinkStatisticsFactor
         ChainLinkStaticStatistics chainLinkStaticStatistics = readChainLinkStaticStatistics();
         ChainLinkStaticStatisticsParameters chainLinkStaticStatisticsParameters = chainLinkStaticStatistics.get(chainLinkStatisticKey);
 
-        if (chainLinkStaticStatisticsParameters != null){
+        if (chainLinkStatistics != null && chainLinkStaticStatisticsParameters != null){
 
             Long averageNanoTime = chainLinkStaticStatisticsParameters.getAverageNanoTime();
             Integer averageNumberOfItems = chainLinkStaticStatisticsParameters.getAverageNumberOfItems();

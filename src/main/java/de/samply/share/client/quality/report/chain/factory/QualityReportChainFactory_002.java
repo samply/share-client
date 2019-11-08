@@ -83,8 +83,11 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
     private CentraxxMapper centraXxMapper;
     private IdPathManager_002 idPathManager;
 
-
     public QualityReportChainFactory_002(IdPathManager_002 idPathManager, ChainFinalizer chainFinalizer) throws ChainFactoryException {
+        this (idPathManager, chainFinalizer, null);
+    }
+
+    public QualityReportChainFactory_002(IdPathManager_002 idPathManager, ChainFinalizer chainFinalizer, LocalDataManagementRequester localDataManagementRequester) throws ChainFactoryException {
 
         this.idPathManager = idPathManager;
 
@@ -103,7 +106,7 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
         ChainLinkStatisticsFactory chainLinkStatisticsFactory = new ChainLinkStatisticsFactoryImpl(chainLinkStaticStatisticsFileManager);
 
 
-        LocalDataManagementRequester localDataManagementRequester = new LocalDataManagementRequesterImpl();
+        localDataManagementRequester = (localDataManagementRequester == null) ? createLocalDataManagementRequester() : localDataManagementRequester;
         QualityResultCsvLineManager_002 qualityResultCsvLineManager = new QualityResultCsvLineManager_002();
         CsvQualityReportFileManager csvQualityReportFileManager = new CsvQualityReportFileManager<>(qualityResultCsvLineManager, idPathManager);
 
@@ -134,6 +137,10 @@ public class QualityReportChainFactory_002 extends QualityReportChainFactory {
         setChainFinalizer(chainFinalizer);
 
 
+    }
+
+    private LocalDataManagementRequester createLocalDataManagementRequester(){
+        return new LocalDataManagementRequesterImpl();
     }
 
     private MdrMappedElements createMdrMappedElements (){

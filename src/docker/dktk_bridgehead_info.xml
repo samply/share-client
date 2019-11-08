@@ -1,0 +1,11 @@
+<dkt:bridgehead xmlns:dkt="http://schema.samply.de/config/BridgeheadInfo">
+    <dkt:name>string</dkt:name>
+    <dkt:longname>string</dkt:longname>
+    <dkt:dktkid>string</dkt:dktkid>
+    <dkt:monitor>https://ccpit.dktk.dkfz.de/dktk.monitor/rest/info</dkt:monitor>
+    <dkt:interval>string</dkt:interval>
+    <dkt:centralsearch>https://centralsearch-test.dktk.dkfz.de/</dkt:centralsearch>
+    <dkt:decentralsearch>https://decentralsearch-test.ccp-it.dktk.dkfz.de/</dkt:decentralsearch>
+    <dkt:updateserver>NOT_DEFINED</dkt:updateserver>
+    <dkt:queryLanguage>QUERY</dkt:queryLanguage>
+</dkt:bridgehead>

@@ -50,7 +50,7 @@ public class ChainLinkStatistics implements ChainLinkStatisticsConsumer, ChainLi
 
 
     @Override
-    public void addTimeProProcess(long timeProProcess, boolean isToBeRepeated) {
+    public void addTimeProProcess(Long timeProProcess, Boolean isToBeRepeated) {
 
         totalProcessedNanoTime += timeProProcess;
         if (!isToBeRepeated) {
@@ -60,8 +60,12 @@ public class ChainLinkStatistics implements ChainLinkStatisticsConsumer, ChainLi
     }
 
     @Override
-    public void setNumberOfElementsToBeProcessed(int numberOfElementsToBeProcessed) {
-        this.numberOfItemsToBeProcessed = numberOfElementsToBeProcessed;
+    public void setNumberOfElementsToBeProcessed(Integer numberOfElementsToBeProcessed) {
+
+        if (numberOfElementsToBeProcessed != null) {
+            this.numberOfItemsToBeProcessed = numberOfElementsToBeProcessed;
+        }
+
     }
 
     @Override

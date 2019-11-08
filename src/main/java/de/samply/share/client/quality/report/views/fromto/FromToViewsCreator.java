@@ -160,16 +160,28 @@ public class FromToViewsCreator implements ViewsCreator{
     private Attribute createFromAttribute (ViewFromTo viewFromTo){
 
 
-        MdrIdDatatype mdrId = new MdrIdDatatype(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_UPLOAD_FROM));
+        MdrIdDatatype mdrId = getMdrKeyUploadFrom();
         return createAttribute(mdrId, viewFromTo.getFrom());
 
     }
 
     private Attribute createToAttribute (ViewFromTo viewFromTo){
 
-        MdrIdDatatype mdrId = new MdrIdDatatype(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_UPLOAD_TO));
+        MdrIdDatatype mdrId = getMdrKeyUploadTo();
         return createAttribute(mdrId, viewFromTo.getTo());
 
+    }
+
+    private MdrIdDatatype getMdrKeyUploadFrom (){
+        return getMdrKey(EnumConfiguration.MDR_KEY_UPLOAD_FROM);
+    }
+
+    private MdrIdDatatype getMdrKeyUploadTo(){
+        return getMdrKey(EnumConfiguration.MDR_KEY_UPLOAD_TO);
+    }
+
+    private MdrIdDatatype getMdrKey (EnumConfiguration enumConfiguration){
+        return new MdrIdDatatype(ConfigurationUtil.getConfigurationElementValue(enumConfiguration));
     }
 
     private Attribute createAttribute (MdrIdDatatype mdrId, String value){

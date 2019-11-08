@@ -1,0 +1,10 @@
+<com:operator xmlns:com="http://schema.samply.de/common">
+  <!--Optional:-->
+  <com:firstName>string</com:firstName>
+  <!--Optional:-->
+  <com:lastName>string</com:lastName>
+  <!--Optional:-->
+  <com:email>string</com:email>
+  <!--Optional:-->
+  <com:phone>string</com:phone>
+</com:operator>

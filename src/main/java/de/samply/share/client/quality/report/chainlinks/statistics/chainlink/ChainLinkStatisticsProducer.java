@@ -26,9 +26,9 @@ package de.samply.share.client.quality.report.chainlinks.statistics.chainlink;/*
 
 public interface ChainLinkStatisticsProducer {
 
-    public void addTimeProProcess (long timeProProcess, boolean isToBeRepeated);
+    public void addTimeProProcess (Long timeProProcess, Boolean isToBeRepeated);
 
-    public void setNumberOfElementsToBeProcessed (int numberOfElementsToBeProcessed);
+    public void setNumberOfElementsToBeProcessed (Integer numberOfElementsToBeProcessed);
 
     public void finalizeProducer() throws ChainLinkStatisticsException;
 

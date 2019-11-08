@@ -20,6 +20,7 @@
             <id>samply</id>
             <properties>
                 <project.context>samply</project.context>
+                <project.subcontext>samply</project.subcontext>
                 <!-- Postgres settings -->
                 <database.username>${project.context}</database.username>
                 <database.password>${project.context}</database.password>
@@ -31,6 +32,7 @@
             <id>osse</id>
             <properties>
                 <project.context>osse</project.context>
+                <project.subcontext>osse</project.subcontext>
                 <project.basename>OSSE.Share</project.basename>
                 <!-- general properties -->
                 <database.username>samplyshare</database.username>
@@ -43,11 +45,25 @@
             <id>dktk</id>
             <properties>
                 <project.context>dktk</project.context>
+                <project.subcontext>dktk</project.subcontext>
                 <project.basename>DKTK.Teiler</project.basename>
                 <!-- general properties -->
                 <database.username>samplyweb</database.username>
                 <database.password>samplyweb</database.password>
                 <database.url>jdbc:postgresql://localhost:5432/share_v2</database.url>
+                <database.schema>samply</database.schema>
+            </properties>
+        </profile>
+        <profile>
+            <id>c4</id>
+            <properties>
+                <project.context>dktk</project.context>
+                <project.subcontext>c4</project.subcontext>
+                <project.basename>C4.Teiler</project.basename>
+                <!-- general properties -->
+                <database.username>samplyconnector</database.username>
+                <database.password>samplyconnector</database.password>
+                <database.url>jdbc:postgresql://samply_connector_db:5432/samplyconnector</database.url>
                 <database.schema>samply</database.schema>
             </properties>
         </profile>
@@ -169,6 +185,7 @@
                                         <include>V*__common*.*</include>
                                         <include>V*__table*.*</include>
                                         <include>V*__${project.context}*.*</include>
+                                        <include>V*__${project.subcontext}*.*</include>
                                     </includes>
                                 </resource>
                                 <resource>

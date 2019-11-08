@@ -56,6 +56,8 @@ import java.io.UnsupportedEncodingException;
 public class LocalDataManagementRequesterImpl extends LocalDataManagementConnector implements LocalDataManagementRequester {
 
 
+    //private QueryResultStatisticConverter queryResultStatisticConverter = new QueryResultStatisticConverterImpl();
+
     @Override
     public LocalDataManagementResponse<String> postViewAndGetLocationUrlStatisticsOnly(View view) throws LocalDataManagementRequesterException {
         return postViewAndGetLocationUrl(view, true);
@@ -80,7 +82,7 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
     private LocalDataManagementResponse<String> postViewAndGetLocationUrlWithoutExceptions(View view, boolean statisticsOnly) throws JAXBException, UnsupportedEncodingException, LocalDataManagementRequesterException {
 
         String localDataManagementUrl = SamplyShareUtils.addTrailingSlash(getLocalDataManagementUrl());
-        localDataManagementUrl += LocalDataManagementUrlSuffixAndParameters.BASE;
+        localDataManagementUrl += getLocalDataManagementURLBase();
 
         MyUri myUri = new MyUri(localDataManagementUrl, LocalDataManagementUrlSuffixAndParameters.REQUESTS_URL_SUFFIX);
         if (statisticsOnly) {
@@ -136,6 +138,35 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
     private LocalDataManagementResponse<QueryResultStatistic> getQueryResultStatistic(MyUri myUri) throws LocalDataManagementRequesterException {
         return getLocalDataManagementResponse(myUri, QueryResultStatistic.class);
     }
+
+    /*
+    private LocalDataManagementResponse<QueryResultStatistic> getQueryResultStatistic(MyUri myUri) throws LocalDataManagementRequesterException {
+        return getLocalDataManagementResponse(myUri, queryResultStatisticConverter);
+    }
+
+
+    private <T> LocalDataManagementResponse<QueryResultStatistic> getLocalDataManagementResponse(MyUri myUri, QueryResultStatisticConverter<T> queryResultStatisticConverter) throws LocalDataManagementRequesterException {
+
+        LocalDataManagementResponse<T> localDataManagementResponse = getLocalDataManagementResponse(myUri, queryResultStatisticConverter.getQueryResultStatisticClass());
+        T response = localDataManagementResponse.getResponse();
+        QueryResultStatistic queryResultStatistic = queryResultStatisticConverter.convert(response);
+
+        LocalDataManagementResponse<QueryResultStatistic> localDataManagementResponse2 = createLocalDataManagementResponse(queryResultStatistic, localDataManagementResponse);
+
+        return localDataManagementResponse2;
+
+    }
+
+    private LocalDataManagementResponse<QueryResultStatistic> createLocalDataManagementResponse (QueryResultStatistic queryResultStatistic, LocalDataManagementResponse localDataManagementResponse){
+
+        LocalDataManagementResponse<QueryResultStatistic> localDataManagementResponse2 = new LocalDataManagementResponse<>();
+        localDataManagementResponse2.setResponse(queryResultStatistic);
+        localDataManagementResponse2.setStatusCode(localDataManagementResponse.getStatusCode());
+        localDataManagementResponse2.setError(localDataManagementResponse.getError());
+
+        return localDataManagementResponse2;
+    }
+*/
 
     @Override
     public LocalDataManagementResponse<QueryResult> getQueryResult(String locationUrl, int page) throws LocalDataManagementRequesterException {
@@ -237,4 +268,27 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
 
     }
 
+    public interface QueryResultStatisticConverter<T>{
+        public QueryResultStatistic convert (T queryResultStatistic);
+        public Class<T> getQueryResultStatisticClass();
+    }
+
+    private class QueryResultStatisticConverterImpl implements QueryResultStatisticConverter<QueryResultStatistic>{
+
+        @Override
+        public QueryResultStatistic convert(QueryResultStatistic queryResultStatistic) {
+            return queryResultStatistic;
+        }
+
+        @Override
+        public Class<QueryResultStatistic> getQueryResultStatisticClass() {
+            return QueryResultStatistic.class;
+        }
+
+    }
+/*
+    public void setQueryResultStatisticConverter(QueryResultStatisticConverter queryResultStatisticConverter) {
+        this.queryResultStatisticConverter = queryResultStatisticConverter;
+    }
+*/
 }

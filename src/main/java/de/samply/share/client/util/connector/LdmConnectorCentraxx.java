@@ -252,7 +252,8 @@ public class LdmConnectorCentraxx extends AbstractLdmConnectorView<LdmClientCent
     private String getMappingForMdrItem(EnumConfiguration mdrKey) {
         String centraxxMappingMdrKey = ConfigurationUtil.getConfigurationElementValue(mdrKey);
         MdrIdDatatype mappingMdrItem = new MdrIdDatatype(centraxxMappingMdrKey);
-        HttpGet httpGet = new HttpGet(baseUrl + "rest/teiler/mapping/" + mappingMdrItem.getLatestCentraxx());
+        String base2 = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL_BASE);
+        HttpGet httpGet = new HttpGet(baseUrl + base2 + "/mapping/" + mappingMdrItem.getLatestCentraxx());
         httpGet.setHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
 
         try (CloseableHttpResponse response = httpClient.execute(host, httpGet)) {
@@ -278,7 +279,8 @@ public class LdmConnectorCentraxx extends AbstractLdmConnectorView<LdmClientCent
     @Override
     public List<CxxMappingElement> getMapping() {
 
-        HttpGet httpGet = new HttpGet(baseUrl + "rest/teiler/mapping");
+        String base2 = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL_BASE);
+        HttpGet httpGet = new HttpGet(baseUrl + base2 + "/mapping");
         httpGet.setHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
 
         return getMapping(httpGet);
