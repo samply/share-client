@@ -1,4 +1,5 @@
-FROM tomcat:8.5.32-jre8-alpine
+#FROM tomcat:8.5.32-jre8-alpine
+FROM tomcat:9.0.27-jdk8-openjdk
 
 RUN ["rm", "-fr", "/usr/local/tomcat/webapps"]
 RUN mkdir /usr/local/tomcat/reports
