@@ -1,6 +1,6 @@
 <com:urls xmlns:com="http://schema.samply.de/common">
-  <com:shareUrl>http://localhost:8080/DKTK-Teiler/</com:shareUrl>
-  <com:idmanagerUrl>http://id_manager:8080/</com:idmanagerUrl>
-  <com:ldmUrl>http://samply_store:8080/</com:ldmUrl>
+  <com:shareUrl>http://localhost:8080/</com:shareUrl>
+  <com:idmanagerUrl>http://idmanager:8080/</com:idmanagerUrl>
+  <com:ldmUrl>http://store:8080/</com:ldmUrl>
   <com:mdrUrl>https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr</com:mdrUrl>
 </com:urls>

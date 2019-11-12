@@ -26,7 +26,7 @@ ADD src/docker/quality-report-info.xlsx        /etc/dktk/reports/
 # JMX Exporter
 ENV JMX_EXPORTER_VERSION 0.3.1
 COPY src/docker/jmx-exporter.yml                /dktk/jmx-exporter.yml
-# ADD https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/$JMX_EXPORTER_VERSION/jmx_prometheus_javaagent-$JMX_EXPORTER_VERSION.jar /dktk/
+ADD https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/$JMX_EXPORTER_VERSION/jmx_prometheus_javaagent-$JMX_EXPORTER_VERSION.jar /dktk/
 
 ADD src/docker/start.sh                         /dktk/
 RUN chmod +x                                    /dktk/start.sh

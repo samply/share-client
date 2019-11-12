@@ -25,14 +25,18 @@ package de.samply.share.client.quality.report.file.excel.sheet.wrapper;/*
 */
 
 import de.samply.share.client.quality.report.file.excel.sheet.ExcelSheetFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class ExcelSheetWithAutoSizeColumnFactory extends ExcelSheetFactoryWrapper {
 
     private Set<Integer> excludedColumnsForAutoSize = new HashSet<>();
+    protected static final Logger logger = LogManager.getLogger(ExcelSheetWithAutoSizeColumnFactory.class);
 
     public ExcelSheetWithAutoSizeColumnFactory(ExcelSheetFactory excelSheetFactory) {
         super(excelSheetFactory);
@@ -44,12 +48,22 @@ public class ExcelSheetWithAutoSizeColumnFactory extends ExcelSheetFactoryWrappe
         for (int i = 0; i < sheet.getRow(0).getPhysicalNumberOfCells(); i++){
 
             if (!excludedColumnsForAutoSize.contains(i)){
-                sheet.autoSizeColumn(i);
+                //sheet.autoSizeColumn(i);
+                autoSizeColumn(sheet, i);
             }
 
         }
 
         return sheet;
+    }
+
+
+    private void autoSizeColumn (XSSFSheet sheet, int column){
+        try{
+            sheet.autoSizeColumn(column);
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+        }
     }
 
     public void addExcludedColumn (int column){
