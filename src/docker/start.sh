@@ -28,7 +28,7 @@ sed -i "s%{mail-from-name}%${MAIL_FROM_NAME}%"            /usr/local/tomcat/conf
 
 sed -i "s#{query-language}#${QUERY_LANGUAGE:-QUERY}#"     /usr/local/tomcat/conf/dktk_bridgehead_info.xml
 
-export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/samply/jmx_prometheus_javaagent-0.3.1.jar=9100:/samply/jmx-exporter.yml"
+# export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/dktk/jmx_prometheus_javaagent-0.3.1.jar=9100:/dktk/jmx-exporter.yml"
 
 # Replace start.sh with catalina.sh
 exec /usr/local/tomcat/bin/catalina.sh run
