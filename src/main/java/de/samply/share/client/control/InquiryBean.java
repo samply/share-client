@@ -560,14 +560,24 @@ public class InquiryBean implements Serializable {
 
     private List<MdrIdDatatype> getExportMdrBlackList() {
 
-        List<String> configurationElementValueList = ConfigurationUtil.getConfigurationElementValueList(EnumConfiguration.EXPORT_MDR_BLACKLIST);
+        try {
+            List<MdrIdDatatype> mdrIdDatatypeList = new ArrayList<>();
 
-        List<MdrIdDatatype> mdrIdDatatypeList = new ArrayList<>();
-        for (String sMdrId : configurationElementValueList) {
-            mdrIdDatatypeList.add(new MdrIdDatatype(sMdrId));
+            List<String> configurationElementValueList = ConfigurationUtil.getConfigurationElementValueList(EnumConfiguration.EXPORT_MDR_BLACKLIST);
+
+            for (String sMdrId : configurationElementValueList) {
+                if (sMdrId.length() > 0) {
+                    mdrIdDatatypeList.add(new MdrIdDatatype(sMdrId));
+                }
+            }
+
+            return mdrIdDatatypeList;
+
+        }catch (Exception e){
+            logger.error(e);
+            return new ArrayList<>();
         }
 
-        return mdrIdDatatypeList;
     }
 
     /**

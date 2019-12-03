@@ -102,12 +102,22 @@ public class LdmConnectorCentraxx extends AbstractLdmConnectorView<LdmClientCent
 
     @Override
     LdmClientCentraxx createLdmClient(CloseableHttpClient httpClient, String baseUrl, boolean useCaching) throws LdmClientException {
-        return new LdmClientCentraxx(httpClient, baseUrl, useCaching);
+
+        LdmClientCentraxx ldmClientCentraxx = new LdmClientCentraxx(httpClient, baseUrl, useCaching);
+        ldmClientCentraxx.addHttpHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());;
+
+        return ldmClientCentraxx;
+
     }
 
     @Override
     LdmClientCentraxx createLdmClient(CloseableHttpClient httpClient, String baseUrl, boolean useCaching, int maxCacheSize) throws LdmClientException {
-        return new LdmClientCentraxx(httpClient, baseUrl, useCaching, maxCacheSize);
+
+        LdmClientCentraxx ldmClientCentraxx = new LdmClientCentraxx(httpClient, baseUrl, useCaching, maxCacheSize);
+        ldmClientCentraxx.addHttpHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());;
+
+        return ldmClientCentraxx;
+
     }
 
     @Override
