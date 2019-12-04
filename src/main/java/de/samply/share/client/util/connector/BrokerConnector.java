@@ -379,13 +379,11 @@ public class BrokerConnector {
     }
 
     public String getReferenceQueryCql() throws BrokerConnectorException {
-        try {
-            CloseableHttpResponse response = getResponse();
+        try (CloseableHttpResponse response = getResponse()){
             int statusCode = response.getStatusLine().getStatusCode();
             HttpEntity entity = response.getEntity();
             String responseString = EntityUtils.toString(entity, Consts.UTF_8);
             EntityUtils.consume(entity);
-            response.close();
             if (statusCode == HttpStatus.SC_OK) {
                 return responseString;
             }
@@ -417,13 +415,11 @@ public class BrokerConnector {
          * @return the reference query
          */
         public Query getReferenceQuery () throws BrokerConnectorException {
-            try {
-                CloseableHttpResponse response = getResponse();
+            try (CloseableHttpResponse response = getResponse()){
                 int statusCode = response.getStatusLine().getStatusCode();
                 HttpEntity entity = response.getEntity();
                 String responseString = EntityUtils.toString(entity, Consts.UTF_8);
                 EntityUtils.consume(entity);
-                response.close();
                 if (statusCode == HttpStatus.SC_OK) {
                     JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
                     Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
