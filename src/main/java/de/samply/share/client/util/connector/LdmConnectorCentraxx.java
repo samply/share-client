@@ -72,6 +72,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class LdmConnectorCentraxx extends AbstractLdmConnectorView<LdmClientCentraxx, QueryResult, QueryResultStatistic, Error, de.samply.share.model.ccp.View> implements LdmConnectorCentraxxExtension {
 
+    private final String MAPPING_PATH = "mapping";
     private static final Logger logger = LogManager.getLogger(LdmConnectorCentraxx.class);
 
     private CxxMappingParser cxxMappingParser = new CxxMappingParser();
@@ -103,9 +104,7 @@ public class LdmConnectorCentraxx extends AbstractLdmConnectorView<LdmClientCent
     @Override
     LdmClientCentraxx createLdmClient(CloseableHttpClient httpClient, String baseUrl, boolean useCaching) throws LdmClientException {
 
-
-        String base2 = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL_BASE);
-        LdmClientCentraxx ldmClientCentraxx = new LdmClientCentraxx(httpClient, baseUrl+base2, useCaching);
+        LdmClientCentraxx ldmClientCentraxx = new LdmClientCentraxx(httpClient, getBaseUrl(), useCaching);
         ldmClientCentraxx.addHttpHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());;
 
         return ldmClientCentraxx;
@@ -115,7 +114,7 @@ public class LdmConnectorCentraxx extends AbstractLdmConnectorView<LdmClientCent
     @Override
     LdmClientCentraxx createLdmClient(CloseableHttpClient httpClient, String baseUrl, boolean useCaching, int maxCacheSize) throws LdmClientException {
 
-        LdmClientCentraxx ldmClientCentraxx = new LdmClientCentraxx(httpClient, baseUrl, useCaching, maxCacheSize);
+        LdmClientCentraxx ldmClientCentraxx = new LdmClientCentraxx(httpClient, getBaseUrl(), useCaching, maxCacheSize);
         ldmClientCentraxx.addHttpHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());;
 
         return ldmClientCentraxx;
@@ -261,11 +260,17 @@ public class LdmConnectorCentraxx extends AbstractLdmConnectorView<LdmClientCent
         return getMappingForMdrItem(mdrKey);
     }
 
+    private String getBaseUrl(){
+
+        String base2 = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL_BASE);
+        return baseUrl+base2;
+
+    }
     private String getMappingForMdrItem(EnumConfiguration mdrKey) {
         String centraxxMappingMdrKey = ConfigurationUtil.getConfigurationElementValue(mdrKey);
         MdrIdDatatype mappingMdrItem = new MdrIdDatatype(centraxxMappingMdrKey);
-        String base2 = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL_BASE);
-        HttpGet httpGet = new HttpGet(baseUrl + base2 + "/mapping/" + mappingMdrItem.getLatestCentraxx());
+
+        HttpGet httpGet = new HttpGet(getBaseUrl() + MAPPING_PATH+'/' + mappingMdrItem.getLatestCentraxx());
         httpGet.setHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
 
         try (CloseableHttpResponse response = httpClient.execute(host, httpGet)) {
@@ -291,8 +296,7 @@ public class LdmConnectorCentraxx extends AbstractLdmConnectorView<LdmClientCent
     @Override
     public List<CxxMappingElement> getMapping() {
 
-        String base2 = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL_BASE);
-        HttpGet httpGet = new HttpGet(baseUrl + base2 + "/mapping");
+        HttpGet httpGet = new HttpGet(getBaseUrl() + MAPPING_PATH);
         httpGet.setHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());
 
         return getMapping(httpGet);
