@@ -103,7 +103,9 @@ public class LdmConnectorCentraxx extends AbstractLdmConnectorView<LdmClientCent
     @Override
     LdmClientCentraxx createLdmClient(CloseableHttpClient httpClient, String baseUrl, boolean useCaching) throws LdmClientException {
 
-        LdmClientCentraxx ldmClientCentraxx = new LdmClientCentraxx(httpClient, baseUrl, useCaching);
+
+        String base2 = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL_BASE);
+        LdmClientCentraxx ldmClientCentraxx = new LdmClientCentraxx(httpClient, baseUrl+base2, useCaching);
         ldmClientCentraxx.addHttpHeader(HttpHeaders.AUTHORIZATION, CredentialsUtil.getBasicAuthStringForLDM());;
 
         return ldmClientCentraxx;

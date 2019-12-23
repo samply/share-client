@@ -1,6 +1,6 @@
 package de.samply.share.client.job;
 
-import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
+//import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
