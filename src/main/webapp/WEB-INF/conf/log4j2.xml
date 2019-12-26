@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Configuration status="debug">
     <Properties>
-        <Property name="logdir">${sys:catalina.base}/logs/connector</Property>
+        <Property name="logdir">C:/ProgramData/DKTK/log/</Property>
+        <Property name="fileBaseName">samply.share.client</Property>
+        <Property name="fileNameSuffix">.log</Property>
+        <!--<Property name="logdir">${sys:catalina.base}/logs/connector</Property>-->
         <Property name="layout">%d [%t] %-5p %c- %m%n</Property>
     </Properties>
     <Appenders>
@@ -9,13 +12,13 @@
             <PatternLayout pattern="${layout}"/>
         </Console>
         <RollingFile name="CATALINA"
-                     fileName="${logdir}/catalina.log"
-                     filePattern="${logdir}/catalina.%d{yyyy-MM-dd}.log.gz">
+                     fileName="${logdir}/${fileBaseName}.log"
+                     filePattern="${logdir}/${fileBaseName}.%d{yyyy-MM-dd}.log.gz">
             <PatternLayout pattern="${layout}"/>
             <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
             <DefaultRolloverStrategy>
                 <Delete basePath="${logdir}" maxDepth="1">
-                    <IfFileName glob="catalina.*.log.gz"/>
+                    <IfFileName glob="${fileBaseName}.*.log.gz"/>
                     <IfAccumulatedFileCount exceeds="10"/>
                 </Delete>
             </DefaultRolloverStrategy>
