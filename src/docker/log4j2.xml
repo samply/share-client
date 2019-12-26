@@ -1,22 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Configuration>
+<Configuration status="debug">
     <Properties>
+        <!--<Property name="logdir">C:/ProgramData/DKTK/log/</Property>-->
+        <Property name="fileBaseName">samply.share.client</Property>
+        <Property name="fileNameSuffix">.log</Property>
+        <Property name="logdir">${sys:catalina.base}/logs/connector</Property>
         <Property name="layout">%d [%t] %-5p %c- %m%n</Property>
     </Properties>
     <Appenders>
         <Console name="CONSOLE" target="SYSTEM_OUT">
             <PatternLayout pattern="${layout}"/>
         </Console>
+        <RollingFile name="CATALINA"
+                     fileName="${logdir}/${fileBaseName}.log"
+                     filePattern="${logdir}/${fileBaseName}.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${layout}"/>
+            <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${logdir}" maxDepth="1">
+                    <IfFileName glob="${fileBaseName}.*.log.gz"/>
+                    <IfAccumulatedFileCount exceeds="10"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        <RollingFile name="LOCALHOST"
+                     fileName="${logdir}/localhost.log"
+                     filePattern="${logdir}/localhost.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${layout}"/>
+            <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${logdir}" maxDepth="1">
+                    <IfFileName glob="localhost.*.log.gz"/>
+                    <IfAccumulatedFileCount exceeds="10"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        <RollingFile name="MANAGER"
+                     fileName="${logdir}/manager.log"
+                     filePattern="${logdir}/manager.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${layout}"/>
+            <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${logdir}" maxDepth="1">
+                    <IfFileName glob="manager.*.log.gz"/>
+                    <IfAccumulatedFileCount exceeds="10"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        <RollingFile name="HOST-MANAGER"
+                     fileName="${logdir}/host-manager.log"
+                     filePattern="${logdir}/host-manager.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${layout}"/>
+            <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${logdir}" maxDepth="1">
+                    <IfFileName glob="host-manager.*.log.gz"/>
+                    <IfAccumulatedFileCount exceeds="10"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
     </Appenders>
     <Loggers>
-        <Root level="info">
+        <Root level="debug">
             <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="CATALINA"/>
         </Root>
+        <Logger name="org.apache.catalina.core.ContainerBase.[Catalina].[localhost]"
+                level="debug"
+                additivity="false">
+            <AppenderRef ref="LOCALHOST"/>
+        </Logger>
+        <Logger name="org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/manager]"
+                level="debug"
+                additivity="false">
+            <AppenderRef ref="MANAGER"/>
+        </Logger>
+        <Logger name="org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/host-manager]"
+                level="debug"
+                additivity="false">
+            <AppenderRef ref="HOST-MANAGER"/>
+        </Logger>
         <Logger name="org.apache.http" level="warn"/>
         <Logger name="org.jooq" level="error"/>
         <Logger name="org.quartz" level="error"/>
         <Logger name="org.flywaydb" level="warn"/>
         <Logger name="de.samply.common.mdrclient" level="error"/>
-        <Logger name="de.samply.share.client.util.Utils" level="error"/>
     </Loggers>
 </Configuration>
