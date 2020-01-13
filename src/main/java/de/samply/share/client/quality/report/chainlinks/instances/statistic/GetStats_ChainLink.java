@@ -24,7 +24,8 @@ package de.samply.share.client.quality.report.chainlinks.instances.statistic;/*
 * permission to convey the resulting work.
 */
 
-import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
+import de.samply.share.model.common.QueryResultStatistic;
+//import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
 import de.samply.share.client.quality.report.chainlinks.ChainLinkException;
 import de.samply.share.client.quality.report.chainlinks.ChainLinkItem;
 import de.samply.share.client.quality.report.chainlinks.LdmChainLink;
