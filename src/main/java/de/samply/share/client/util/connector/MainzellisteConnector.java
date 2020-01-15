@@ -17,7 +17,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.r4.model.*;
 import org.jooq.tools.json.JSONObject;
 import org.jooq.tools.json.JSONParser;
 import org.jooq.tools.json.ParseException;
@@ -163,7 +163,7 @@ public class MainzellisteConnector {
      * @return an encrypted ID
      * @throws IOException
      */
-    private JSONObject getPseudonymFromMainzelliste(JSONObject patient) throws IOException {
+    private JSONObject getPseudonymFromMainzelliste(JSONObject patient) throws IOException,IllegalArgumentException {
         HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MAINZELLISTE_URL) + GET_ENCRYPTID_URL));
         HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
@@ -174,6 +174,13 @@ public class MainzellisteConnector {
         JSONObject encryptedID = new JSONObject();
         try {
             response = httpClient.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode >= 500 && statusCode < 600) {
+                throw new IOException("Mainzelliste server not responding");
+            }
+            if (statusCode >= 400 && statusCode < 500) {
+                throw new IllegalArgumentException("Invalid patient bundle posted to Mainzelliste");
+            }
             String encryptedIDString = EntityUtils.toString(response.getEntity());
             JSONParser parser = new JSONParser();
             encryptedID = (JSONObject) parser.parse(encryptedIDString);

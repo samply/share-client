@@ -1,5 +1,7 @@
 package de.samply.share.client.util.connector;
 
+import ca.uhn.fhir.context.ConfigurationException;
+import ca.uhn.fhir.parser.DataFormatException;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.fhir.FHIRResource;
@@ -15,7 +17,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -42,7 +44,7 @@ public class CTSConnector {
         }
     }
 
-    public void postPseudonmToCTS(String bundleString) throws Exception {
+    public void postPseudonmToCTS(String bundleString) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException {
         Bundle pseudonymBundle = pseudonymiseBundle(bundleString);
         HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL)));
         HttpEntity entity = new StringEntity(pseudonymBundle.toString(), Consts.UTF_8);
@@ -52,16 +54,19 @@ public class CTSConnector {
         CloseableHttpResponse response;
         try {
             response = httpClient.execute(httpPost);
-            if(response.getStatusLine().getStatusCode()!= 200){
-                throw new Exception();
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode >= 500 && statusCode < 600) {
+                throw new IOException("CTS server not responding");
             }
-
+            if (statusCode >= 400 && statusCode < 500) {
+                throw new IllegalArgumentException(response.toString());
+            }
         } catch (IOException e) {
             throw new IOException(e);
         }
     }
 
-    private Bundle pseudonymiseBundle(String bundleString) throws IOException {
+    private Bundle pseudonymiseBundle(String bundleString) throws IOException, ConfigurationException, DataFormatException {
         FHIRResource fhirResource = new FHIRResource();
         Bundle bundle = fhirResource.convertToBundleResource(bundleString);
         MainzellisteConnector mainzellisteConnector = new MainzellisteConnector();
