@@ -82,5 +82,6 @@
         <Logger name="org.quartz" level="error"/>
         <Logger name="org.flywaydb" level="warn"/>
         <Logger name="de.samply.common.mdrclient" level="error"/>
+        <Logger name="de.samply.share.client.util.Utils" level="error"/>
     </Loggers>
 </Configuration>
