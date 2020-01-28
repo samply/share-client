@@ -4,21 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.8.0 - 2020-05-26]
-### Added
-- Sync between directory and bridgehead
-
-## [5.7.0 - 2020-04-24]
+## [5.6.4 - 2020-01-28]
 ### Change
-- Add stratification to InquiryResult
-- Add stratifications to reply (for Searchbroker)
-- Update several dependencies share-dto (4.8.0) share-common (3.4.0) common-ldmclient.cql (1.3.0) common-ldmclient.centraxx (5.4.0) common-ldmclient.samplystore-biobank (2.4.0)
-### Bugfix
-- Use QueryRTesultStatistic from common (not CentraXX)
+- Adopt interval for collecting inquiries to 1 second
+- Reduce log level of Utils class to disable proxy warnings
 
-## [5.6.3/5.6.4 - 2020-01-10]
+## [5.6.3 - 2020-01-10]
 ### Change
-- Adopt interval for collecting inquiries
+- Adopt interval for collecting inquiries to 10 seconds
 
 ## [5.6.2 - 2019-09-30]
 ### Bugfix
