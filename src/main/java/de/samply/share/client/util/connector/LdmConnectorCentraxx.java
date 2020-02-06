@@ -34,6 +34,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.samply.common.ldmclient.LdmClientException;
 import de.samply.common.ldmclient.centraxx.LdmClientCentraxx;
+//TODO
 import de.samply.share.model.common.QueryResultStatistic;
 //import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
 import de.samply.common.mdrclient.MdrConnectionException;

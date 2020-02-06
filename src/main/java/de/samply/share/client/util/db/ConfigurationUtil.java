@@ -263,13 +263,14 @@ public class ConfigurationUtil {
                 configParams.put(PROXY_HTTP_HOST, configuration.getProxy().getHTTP().getUrl().getHost());
                 configParams.put(PROXY_HTTP_PORT, Integer.toString(configuration.getProxy().getHTTP().getUrl().getPort()));
             } catch (NullPointerException npe) {
-                logger.debug("Could not get HTTP Proxy Settings...should be empty or null");
+                // Note: it is too often shown -> makes large logs
+                //logger.debug("Could not get HTTP Proxy Settings...should be empty or null");
             }
             try {
                 configParams.put(PROXY_HTTPS_HOST, configuration.getProxy().getHTTPS().getUrl().getHost());
                 configParams.put(PROXY_HTTPS_PORT, Integer.toString(configuration.getProxy().getHTTPS().getUrl().getPort()));
             } catch (NullPointerException npe) {
-                logger.debug("Could not get HTTPS Proxy Settings...should be empty or null");
+                //logger.debug("Could not get HTTPS Proxy Settings...should be empty or null");
             }
             configParams.put(PROXY_BYPASS_PRIVATE_NETWORKS, Boolean.TRUE.toString());
 
