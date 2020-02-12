@@ -24,8 +24,8 @@ package de.samply.share.client.quality.report.localdatamanagement;/*
  * permission to convey the resulting work.
  */
 
-import de.samply.share.model.common.QueryResultStatistic;
-//import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
+//import de.samply.share.model.common.QueryResultStatistic;
+import de.samply.common.ldmclient.centraxx.model.QueryResultStatistic;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.util.connector.LdmConnectorCentraxx;
