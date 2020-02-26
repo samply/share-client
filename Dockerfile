@@ -28,8 +28,6 @@ ADD $SOURCE_COMMON_DIR/log4j2.xml                      $TOMCAT_CONF_DIR/
 ADD $SOURCE_COMMON_DIR/dktkmds-db-key-public.der       $TOMCAT_CONF_DIR/
 ADD $SOURCE_COMMON_DIR/tomcat.jks                      $TOMCAT_CONF_DIR/
 
-RUN apt-get update && apt-get install -y dos2unix
-RUN for file in $TOMCAT_CONF_DIR/*.xml ; do dos2unix $file $file ; done
 
 ADD $SOURCE_COMMON_DIR/quality-report-statistics.txt   $REPORTS_DIR/
 ADD $SOURCE_COMMON_DIR/quality-report-info.xlsx        $REPORTS_DIR/
@@ -42,5 +40,10 @@ ADD https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/$J
 ADD $SOURCE_COMMON_DIR/start.sh                         $PROJECT_DIR/
 
 RUN chmod +x                                            $PROJECT_DIR/start.sh
+
+RUN apt-get update && apt-get install -y dos2unix
+RUN for file in $TOMCAT_CONF_DIR/*.xml $CATALINA_DIR/*.xml ; do dos2unix $file $file ; done
+
+
 RUN echo $PROJECT_DIR
 CMD ["sh", "-c", "$PROJECT_DIR/start.sh"]
