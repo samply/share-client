@@ -1,7 +1,7 @@
 <com:urls xmlns:com="http://schema.samply.de/common">
     <com:shareUrl>http://www.company.org/cum/sonoras</com:shareUrl>
     <com:idmanagerUrl>http://172.22.53.221:8180/ID-Manager</com:idmanagerUrl>
-    <com:ldmUrl>{store-url}</com:ldmUrl>
+    <com:ldmUrl>{ldm-url}</com:ldmUrl>
     <com:mdrUrl>{mdr-url}</com:mdrUrl>
     <com:directoryUrl>{directory-url}</com:directoryUrl>
 </com:urls>
