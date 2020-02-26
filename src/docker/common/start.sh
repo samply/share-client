@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
 
-export CATALINA_DIR=$TOMCAT_CONF_DIR/Catalina
-
-export DIR_1=$CATALINA_DIR/localhost
-export DIR_2=$TOMCAT_CONF_DIR
-
-export FILES_TO_PARSE="$DIR_1/ROOT.xml $DIR_2/${CONTEXT}_common_config.xml $DIR_2/${CONTEXT}_common_urls.xml $DIR_2/${CONTEXT}_common_operator.xml $DIR_2/mailSending.xml $DIR_2/${CONTEXT}_bridgehead_info.xml"
+export FILES_TO_PARSE="$CATALINA_DIR/ROOT.xml $TOMCAT_CONF_DIR/${CONTEXT}_common_config.xml $TOMCAT_CONF_DIR/${CONTEXT}_common_urls.xml $TOMCAT_CONF_DIR/${CONTEXT}_common_operator.xml $TOMCAT_CONF_DIR/mailSending.xml $TOMCAT_CONF_DIR/${CONTEXT}_bridgehead_info.xml"
 
 set -e
 

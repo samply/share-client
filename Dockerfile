@@ -14,6 +14,7 @@ ENV PROJECT_DIR /$PROJECT
 ENV TOMCAT_DIR /usr/local/tomcat
 ENV TOMCAT_CONF_DIR $TOMCAT_DIR/conf
 ENV REPORTS_DIR /etc/$PROJECT/reports
+ENV CATALINA_DIR $TOMCAT_CONF_DIR/Catalina/localhost
 ENV JMX_EXPORTER_VERSION 0.3.1
 
 
@@ -21,7 +22,7 @@ ADD target/connector.war                               $TOMCAT_DIR/webapps/ROOT.
 
 ADD $SOURCE_PROJECT_DIR                                $TOMCAT_CONF_DIR
 
-ADD $SOURCE_COMMON_DIR/context.xml                     $TOMCAT_CONF_DIR/Catalina/localhost/ROOT.xml
+ADD $SOURCE_COMMON_DIR/context.xml                     $CATALINA_DIR/ROOT.xml
 ADD $SOURCE_COMMON_DIR/mailSending.xml                 $TOMCAT_CONF_DIR/
 ADD $SOURCE_COMMON_DIR/log4j2.xml                      $TOMCAT_CONF_DIR/
 ADD $SOURCE_COMMON_DIR/dktkmds-db-key-public.der       $TOMCAT_CONF_DIR/
