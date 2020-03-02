@@ -123,6 +123,10 @@ public class LdmConnectorCentraxx extends AbstractLdmConnectorView<LdmClientCent
 
     }
 
+    private View createView(Query query, boolean completeMdsViewFields) throws LDMConnectorException {
+        return createView(query, null, completeMdsViewFields, false);
+    }
+
     @Override
     View createView(Query query, List<String> removeKeysFromView, boolean completeMdsViewFields, boolean includeAdditionalViewfields) throws LDMConnectorException {
         View view = new View();
@@ -228,14 +232,7 @@ public class LdmConnectorCentraxx extends AbstractLdmConnectorView<LdmClientCent
      */
     @Override
     View createReferenceViewForMonitoring(Query referenceQuery) throws LDMConnectorException {
-        View view = new View();
-        view.setQuery(referenceQuery);
-        try {
-            view.setViewFields(MdrUtils.getViewFields(true));
-        } catch (MdrConnectionException | ExecutionException e) {
-            throw new LDMConnectorException(e);
-        }
-        return view;
+        return createView(referenceQuery, true);
     }
 
     /**
