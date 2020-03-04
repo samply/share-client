@@ -1,0 +1,1 @@
+UPDATE samply.job_schedule SET paused = false, cron_expression = '0 0 0/6 ? * * *' WHERE job_key='MaintenanceGroup.ReportToMonitoringJob';
