@@ -270,7 +270,7 @@ public class UploadToCentralMdsDbJob implements Job {
                                     UploadUtil.updateUpload(upload);
                                     attempt = maxAttempts;
                                 } else if (uploadResult.isRetry()) {
-                                    ++attempt;
+                                        ++attempt;
                                     TimeUnit.SECONDS.sleep(delay);
                                 } else {
                                     upload.setFailureCount(++failCount);
@@ -326,14 +326,13 @@ public class UploadToCentralMdsDbJob implements Job {
         // Replace Patient IDs with Export IDs
         Map<String, String> idMap = getExportIds(sourceResultPage);
         for (Patient patient : sourceResultPage.getPatient()) {
-            // Transform Patient from Local Datamanagement Format to Central Search Format
-            patient = patientConverter.centraxxToCentralsearch(patient);
+
             // TODO: remove this workaround when it is agreed upon that it is not needed here any more. This has been discussed.
             patient = ApplicationBean.getPatientValidator().fixOrRemoveWrongAttributes(patient);
 
             String localId = patient.getId();
             patient.setId(idMap.get(localId));
-            patient = PatientConverterUtil.removeAttributeFromCases(patient, ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_DKTK_GLOBAL_ID));
+            patient = PatientConverterUtil.removeAttributeFromPatient(patient, ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_DKTK_GLOBAL_ID));
             preparedQueryResultPage.getPatient().add(patient);
         }
 

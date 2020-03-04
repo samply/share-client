@@ -43,6 +43,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -55,6 +57,8 @@ import java.io.UnsupportedEncodingException;
 
 public class LocalDataManagementRequesterImpl extends LocalDataManagementConnector implements LocalDataManagementRequester {
 
+
+    private static final Logger logger = LogManager.getLogger(LocalDataManagementRequesterImpl.class);
 
     //private QueryResultStatisticConverter queryResultStatisticConverter = new QueryResultStatisticConverterImpl();
 
@@ -259,6 +263,22 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
     }
 
     private <T> T createObject(String entity, Class<T> clazz) throws JAXBException {
+
+        try {
+            return createObject_WithoutCastException(entity, clazz);
+        } catch (ClassCastException exception){
+
+            logger.info("[--ClassCastExeption-----");
+            logger.info(entity);
+            logger.info("------------------------]");
+
+            throw exception;
+
+        }
+
+    }
+
+    private <T> T createObject_WithoutCastException(String entity, Class<T> clazz) throws JAXBException {
 
         JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
