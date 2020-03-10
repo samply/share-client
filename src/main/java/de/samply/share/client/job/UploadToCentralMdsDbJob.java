@@ -37,6 +37,7 @@ import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
 import de.samply.share.client.job.params.UploadJobParams;
 import de.samply.share.client.job.util.InquiryCriteriaFactory;
+import de.samply.share.client.job.util.QueryResultWhiteListFilter;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.IdObject;
@@ -68,10 +69,7 @@ import org.quartz.impl.matchers.KeyMatcher;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static de.samply.share.client.model.db.enums.InquiryStatusType.IS_NEW;
@@ -105,6 +103,8 @@ public class UploadToCentralMdsDbJob implements Job {
 
     private UploadJobParams jobParams;
     private Upload upload;
+
+    private QueryResultWhiteListFilter queryResultWhiteListFilter = new QueryResultWhiteListFilter();
     private PatientConverter patientConverter;
 
     @Override
@@ -250,6 +250,7 @@ public class UploadToCentralMdsDbJob implements Job {
                 QueryResult queryResultPage = (QueryResult)ldmConnector.getResultsFromPage(resultLocation, pageNr);
                 QueryResultWithIdMap queryResultWithIdMap = stageQueryResultPage(queryResultPage);
                 QueryResult queryResultPageToUpload = queryResultWithIdMap.getQueryResult();
+                queryResultPageToUpload = queryResultWhiteListFilter.filter(queryResultPageToUpload);
                 Map<String, String> idMap = queryResultWithIdMap.getIdMap();
 
                 // Upload / Dryrun
