@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
     <Properties>
-        <Property name="logDirLinux">/tmp/log/</Property>
-        <Property name="logDirWindows">C:/ProgramData/dktk/log/</Property>
+        <Property name="logDir">/var/log/samply/</Property>
         <Property name="fileBaseName">samply.share.client</Property>
         <Property name="fileNameSuffix">.log</Property>
     </Properties>
@@ -12,7 +11,7 @@
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>
         </Console>
 
-        <RollingFile name="RollingFileLinux" fileName="${logDirLinux}${fileBaseName}${fileNameSuffix}"
+        <RollingFile name="RollingFile" fileName="${logDir}${fileBaseName}${fileNameSuffix}"
                      filePattern="${logDir}$${date:yyyy-MM}/${fileBaseName}-%d{yyyy-MM-dd}-%i${fileNameSuffix}">
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
@@ -22,21 +21,11 @@
             </Policies>
         </RollingFile>
 
-        <RollingFile name="RollingFileWindows" fileName="${logDirWindows}${fileBaseName}${fileNameSuffix}"
-                     filePattern="${logDir}$${date:yyyy-MM}/${fileBaseName}-%d{yyyy-MM-dd}-%i${fileNameSuffix}">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy/>
-            </Policies>
-        </RollingFile>
     </Appenders>
     <Loggers>
         <Root level="debug">
             <AppenderRef ref="Console"/>
-            <AppenderRef ref="RollingFileLinux"/>
-            <AppenderRef ref="RollingFileWindows"/>
+            <AppenderRef ref="RollingFile"/>
         </Root>
         <Logger name="org.apache.http" level="warn"/>
         <Logger name="org.jooq" level="info"/>
