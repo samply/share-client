@@ -12,12 +12,13 @@
         </Console>
 
         <RollingFile name="RollingFile" fileName="${logDir}${fileBaseName}${fileNameSuffix}"
-                     filePattern="${logDir}$${date:yyyy-MM}/${fileBaseName}-%d{yyyy-MM-dd}-%i${fileNameSuffix}">
+                     filePattern="${logDir}$${date:yyyy-MM}/%d{yyyy-MM-dd}-${fileBaseName}-%i${fileNameSuffix}">
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
             </PatternLayout>
             <Policies>
-                <TimeBasedTriggeringPolicy/>
+                <OnStartupTriggeringPolicy/>
+                <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
             </Policies>
         </RollingFile>
 
