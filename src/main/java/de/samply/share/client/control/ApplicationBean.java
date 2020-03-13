@@ -224,6 +224,7 @@ public class ApplicationBean implements Serializable {
 
     private void initDthValidator() {
         try {
+
             mdrConnection = new MdrConnection(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_URL),
                     null,
                     null,
@@ -231,7 +232,7 @@ public class ApplicationBean implements Serializable {
                     null,
                     NAMESPACES,
                     true,
-                    null);
+                    createHttpConnector());
             mdrValidator = new MDRValidator(mdrConnection, true);
         } catch (MdrConnectionException | ExecutionException | MdrException | MdrInvalidResponseException e) {
             logger.error("Error initializing DTH Validator", e);
