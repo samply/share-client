@@ -18,7 +18,6 @@ import de.samply.share.client.model.check.ConnectCheckResult;
 import de.samply.share.client.model.common.Bridgehead;
 import de.samply.share.client.model.common.Operator;
 import de.samply.share.client.model.common.Urls;
-import de.samply.share.client.model.common.Cts;
 import de.samply.share.client.model.db.enums.*;
 import de.samply.share.client.model.db.tables.pojos.Credentials;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
@@ -86,7 +85,6 @@ public class ApplicationBean implements Serializable {
     private static final String COMMON_URLS_FILENAME_SUFFIX = "_common_urls.xml";
     private static final String COMMON_OPERATOR_FILENAME_SUFFIX = "_common_operator.xml";
     private static final String COMMON_INFOS_FILENAME_SUFFIX = "_bridgehead_info.xml";
-    private static final String CTS_FILENAME_SUFFIX = "_cts_info.xml";
     private static final List<String> NAMESPACES = new ArrayList<>(Arrays.asList("dktk", "adt"));
 
     private static final int TIMEOUT_IN_SECONDS = 15;
@@ -94,7 +92,6 @@ public class ApplicationBean implements Serializable {
     private static Urls urls;
     private static Operator operator;
     private static Bridgehead infos;
-    private static Cts cts;
 
     private static boolean qrTaskRunning;
 
@@ -113,8 +110,6 @@ public class ApplicationBean implements Serializable {
     private static MdrConnection mdrConnection;
     private static MDRValidator mdrValidator;
     private static LdmConnector ldmConnector;
-    private static MainzellisteConnector mainzellisteConnector;
-    private static CTSConnector ctsConnector;
 
     private static final ConnectCheckResult shareAvailability = new ConnectCheckResult(true, "Samply.Share.Client", ProjectInfo.INSTANCE.getVersionString());
     private ConnectCheckResult ldmAvailability = new ConnectCheckResult();
@@ -130,54 +125,51 @@ public class ApplicationBean implements Serializable {
     public void init() {
         // On startup, check if there are changes to be done in the database
         try {
+            logger.info("Migrating Flyway...");
             Migration.doUpgrade();
         } catch (FlywayException e) {
             logger.fatal("Could not initialize or migrate database", e);
             throw new RuntimeException(e);
         }
-        // Load common-config.xml
+        logger.info("Loading common-config.xml...");
         loadCommonConfig();
 
+        logger.info ("Loading Urls...");
         loadUrls();
+        logger.info("Loading operator...");
         loadOperator();
+        logger.info("Loading bidgehead info...");
         loadBridgeheadInfo();
+        logger.info ("Loading common urls...");
         updateCommonUrls();
 
+        logger.info ("Reseting MDR context");
         resetMdrContext();
+        logger.info ("Loading patient validator...");
         patientValidator = new PatientValidator(MdrContext.getMdrContext().getMdrClient());
 
         // Initialize Quartz scheduler
         try {
+            logger.info ("Initializing scheduler...");
             initScheduler();
         } catch (SchedulerException e) {
             throw new RuntimeException("Could not initialize quartz scheduler.", e);
         }
 
+        logger.info ("Initializing dth validator...");
         initDthValidator();
+
+        logger.info("Initializing ldm connector...");
         ApplicationBean.initLdmConnector();
 
+        logger.info ("Inserting event log entry...");
         EventLogUtil.insertEventLogEntry(EventMessageType.E_SYSTEM_STARTUP);
+
+        logger.info ("Checking Processing inquiries...");
         checkProcessingInquiries();
-        if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
-            initMainzelliste();
-            loadCtsInfo();
-            updateCtsInfo();
-        }
-    }
 
-    private void initMainzelliste() {
-        mainzellisteConnector = new MainzellisteConnector();
-    }
+        logger.info("Application Bean initialized");
 
-    private static void initCTS() {
-        ctsConnector = new CTSConnector();
-    }
-
-    public static CTSConnector getCtsConnector() {
-        if (ApplicationBean.ctsConnector == null) {
-            ApplicationBean.initCTS();
-        }
-        return ctsConnector;
     }
 
     private void checkProcessingInquiries() {
@@ -204,13 +196,16 @@ public class ApplicationBean implements Serializable {
      * The configuration is done via web.xml and quartz.properties
      */
     private void initScheduler() throws SchedulerException {
+        logger.info("Initializing FacesContext...");
         ServletContext servletContext = (ServletContext) FacesContext
                 .getCurrentInstance().getExternalContext().getContext();
 
         //Get QuartzInitializerListener
+        logger.info("Initializing Quartz Listener...");
         StdSchedulerFactory stdSchedulerFactory = (StdSchedulerFactory) servletContext
                 .getAttribute(QuartzInitializerListener.QUARTZ_FACTORY_KEY);
 
+        logger.info("Getting scheduler...");
         scheduler = stdSchedulerFactory.getScheduler();
         while (!scheduler.isStarted()) {
             try {
@@ -219,6 +214,7 @@ public class ApplicationBean implements Serializable {
                 logger.warn("Caught Interrupted exception while trying to wait for scheduler start.", e);
             }
         }
+        logger.info("Scheduling jobs...");
         scheduleJobsFromDatabase();
     }
 
@@ -363,24 +359,6 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
-     * Load the CTS info xml file from disk
-     */
-    private static void loadCtsInfo() {
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(de.samply.share.client.model.common.ObjectFactory.class);
-            cts = JAXBUtil
-                    .findUnmarshall(ProjectInfo.INSTANCE.getProjectName().toLowerCase() + CTS_FILENAME_SUFFIX,
-                            jaxbContext, Cts.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase(), System.getProperty("catalina.base") + File.separator + "conf", getServletContext().getRealPath("/WEB-INF"));
-        } catch (FileNotFoundException e) {
-            logger.error("No CTS file found by using samply.common.config for project " + ProjectInfo.INSTANCE.getProjectName());
-        } catch (UnmarshalException ue) {
-            throw new RuntimeException("Unable to unmarshal CTS file", ue);
-        } catch (SAXException | JAXBException | ParserConfigurationException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Update the proxy information in the db with the settings read from the config file
      */
     private static void updateProxiesInDb() {
@@ -426,30 +404,6 @@ public class ApplicationBean implements Serializable {
             mdrConfigElement.setSetting(urls.getMdrUrl());
             ConfigurationUtil.insertOrUpdateConfigurationElement(mdrConfigElement);
         }
-    }
-
-
-    /**
-     * Update the information associated with the CTS in the db with the settings read from the corresponding xml file
-     */
-    private static void updateCtsInfo() {
-        if (cts != null) {
-            if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
-                insertConfigElement(EnumConfiguration.CTS_USERNAME.name(), cts.getUsername());
-                insertConfigElement(EnumConfiguration.CTS_PASSWORD.name(), cts.getPassword());
-                insertConfigElement(EnumConfiguration.CTS_URL.name(), cts.getUrl());
-                insertConfigElement(EnumConfiguration.CTS_PROFILE.name(), cts.getProfile());
-                insertConfigElement(EnumConfiguration.CTS_MAINZELLISTE_URL.name(), cts.getMainzellisteUrl());
-                insertConfigElement(EnumConfiguration.CTS_MAINZELLISTE_API_KEY.name(), cts.getMainzellisteApiKey());
-            }
-        }
-    }
-
-    private static void insertConfigElement(String name, String value) {
-        de.samply.share.client.model.db.tables.pojos.Configuration configElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
-        configElement.setName(name);
-        configElement.setSetting(value);
-        ConfigurationUtil.insertOrUpdateConfigurationElement(configElement);
     }
 
     /**
