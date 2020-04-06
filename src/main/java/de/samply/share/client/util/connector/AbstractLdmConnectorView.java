@@ -59,7 +59,7 @@ public abstract class AbstractLdmConnectorView<
         try {
             View referenceView = createReferenceViewForMonitoring(referenceQuery);
             Stopwatch stopwatch = Stopwatch.createStarted();
-            String resultLocation = ldmClient.postView(referenceView, false);
+            String resultLocation = ldmClient.postView(referenceView, true);
 
             int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
                     EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
@@ -85,7 +85,7 @@ public abstract class AbstractLdmConnectorView<
                                 ArrayList<String> unknownKeys = new ArrayList<>(error.getMdrKey());
                                 referenceView = QueryConverter.removeAttributesFromView(referenceView, unknownKeys);
                                 stopwatch.start();
-                                resultLocation = ldmClient.postView(referenceView, false);
+                                resultLocation = ldmClient.postView(referenceView, true);
                                 break;
                         }
                     } else if (ldmQueryResult.hasResult()) {
