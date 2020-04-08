@@ -7,11 +7,10 @@
     <xs:complexType name="urls">
         <xs:all>
             <xs:element name="shareUrl" type="xs:anyURI" />
-            <xs:element name="idmanagerUrl" minOccurs="0" type="xs:anyURI" />
-            <xs:element name="centraxxUrl" type="xs:anyURI" />
+            <xs:element name="idmanagerUrl" type="xs:anyURI" minOccurs="0"/>
+            <xs:element name="ldmUrl" type="xs:anyURI" />
             <xs:element name="mdrUrl" type="xs:anyURI"/>
-            <xs:element name="mainzellisteUrl" minOccurs="0" type="xs:anyURI"/>
-            <xs:element name="ctsUrl"  minOccurs="0" type="xs:anyURI"/>
+            <xs:element name="directoryUrl" type="xs:anyURI" minOccurs="0"/>
         </xs:all>
     </xs:complexType>
 </xs:schema>

@@ -2,11 +2,7 @@
 package de.samply.share.client.model.common;
 
 import javax.annotation.Generated;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 
 /**
@@ -21,10 +17,9 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;all>
  *         &lt;element name="shareUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *         &lt;element name="idmanagerUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
- *         &lt;element name="centraxxUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
+ *         &lt;element name="ldmUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *         &lt;element name="mdrUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
- *         &lt;element name="mainzellisteUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
- *         &lt;element name="mdrUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
+ *         &lt;element name="directoryUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *       &lt;/all>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -51,7 +46,7 @@ public class Urls {
     @XmlElement(namespace = "http://schema.samply.de/common", required = true)
     @XmlSchemaType(name = "anyURI")
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
-    protected String centraxxUrl;
+    protected String ldmUrl;
     @XmlElement(namespace = "http://schema.samply.de/common", required = true)
     @XmlSchemaType(name = "anyURI")
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
@@ -59,11 +54,7 @@ public class Urls {
     @XmlElement(namespace = "http://schema.samply.de/common", required = true)
     @XmlSchemaType(name = "anyURI")
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
-    protected String mainzellisteUrl;
-    @XmlElement(namespace = "http://schema.samply.de/common", required = true)
-    @XmlSchemaType(name = "anyURI")
-    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
-    protected String ctsUrl;
+    protected String directoryUrl;
 
     /**
      * Gets the value of the shareUrl property.
@@ -118,7 +109,7 @@ public class Urls {
     }
 
     /**
-     * Gets the value of the centraxxUrl property.
+     * Gets the value of the ldmUrl property.
      * 
      * @return
      *     possible object is
@@ -126,12 +117,12 @@ public class Urls {
      *     
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
-    public String getCentraxxUrl() {
-        return centraxxUrl;
+    public String getLdmUrl() {
+        return ldmUrl;
     }
 
     /**
-     * Sets the value of the centraxxUrl property.
+     * Sets the value of the ldmUrl property.
      * 
      * @param value
      *     allowed object is
@@ -139,8 +130,8 @@ public class Urls {
      *     
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
-    public void setCentraxxUrl(String value) {
-        this.centraxxUrl = value;
+    public void setLdmUrl(String value) {
+        this.ldmUrl = value;
     }
 
     /**
@@ -164,46 +155,26 @@ public class Urls {
     public void setMdrUrl(String value) {
         this.mdrUrl = value;
     }
+
     /**
-     * Gets the value of the ctsUrl property.
+     * Gets the value of the directoryUrl property.
      *
      * @return possible object is
      * {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
-    public String getCtsUrl() {
-        return ctsUrl;
+    public String getDirecotryUrl() {
+        return directoryUrl;
     }
 
     /**
-     * Sets the value of the ctsUrl property.
+     * Sets the value of the directoryUrl property.
      *
      * @param value allowed object is
      *              {@link String }
      */
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
-    public void setCtsUrl(String value) {
-        this.ctsUrl = value;
-    }
-    /**
-     * Gets the value of the mainzellisteUrl property.
-     *
-     * @return possible object is
-     * {@link String }
-     */
-    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
-    public String getMainzellisteUrl() {
-        return mainzellisteUrl;
-    }
-
-    /**
-     * Sets the value of the mainzellisteUrl property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
-    public void setMainzellisteUrl(String value) {
-        this.mainzellisteUrl = value;
+    public void setDirectoryUrl(String value) {
+        this.directoryUrl = value;
     }
 }

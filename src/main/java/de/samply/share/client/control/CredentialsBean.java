@@ -204,6 +204,7 @@ public class CredentialsBean implements Serializable {
         targetTypes.add(TargetType.valueOf("TT_HTTPS_PROXY"));
         targetTypes.add(TargetType.valueOf("TT_LDM"));
         targetTypes.add(TargetType.valueOf("TT_BROKER"));
+        targetTypes.add(TargetType.valueOf("TT_DIRECTORY"));
         if (ApplicationUtils.isDktk()) {
             targetTypes.add(TargetType.valueOf("TT_CENTRALSEARCH"));
         }

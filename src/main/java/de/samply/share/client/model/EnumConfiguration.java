@@ -18,6 +18,7 @@ public enum EnumConfiguration {
     MDR_URL,
     LDM_URL,
     SHARE_URL,
+    DIRECTORY_URL,
     ID_MANAGER_URL,
     ID_MANAGER_INSTANCE_ID,
     ID_MANAGER_NETWORK_ID,

@@ -2,4 +2,5 @@
     <com:shareUrl>http://www.company.org/cum/sonoras</com:shareUrl>
     <com:ldmUrl>http://localhost:8081</com:ldmUrl>
     <com:mdrUrl>https://mdr.germanbiobanknode.de/v3/api/mdr</com:mdrUrl>
+    <com:directoryUrl>https://molgenis39.gcc.rug.nl</com:directoryUrl>
 </com:urls>

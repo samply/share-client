@@ -171,6 +171,23 @@
         </job>
     </schedule>
 
+    <schedule>
+        <job>
+            <name>DirectorySyncJob</name>
+            <group>DirectoryGroup</group>
+            <description>Synchronize the information about the biobank in the store with the data in the directory.</description>
+            <job-class>de.samply.share.client.job.DirectorySyncJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>SHOW</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+
     <!-- Define jobs that won't show on the admin interface. They will only be triggered programmatically -->
 
     <schedule>
