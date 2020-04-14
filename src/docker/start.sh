@@ -14,7 +14,7 @@ sed -i "s/{proxy-pass}/${PROXY_PASS}/"                    /usr/local/tomcat/conf
 
 sed -i "s#{store-url}#${STORE_URL}#"                      /usr/local/tomcat/conf/samply_common_urls.xml
 sed -i "s#{mdr-url}#${MDR_URL}#"                          /usr/local/tomcat/conf/samply_common_urls.xml
-sed -i "s#{directory-url}#${DIRECTORY_URL}#"                    /usr/local/tomcat/conf/samply_common_urls.xml
+sed -i "s#{directory-url}#${DIRECTORY_URL}#"              /usr/local/tomcat/conf/samply_common_urls.xml
 
 sed -i "s/{operator-first-name}/${OPERATOR_FIRST_NAME}/"  /usr/local/tomcat/conf/samply_common_operator.xml
 sed -i "s/{operator-last-name}/${OPERATOR_LAST_NAME}/"    /usr/local/tomcat/conf/samply_common_operator.xml
