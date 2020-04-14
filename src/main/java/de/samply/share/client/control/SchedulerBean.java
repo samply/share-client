@@ -66,21 +66,20 @@ public class SchedulerBean implements Serializable {
                 JobDetail jobDetail = scheduler.getJobDetail(jobKey);
                 // get job's trigger
                 List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
-
-                if (CollectionUtils.isEmpty(triggers)) {
-                    if (shouldJobAdded(jobKey, jobDetail)) {
+                if (shouldJobAdded(jobKey, jobDetail)) {
+                    if (CollectionUtils.isEmpty(triggers)) {
                         jobList.add(new QuartzJob(jobKey.getName(), jobKey.getGroup(), null, null, null, "", isPaused(jobKey), jobDetail.getDescription()));
-                    }
-                } else {
-                    for (Trigger trigger : triggers) {
-                        Date nextFireTime = trigger.getNextFireTime();
-                        Date previousFireTime = trigger.getPreviousFireTime();
-                        String cronExpression;
-                        if (trigger instanceof CronTrigger) {
-                            CronTrigger cronTrigger = ((CronTrigger) trigger);
-                            cronExpression = cronTrigger.getCronExpression();
-                            jobList.add(new QuartzJob(jobName, jobGroup, null, nextFireTime, previousFireTime, cronExpression, isPaused(jobKey), jobDetail.getDescription()));
+                    } else {
+                        for (Trigger trigger : triggers) {
+                            Date nextFireTime = trigger.getNextFireTime();
+                            Date previousFireTime = trigger.getPreviousFireTime();
+                            String cronExpression;
+                            if (trigger instanceof CronTrigger) {
+                                CronTrigger cronTrigger = ((CronTrigger) trigger);
+                                cronExpression = cronTrigger.getCronExpression();
+                                jobList.add(new QuartzJob(jobName, jobGroup, null, nextFireTime, previousFireTime, cronExpression, isPaused(jobKey), jobDetail.getDescription()));
 
+                            }
                         }
                     }
                 }
@@ -96,7 +95,11 @@ public class SchedulerBean implements Serializable {
         if (jobDataMap == null || !jobDataMap.getBooleanFromString("SHOW")) {
             return false;
         }
-        return !ApplicationUtils.isSamply() || !jobKey.getGroup().equals("CentralSearchGroup");
+        if (ApplicationUtils.isDktk()) {
+            return !jobKey.getGroup().equals("DirectoryGroup");
+        } else {
+            return !jobKey.getGroup().equals("CentralSearchGroup");
+        }
     }
 
     /**
