@@ -1,8 +1,23 @@
 # Connector
 
-The Connector (or "Samply Share Client" or "Teiler" ) connects the store[Blaze](https://github.com/life-research/blaze) and the central [Searchbroker](https://code.mitro.dkfz.de/projects/SHAR/repos/samply.share.broker.rest) as part of the [Bridgehead-Deployment](https://github.com/samply/bridgehead-deployment).
+The Connector (or "Samply Share Client" or "Teiler" ) connects Store and [Searchbroker](https://code.mitro.dkfz.de/projects/SHAR/repos/samply.share.broker.rest) as part of the [Bridgehead-Deployment](https://github.com/samply/bridgehead-deployment).
+Currently the [classic Store](https://code.mitro.dkfz.de/projects/STOR/repos/samply.store.rest) is used, in future [Blaze](https://github.com/life-research/blaze).
 
 You can access the Connector under http://localhost:8082 and login under <http://localhost:8082/login.xhtml> (default credentials are **admin**, **adminpass**).
+By default the Connector and Store use the same default credentials (**local_admin**, **local_admin**).
+
+To change the default credentials for Connector & Store add a new user to the Connector and add credentials satisfying 
+
+|Key|Value|
+|---|---|
+|Target| Local Datamanagement|
+|CredentialType| Basic |
+|Username| [username of new user] |
+|Password| [password of new user] |
+|Domain||
+|Workstation||
+
+If the Store runs while logging in the first time with this new user, the default credentials of the Store get deactivated. From now on, Connector and Store share the same new credentials instead of the old ones.
 
 To register a Searchbroker, see [Bridgehead-Deployment](https://github.com/samply/bridgehead-deployment#connect-sample-locator).
 
@@ -221,6 +236,7 @@ common_urls.xml:
     <com:idmanagerUrl>url of the id-manager (only for dktk necessary)</com:idmanagerUrl>
     <com:ldmUrl>url of the local data management</com:ldmUrl>
     <com:mdrUrl>url of the mdr server</com:mdrUrl>
+    <com:directoryUrl>url of the directory</com:directoryUrl>
 </com:urls>
 ```
 common_operator.xml:
@@ -260,6 +276,52 @@ common_config.xml
     </Proxy>
 </Configuration>
 ```
+
+### Connections
+
+Ingoing (secured with basic auth):
+
+```
+GET /inquiries/active
+GET /inquiries/archived
+GET /inquiries/erroneous
+GET /inquiries/log
+```
+
+
+
+Outgoing:
+
+```
+STORE/testAuth
+STORE/saveOrUpdateUser
+
+STORE/requests
+STORE/result
+STORE/stats
+STORE/info
+
+SEARCHBROKER/rest/searchbroker/banks/{bankemail} (register, activate and unregister)
+SEARCHBROKER/rest/searchbroker/inquiries
+SEARCHBROKER/rest/searchbroker/inquiries/{inquiryid}
+SEARCHBROKER/rest/searchbroker/inquiries/{inquiryid}/replies/{bankemail}
+
+SEARCHBROKER/rest/test/inquiries/{inquiryid}
+SEARCHBROKER/referencequery
+SEARCHBROKER/rest/monitoring
+
+DIRECTORY/api/v1/login
+DIRECTORY/api/v2/eu_bbmri_eric_biobanks
+DIRECTORY/api/v2/eu_bbmri_eric_collections
+
+```
+#### Directory Sync:
+Add the directory credentials at the admin page "credentials" so that the directory synchronization can work. 
+The job will terminate at 02:00 every day.
+For more information about the directory sync go to:
+https://github.com/samply/directory-sync
+
+
 
 ### Productive Settings
 

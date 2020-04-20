@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.7.0 - 2020-04-17]
+### Added
+- Sync between directory and bridgehead
+
 ## [5.6.3/5.6.4 - 2020-01-10]
 ### Change
 - Adopt interval for collecting inquiries
