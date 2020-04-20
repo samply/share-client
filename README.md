@@ -277,44 +277,6 @@ common_config.xml
 </Configuration>
 ```
 
-### Connections
-
-Ingoing (secured with basic auth):
-
-```
-GET /inquiries/active
-GET /inquiries/archived
-GET /inquiries/erroneous
-GET /inquiries/log
-```
-
-
-
-Outgoing:
-
-```
-STORE/testAuth
-STORE/saveOrUpdateUser
-
-STORE/requests
-STORE/result
-STORE/stats
-STORE/info
-
-SEARCHBROKER/rest/searchbroker/banks/{bankemail} (register, activate and unregister)
-SEARCHBROKER/rest/searchbroker/inquiries
-SEARCHBROKER/rest/searchbroker/inquiries/{inquiryid}
-SEARCHBROKER/rest/searchbroker/inquiries/{inquiryid}/replies/{bankemail}
-
-SEARCHBROKER/rest/test/inquiries/{inquiryid}
-SEARCHBROKER/referencequery
-SEARCHBROKER/rest/monitoring
-
-DIRECTORY/api/v1/login
-DIRECTORY/api/v2/eu_bbmri_eric_biobanks
-DIRECTORY/api/v2/eu_bbmri_eric_collections
-
-```
 #### Directory Sync:
 Add the directory credentials at the admin page "credentials" so that the directory synchronization can work. 
 The job will terminate at 02:00 every day.
