@@ -279,7 +279,7 @@ common_config.xml
 
 #### Directory Sync:
 Add the directory credentials at the admin page "credentials" so that the directory synchronization can work. 
-The job will terminate at 02:00 every day.
+The job will terminate at 03:00 every day.
 For more information about the directory sync go to:
 https://github.com/samply/directory-sync
 
