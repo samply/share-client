@@ -16,9 +16,13 @@ sed -i "s/{postgres-db}/${POSTGRES_DB}/"                  $file
 sed -i "s/{postgres-user}/${POSTGRES_USER}/"              $file
 sed -i "s/{postgres-pass}/${POSTGRES_PASSWORD}/"          $file
 
-sed -i "s~{proxy-url}~${HTTP_PROXY}~"                     $file
-sed -i "s/{proxy-user}/${PROXY_USER}/"                    $file
-sed -i "s/{proxy-pass}/${PROXY_PASS}/"                    $file
+sed -i "s~{http-proxy-url}~${HTTP_PROXY_HOST}~"           $file
+sed -i "s~{http-proxy-user}~${HTTP_PROXY_USER}~"          $file
+sed -i "s~{http-proxy-pass}~${HTTP_PROXY_PASSWORD}~"      $file
+
+sed -i "s~{https-proxy-url}~${HTTPS_PROXY_HOST}~"         $file
+sed -i "s~{https-proxy-user}~${HTTPS_PROXY_USER}~"        $file
+sed -i "s~{https-proxy-pass}~${HTTPS_PROXY_PASSWORD}~"    $file
 
 sed -i "s/{operator-first-name}/${OPERATOR_FIRST_NAME}/"  $file
 sed -i "s/{operator-last-name}/${OPERATOR_LAST_NAME}/"    $file
