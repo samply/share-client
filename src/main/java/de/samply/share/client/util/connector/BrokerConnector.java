@@ -46,6 +46,8 @@ import de.samply.share.common.utils.Constants;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.common.*;
 import de.samply.share.model.common.inquiry.InquiriesIdList;
+import de.samply.share.model.common.result.Reply;
+import de.samply.share.model.common.result.ReplyEntity;
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -57,7 +59,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jooq.tools.json.JSONObject;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
@@ -600,24 +602,24 @@ public class BrokerConnector {
          * @param inquiryDetails the inquiry details object
          * @param result         the reply to submit to the broker
          */
-        @SuppressWarnings("unchecked")
         public void reply (InquiryDetails inquiryDetails, ISamplyResult result) throws BrokerConnectorException {
-            JSONObject replyDonor = new JSONObject();
-            replyDonor.put("label", "Donors");
-            replyDonor.put("count", NumberDisguiser.getDisguisedNumber(result.getNumberOfPatients()));
-            replyDonor.put("stratifications", result.getStratificationsOfPatients());
+            ReplyEntity replyDonor = new ReplyEntity();
+            replyDonor.setLabel("Donors");
+            replyDonor.setCount(NumberDisguiser.getDisguisedNumber(result.getNumberOfPatients()));
+            replyDonor.setStratifications(result.getStratificationsOfPatients());
 
-            JSONObject replySample = new JSONObject();
-            replySample.put("label", "Samples");
-            replySample.put("count", NumberDisguiser.getDisguisedNumber(result.getNumberOfSpecimens()));
-            replySample.put("stratifications", result.getStratificationsOfSpecimens());
+            ReplyEntity replySample = new ReplyEntity();
+            replySample.setLabel("Samples");
+            replySample.setCount(NumberDisguiser.getDisguisedNumber(result.getNumberOfSpecimens()));
+            replySample.setStratifications(result.getStratificationsOfSpecimens());
 
-            JSONObject reply = new JSONObject();
-            reply.put("donor", replyDonor);
-            reply.put("sample", replySample);
+            Reply reply = new Reply();
+            reply.setDonor(replyDonor);
+            reply.setSample(replySample);
 
+            ObjectMapper mapper = new ObjectMapper();
             try {
-                reply(inquiryDetails, reply.toString());
+                reply(inquiryDetails, mapper.writeValueAsString(reply));
             } catch (URISyntaxException | IOException e) {
                 throw new BrokerConnectorException(e);
             }
