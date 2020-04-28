@@ -267,7 +267,7 @@ public class BrokerConnector {
             throw new BrokerConnectorException("No credentials provided for broker " + broker.getId());
         }
         try {
-            URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH);
+            URI uri = new URI(brokerUrl.getPath()).resolve(Constants.INQUIRIES_PATH);
 
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
             httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
@@ -600,16 +600,24 @@ public class BrokerConnector {
          * @param inquiryDetails the inquiry details object
          * @param result         the reply to submit to the broker
          */
+        @SuppressWarnings("unchecked")
         public void reply (InquiryDetails inquiryDetails, ISamplyResult result) throws BrokerConnectorException {
+            JSONObject replyDonor = new JSONObject();
+            replyDonor.put("label", "Donors");
+            replyDonor.put("count", NumberDisguiser.getDisguisedNumber(result.getNumberOfPatients()));
+            replyDonor.put("stratifications", result.getStratificationsOfPatients());
 
-            JSONObject stats = new JSONObject();
+            JSONObject replySample = new JSONObject();
+            replySample.put("label", "Samples");
+            replySample.put("count", NumberDisguiser.getDisguisedNumber(result.getNumberOfSpecimens()));
+            replySample.put("stratifications", result.getStratificationsOfSpecimens());
 
-            stats.put("donor", NumberDisguiser.getDisguisedNumber(result.getNumberOfPatients()));
-            stats.put("sample", NumberDisguiser.getDisguisedNumber(result.getNumberOfSpecimens()));
-            String replyString = stats.toString();
+            JSONObject reply = new JSONObject();
+            reply.put("donor", replyDonor);
+            reply.put("sample", replySample);
 
             try {
-                reply(inquiryDetails, replyString);
+                reply(inquiryDetails, reply.toString());
             } catch (URISyntaxException | IOException e) {
                 throw new BrokerConnectorException(e);
             }

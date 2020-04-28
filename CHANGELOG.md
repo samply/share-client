@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.7.0 - 2020-04-17]
-### Added
-- Sync between directory and bridgehead
+## [5.7.0 - 2020-04-24]
+### Change
+- Add stratification to InquiryResult
+- Add stratifications to reply (for Searchbroker)
+- Update several dependencies share-dto (4.8.0) share-common (3.4.0) common-ldmclient.cql (1.3.0) common-ldmclient.centraxx (5.4.0) common-ldmclient.samplystore-biobank (2.4.0)
+### Bugfix
+- Use QueryRTesultStatistic from common (not CentraXX)
 
 ## [5.6.3/5.6.4 - 2020-01-10]
 ### Change

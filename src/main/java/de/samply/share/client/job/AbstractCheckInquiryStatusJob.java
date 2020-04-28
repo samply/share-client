@@ -55,8 +55,10 @@ import de.samply.share.model.common.Error;
 import de.samply.share.model.common.QueryResultStatistic;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.quartz.*;
 
+import java.io.IOException;
 import java.util.function.Consumer;
 
 /**
@@ -170,6 +172,8 @@ abstract class AbstractCheckInquiryStatusJob<T_LDM_CONNECTOR extends LdmConnecto
         QueryResultStatistic queryResultStatistic = ldmQueryResult.getResult();
         log(EventMessageType.E_STATISTICS_READY, Integer.toString(queryResultStatistic.getTotalSize()));
         inquiryResult.setSize(queryResultStatistic.getTotalSize());
+        inquiryResult.setStratifications(createStratificationAsJson(queryResultStatistic));
+
         InquiryResultUtil.updateInquiryResult(inquiryResult);
         jobExecutionContext.getJobDetail().getJobDataMap().put(CheckInquiryStatusJobParams.STATS_DONE, true);
         if (inquiryResult.getStatisticsOnly() || queryResultStatistic.getTotalSize() == 0) {
@@ -205,6 +209,15 @@ abstract class AbstractCheckInquiryStatusJob<T_LDM_CONNECTOR extends LdmConnecto
             rescheduleCheckingForResults(jobExecutionContext);
         }
         return false;
+    }
+
+    private String createStratificationAsJson(QueryResultStatistic queryResultStatistic) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(queryResultStatistic.getStratification());
+        } catch (IOException e) {
+            return "[]";
+        }
     }
 
     abstract void handleInquiryStatusReady();

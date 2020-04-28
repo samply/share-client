@@ -6,6 +6,7 @@ import de.samply.share.client.util.connector.LdmConnectorCql;
 import de.samply.share.client.util.connector.LdmPostQueryParameterCql;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.InquiryCriteriaUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobExecutionException;
 
 import java.util.List;
@@ -30,8 +31,6 @@ public class ExecuteInquiryJobCql extends AbstractExecuteInquiryJob<LdmConnector
     }
 
     private void executeOneCriteria(InquiryCriteria inquiryCriteria) throws JobExecutionException {
-        List<String> unknownKeys = jobParams.getUnknownKeys();
-
         try {
             setInquiryDetailsStatusAndUpdateInquiryDetails(IS_PROCESSING);
             String query = inquiryCriteria.getCriteriaOriginal();
@@ -40,7 +39,7 @@ public class ExecuteInquiryJobCql extends AbstractExecuteInquiryJob<LdmConnector
             LdmPostQueryParameterCql parameter = new LdmPostQueryParameterCql(jobParams.isStatsOnly(), inquiryCriteria.getEntityType());
             String resultLocation = ldmConnector.postQuery(query, parameter);
 
-            if (resultLocation != null && resultLocation.length() > 0) {
+            if (!StringUtils.isEmpty(resultLocation)) {
                 log(EventMessageType.E_INQUIRY_RESULT_AT, resultLocation);
                 int inquiryResultId = createNewInquiryResult(resultLocation, inquiryCriteria.getId());
                 spawnNewCheckInquiryStatusJob(inquiryResultId, inquiryCriteria.getEntityType());

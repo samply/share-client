@@ -87,7 +87,7 @@ public class ApplicationBean implements Serializable {
     private static final String COMMON_INFOS_FILENAME_SUFFIX = "_bridgehead_info.xml";
     private static final List<String> NAMESPACES = new ArrayList<>(Arrays.asList("dktk", "adt"));
 
-    private static final int TIMEOUT_IN_SECONDS = 15;
+    private static final int TIMEOUT_IN_SECONDS = 60;
 
     private static Urls urls;
     private static Operator operator;
