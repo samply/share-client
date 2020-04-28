@@ -99,7 +99,7 @@
         <twbs-pagination.version>1.4.1</twbs-pagination.version>
         <jqplot.version>1.0.9.d96a669-1</jqplot.version>
 
-        <hapi.version>4.1.0</hapi.version>
+        <hapi.version>4.2.0</hapi.version>
 
         <skipTests>false</skipTests>
     </properties>
@@ -567,23 +567,10 @@
             <artifactId>hapi-fhir-base</artifactId>
             <version>${hapi.version}</version>
         </dependency>
-
-        <!-- At least one "structures" JAR must also be included -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-r4</artifactId>
             <version>${hapi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ca.uhn.hapi.fhir</groupId><!--org.hl7.fhir.dstu3.hapi.validation-->
-            <artifactId>hapi-fhir-validation</artifactId>
-            <version>4.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ca.uhn.hapi.fhir</groupId>
-            <artifactId>hapi-fhir-validation-resources-dstu3</artifactId>
-            <version>LATEST</version>
         </dependency>
     </dependencies>
 

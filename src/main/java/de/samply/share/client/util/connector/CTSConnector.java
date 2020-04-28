@@ -44,33 +44,33 @@ public class CTSConnector {
         }
     }
 
-    public void postPseudonmToCTS(String bundleString) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException {
-        Bundle pseudonymBundle = pseudonymiseBundle(bundleString);
-        HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL)));
-        HttpEntity entity = new StringEntity(pseudonymBundle.toString(), Consts.UTF_8);
-        httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_XML.getMimeType());
-        httpPost.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
-        httpPost.setEntity(entity);
-        CloseableHttpResponse response;
-        try {
-            response = httpClient.execute(httpPost);
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode >= 500 && statusCode < 600) {
-                throw new IOException("CTS server not responding");
+    public void postPseudonmToCTS(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException {
+            String pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
+            HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL)));
+            HttpEntity entity = new StringEntity(pseudonymBundle, Consts.UTF_8);
+            httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir+xml");
+            httpPost.setHeader(HttpHeaders.ACCEPT, "application/fhir+xml");
+            httpPost.setEntity(entity);
+            CloseableHttpResponse response;
+            try {
+                response = httpClient.execute(httpPost);
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode >= 500 && statusCode < 600) {
+                    throw new IOException("CTS server not responding");
+                }
+                if (statusCode >= 400 && statusCode < 500) {
+                    throw new IllegalArgumentException(response.toString());
+                }
+            } catch (IOException e) {
+                throw new IOException(e);
             }
-            if (statusCode >= 400 && statusCode < 500) {
-                throw new IllegalArgumentException(response.toString());
-            }
-        } catch (IOException e) {
-            throw new IOException(e);
-        }
     }
 
-    private Bundle pseudonymiseBundle(String bundleString) throws IOException, ConfigurationException, DataFormatException {
+    private String pseudonymiseBundle(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException {
         FHIRResource fhirResource = new FHIRResource();
-        Bundle bundle = fhirResource.convertToBundleResource(bundleString);
+        Bundle bundle = fhirResource.convertToBundleResource(bundleString, mediaType);
         MainzellisteConnector mainzellisteConnector = new MainzellisteConnector();
-        return mainzellisteConnector.getPatientPseudonym(bundle);
+        return fhirResource.convertBundleToXml(mainzellisteConnector.getPatientPseudonym(bundle));
     }
 
 }
