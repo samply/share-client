@@ -84,7 +84,7 @@
         <!--<common-ldmclient.centraxx.version>5.3.2</common-ldmclient.centraxx.version>-->
         <common-ldmclient.samplystore.biobank.version>2.3.0</common-ldmclient.samplystore.biobank.version>
         <common-ldmclient.cql.version>1.2.1</common-ldmclient.cql.version>
-        <converter.dktk.patient.version>1.1.8-SNAPSHOT</converter.dktk.patient.version> <!-- TODO: Replace release -->
+        <converter.dktk.patient.version>1.1.9-SNAPSHOT</converter.dktk.patient.version> <!-- TODO: Replace release -->
 
         <!-- general dependencies -->
         <version.flyway>4.2.0</version.flyway>
