@@ -61,7 +61,7 @@ public class CollectInquiriesJob implements Job {
             } catch (JAXBException | URISyntaxException e) {
                 logger.error("Error loading and/or persisting inquiries", e);
             } catch (BrokerConnectorException e) {
-                logger.warn("Could not connect to " + broker.getAddress());
+                logger.error("Error while collecting inquiries from " + broker.getAddress(), e);
             }
         }
     }

@@ -269,7 +269,7 @@ public class BrokerConnector {
             throw new BrokerConnectorException("No credentials provided for broker " + broker.getId());
         }
         try {
-            URI uri = new URI(brokerUrl.getPath()).resolve(Constants.INQUIRIES_PATH);
+            URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath())).resolve(Constants.INQUIRIES_PATH);
 
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
             httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
