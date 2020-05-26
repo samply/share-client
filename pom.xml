@@ -6,7 +6,7 @@
     <packaging>war</packaging>
     <artifactId>share-client</artifactId>
     <name>Connector</name>
-    <version>5.7.1-SNAPSHOT</version>
+    <version>5.8.0-SNAPSHOT</version>
 
     <parent>
         <groupId>de.samply</groupId>
@@ -18,9 +18,6 @@
         <!-- ${project.context} also defines the folder where flyway looks for sql files -->
         <profile>
             <id>samply</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <project.context>samply</project.context>
                 <!-- Postgres settings -->
@@ -104,6 +101,7 @@
         <skipTests>false</skipTests>
         <hapi-fhir-structures-r4.version>4.1.0</hapi-fhir-structures-r4.version>
         <hapi-fhir-client.version>4.1.0</hapi-fhir-client.version>
+        <directory-sync.version>0.1.0</directory-sync.version>
     </properties>
 
     <build>
@@ -373,7 +371,7 @@
         <dependency>
             <groupId>de.samply</groupId>
             <artifactId>directory-sync</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${directory-sync.version}</version>
         </dependency>
 
         <!-- JSF 2 -->
