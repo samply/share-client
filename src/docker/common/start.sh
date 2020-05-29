@@ -44,16 +44,19 @@ sed -i "s/{update-server}/${UPDATE_SERVER}/"              $file
 sed -i "s/{monitor-interval}/${MONITOR_INTERVAL}/"        $file
 sed -i "s/{monitor-url}/${MONITOR_URL}/"                  $file
 
+sed -i "s#{store-url}#${STORE_URL}#"                      $file
 sed -i "s~{share-url}~${SHARE_URL}~"                      $file
 sed -i "s~{id-manager-url}~${ID_MANAGER_URL}~"            $file
 sed -i "s~{central-search}~${CENTRAL_SEARCH}~"            $file
 sed -i "s~{decentral-search}~${DECENTRAL_SEARCH}~"        $file
 sed -i "s~{ldm-url}~${LDM_URL}~"                          $file
 sed -i "s~{mdr-url}~${MDR_URL}~"                          $file
+sed -i "s#{directory-url}#${DIRECTORY_URL}#"              $file
 
 
 done
 
+export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/samply/jmx_prometheus_javaagent-0.3.1.jar=9100:/samply/jmx-exporter.yml"
 
 # Replace start.sh with catalina.sh
 exec /usr/local/tomcat/bin/catalina.sh run
