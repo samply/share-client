@@ -1,5 +1,6 @@
 package de.samply.share.client.control;
 
+import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.job.params.QuartzJob;
 import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.util.db.JobScheduleUtil;
@@ -95,11 +96,12 @@ public class SchedulerBean implements Serializable {
         if (jobDataMap == null || !jobDataMap.getBooleanFromString("SHOW")) {
             return false;
         }
-        if (ApplicationUtils.isDktk()) {
-            return !jobKey.getGroup().equals("DirectoryGroup");
-        } else {
-            return !jobKey.getGroup().equals("CentralSearchGroup");
+        if (jobKey.getGroup().equals("DirectoryGroup")) {
+            return ClientFeature.BBMRI_DIRECTORY_SYNC.isActive();
+        } else if(jobKey.getGroup().equals("CentralSearchGroup")) {
+            return ClientFeature.DKTK_CENTRAL_SEARCH.isActive();
         }
+        return true;
     }
 
     /**

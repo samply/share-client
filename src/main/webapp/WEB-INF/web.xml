@@ -106,6 +106,10 @@
     <!--<param-name>quartz:start-delay-seconds</param-name>-->
     <!--<param-value>5</param-value>-->
     <!--</context-param>-->
+    <context-param>
+        <param-name>org.togglz.core.manager.TogglzConfig</param-name>
+        <param-value>de.samply.share.client.feature.ClientConfiguration</param-value>
+    </context-param>
 
     <!--Filters-->
     <filter>

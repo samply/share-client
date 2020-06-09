@@ -116,6 +116,8 @@
         <hapi-fhir-structures-r4.version>4.1.0</hapi-fhir-structures-r4.version>
         <hapi-fhir-client.version>4.1.0</hapi-fhir-client.version>
         <directory-sync.version>0.1.0</directory-sync.version>
+        <togglz-core.version>2.6.1.Final</togglz-core.version>
+        <togglz-jsf.version>2.6.1.Final</togglz-jsf.version>
     </properties>
 
     <build>
@@ -590,6 +592,16 @@
             <groupId>org.webjars</groupId>
             <artifactId>jqplot</artifactId>
             <version>${jqplot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.togglz</groupId>
+            <artifactId>togglz-core</artifactId>
+            <version>${togglz-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.togglz</groupId>
+            <artifactId>togglz-jsf</artifactId>
+            <version>${togglz-jsf.version}</version>
         </dependency>
     </dependencies>
 

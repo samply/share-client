@@ -28,6 +28,7 @@
 
 package de.samply.share.client.control;
 
+import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.model.db.enums.AuthSchemeType;
 import de.samply.share.client.model.db.enums.TargetType;
 import de.samply.share.client.model.db.tables.pojos.Credentials;
@@ -204,10 +205,10 @@ public class CredentialsBean implements Serializable {
         targetTypes.add(TargetType.valueOf("TT_HTTPS_PROXY"));
         targetTypes.add(TargetType.valueOf("TT_LDM"));
         targetTypes.add(TargetType.valueOf("TT_BROKER"));
-        if (ApplicationUtils.isSamply()) {
+        if (ClientFeature.BBMRI_DIRECTORY_SYNC.isActive()) {
             targetTypes.add(TargetType.valueOf("TT_DIRECTORY"));
         }
-        if (ApplicationUtils.isDktk()) {
+        if (ClientFeature.DKTK_CENTRAL_SEARCH.isActive()) {
             targetTypes.add(TargetType.valueOf("TT_CENTRALSEARCH"));
         }
         return targetTypes;
