@@ -80,7 +80,7 @@
         <jsf-renderer.version>2.0.0</jsf-renderer.version>
         <common-mailing.version>2.2.0</common-mailing.version>
         <common-http.version>6.1.1</common-http.version>
-        <common-ldmclient.centraxx.version>5.4.1-pre-centraxx-3.14</common-ldmclient.centraxx.version>
+        <common-ldmclient.centraxx.version>5.4.2-SNAPSHOT</common-ldmclient.centraxx.version>
 <!--        <common-ldmclient.centraxx.version>5.4.1</common-ldmclient.centraxx.version>-->
         <common-ldmclient.samplystore.biobank.version>2.3.0</common-ldmclient.samplystore.biobank.version>
         <common-ldmclient.cql.version>1.2.1</common-ldmclient.cql.version>
