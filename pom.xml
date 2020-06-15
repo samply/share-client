@@ -6,7 +6,7 @@
     <packaging>war</packaging>
     <artifactId>share-client</artifactId>
     <name>Connector</name>
-    <version>6.1.4-pre-centraxx.3.14-SNAPSHOT</version>
+    <version>6.1.4-pre-and-post-centraxx-3.14-compatible</version>
 
     <parent>
         <groupId>de.samply</groupId>
