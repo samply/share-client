@@ -12,8 +12,6 @@ public enum  ClientFeature implements Feature {
     @Label("BBMRI Directory Sync")
     BBMRI_DIRECTORY_SYNC;
 
-
-
     public boolean isActive() {
         return FeatureContext.getFeatureManager().isActive(this);
     }

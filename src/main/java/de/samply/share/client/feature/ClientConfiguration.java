@@ -12,10 +12,8 @@ import org.togglz.core.user.SimpleFeatureUser;
 import org.togglz.core.user.UserProvider;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import static org.omnifaces.util.Faces.getServletContext;
 
@@ -33,23 +31,10 @@ public class ClientConfiguration implements TogglzConfig {
         try {
             file = FileFinderUtil.findFile(FEATURE_PROPERTIES, ProjectInfo.INSTANCE.getProjectName().toLowerCase(), System.getProperty("catalina.base") + File.separator + "conf", getServletContext().getRealPath("/WEB-INF"));
         } catch (FileNotFoundException e) {
-            logger.debug("Feature configuration not found. Creating an empty one");
-            file = createFile();
+            logger.debug("Feature configuration not found.");
+            return new EmptyStateRepository();
         }
         return new FileBasedStateRepository(file);
-    }
-
-    private File createFile() {
-        ServletContext ctx = getServletContext();
-        String path = ctx.getRealPath("WEB-INF/conf/");
-        File file = new File(path + "feature.properties");
-        try {
-            if (file.createNewFile())
-                return file;
-        } catch (IOException e) {
-            logger.error("Could not create a new feature.properties file");
-        }
-        return null;
     }
 
     @Override
