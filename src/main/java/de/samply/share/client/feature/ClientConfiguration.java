@@ -31,7 +31,7 @@ public class ClientConfiguration implements TogglzConfig {
         try {
             file = FileFinderUtil.findFile(FEATURE_PROPERTIES, ProjectInfo.INSTANCE.getProjectName().toLowerCase(), System.getProperty("catalina.base") + File.separator + "conf", getServletContext().getRealPath("/WEB-INF"));
         } catch (FileNotFoundException e) {
-            logger.debug("Feature configuration not found.");
+            logger.warn("Feature configuration not found.");
             return new EmptyStateRepository();
         }
         return new FileBasedStateRepository(file);
