@@ -17,6 +17,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.*;
 import org.jooq.tools.json.JSONObject;
 import org.jooq.tools.json.JSONParser;
@@ -27,8 +29,12 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 public class MainzellisteConnector {
+
+    private static final Logger logger = LogManager.getLogger(MainzellisteConnector.class);
+
     private transient HttpConnector httpConnector;
     private CloseableHttpClient httpClient;
     private String mainzellisteBaseUrl;
@@ -46,6 +52,18 @@ public class MainzellisteConnector {
             this.mainzellisteHost = SamplyShareUtils.getAsHttpHost(mainzellisteBaseUrl);
             httpClient = httpConnector.getHttpClient(mainzellisteHost);
         } catch (MalformedURLException e) {
+            logger.error("MalformedURLException, e=", e);
+            e.printStackTrace();
+        } catch (Exception e) {
+            String configurationElementValue = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MAINZELLISTE_URL);
+            logger.error("Problem initializing connection to Mainzelliste");
+            if (configurationElementValue == null)
+                logger.error("mainzellisteBaseUrl configurationElementValue is null");
+            else if (configurationElementValue == "")
+                logger.error("mainzellisteBaseUrl configurationElementValue is empty");
+            else
+                logger.error("mainzellisteBaseUrl configurationElementValue=", configurationElementValue);
+            logger.error("mainzellisteBaseUrl=", SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MAINZELLISTE_URL)));
             e.printStackTrace();
         }
     }
@@ -159,11 +177,16 @@ public class MainzellisteConnector {
     /**
      * Post the original patient to the Mainzelliste and get an encrypted ID
      *
+     * If no Mainzelliste URL has been specified, assume that we are in a
+     * test environment, and return a random patient ID.
+     *
      * @param patient
      * @return an encrypted ID
      * @throws IOException
      */
     private JSONObject getPseudonymFromMainzelliste(JSONObject patient) throws IOException,IllegalArgumentException {
+        if (!this.isMainzelisteUrlSpecified())
+            return createFakeencryptedID();
         HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MAINZELLISTE_URL) + GET_ENCRYPTID_URL));
         HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
@@ -191,5 +214,29 @@ public class MainzellisteConnector {
             e.printStackTrace();
         }
         return encryptedID;
+    }
+
+    /**
+     * Create a JSON object with a random value in the "EncID" element. This mimics the output
+     * of the Mainzelliste when the GET_ENCRYPTID_URL endpoint is used for generating a
+     * pseudonym for a patient.
+     *
+     * @return
+     */
+    private JSONObject createFakeencryptedID() {
+        JSONObject encryptedID = new JSONObject();
+        encryptedID.put("EncID", UUID.randomUUID().toString());
+
+        return encryptedID;
+    }
+
+    /**
+     * If no Mainzelliste URL has been specified in the configuration file, assume that
+     * there is no Mainzelliste available, and return false.
+     *
+     * @return
+     */
+    private boolean isMainzelisteUrlSpecified() {
+        return mainzellisteBaseUrl != null && mainzellisteBaseUrl.length() > 0 && !mainzellisteBaseUrl.equals("/");
     }
 }
