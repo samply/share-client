@@ -10,22 +10,27 @@ import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.util.db.ConfigurationUtil;
 
 import de.samply.share.common.utils.SamplyShareUtils;
-import org.apache.http.Consts;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpHost;
+import org.apache.http.*;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class CTSConnector {
 
@@ -93,29 +98,35 @@ public class CTSConnector {
      * @throws IllegalArgumentException
      */
     public void postStringToCTS(String string) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException {
+        logger.info("postStringToCTS: entered");
         HttpEntity entity = new StringEntity(string, Consts.UTF_8);
         String ctsUri = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL));
         HttpPost httpPost = new HttpPost(ctsUri);
-        List<String> ctsInfo = getCtsInfo();
-        httpPost.setHeader("Cookie", "SDMS_code=" + ctsInfo.get(0) + "; SDMS_user=" + ctsInfo.get(1));
+        CtsAuthorization ctsAuthorization = getCtsAuthorization();
+        httpPost.setHeader("Cookie", "SDMS_code=" + ctsAuthorization.code + "; SDMS_user=" + ctsAuthorization.user);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir+xml; fhirVersion=4.0");
         httpPost.setHeader(HttpHeaders.ACCEPT, "application/fhir+xml; fhirVersion=4.0");
         httpPost.setEntity(entity);
+        CloseableHttpResponse response = null;
         try {
-            CloseableHttpResponse response = httpClient.execute(httpPost);
+            response = httpClient.execute(httpPost);
             int statusCode = response.getStatusLine().getStatusCode();
+            logger.info("CTS upload status code: " + statusCode);
             if (statusCode >= 500 && statusCode < 600) {
-                logger.error("CTS server error, statusCode: " + statusCode + ", status: " + response.toString());
-                throw new IOException("CTS server error, statusCode: " + statusCode + ", status: " + response.toString());
+                logger.error("Upload: CTS server error, statusCode: " + statusCode + ", status: " + response.toString());
+                throw new IOException("Upload: CTS server error, statusCode: " + statusCode + ", status: " + response.toString());
             }
             if (statusCode >= 400 && statusCode < 500) {
-                logger.error("CTS permission problem, statusCode: " + statusCode + ", status: " + response.toString());
-                throw new IllegalArgumentException("CTS permission problem, statusCode: " + statusCode + ", status: " + response.toString());
+                logger.error("Upload: CTS permission problem, statusCode: " + statusCode + ", status: " + response.toString());
+                throw new IllegalArgumentException("Upload: CTS permission problem, statusCode: " + statusCode + ", status: " + response.toString());
             }
         } catch (IOException e) {
-            logger.error("IOException, URI: " + httpPost.getURI() + ", e: " + e);
-            throw new IOException("IOException, URI: " + httpPost.getURI() + ", e: " + e);
+            logger.error("Upload: IOException, URI: " + httpPost.getURI() + ", e: " + e);
+            throw new IOException("Upload: IOException, URI: " + httpPost.getURI() + ", e: " + e);
+        } finally {
+            response.close();
         }
+        logger.info("postStringToCTS: done");
     }
 
     private Bundle pseudonymiseBundle(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException {
@@ -133,17 +144,114 @@ public class CTSConnector {
         resource.setMeta(m);
     }
 
+    public class CtsAuthorization {
+        String code;
+        String user;
+    }
+
     /**
-     * Returns CTS code and CTS user as elements 0 and 1 of a list, respectively.
+     * Returns CTS code and CTS user.
      *
      * @return
      */
-    private List<String> getCtsInfo() {
-        List<String> ctsInfo = new ArrayList<String>();
+    private CtsAuthorization getCtsAuthorization() throws IOException, IllegalArgumentException {
+        logger.info("getCtsInfo: entered");
 
-        ctsInfo.add("g845upw5zyji1w90n45pw0z38ijgmtttxxqzio6e_1591624687_ceb068b41cda018bf993a25d5b84795f");
-        ctsInfo.add("admin");
+        // Get username and password for an SMS login
+        Credentials credentials = getCtsCredentials();
 
-        return ctsInfo;
+        // Build a form-based entity to realize the login
+        List<NameValuePair> formElements = new ArrayList<NameValuePair>();
+        formElements.add(new BasicNameValuePair("username", credentials.username));
+        formElements.add(new BasicNameValuePair("password", credentials.password));
+        formElements.add(new BasicNameValuePair("login", "")); // seems to be required, not sure why
+        HttpEntity entity = new UrlEncodedFormEntity(formElements, Consts.UTF_8);
+
+        // Get a URI for the login page. This boils down to extracting the root URL
+        // from the upload-API URI. Any attempt to access this URL automatically
+        // redirects to the SMS login page.
+        String ctsUri = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL);
+        String ctsBaseUri = SamplyShareUtils.addTrailingSlash(extractBaseUrl(ctsUri));
+
+        // Build the HttpPost object that specifies the request.
+        HttpPost httpPost = new HttpPost(ctsBaseUri);
+        httpPost.setEntity(entity);
+
+        // Run the request and gather the CTS authorization parameters.
+        CloseableHttpResponse response = null;
+        CtsAuthorization ctsAuthorization = new CtsAuthorization();
+        try {
+            HttpClientContext context = new HttpClientContext();
+            response = httpClient.execute(httpPost, context);
+            int statusCode = response.getStatusLine().getStatusCode();
+            logger.info("CTS authorization status code: " + statusCode);
+            if (statusCode >= 500 && statusCode < 600) {
+                logger.error("Authorization: CTS server error, statusCode: " + statusCode + ", status: " + response.toString());
+                throw new IOException("Authorization: CTS server error, statusCode: " + statusCode + ", status: " + response.toString());
+            }
+            if (statusCode >= 400 && statusCode < 500) {
+                logger.error("Authorization: CTS permission problem, statusCode: " + statusCode + ", status: " + response.toString());
+                throw new IllegalArgumentException("Authorization: CTS permission problem, statusCode: " + statusCode + ", status: " + response.toString());
+            }
+            CookieStore cookieStore = context.getCookieStore();
+            List<Cookie> cookies = cookieStore.getCookies();
+            for (Cookie cookie: cookies) {
+                String cookieName = cookie.getName();
+                if (cookieName.equals("SDMS_code"))
+                    ctsAuthorization.code = cookie.getValue();
+                else if (cookieName.equals("SDMS_user"))
+                    ctsAuthorization.user = cookie.getValue();
+            }
+            if (ctsAuthorization.code == null || ctsAuthorization.user == null) {
+                logger.error("Authorization: missing cookie, SDMS_code or SDMS_user could not be found");
+                throw new IllegalArgumentException("Authorization: missing cookie, SDMS_code or SDMS_user could not be found");
+            }
+        } catch (IOException e) {
+            logger.error("Authorization: IOException, URI: " + httpPost.getURI() + ", e: " + e);
+            throw new IOException("Authorization: IOException, URI: " + httpPost.getURI() + ", e: " + e);
+        } finally {
+            response.close();
+        }
+
+        logger.info("getCtsInfo: done");
+        return ctsAuthorization;
+    }
+
+    private String extractBaseUrl(String urlString) throws MalformedURLException {
+        URL url = new URL(urlString);
+        String baseUrl = url.getProtocol() + "://" + url.getHost();
+
+        return baseUrl;
+    }
+
+    public class Credentials {
+        public String username;
+        public String password;
+    }
+
+    /**
+     * Returns CTS login and CTS password.
+     *
+     * @return
+     */
+    private Credentials getCtsCredentials() throws IOException {
+        Credentials credentials = new Credentials();
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        InputStream input = classLoader.getResourceAsStream("cts_credentials.properties");
+        Properties properties = new Properties();
+        try {
+            properties.load(input);
+        } catch (IOException e) {
+            logger.error("Problem reading CTS credentials, e: " + e);
+            throw new IOException("Problem reading CTS credentials, e: " + e);
+        } finally {
+            input.close();
+        }
+
+        credentials.username = properties.getProperty("cts.credentials.username");
+        credentials.password = properties.getProperty("cts.credentials.password");
+
+        return credentials;
     }
 }

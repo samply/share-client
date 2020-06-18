@@ -22,6 +22,9 @@ ADD src/docker/start.sh                         /samply/
 RUN chmod +x                                    /samply/start.sh
 
 # Run on port 8085 for testing purposes, rather than the usual port 8080
-RUN sed -i 's/8080/8085/' /usr/local/tomcat/conf/server.xml
+#RUN sed -i 's/8080/8085/' /usr/local/tomcat/conf/server.xml
+
+EXPOSE 8080
+EXPOSE 8009
 
 CMD ["/samply/start.sh"]
