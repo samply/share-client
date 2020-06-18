@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
     <Properties>
-        <Property name="logDir">/var/log/samply/</Property>
+        <Property name="logDir">/var/log/${projectDir}/</Property>
         <Property name="fileNameSuffix">.log</Property>
     </Properties>
 

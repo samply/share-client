@@ -52,11 +52,12 @@ sed -i "s~{decentral-search}~${DECENTRAL_SEARCH}~"        $file
 sed -i "s~{ldm-url}~${LDM_URL}~"                          $file
 sed -i "s~{mdr-url}~${MDR_URL}~"                          $file
 sed -i "s#{directory-url}#${DIRECTORY_URL}#"              $file
+sed -i "s~{projectDir}~${PROJECT_DIR}~"                   $file
 
 
 done
 
-export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/samply/jmx_prometheus_javaagent-0.3.1.jar=9100:/samply/jmx-exporter.yml"
+export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/${PROJECT_DIR}/jmx_prometheus_javaagent-0.3.1.jar=9100:/${PROJECT_DIR}/jmx-exporter.yml"
 
 # Replace start.sh with catalina.sh
 exec /usr/local/tomcat/bin/catalina.sh run
