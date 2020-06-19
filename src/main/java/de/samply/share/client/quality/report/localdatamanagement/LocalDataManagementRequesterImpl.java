@@ -59,7 +59,7 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
 
     private static final Logger logger = LogManager.getLogger(LocalDataManagementRequesterImpl.class);
 
-    private QueryResultStatisticClassGetter queryResultStatisticClassGetter = new QueryResultStatisticClassGetter();
+    private final QueryResultStatisticClassGetter queryResultStatisticClassGetter = new QueryResultStatisticClassGetter();
 
 
     @Override
@@ -143,18 +143,18 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
         return getLocalDataManagementResponse(myUri, queryResultStatisticClassGetter);
     }
 
-    private class QueryResultStatisticClassGetter implements ClassGetterWithConverter<QueryResultStatistic>{
+     private static class QueryResultStatisticClassGetter implements ClassGetterWithConverter<QueryResultStatistic> {
 
         @Override
         public QueryResultStatistic convertToOutputClass(Object object) {
 
             QueryResultStatistic result = null;
 
-            if (object instanceof QueryResultStatistic){
+            if (object instanceof QueryResultStatistic) {
 
                 result = (QueryResultStatistic) object;
 
-            } else if (object instanceof de.samply.common.ldmclient.centraxx.model.QueryResultStatistic){
+            } else if (object instanceof de.samply.common.ldmclient.centraxx.model.QueryResultStatistic) {
 
                 result = new QueryResultStatistic();
                 de.samply.common.ldmclient.centraxx.model.QueryResultStatistic input = (de.samply.common.ldmclient.centraxx.model.QueryResultStatistic) object;
@@ -170,7 +170,7 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
         }
 
         @Override
-        public Class getInputClass(String entity) {
+        public Class<?> getInputClass(String entity) {
             return (entity.contains("http://de.kairos.centraxx/ccp/QueryResultStatistic")) ?
                     de.samply.common.ldmclient.centraxx.model.QueryResultStatistic.class : QueryResultStatistic.class;
 
@@ -214,7 +214,7 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
         return getLocalDataManagementResponse(myUri, (x) -> QueryResult.class);
     }
 
-    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(MyUri myUri, ClassGetter<T> classGetter) throws LocalDataManagementRequesterException {
+    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(MyUri myUri, ClassGetter classGetter) throws LocalDataManagementRequesterException {
 
         String uri = myUri.toString();
         HttpGet httpGet = createHttpGet(uri);
@@ -222,7 +222,7 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
         return getLocalDataManagementResponse(uri, httpGet, classGetter);
     }
 
-    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(String url, HttpGet httpGet, ClassGetter<T> classGetter) throws LocalDataManagementRequesterException {
+    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(String url, HttpGet httpGet, ClassGetter classGetter) throws LocalDataManagementRequesterException {
 
         try (CloseableHttpResponse response = getResponse(url, httpGet)) {
 
@@ -234,7 +234,7 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
 
     }
 
-    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(CloseableHttpResponse response, ClassGetter<T> classGetter) throws IOException, JAXBException {
+    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(CloseableHttpResponse response, ClassGetter classGetter) throws IOException, JAXBException {
 
         int statusCode = response.getStatusLine().getStatusCode();
 
@@ -268,21 +268,18 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
 
     }
 
-
-    private interface ClassGetterWithConverter<T> extends ClassGetter<T>{
-        T convertToOutputClass (Object object);
-    }
-
-    private interface ClassGetter<T>{
+    private interface ClassGetter {
         Class getInputClass(String entity);
     }
 
-    private <T> T createTObject(String entity, ClassGetter<T> classGetter) throws JAXBException {
-        Object object = createObject(entity, classGetter);
+    private interface ClassGetterWithConverter<T> extends ClassGetter {
+        T convertToOutputClass(Object object);
+    }
 
-        return (classGetter instanceof ClassGetterWithConverter) ?
-                ((ClassGetterWithConverter<T>) classGetter).convertToOutputClass(object) :
-                (T) object;
+    private <T> T createTObject(String entity, ClassGetter classGetter) throws JAXBException {
+
+        Object object = createObject(entity, classGetter);
+        return (classGetter instanceof ClassGetterWithConverter) ? ((ClassGetterWithConverter<T>) classGetter).convertToOutputClass(object) : (T) object;
 
     }
 
@@ -290,7 +287,7 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
 
         try {
             return createObject_WithoutCastException(entity, classGetter);
-        } catch (ClassCastException exception){
+        } catch (ClassCastException exception) {
 
             logger.info("[--ClassCastExeption-----");
             logger.info(entity);
@@ -311,7 +308,6 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
         return (object instanceof JAXBElement) ? ((JAXBElement) object).getValue() : object;
 
     }
-
 
 
 }
