@@ -18,8 +18,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.*;
@@ -28,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -76,14 +82,14 @@ public class CTSConnector {
         // Make sure that the bundle contains the correct CTS profile
         insertProfile(pseudonymBundle, "http://uk-koeln.de/fhir/StructureDefinition/Bundle/nNGM/registration-form");
 
-        String pseudonymBundleXml = serializeToXml(pseudonymBundle);
+        String pseudonymBundleXml = serializeToJsonString(pseudonymBundle);
 
         postStringToCTS(pseudonymBundleXml);
     }
 
-    private String serializeToXml(Bundle pseudonymBundle) {
+    private String serializeToJsonString(Bundle pseudonymBundle) {
         FhirContext ctx = FhirContext.forR4();
-        String string = ctx.newXmlParser().encodeResourceToString(pseudonymBundle);
+        String string = ctx.newJsonParser().encodeResourceToString(pseudonymBundle);
         return string;
     }
 
@@ -100,12 +106,12 @@ public class CTSConnector {
     public void postStringToCTS(String string) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException {
         logger.info("postStringToCTS: entered");
         HttpEntity entity = new StringEntity(string, Consts.UTF_8);
-        String ctsUri = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL));
+        String ctsUri = removeTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL));
         HttpPost httpPost = new HttpPost(ctsUri);
         CtsAuthorization ctsAuthorization = getCtsAuthorization();
         httpPost.setHeader("Cookie", "SDMS_code=" + ctsAuthorization.code + "; SDMS_user=" + ctsAuthorization.user);
-        httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir+xml; fhirVersion=4.0");
-        httpPost.setHeader(HttpHeaders.ACCEPT, "application/fhir+xml; fhirVersion=4.0");
+//        httpPost.setHeader("Cookie", "SDMS_code=qfw9d42vabyaardhm0jl17m5rbo7dyj98o0bxoxc_1592310884_12f8fbcc5420ae63af93a9b2c65c3032; SDMS_user=admin");
+        httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir-json; fhirVersion=4.0");
         httpPost.setEntity(entity);
         CloseableHttpResponse response = null;
         try {
@@ -127,6 +133,41 @@ public class CTSConnector {
             response.close();
         }
         logger.info("postStringToCTS: done");
+    }
+
+//    /**
+//     * Create a BasicHttpContext for CTS upload, with the cookies needed for authorization.
+//     *
+//     * @return
+//     */
+//    private HttpContext createCtsContext() throws IOException {
+//        CtsAuthorization ctsAuthorization = getCtsAuthorization();
+//
+//        BasicCookieStore cookieStore = new BasicCookieStore();
+//        BasicClientCookie codeCookie = new BasicClientCookie("SDMS_code", ctsAuthorization.code);
+//        cookieStore.addCookie(codeCookie);
+//        BasicClientCookie userCookie = new BasicClientCookie("SDMS_user", ctsAuthorization.user);
+//        cookieStore.addCookie(userCookie);
+//
+//        HttpContext ctsContext = new BasicHttpContext();
+//        ctsContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
+//
+//        return ctsContext;
+//    }
+
+    /**
+     * Recursively remove trailing slashes from the supplied URL.
+     *
+     * @param url
+     * @return
+     */
+    private String removeTrailingSlash(String url) {
+        String newUrl = url;
+
+        if (url.endsWith("/"))
+            newUrl = removeTrailingSlash(url.substring(0, url.length() - 1));
+
+        return newUrl;
     }
 
     private Bundle pseudonymiseBundle(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException {

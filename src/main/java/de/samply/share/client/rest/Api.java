@@ -33,6 +33,8 @@ public class Api {
             return Response.status(400).entity(e.getMessage()).build();
         } catch (IOException e) {
             return Response.status(500).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            return Response.status(500).entity(e.getMessage()).build();
         }
     }
 
