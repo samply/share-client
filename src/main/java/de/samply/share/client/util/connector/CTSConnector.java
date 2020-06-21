@@ -20,7 +20,6 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
@@ -33,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -46,7 +44,7 @@ public class CTSConnector {
     private CloseableHttpClient httpClient;
     private String ctsBaseUrl;
     private HttpHost ctsHost;
-
+    private Credentials credentials;
 
     public CTSConnector() {
         init();
@@ -54,19 +52,24 @@ public class CTSConnector {
 
     private void init() {
         try {
-            this.ctsBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL));
+            // Pull various pieces of information from property files and store them
+            // in memory.
+            ctsBaseUrl = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL);
             httpConnector = ApplicationBean.createHttpConnector();
-            this.ctsHost = SamplyShareUtils.getAsHttpHost(ctsBaseUrl);
+            ctsHost = SamplyShareUtils.getAsHttpHost(ctsBaseUrl);
             httpClient = httpConnector.getHttpClient(ctsHost);
+            credentials = getCtsCredentials();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            logger.error("URL problem while initializing CTS uploader, e: " + e);
+        } catch (IOException e) {
+            logger.error("Credentials problem while initializing CTS uploader, e: " + e);
         }
     }
 
     /**
      * Takes a stringified FHIR Bundle, assumed to be containing identifying patient data (IDAT),
-     * replaces the IDAT with a pseudonym supplied by the Mainzelliste, and then sends the
-     * pseudonymized bundle to the CTS data upload endpoint.
+     * replaces the IDAT with a pseudonym, and then sends the pseudonymized bundle to the CTS data
+     * upload endpoint.
      *
      * @param bundleString
      * @throws IOException
@@ -87,9 +90,15 @@ public class CTSConnector {
         postStringToCTS(pseudonymBundleXml);
     }
 
-    private String serializeToJsonString(Bundle pseudonymBundle) {
+    /**
+     * Take the supplied FHIR-Bundle object, and return a stringified version of it.
+     *
+     * @param bundle
+     * @return
+     */
+    private String serializeToJsonString(Bundle bundle) {
         FhirContext ctx = FhirContext.forR4();
-        String string = ctx.newJsonParser().encodeResourceToString(pseudonymBundle);
+        String string = ctx.newJsonParser().encodeResourceToString(bundle);
         return string;
     }
 
@@ -104,18 +113,16 @@ public class CTSConnector {
      * @throws IllegalArgumentException
      */
     public void postStringToCTS(String string) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException {
-        logger.info("postStringToCTS: entered");
+        logger.debug("postStringToCTS: entered");
+
         HttpEntity entity = new StringEntity(string, Consts.UTF_8);
-        String ctsUri = removeTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL));
-        HttpPost httpPost = new HttpPost(ctsUri);
-        CtsAuthorization ctsAuthorization = getCtsAuthorization();
-        httpPost.setHeader("Cookie", "SDMS_code=" + ctsAuthorization.code + "; SDMS_user=" + ctsAuthorization.user);
-//        httpPost.setHeader("Cookie", "SDMS_code=qfw9d42vabyaardhm0jl17m5rbo7dyj98o0bxoxc_1592310884_12f8fbcc5420ae63af93a9b2c65c3032; SDMS_user=admin");
+        HttpPost httpPost = new HttpPost(ctsBaseUrl);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir-json; fhirVersion=4.0");
         httpPost.setEntity(entity);
         CloseableHttpResponse response = null;
         try {
-            response = httpClient.execute(httpPost);
+            HttpContext ctsContext = createCtsContext();
+            response = httpClient.execute(httpPost, ctsContext);
             int statusCode = response.getStatusLine().getStatusCode();
             logger.info("CTS upload status code: " + statusCode);
             if (statusCode >= 500 && statusCode < 600) {
@@ -129,47 +136,69 @@ public class CTSConnector {
         } catch (IOException e) {
             logger.error("Upload: IOException, URI: " + httpPost.getURI() + ", e: " + e);
             throw new IOException("Upload: IOException, URI: " + httpPost.getURI() + ", e: " + e);
+        } catch (Exception e) {
+            logger.error("Upload: miscellaneous Exception, e: " + e);
+            throw new IOException("Upload: miscellaneous Exception, e: " + e);
         } finally {
             response.close();
         }
-        logger.info("postStringToCTS: done");
-    }
 
-//    /**
-//     * Create a BasicHttpContext for CTS upload, with the cookies needed for authorization.
-//     *
-//     * @return
-//     */
-//    private HttpContext createCtsContext() throws IOException {
-//        CtsAuthorization ctsAuthorization = getCtsAuthorization();
-//
-//        BasicCookieStore cookieStore = new BasicCookieStore();
-//        BasicClientCookie codeCookie = new BasicClientCookie("SDMS_code", ctsAuthorization.code);
-//        cookieStore.addCookie(codeCookie);
-//        BasicClientCookie userCookie = new BasicClientCookie("SDMS_user", ctsAuthorization.user);
-//        cookieStore.addCookie(userCookie);
-//
-//        HttpContext ctsContext = new BasicHttpContext();
-//        ctsContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
-//
-//        return ctsContext;
-//    }
+        logger.debug("postStringToCTS: done");
+    }
 
     /**
-     * Recursively remove trailing slashes from the supplied URL.
+     * Create a BasicHttpContext for CTS upload, with the cookies needed for authorization.
      *
-     * @param url
      * @return
      */
-    private String removeTrailingSlash(String url) {
-        String newUrl = url;
+    private HttpContext createCtsContext() throws IOException {
+        CtsAuthorization ctsAuthorization = getCtsAuthorization();
 
-        if (url.endsWith("/"))
-            newUrl = removeTrailingSlash(url.substring(0, url.length() - 1));
+        BasicCookieStore cookieStore = new BasicCookieStore();
+        cookieStore.addCookie(createCtsCookie("SDMS_code", ctsAuthorization.code));
+        cookieStore.addCookie(createCtsCookie("SDMS_user", ctsAuthorization.user));
 
-        return newUrl;
+        HttpContext ctsContext = new BasicHttpContext();
+        ctsContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
+
+        return ctsContext;
     }
 
+    /**
+     * Create a cookie with the given name and value.
+     *
+     * Suitable domain and path values will be appended to the cookie.
+     *
+     * @param name
+     * @param value
+     * @return
+     */
+    private BasicClientCookie createCtsCookie(String name, String value) {
+        String domain = null;
+        try {
+            URL url = new URL(ctsBaseUrl);
+            domain = url.getHost();
+        } catch (MalformedURLException e) {
+            logger.warn("Problem finding Healex domain, e: " + e);
+        }
+
+        BasicClientCookie cookie = new BasicClientCookie(name, value);
+        cookie.setDomain(domain);
+        cookie.setPath("/");
+
+        return cookie;
+    }
+
+    /**
+     * Pseudonymize any patient data in the bundle.
+     *
+     * @param bundleString
+     * @param mediaType
+     * @return
+     * @throws IOException
+     * @throws ConfigurationException
+     * @throws DataFormatException
+     */
     private Bundle pseudonymiseBundle(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException {
         FHIRResource fhirResource = new FHIRResource();
         Bundle bundle = fhirResource.convertToBundleResource(bundleString, mediaType);
@@ -178,6 +207,13 @@ public class CTSConnector {
         return pseudonymizedBundle;
     }
 
+    /**
+     * Place the supplied profile into the Meta-element of the FHIR-resource, wiping
+     * any existing profiles.
+     *
+     * @param resource
+     * @param profile
+     */
     private static void insertProfile(Resource resource, String profile) {
         Meta m = resource.getMeta();
         m.setProfile(null); // wipe existing profiles
@@ -185,6 +221,9 @@ public class CTSConnector {
         resource.setMeta(m);
     }
 
+    /**
+     * Class for transporting CTS-authorization parameters.
+     */
     public class CtsAuthorization {
         String code;
         String user;
@@ -196,7 +235,7 @@ public class CTSConnector {
      * @return
      */
     private CtsAuthorization getCtsAuthorization() throws IOException, IllegalArgumentException {
-        logger.info("getCtsInfo: entered");
+        logger.debug("getCtsInfo: entered");
 
         // Get username and password for an SMS login
         Credentials credentials = getCtsCredentials();
@@ -208,14 +247,8 @@ public class CTSConnector {
         formElements.add(new BasicNameValuePair("login", "")); // seems to be required, not sure why
         HttpEntity entity = new UrlEncodedFormEntity(formElements, Consts.UTF_8);
 
-        // Get a URI for the login page. This boils down to extracting the root URL
-        // from the upload-API URI. Any attempt to access this URL automatically
-        // redirects to the SMS login page.
-        String ctsUri = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL);
-        String ctsBaseUri = SamplyShareUtils.addTrailingSlash(extractBaseUrl(ctsUri));
-
         // Build the HttpPost object that specifies the request.
-        HttpPost httpPost = new HttpPost(ctsBaseUri);
+        HttpPost httpPost = new HttpPost(ctsHost.toURI());
         httpPost.setEntity(entity);
 
         // Run the request and gather the CTS authorization parameters.
@@ -254,17 +287,13 @@ public class CTSConnector {
             response.close();
         }
 
-        logger.info("getCtsInfo: done");
+        logger.debug("getCtsInfo: done");
         return ctsAuthorization;
     }
 
-    private String extractBaseUrl(String urlString) throws MalformedURLException {
-        URL url = new URL(urlString);
-        String baseUrl = url.getProtocol() + "://" + url.getHost();
-
-        return baseUrl;
-    }
-
+    /**
+     * Class for transporting CTS credential parameters.
+     */
     public class Credentials {
         public String username;
         public String password;
