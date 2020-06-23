@@ -2,6 +2,7 @@ package de.samply.share.client.control;
 
 import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.job.params.QuartzJob;
+import de.samply.share.client.model.EnumQuartzJob;
 import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.util.db.JobScheduleUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -96,9 +97,9 @@ public class SchedulerBean implements Serializable {
         if (jobDataMap == null || !jobDataMap.getBooleanFromString("SHOW")) {
             return false;
         }
-        if (jobKey.getGroup().equals("DirectoryGroup")) {
+        if (jobKey.getGroup().equalsIgnoreCase(EnumQuartzJob.DIRECTORY_GROUP.toString())) {
             return ClientFeature.BBMRI_DIRECTORY_SYNC.isActive();
-        } else if(jobKey.getGroup().equals("CentralSearchGroup")) {
+        } else if(jobKey.getGroup().equalsIgnoreCase(EnumQuartzJob.CENTRAL_SEARCH_GROUP.toString())) {
             return ClientFeature.DKTK_CENTRAL_SEARCH.isActive();
         }
         return true;
