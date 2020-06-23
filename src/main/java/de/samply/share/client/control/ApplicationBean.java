@@ -18,6 +18,7 @@ import de.samply.share.client.model.check.ConnectCheckResult;
 import de.samply.share.client.model.common.Bridgehead;
 import de.samply.share.client.model.common.Operator;
 import de.samply.share.client.model.common.Urls;
+import de.samply.share.client.model.common.Cts;
 import de.samply.share.client.model.db.enums.*;
 import de.samply.share.client.model.db.tables.pojos.Credentials;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
@@ -85,13 +86,15 @@ public class ApplicationBean implements Serializable {
     private static final String COMMON_URLS_FILENAME_SUFFIX = "_common_urls.xml";
     private static final String COMMON_OPERATOR_FILENAME_SUFFIX = "_common_operator.xml";
     private static final String COMMON_INFOS_FILENAME_SUFFIX = "_bridgehead_info.xml";
+    private static final String CTS_FILENAME_SUFFIX = "_cts_info.xml";
     private static final List<String> NAMESPACES = new ArrayList<>(Arrays.asList("dktk", "adt"));
 
-    private static final int TIMEOUT_IN_SECONDS = 60;
+    private static final int TIMEOUT_IN_SECONDS = 15;
 
     private static Urls urls;
     private static Operator operator;
     private static Bridgehead infos;
+    private static Cts cts;
 
     private static boolean qrTaskRunning;
 
@@ -110,6 +113,8 @@ public class ApplicationBean implements Serializable {
     private static MdrConnection mdrConnection;
     private static MDRValidator mdrValidator;
     private static LdmConnector ldmConnector;
+    private static MainzellisteConnector mainzellisteConnector;
+    private static CTSConnector ctsConnector;
 
     private static final ConnectCheckResult shareAvailability = new ConnectCheckResult(true, "Samply.Share.Client", ProjectInfo.INSTANCE.getVersionString());
     private ConnectCheckResult ldmAvailability = new ConnectCheckResult();
@@ -153,6 +158,26 @@ public class ApplicationBean implements Serializable {
 
         EventLogUtil.insertEventLogEntry(EventMessageType.E_SYSTEM_STARTUP);
         checkProcessingInquiries();
+        if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
+            initMainzelliste();
+            loadCtsInfo();
+            updateCtsInfo();
+        }
+    }
+
+    private void initMainzelliste() {
+        mainzellisteConnector = new MainzellisteConnector();
+    }
+
+    private static void initCTS() {
+        ctsConnector = new CTSConnector();
+    }
+
+    public static CTSConnector getCtsConnector() {
+        if (ApplicationBean.ctsConnector == null) {
+            ApplicationBean.initCTS();
+        }
+        return ctsConnector;
     }
 
     private void checkProcessingInquiries() {
@@ -230,8 +255,8 @@ public class ApplicationBean implements Serializable {
 
             case SAMPLY:
                 if (ApplicationUtils.isLanguageCql()) {
-                    ApplicationBean.ldmConnector = new LdmConnectorCql(false);
-                } else {
+                        ApplicationBean.ldmConnector = new LdmConnectorCql(false);
+                }else {
                     if (ConfigurationUtil.getConfigurationElementValueAsBoolean(EnumConfiguration.LDM_CACHING_ENABLED)) {
                         try {
                             int maxCacheSize = Integer.parseInt(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_CACHING_MAX_SIZE));
@@ -337,6 +362,24 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
+     * Load the CTS info xml file from disk
+     */
+    private static void loadCtsInfo() {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(de.samply.share.client.model.common.ObjectFactory.class);
+            cts = JAXBUtil
+                    .findUnmarshall(ProjectInfo.INSTANCE.getProjectName().toLowerCase() + CTS_FILENAME_SUFFIX,
+                            jaxbContext, Cts.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase(), System.getProperty("catalina.base") + File.separator + "conf", getServletContext().getRealPath("/WEB-INF"));
+        } catch (FileNotFoundException e) {
+            logger.error("No CTS file found by using samply.common.config for project " + ProjectInfo.INSTANCE.getProjectName());
+        } catch (UnmarshalException ue) {
+            throw new RuntimeException("Unable to unmarshal CTS file", ue);
+        } catch (SAXException | JAXBException | ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Update the proxy information in the db with the settings read from the config file
      */
     private static void updateProxiesInDb() {
@@ -381,13 +424,26 @@ public class ApplicationBean implements Serializable {
             mdrConfigElement.setName(EnumConfiguration.MDR_URL.name());
             mdrConfigElement.setSetting(urls.getMdrUrl());
             ConfigurationUtil.insertOrUpdateConfigurationElement(mdrConfigElement);
-            if (ApplicationUtils.isSamply()) {
-                de.samply.share.client.model.db.tables.pojos.Configuration directoryConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
-                directoryConfigElement.setName(EnumConfiguration.DIRECTORY_URL.name());
-                directoryConfigElement.setSetting(urls.getDirecotryUrl());
-                ConfigurationUtil.insertOrUpdateConfigurationElement(directoryConfigElement);
+
+            if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
+                de.samply.share.client.model.db.tables.pojos.Configuration ctsConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
+                ctsConfigElement.setName(EnumConfiguration.CTS_URL.name());
+                ctsConfigElement.setSetting(urls.getCtsUrl());
+                ConfigurationUtil.insertOrUpdateConfigurationElement(ctsConfigElement);
+
+                de.samply.share.client.model.db.tables.pojos.Configuration mainzellisteConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
+                mainzellisteConfigElement.setName(EnumConfiguration.MAINZELLISTE_URL.name());
+                mainzellisteConfigElement.setSetting(urls.getMainzellisteUrl());
+                ConfigurationUtil.insertOrUpdateConfigurationElement(mainzellisteConfigElement);
             }
         }
+    }
+
+
+    /**
+     * Update the information associated with the CTS in the db with the settings read from the corresponding xml file
+     */
+    private static void updateCtsInfo() {
     }
 
     /**
@@ -488,10 +544,6 @@ public class ApplicationBean implements Serializable {
         } catch (SchedulerException e) {
             throw new ValidatorException(new FacesMessage(e.getLocalizedMessage()));
         }
-    }
-
-    public static Urls getUrlsForDirectory(){
-        return urls;
     }
 
     public Urls getUrls() {

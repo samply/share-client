@@ -45,12 +45,9 @@ public class CTSConnector {
     private String ctsBaseUrl;
     private HttpHost ctsHost;
     private Credentials credentials;
+    private static FHIRResource fhirResource = new FHIRResource();
 
     public CTSConnector() {
-        init();
-    }
-
-    private void init() {
         try {
             // Pull various pieces of information from property files and store them
             // in memory.
@@ -82,40 +79,11 @@ public class CTSConnector {
         // bundle with a pseudonym.
         Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
 
-        // Make sure that the bundle contains the correct CTS profile
-        insertProfile(pseudonymBundle, "http://uk-koeln.de/fhir/StructureDefinition/Bundle/nNGM/registration-form");
+        // Serialize into a JSON String
+        String pseudonymBundleJson = fhirResource.convertBundleToJson(pseudonymBundle);
 
-        String pseudonymBundleXml = serializeToJsonString(pseudonymBundle);
-
-        postStringToCTS(pseudonymBundleXml);
-    }
-
-    /**
-     * Take the supplied FHIR-Bundle object, and return a stringified version of it.
-     *
-     * @param bundle
-     * @return
-     */
-    private String serializeToJsonString(Bundle bundle) {
-        FhirContext ctx = FhirContext.forR4();
-        String string = ctx.newJsonParser().encodeResourceToString(bundle);
-        return string;
-    }
-
-    /**
-     * Posts the supplied string directly to the CTS data upload endpoint. No checking is performed
-     * on the string format.
-     *
-     * @param string
-     * @throws IOException
-     * @throws ConfigurationException
-     * @throws DataFormatException
-     * @throws IllegalArgumentException
-     */
-    public void postStringToCTS(String string) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException {
-        logger.debug("postStringToCTS: entered");
-
-        HttpEntity entity = new StringEntity(string, Consts.UTF_8);
+        // Set up the API call
+        HttpEntity entity = new StringEntity(pseudonymBundleJson, Consts.UTF_8);
         HttpPost httpPost = new HttpPost(ctsBaseUrl);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir-json; fhirVersion=4.0");
         httpPost.setEntity(entity);
@@ -155,38 +123,14 @@ public class CTSConnector {
         CtsAuthorization ctsAuthorization = getCtsAuthorization();
 
         BasicCookieStore cookieStore = new BasicCookieStore();
-        cookieStore.addCookie(createCtsCookie("SDMS_code", ctsAuthorization.code));
-        cookieStore.addCookie(createCtsCookie("SDMS_user", ctsAuthorization.user));
+        // Recycle the authorization cookies that we received from the CTS
+        cookieStore.addCookie(ctsAuthorization.codeCookie);
+        cookieStore.addCookie(ctsAuthorization.userCookie);
 
         HttpContext ctsContext = new BasicHttpContext();
         ctsContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
 
         return ctsContext;
-    }
-
-    /**
-     * Create a cookie with the given name and value.
-     *
-     * Suitable domain and path values will be appended to the cookie.
-     *
-     * @param name
-     * @param value
-     * @return
-     */
-    private BasicClientCookie createCtsCookie(String name, String value) {
-        String domain = null;
-        try {
-            URL url = new URL(ctsBaseUrl);
-            domain = url.getHost();
-        } catch (MalformedURLException e) {
-            logger.warn("Problem finding Healex domain, e: " + e);
-        }
-
-        BasicClientCookie cookie = new BasicClientCookie(name, value);
-        cookie.setDomain(domain);
-        cookie.setPath("/");
-
-        return cookie;
     }
 
     /**
@@ -200,7 +144,6 @@ public class CTSConnector {
      * @throws DataFormatException
      */
     private Bundle pseudonymiseBundle(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException {
-        FHIRResource fhirResource = new FHIRResource();
         Bundle bundle = fhirResource.convertToBundleResource(bundleString, mediaType);
         MainzellisteConnector mainzellisteConnector = new MainzellisteConnector();
         Bundle pseudonymizedBundle = mainzellisteConnector.getPatientPseudonym(bundle);
@@ -208,25 +151,11 @@ public class CTSConnector {
     }
 
     /**
-     * Place the supplied profile into the Meta-element of the FHIR-resource, wiping
-     * any existing profiles.
-     *
-     * @param resource
-     * @param profile
-     */
-    private static void insertProfile(Resource resource, String profile) {
-        Meta m = resource.getMeta();
-        m.setProfile(null); // wipe existing profiles
-        m.addProfile(profile);
-        resource.setMeta(m);
-    }
-
-    /**
      * Class for transporting CTS-authorization parameters.
      */
     public class CtsAuthorization {
-        String code;
-        String user;
+        Cookie codeCookie;
+        Cookie userCookie;
     }
 
     /**
@@ -237,8 +166,8 @@ public class CTSConnector {
     private CtsAuthorization getCtsAuthorization() throws IOException, IllegalArgumentException {
         logger.debug("getCtsInfo: entered");
 
-        // Get username and password for an SMS login
-        Credentials credentials = getCtsCredentials();
+//        // Get username and password for an SMS login
+//        Credentials credentials = getCtsCredentials();
 
         // Build a form-based entity to realize the login
         List<NameValuePair> formElements = new ArrayList<NameValuePair>();
@@ -272,11 +201,11 @@ public class CTSConnector {
             for (Cookie cookie: cookies) {
                 String cookieName = cookie.getName();
                 if (cookieName.equals("SDMS_code"))
-                    ctsAuthorization.code = cookie.getValue();
+                    ctsAuthorization.codeCookie = cookie;
                 else if (cookieName.equals("SDMS_user"))
-                    ctsAuthorization.user = cookie.getValue();
+                    ctsAuthorization.userCookie = cookie;
             }
-            if (ctsAuthorization.code == null || ctsAuthorization.user == null) {
+            if (ctsAuthorization.codeCookie == null || ctsAuthorization.userCookie == null) {
                 logger.error("Authorization: missing cookie, SDMS_code or SDMS_user could not be found");
                 throw new IllegalArgumentException("Authorization: missing cookie, SDMS_code or SDMS_user could not be found");
             }

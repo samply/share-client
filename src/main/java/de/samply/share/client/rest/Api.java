@@ -2,6 +2,7 @@ package de.samply.share.client.rest;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.parser.DataFormatException;
+import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.util.connector.CTSConnector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,11 +23,11 @@ public class Api {
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Path("/postCTS")
+    @Path("/postcts")
     public Response postToCTS(String bundle, @Context HttpHeaders httpHeaders) {
         String mediaType = httpHeaders.getMediaType().getSubtype();
         try {
-            CTSConnector ctsConnector = new CTSConnector();
+            CTSConnector ctsConnector = ApplicationBean.getCtsConnector();
             ctsConnector.postPseudonmToCTS(bundle, mediaType);
             return Response.ok().build();
         } catch (NullPointerException | ConfigurationException | DataFormatException | IllegalArgumentException e) {

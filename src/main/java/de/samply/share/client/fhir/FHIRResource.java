@@ -20,4 +20,8 @@ public class FHIRResource {
         return ctx.newXmlParser().encodeResourceToString(bundle);
     }
 
+    public String convertBundleToJson(Bundle bundle){
+        return ctx.newJsonParser().encodeResourceToString(bundle);
+    }
+
 }
