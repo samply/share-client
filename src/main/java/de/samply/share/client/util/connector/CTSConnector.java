@@ -1,7 +1,6 @@
 package de.samply.share.client.util.connector;
 
 import ca.uhn.fhir.context.ConfigurationException;
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
@@ -20,7 +19,6 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
@@ -31,7 +29,6 @@ import org.hl7.fhir.r4.model.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -44,22 +41,22 @@ public class CTSConnector {
     private CloseableHttpClient httpClient;
     private String ctsBaseUrl;
     private HttpHost ctsHost;
-    private Credentials credentials;
     private static FHIRResource fhirResource = new FHIRResource();
+    private String username;
+    private String password;
 
     public CTSConnector() {
         try {
-            // Pull various pieces of information from property files and store them
+            // Pull various pieces of information from the database and store them
             // in memory.
             ctsBaseUrl = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL);
             httpConnector = ApplicationBean.createHttpConnector();
             ctsHost = SamplyShareUtils.getAsHttpHost(ctsBaseUrl);
             httpClient = httpConnector.getHttpClient(ctsHost);
-            credentials = getCtsCredentials();
+            username = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_USERNAME);
+            password = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PASSWORD);
         } catch (MalformedURLException e) {
             logger.error("URL problem while initializing CTS uploader, e: " + e);
-        } catch (IOException e) {
-            logger.error("Credentials problem while initializing CTS uploader, e: " + e);
         }
     }
 
@@ -166,13 +163,10 @@ public class CTSConnector {
     private CtsAuthorization getCtsAuthorization() throws IOException, IllegalArgumentException {
         logger.debug("getCtsInfo: entered");
 
-//        // Get username and password for an SMS login
-//        Credentials credentials = getCtsCredentials();
-
         // Build a form-based entity to realize the login
         List<NameValuePair> formElements = new ArrayList<NameValuePair>();
-        formElements.add(new BasicNameValuePair("username", credentials.username));
-        formElements.add(new BasicNameValuePair("password", credentials.password));
+        formElements.add(new BasicNameValuePair("username", username));
+        formElements.add(new BasicNameValuePair("password", password));
         formElements.add(new BasicNameValuePair("login", "")); // seems to be required, not sure why
         HttpEntity entity = new UrlEncodedFormEntity(formElements, Consts.UTF_8);
 
@@ -218,39 +212,5 @@ public class CTSConnector {
 
         logger.debug("getCtsInfo: done");
         return ctsAuthorization;
-    }
-
-    /**
-     * Class for transporting CTS credential parameters.
-     */
-    public class Credentials {
-        public String username;
-        public String password;
-    }
-
-    /**
-     * Returns CTS login and CTS password.
-     *
-     * @return
-     */
-    private Credentials getCtsCredentials() throws IOException {
-        Credentials credentials = new Credentials();
-
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        InputStream input = classLoader.getResourceAsStream("cts_credentials.properties");
-        Properties properties = new Properties();
-        try {
-            properties.load(input);
-        } catch (IOException e) {
-            logger.error("Problem reading CTS credentials, e: " + e);
-            throw new IOException("Problem reading CTS credentials, e: " + e);
-        } finally {
-            input.close();
-        }
-
-        credentials.username = properties.getProperty("cts.credentials.username");
-        credentials.password = properties.getProperty("cts.credentials.password");
-
-        return credentials;
     }
 }

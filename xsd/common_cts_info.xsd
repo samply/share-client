@@ -6,10 +6,11 @@
 
     <xs:complexType name="cts">
         <xs:all>
-            <xs:element name="username"  minOccurs="0" type="xs:anyURI"/>
-            <xs:element name="password"  minOccurs="0" type="xs:anyURI"/>
+            <xs:element name="username"  minOccurs="0" type="xs:string"/>
+            <xs:element name="password"  minOccurs="0" type="xs:string"/>
             <xs:element name="url"  minOccurs="0" type="xs:anyURI"/>
             <xs:element name="profile"  minOccurs="0" type="xs:anyURI"/>
+            <xs:element name="mainzellisteUrl"  minOccurs="0" type="xs:anyURI"/>
         </xs:all>
     </xs:complexType>
 </xs:schema>

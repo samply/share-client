@@ -76,4 +76,12 @@ public class ObjectFactory {
         return new JAXBElement<Urls>(_Urls_QNAME, Urls.class, null, value);
     }
 
+
+    /**
+     * Create an instance of {@link Cts }
+     *
+     */
+    public Cts createCts() {
+        return new Cts();
+    }
 }

@@ -41,7 +41,7 @@ public class MainzellisteConnector {
 
     private void init() {
         try {
-            this.mainzellisteBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MAINZELLISTE_URL));
+            this.mainzellisteBaseUrl = SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_URL));
             httpConnector = ApplicationBean.createHttpConnector();
             this.mainzellisteHost = SamplyShareUtils.getAsHttpHost(mainzellisteBaseUrl);
             httpClient = httpConnector.getHttpClient(mainzellisteHost);
@@ -96,10 +96,9 @@ public class MainzellisteConnector {
         patientNew.setIdentifier(identifierList);
         patientNew.setDeceased(orginal.getDeceased());
         patientNew.setId(orginal.getId());
+        String profile = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PROFILE);
         Meta meta = new Meta();
-        meta.addProfile(
-                "http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert/0.1"
-        );
+        meta.addProfile(profile);
         patientNew.setMeta(meta);
         return patientNew;
     }
@@ -164,7 +163,7 @@ public class MainzellisteConnector {
      * @throws IOException
      */
     private JSONObject getPseudonymFromMainzelliste(JSONObject patient) throws IOException,IllegalArgumentException {
-        HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MAINZELLISTE_URL) + GET_ENCRYPTID_URL));
+        HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_URL) + GET_ENCRYPTID_URL));
         HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
         httpPost.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());

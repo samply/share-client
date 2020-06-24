@@ -424,18 +424,6 @@ public class ApplicationBean implements Serializable {
             mdrConfigElement.setName(EnumConfiguration.MDR_URL.name());
             mdrConfigElement.setSetting(urls.getMdrUrl());
             ConfigurationUtil.insertOrUpdateConfigurationElement(mdrConfigElement);
-
-            if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
-                de.samply.share.client.model.db.tables.pojos.Configuration ctsConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
-                ctsConfigElement.setName(EnumConfiguration.CTS_URL.name());
-                ctsConfigElement.setSetting(urls.getCtsUrl());
-                ConfigurationUtil.insertOrUpdateConfigurationElement(ctsConfigElement);
-
-                de.samply.share.client.model.db.tables.pojos.Configuration mainzellisteConfigElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
-                mainzellisteConfigElement.setName(EnumConfiguration.MAINZELLISTE_URL.name());
-                mainzellisteConfigElement.setSetting(urls.getMainzellisteUrl());
-                ConfigurationUtil.insertOrUpdateConfigurationElement(mainzellisteConfigElement);
-            }
         }
     }
 
@@ -444,6 +432,22 @@ public class ApplicationBean implements Serializable {
      * Update the information associated with the CTS in the db with the settings read from the corresponding xml file
      */
     private static void updateCtsInfo() {
+        if (cts != null) {
+            if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
+                insertConfigElement(EnumConfiguration.CTS_USERNAME.name(), cts.getUsername());
+                insertConfigElement(EnumConfiguration.CTS_PASSWORD.name(), cts.getPassword());
+                insertConfigElement(EnumConfiguration.CTS_URL.name(), cts.getUrl());
+                insertConfigElement(EnumConfiguration.CTS_PROFILE.name(), cts.getProfile());
+                insertConfigElement(EnumConfiguration.CTS_MAINZELLISTE_URL.name(), cts.getMainzellisteUrl());
+            }
+        }
+    }
+
+    private static void insertConfigElement(String name, String value) {
+        de.samply.share.client.model.db.tables.pojos.Configuration configElement = new de.samply.share.client.model.db.tables.pojos.Configuration();
+        configElement.setName(name);
+        configElement.setSetting(value);
+        ConfigurationUtil.insertOrUpdateConfigurationElement(configElement);
     }
 
     /**

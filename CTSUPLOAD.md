@@ -71,8 +71,9 @@ The following are required for a successful upload:
 - Header: Content-Type=application/xml OR Content-Type=application/json, depending
   on whether your Bundle is in XML or JSON format.
 - Body: the file to upload (mode: raw).
-- Media type. This can be either "xml" or "json", depending on the format of the file.
-  If you don'r specify a type, XML will be assumed.
+- Media type.  This should be set in the "Content-Type" header, which takes the value
+  "application/xml" or "application/json", depending on the bundle, which may be in
+  either XML or JSON.
 
 ## Notes on uploaded data
 
