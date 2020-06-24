@@ -4,20 +4,17 @@ public enum EnumQuartzJob {
     DIRECTORY_GROUP("DirectoryGroup"),
     CENTRAL_SEARCH_GROUP("CentralSearchGroup");
 
-    private final String text;
+    private final String name;
 
     /**
-     * @param text
+     * @param name
      */
-    EnumQuartzJob(final String text) {
-        this.text = text;
+    EnumQuartzJob(final String name) {
+        this.name = name;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Enum#toString()
-     */
-    @Override
-    public String toString() {
-        return text;
+
+    public String getName(){
+        return name;
     }
 }

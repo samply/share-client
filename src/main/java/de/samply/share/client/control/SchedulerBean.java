@@ -97,9 +97,9 @@ public class SchedulerBean implements Serializable {
         if (jobDataMap == null || !jobDataMap.getBooleanFromString("SHOW")) {
             return false;
         }
-        if (jobKey.getGroup().equalsIgnoreCase(EnumQuartzJob.DIRECTORY_GROUP.toString())) {
+        if (jobKey.getGroup().equalsIgnoreCase(EnumQuartzJob.DIRECTORY_GROUP.getName())) {
             return ClientFeature.BBMRI_DIRECTORY_SYNC.isActive();
-        } else if(jobKey.getGroup().equalsIgnoreCase(EnumQuartzJob.CENTRAL_SEARCH_GROUP.toString())) {
+        } else if(jobKey.getGroup().equalsIgnoreCase(EnumQuartzJob.CENTRAL_SEARCH_GROUP.getName())) {
             return ClientFeature.DKTK_CENTRAL_SEARCH.isActive();
         }
         return true;
