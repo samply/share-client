@@ -9,36 +9,38 @@ uploaded from the Connector to the CTS.
 
 ## Configuration
 
-The following needs to be configured before building the Connector:
+Some configuration will probably be required in order to be able to successfully
+perform uploads to CTS. The following elements can be configured via an XML file:
 
-- A URL for the CTS file upload API.
-- Credentials information for CTS login.
+- Login credentials for the stored CTS user.
+- The CTS upload URL.
+- A profile for pseudonymized patients uploaded to the CTS.
+- A URL for the pseudonymization API.
+- An API key for the pseudonymization API.
 
-The URL should be entered into the <com:ctsUrl> element of the following file:
-
-```
-src/main/resources/dktk_common_urls.xml
-```
-
-E.g.:
-
-```
-<com:ctsUrl>https://nngm-qat.staging.healex.systems/trial/nNGMv09ccf/import-fhir</com:ctsUrl>
-```
-
-Credentials need to be added to the file:
-
-```
-src/main/resources/cts_credentials.properties
-```
-
-E.g., if the CTS username is "admin", with a password "admin", then you would add:
+The relevant file can be found here:
 
 
 ```
-cts.credentials.username=admin
-cts.credentials.password=admin
+src/main/resources/dktk_cts_info.xml
 ```
+
+Typically, it will look something like this:
+
+
+```
+<com:cts xmlns:com="http://schema.samply.de/config/CtsInfo">
+    <com:username>admin</com:username>
+    <com:password>admin</com:password>
+    <com:url>https://nngm-qat.staging.healex.systems/trial/nNGMv09ccf/import-fhir</com:url>
+    <com:profile>http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert</com:profile>
+    <com:mainzellisteUrl>https://test.verbis.dkfz.de/mpl</com:mainzellisteUrl>
+    <com:mainzellisteApiKey>nngmTestKey?[8574]</com:mainzellisteApiKey>
+</com:cts>
+```
+
+The "mainzellisteUrl" and "mainzellisteApiKey" should actually correspond to
+the URL and key of a running MAGICPL instance.
 
 ## Building
 
@@ -71,9 +73,6 @@ The following are required for a successful upload:
 - Header: Content-Type=application/xml OR Content-Type=application/json, depending
   on whether your Bundle is in XML or JSON format.
 - Body: the file to upload (mode: raw).
-- Media type.  This should be set in the "Content-Type" header, which takes the value
-  "application/xml" or "application/json", depending on the bundle, which may be in
-  either XML or JSON.
 
 ## Notes on uploaded data
 
@@ -81,8 +80,6 @@ The file should be a FHIR documentation Bundle, in either XML or JSON format.
 This type of Bundle always has a Composition as its first entry.
  
 Before transmitting the file to the CTS, the Connector will pseudonymize any patient
-data it contains. If you have set up a Mainzelliste to work together with the Connector,
-this will be used for the pseudonymization, which means that record linkage will be
-possible, even though detailed IDATs will not be available to the CTS. If you don't
-have a Mainzelliste, then pseudo-random pseudonyms will be used. In this case, no
-record linkage will be possible.
+data it contains. For this to work, you need to have access to a running MAGICPL
+instance. You can either set this up locally (e.g. using one of the Docker images
+generously provided by VerbIS) or point to a public instance of the service.
