@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+    <Properties>
+        <Property name="layout">%d [%t] %-5p %c- %m%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="${layout}"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="CONSOLE"/>
+        </Root>
+        <Logger name="org.apache.http" level="warn"/>
+        <Logger name="org.jooq" level="error"/>
+        <Logger name="org.quartz" level="error"/>
+        <Logger name="org.flywaydb" level="warn"/>
+        <Logger name="de.samply.common.mdrclient" level="error"/>
+        <Logger name="de.samply.share.client.util.Utils" level="error"/>
+    </Loggers>
+</Configuration>
