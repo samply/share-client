@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 public class MainzellisteConnector {
     private transient HttpConnector httpConnector;
@@ -116,7 +117,6 @@ public class MainzellisteConnector {
         try {
             patientPs.put("vorname", checkIfAttributeExist(patient.getNameFirstRep().getGivenAsSingleString(), "vorname"));
             patientPs.put("nachname", checkIfAttributeExist(patient.getNameFirstRep().getFamily(), "nachname"));
-            patientPs.put("geburtsname", ""); //TODO: Resource erweitern
             int birthDay = patient.getBirthDateElement().getDay();
             int birthMonth = patient.getBirthDateElement().getMonth();
             String day = String.valueOf(birthDay);
@@ -130,8 +130,9 @@ public class MainzellisteConnector {
             patientPs.put("geburtstag", checkIfAttributeExist(day, "geburtstag"));
             patientPs.put("geburtsmonat", checkIfAttributeExist(month, "geburtsmonat"));
             patientPs.put("geburtsjahr", checkIfAttributeExist(patient.getBirthDateElement().getYear().toString(), "geburtsjahr"));
-            patientPs.put("plz", checkIfAttributeExist(patient.getAddressFirstRep().getPostalCode(), "plz"));
-            patientPs.put("ort", checkIfAttributeExist(patient.getAddressFirstRep().getCity(), "ort"));
+            patientPs.put("adresse.plz", checkIfAttributeExist(patient.getAddressFirstRep().getPostalCode(), "adresse.plz"));
+            patientPs.put("adresse.stadt", checkIfAttributeExist(patient.getAddressFirstRep().getCity(), "adresse.stadt"));
+//            patientPs.put("adresse.strasse", checkIfAttributeExist(patient.getAddressFirstRep().getLine().get(0), "adresse.strasse"));
             patientPs.put("requestedIdType", "ctsid");
         } catch (NullPointerException e) {
             throw new NullPointerException("Error at patient (ID: " + patient.getId() + "). " + e.getMessage());
@@ -167,7 +168,7 @@ public class MainzellisteConnector {
         HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
         httpPost.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-        httpPost.setHeader("apiKey", "nngmTestKey?[8574]");
+        httpPost.setHeader("apiKey", ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_API_KEY));
         httpPost.setEntity(entity);
         CloseableHttpResponse response;
         JSONObject encryptedID = new JSONObject();

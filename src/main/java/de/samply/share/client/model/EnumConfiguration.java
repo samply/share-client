@@ -91,5 +91,6 @@ public enum EnumConfiguration {
     CTS_PASSWORD,
     CTS_PROFILE,
     CTS_URL,
-    CTS_MAINZELLISTE_URL
+    CTS_MAINZELLISTE_URL,
+    CTS_MAINZELLISTE_API_KEY
 }

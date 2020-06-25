@@ -11,6 +11,7 @@
             <xs:element name="url"  minOccurs="0" type="xs:anyURI"/>
             <xs:element name="profile"  minOccurs="0" type="xs:anyURI"/>
             <xs:element name="mainzellisteUrl"  minOccurs="0" type="xs:anyURI"/>
+            <xs:element name="mainzellisteApiKey"  minOccurs="0" type="xs:string"/>
         </xs:all>
     </xs:complexType>
 </xs:schema>

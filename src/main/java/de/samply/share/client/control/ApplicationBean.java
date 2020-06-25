@@ -439,6 +439,7 @@ public class ApplicationBean implements Serializable {
                 insertConfigElement(EnumConfiguration.CTS_URL.name(), cts.getUrl());
                 insertConfigElement(EnumConfiguration.CTS_PROFILE.name(), cts.getProfile());
                 insertConfigElement(EnumConfiguration.CTS_MAINZELLISTE_URL.name(), cts.getMainzellisteUrl());
+                insertConfigElement(EnumConfiguration.CTS_MAINZELLISTE_API_KEY.name(), cts.getMainzellisteApiKey());
             }
         }
     }

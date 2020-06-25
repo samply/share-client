@@ -3,5 +3,6 @@
     <com:password>admin</com:password>
     <com:url>https://nngm-qat.staging.healex.systems/trial/nNGMv09ccf/import-fhir</com:url>
     <com:profile>http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert</com:profile>
-    <com:mainzellisteUrl></com:mainzellisteUrl>
+    <com:mainzellisteUrl>https://test.verbis.dkfz.de/mpl</com:mainzellisteUrl>
+    <com:mainzellisteApiKey>nngmTestKey?[8574]</com:mainzellisteApiKey>
 </com:cts>

@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.*;
  *         &lt;element name="url" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="profile" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="mainzellisteUrl" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="mainzellisteApiKey" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -32,7 +33,8 @@ import javax.xml.bind.annotation.*;
         "password",
         "url",
         "profile",
-        "mainzellisteUrl"
+        "mainzellisteUrl",
+        "mainzellisteApiKey"
 })
 @XmlRootElement(name = "cts", namespace = "http://schema.samply.de/config/CtsInfo")
 @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
@@ -53,6 +55,9 @@ public class Cts {
     @XmlElement(namespace = "http://schema.samply.de/config/CtsInfo", required = true)
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String mainzellisteUrl;
+    @XmlElement(namespace = "http://schema.samply.de/config/CtsInfo", required = true)
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    protected String mainzellisteApiKey;
 
 
     /**
@@ -164,6 +169,28 @@ public class Cts {
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setMainzellisteUrl(String value) {
         this.mainzellisteUrl = value;
+    }
+
+    /**
+     * Gets the value of the mainzellisteApiKey property.
+     *
+     * @return possible object is
+     * {@link String }
+     */
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    public String getMainzellisteApiKey() {
+        return mainzellisteApiKey;
+    }
+
+    /**
+     * Sets the value of the mainzellisteApiKey property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    public void setMainzellisteApiKey(String value) {
+        this.mainzellisteApiKey = value;
     }
 
 
