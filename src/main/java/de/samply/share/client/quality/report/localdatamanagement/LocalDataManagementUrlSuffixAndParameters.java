@@ -26,7 +26,6 @@ package de.samply.share.client.quality.report.localdatamanagement;/*
 
 public class LocalDataManagementUrlSuffixAndParameters {
 
-    //public final static String BASE = "rest/teiler/";
 
     public final static String REQUESTS_URL_SUFFIX = "requests";
     public final static String STATISTICS_URL_SUFFIX = "stats";
