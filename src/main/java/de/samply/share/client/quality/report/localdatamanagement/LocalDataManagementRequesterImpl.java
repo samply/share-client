@@ -60,6 +60,7 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
     private static final Logger logger = LogManager.getLogger(LocalDataManagementRequesterImpl.class);
 
     private final QueryResultStatisticClassGetter queryResultStatisticClassGetter = new QueryResultStatisticClassGetter();
+    private final ErrorClassGetter errorClassGetter = new ErrorClassGetter();
 
 
     @Override
@@ -178,6 +179,28 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
 
     }
 
+    private static class ErrorClassGetter implements ClassGetterWithConverter<Error>{
+
+        @Override
+        public Class getInputClass(String entity) {
+            return de.samply.share.model.ccp.Error.class;
+        }
+
+        @Override
+        public Error convertToOutputClass(Object object) throws LocalDataManagementRequesterException {
+            de.samply.share.model.ccp.Error error = (de.samply.share.model.ccp.Error) object;
+            return convert(error);
+        }
+
+        private Error convert (de.samply.share.model.ccp.Error error) throws LocalDataManagementRequesterException {
+            try {
+                return QueryConverter.convertCcpErrorToCommonError(error);
+            } catch (JAXBException e) {
+                throw new LocalDataManagementRequesterException(e);
+            }
+        }
+    }
+
     @Override
     public LocalDataManagementResponse<QueryResult> getQueryResult(String locationUrl, int page) throws LocalDataManagementRequesterException {
 
@@ -234,7 +257,7 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
 
     }
 
-    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(CloseableHttpResponse response, ClassGetter classGetter) throws IOException, JAXBException {
+    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(CloseableHttpResponse response, ClassGetter classGetter) throws IOException, JAXBException, LocalDataManagementRequesterException {
 
         int statusCode = response.getStatusLine().getStatusCode();
 
@@ -251,7 +274,7 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
 
         } else if (statusCode == HttpStatus.SC_UNPROCESSABLE_ENTITY) {
 
-            Error error = createError(entityOutput);
+            Error error = createTObject(entityOutput, errorClassGetter);
             ldmResponse.setError(error);
         }
 
@@ -261,22 +284,15 @@ public class LocalDataManagementRequesterImpl extends LocalDataManagementConnect
 
     }
 
-    private Error createError(String ccpEntity) throws JAXBException {
-
-        de.samply.share.model.ccp.Error error = createTObject(ccpEntity, (x) -> de.samply.share.model.ccp.Error.class);
-        return QueryConverter.convertCcpErrorToCommonError(error);
-
-    }
-
     private interface ClassGetter {
-        Class getInputClass(String entity);
+        Class<?> getInputClass(String entity);
     }
 
     private interface ClassGetterWithConverter<T> extends ClassGetter {
-        T convertToOutputClass(Object object);
+        T convertToOutputClass(Object object) throws LocalDataManagementRequesterException;
     }
 
-    private <T> T createTObject(String entity, ClassGetter classGetter) throws JAXBException {
+    private <T> T createTObject(String entity, ClassGetter classGetter) throws JAXBException, LocalDataManagementRequesterException {
 
         Object object = createObject(entity, classGetter);
         return (classGetter instanceof ClassGetterWithConverter) ? ((ClassGetterWithConverter<T>) classGetter).convertToOutputClass(object) : (T) object;
