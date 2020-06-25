@@ -1,6 +1,0 @@
-<com:urls xmlns:com="http://schema.samply.de/common">
-  <com:shareUrl>{share-url}</com:shareUrl>
-  <com:idmanagerUrl>{id-manager-url}</com:idmanagerUrl>
-  <com:ldmUrl>{ldm-url}</com:ldmUrl>
-  <com:mdrUrl>{mdr-url}</com:mdrUrl>
-</com:urls>
