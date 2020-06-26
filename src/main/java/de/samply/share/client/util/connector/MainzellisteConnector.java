@@ -27,9 +27,19 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 
 public class MainzellisteConnector {
+    public static final String FHIR_RESOURCE_PATIENT = "Patient";
+    public static final String MAINZELLISTE_IDTYPE_ENC_ID = "EncID";
+    public static final String IDAT_VORNAME = "vorname";
+    public static final String IDAT_NACHNAME = "nachname";
+    public static final String IDAT_GEBURTSDATUM = "Geburtsdatum";
+    public static final String IDAT_GEBURTSTAG = "geburtstag";
+    public static final String IDAT_GEBURTSMONAT = "geburtsmonat";
+    public static final String IDAT_GEBURTSJAHR = "geburtsjahr";
+    public static final String IDAT_ADRESSE_STADT = "adresse.stadt";
+    public static final String IDAT_ADRESSE_PLZ = "adresse.plz";
+    public static final String IDAT_ADRESSE_STRASSE = "adresse.strasse";
     private transient HttpConnector httpConnector;
     private CloseableHttpClient httpClient;
     private String mainzellisteBaseUrl;
@@ -62,7 +72,7 @@ public class MainzellisteConnector {
     public Bundle getPatientPseudonym(Bundle bundle) throws IllegalArgumentException, IOException {
         for (int i = 0; i < bundle.getEntry().size(); i++) {
             Resource resource = bundle.getEntry().get(i).getResource();
-            if (resource.fhirType().equals("Patient")) {
+            if (resource.fhirType().equals(FHIR_RESOURCE_PATIENT)) {
                 JSONObject patient = createJSONPatient((Patient) resource);
                 Patient original = (Patient) resource;
                 JSONObject encryptedID = getPseudonymFromMainzelliste(patient);
@@ -92,7 +102,7 @@ public class MainzellisteConnector {
         patientNew.setGender(orginal.getGender());
         List<Identifier> identifierList = new ArrayList<>();
         Identifier identifier = new Identifier();
-        identifier.setValue(encryptedID.get("EncID").toString());
+        identifier.setValue(encryptedID.get(MAINZELLISTE_IDTYPE_ENC_ID).toString());
         identifierList.add(identifier);
         patientNew.setIdentifier(identifierList);
         patientNew.setDeceased(orginal.getDeceased());
@@ -115,10 +125,13 @@ public class MainzellisteConnector {
     private JSONObject createJSONPatient(Patient patient) throws NullPointerException {
         JSONObject patientPs = new JSONObject();
         try {
-            patientPs.put("vorname", checkIfAttributeExist(patient.getNameFirstRep().getGivenAsSingleString(), "vorname"));
-            patientPs.put("nachname", checkIfAttributeExist(patient.getNameFirstRep().getFamily(), "nachname"));
-            int birthDay = patient.getBirthDateElement().getDay();
-            int birthMonth = patient.getBirthDateElement().getMonth();
+            patientPs.put(IDAT_VORNAME, checkIfAttributeExist(patient.getNameFirstRep().getGivenAsSingleString(), IDAT_VORNAME));
+            patientPs.put(IDAT_NACHNAME, checkIfAttributeExist(patient.getNameFirstRep().getFamily(), IDAT_NACHNAME));
+            DateType birthDateElement = patient.getBirthDateElement();
+            checkIfAttributeExist(birthDateElement.asStringValue(), IDAT_GEBURTSDATUM);
+            int birthDay = birthDateElement.getDay();
+            int birthMonth = birthDateElement.getMonth();
+            birthMonth+=1;// +1 because Hapi returns the month with 0-index, e.g. 0=January
             String day = String.valueOf(birthDay);
             String month = String.valueOf(birthMonth);
             if (birthDay < 10) {
@@ -127,13 +140,22 @@ public class MainzellisteConnector {
             if (birthMonth < 10) {
                 month = String.format("%02d", birthMonth);
             }
-            patientPs.put("geburtstag", checkIfAttributeExist(day, "geburtstag"));
-            patientPs.put("geburtsmonat", checkIfAttributeExist(month, "geburtsmonat"));
-            patientPs.put("geburtsjahr", checkIfAttributeExist(patient.getBirthDateElement().getYear().toString(), "geburtsjahr"));
-            patientPs.put("adresse.plz", checkIfAttributeExist(patient.getAddressFirstRep().getPostalCode(), "adresse.plz"));
-            patientPs.put("adresse.stadt", checkIfAttributeExist(patient.getAddressFirstRep().getCity(), "adresse.stadt"));
-//            patientPs.put("adresse.strasse", checkIfAttributeExist(patient.getAddressFirstRep().getLine().get(0), "adresse.strasse"));
+            patientPs.put(IDAT_GEBURTSTAG, checkIfAttributeExist(day, IDAT_GEBURTSTAG));
+            patientPs.put(IDAT_GEBURTSMONAT, checkIfAttributeExist(month, IDAT_GEBURTSMONAT));
+            patientPs.put(IDAT_GEBURTSJAHR, checkIfAttributeExist(birthDateElement.getYear().toString(), IDAT_GEBURTSJAHR));
+            if (!patient.getAddressFirstRep().isEmpty()) {
+                if (patient.getAddressFirstRep().hasCity())
+                    patientPs.put(IDAT_ADRESSE_STADT, patient.getAddressFirstRep().getCity());
+                if (patient.getAddressFirstRep().hasPostalCode())
+                    patientPs.put(IDAT_ADRESSE_PLZ, patient.getAddressFirstRep().getPostalCode());
+                if (patient.getAddressFirstRep().hasLine())
+                    patientPs.put(IDAT_ADRESSE_STRASSE, patient.getAddressFirstRep().getLine().get(0).getValue());
+            }
             patientPs.put("requestedIdType", "ctsid");
+            // @TODO next version add the Versichertennummer
+            //if(coverage!=null&&coverage.hasIdentifier()){
+            //patientPs.put("versicherungsnummer",coverage.getIdentifierFirstRep().getValue());
+            //}
         } catch (NullPointerException e) {
             throw new NullPointerException("Error at patient (ID: " + patient.getId() + "). " + e.getMessage());
         }
@@ -149,8 +171,8 @@ public class MainzellisteConnector {
      * @throws NullPointerException
      */
     private String checkIfAttributeExist(String attribute, String attributeName) throws NullPointerException {
-        if (attribute == null) {
-            throw new NullPointerException("The attribute " + attributeName + " was empty");
+        if (attribute == null || attribute.isEmpty()) {
+            throw new NullPointerException("The mandatory attribute " + attributeName + " was empty");
         } else {
             return attribute;
         }
