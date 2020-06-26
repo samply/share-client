@@ -40,6 +40,8 @@ public class MainzellisteConnector {
     public static final String IDAT_ADRESSE_STADT = "adresse.stadt";
     public static final String IDAT_ADRESSE_PLZ = "adresse.plz";
     public static final String IDAT_ADRESSE_STRASSE = "adresse.strasse";
+    public static final String IDAT_REQUESTED_ID_TYPE = "requestedIdType";
+    public static final String IDAT_CTSID = "ctsid";
     private transient HttpConnector httpConnector;
     private CloseableHttpClient httpClient;
     private String mainzellisteBaseUrl;
@@ -151,7 +153,7 @@ public class MainzellisteConnector {
                 if (patient.getAddressFirstRep().hasLine())
                     patientPs.put(IDAT_ADRESSE_STRASSE, patient.getAddressFirstRep().getLine().get(0).getValue());
             }
-            patientPs.put("requestedIdType", "ctsid");
+            patientPs.put(IDAT_REQUESTED_ID_TYPE, IDAT_CTSID);
             // @TODO next version add the Versichertennummer
             //if(coverage!=null&&coverage.hasIdentifier()){
             //patientPs.put("versicherungsnummer",coverage.getIdentifierFirstRep().getValue());
