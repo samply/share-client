@@ -29,7 +29,7 @@ import java.util.Calendar;
 import java.util.List;
 
 public class MainzellisteConnector {
-    public static final String FHIR_RESOURCE_PATIENT = "Patient";
+    public static final String FHIR_RESOURCE_PATIENT = "patient";
     public static final String MAINZELLISTE_IDTYPE_ENC_ID = "EncID";
     public static final String IDAT_VORNAME = "vorname";
     public static final String IDAT_NACHNAME = "nachname";
@@ -74,7 +74,7 @@ public class MainzellisteConnector {
     public Bundle getPatientPseudonym(Bundle bundle) throws IllegalArgumentException, IOException {
         for (int i = 0; i < bundle.getEntry().size(); i++) {
             Resource resource = bundle.getEntry().get(i).getResource();
-            if (resource.fhirType().equals(FHIR_RESOURCE_PATIENT)) {
+            if (resource.fhirType().equalsIgnoreCase(FHIR_RESOURCE_PATIENT)) {
                 JSONObject patient = createJSONPatient((Patient) resource);
                 Patient original = (Patient) resource;
                 JSONObject encryptedID = getPseudonymFromMainzelliste(patient);
