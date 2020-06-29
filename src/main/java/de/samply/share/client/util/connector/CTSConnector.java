@@ -2,6 +2,7 @@ package de.samply.share.client.util.connector;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.parser.DataFormatException;
+import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.fhir.FHIRResource;
@@ -69,7 +70,7 @@ public class CTSConnector {
      * @throws DataFormatException
      * @throws IllegalArgumentException
      */
-    public Response postPseudonmToCTS(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException {
+    public Response postPseudonmToCTS(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException, NotFoundException {
         // Make a call to the PL, and replace patient identifying information in the
         // bundle with a pseudonym.
         Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
@@ -80,12 +81,12 @@ public class CTSConnector {
         // Set up the API call
         HttpEntity entity = new StringEntity(pseudonymBundleJson, Consts.UTF_8);
         HttpPost httpPost = new HttpPost(ctsBaseUrl);
-        httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir-json; fhirVersion=4.0");
+        httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir+json; fhirVersion=4.0");
         httpPost.setEntity(entity);
         CloseableHttpResponse response;
         try {
             HttpContext ctsContext = createCtsContext();
-            response = httpClient.execute(httpPost,ctsContext);
+            response = httpClient.execute(httpPost, ctsContext);
             int statusCode = response.getStatusLine().getStatusCode();
             return Response.status(statusCode).entity(response.toString()).build();
         } catch (IOException e) {
@@ -122,7 +123,7 @@ public class CTSConnector {
      * @throws ConfigurationException
      * @throws DataFormatException
      */
-    private Bundle pseudonymiseBundle(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException {
+    private Bundle pseudonymiseBundle(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException, NotFoundException {
         Bundle bundle = fhirResource.convertToBundleResource(bundleString, mediaType);
         MainzellisteConnector mainzellisteConnector = new MainzellisteConnector();
         Bundle pseudonymizedBundle = mainzellisteConnector.getPatientPseudonym(bundle);
@@ -174,7 +175,7 @@ public class CTSConnector {
             }
             CookieStore cookieStore = context.getCookieStore();
             List<Cookie> cookies = cookieStore.getCookies();
-            for (Cookie cookie: cookies) {
+            for (Cookie cookie : cookies) {
                 String cookieName = cookie.getName();
                 if (cookieName.equals("SDMS_code"))
                     ctsAuthorization.codeCookie = cookie;

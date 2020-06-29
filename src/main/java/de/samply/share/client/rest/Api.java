@@ -2,6 +2,8 @@ package de.samply.share.client.rest;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.parser.DataFormatException;
+import com.sun.jersey.api.NotFoundException;
+import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.db.tables.pojos.User;
 import de.samply.share.client.util.connector.CTSConnector;
 import de.samply.share.client.util.db.UserUtil;
@@ -35,10 +37,12 @@ public class Api {
                 return Response.status(401).build();
             }
             String mediaType = httpHeaders.getMediaType().getSubtype();
-            CTSConnector ctsConnector = new CTSConnector();
+            CTSConnector ctsConnector = ApplicationBean.getCtsConnector();
             return ctsConnector.postPseudonmToCTS(bundle, mediaType);
-        } catch (NullPointerException | ConfigurationException | DataFormatException | IllegalArgumentException  e) {
+        } catch (NullPointerException | ConfigurationException | DataFormatException | IllegalArgumentException e) {
             return Response.status(400).entity(e.getMessage()).build();
+        } catch (NotFoundException e) {
+            return Response.status(404).entity(e.getMessage()).build();
         } catch (IOException e) {
             return Response.status(500).entity(e.getMessage()).build();
         }

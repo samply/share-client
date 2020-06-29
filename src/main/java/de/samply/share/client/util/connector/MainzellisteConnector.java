@@ -2,6 +2,7 @@ package de.samply.share.client.util.connector;
 
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
@@ -71,7 +72,7 @@ public class MainzellisteConnector {
      * @throws IllegalArgumentException
      * @throws IOException
      */
-    public Bundle getPatientPseudonym(Bundle bundle) throws IllegalArgumentException, IOException {
+    public Bundle getPatientPseudonym(Bundle bundle) throws IllegalArgumentException, NotFoundException, IOException {
         for (int i = 0; i < bundle.getEntry().size(); i++) {
             Resource resource = bundle.getEntry().get(i).getResource();
             if (resource.fhirType().equalsIgnoreCase(FHIR_RESOURCE_PATIENT)) {
@@ -133,7 +134,7 @@ public class MainzellisteConnector {
             checkIfAttributeExist(birthDateElement.asStringValue(), IDAT_GEBURTSDATUM);
             int birthDay = birthDateElement.getDay();
             int birthMonth = birthDateElement.getMonth();
-            birthMonth+=1;// +1 because Hapi returns the month with 0-index, e.g. 0=January
+            birthMonth += 1;// +1 because Hapi returns the month with 0-index, e.g. 0=January
             String day = String.valueOf(birthDay);
             String month = String.valueOf(birthMonth);
             if (birthDay < 10) {
@@ -187,7 +188,7 @@ public class MainzellisteConnector {
      * @return an encrypted ID
      * @throws IOException
      */
-    private JSONObject getPseudonymFromMainzelliste(JSONObject patient) throws IOException,IllegalArgumentException {
+    private JSONObject getPseudonymFromMainzelliste(JSONObject patient) throws IOException, IllegalArgumentException, NotFoundException {
         HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_URL) + GET_ENCRYPTID_URL));
         HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
@@ -201,6 +202,9 @@ public class MainzellisteConnector {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode >= 500 && statusCode < 600) {
                 throw new IOException("Mainzelliste server not responding");
+            }
+            if (statusCode == 404) {
+                throw new NotFoundException("Mainzelliste Url not found");
             }
             if (statusCode >= 400 && statusCode < 500) {
                 throw new IllegalArgumentException("Invalid patient bundle posted to Mainzelliste");
