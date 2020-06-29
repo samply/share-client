@@ -6,7 +6,7 @@
     <packaging>war</packaging>
     <artifactId>share-client</artifactId>
     <name>Connector</name>
-    <version>6.2.1</version>
+    <version>6.2.2-SNAPSHOT</version>
 
     <parent>
         <groupId>de.samply</groupId>
