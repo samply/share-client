@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.*;
  *         &lt;element name="idmanagerUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *         &lt;element name="ldmUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *         &lt;element name="mdrUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
+ *         &lt;element name="directoryUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
  *       &lt;/all>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -50,6 +51,10 @@ public class Urls {
     @XmlSchemaType(name = "anyURI")
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     protected String mdrUrl;
+    @XmlElement(namespace = "http://schema.samply.de/common", required = true)
+    @XmlSchemaType(name = "anyURI")
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    protected String directoryUrl;
 
     /**
      * Gets the value of the shareUrl property.
@@ -130,7 +135,7 @@ public class Urls {
     }
 
     /**
-     * Gets the value of the ldmUrl property.
+     * Gets the value of the mdrUrl property.
      *
      * @return possible object is
      * {@link String }
@@ -141,7 +146,7 @@ public class Urls {
     }
 
     /**
-     * Sets the value of the ldmUrl property.
+     * Sets the value of the mdrUrl property.
      *
      * @param value allowed object is
      *              {@link String }
@@ -149,5 +154,27 @@ public class Urls {
     @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
     public void setMdrUrl(String value) {
         this.mdrUrl = value;
+    }
+
+    /**
+     * Gets the value of the directoryUrl property.
+     *
+     * @return possible object is
+     * {@link String }
+     */
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    public String getDirecotryUrl() {
+        return directoryUrl;
+    }
+
+    /**
+     * Sets the value of the directoryUrl property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00", comments = "JAXB RI v2.2.8-b130911.1802")
+    public void setDirectoryUrl(String value) {
+        this.directoryUrl = value;
     }
 }

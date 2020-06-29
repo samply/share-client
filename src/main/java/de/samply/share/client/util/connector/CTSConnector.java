@@ -7,7 +7,6 @@ import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.fhir.FHIRResource;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.util.db.ConfigurationUtil;
-
 import de.samply.share.common.utils.SamplyShareUtils;
 import org.apache.http.*;
 import org.apache.http.client.CookieStore;
@@ -24,14 +23,13 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle;
 
+import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class CTSConnector {
 
@@ -71,7 +69,7 @@ public class CTSConnector {
      * @throws DataFormatException
      * @throws IllegalArgumentException
      */
-    public void postPseudonmToCTS(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException {
+    public Response postPseudonmToCTS(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException {
         // Make a call to the PL, and replace patient identifying information in the
         // bundle with a pseudonym.
         Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
@@ -84,31 +82,15 @@ public class CTSConnector {
         HttpPost httpPost = new HttpPost(ctsBaseUrl);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir-json; fhirVersion=4.0");
         httpPost.setEntity(entity);
-        CloseableHttpResponse response = null;
+        CloseableHttpResponse response;
         try {
             HttpContext ctsContext = createCtsContext();
-            response = httpClient.execute(httpPost, ctsContext);
+            response = httpClient.execute(httpPost,ctsContext);
             int statusCode = response.getStatusLine().getStatusCode();
-            logger.info("CTS upload status code: " + statusCode);
-            if (statusCode >= 500 && statusCode < 600) {
-                logger.error("Upload: CTS server error, statusCode: " + statusCode + ", status: " + response.toString());
-                throw new IOException("Upload: CTS server error, statusCode: " + statusCode + ", status: " + response.toString());
-            }
-            if (statusCode >= 400 && statusCode < 500) {
-                logger.error("Upload: CTS permission problem, statusCode: " + statusCode + ", status: " + response.toString());
-                throw new IllegalArgumentException("Upload: CTS permission problem, statusCode: " + statusCode + ", status: " + response.toString());
-            }
+            return Response.status(statusCode).entity(response.toString()).build();
         } catch (IOException e) {
-            logger.error("Upload: IOException, URI: " + httpPost.getURI() + ", e: " + e);
-            throw new IOException("Upload: IOException, URI: " + httpPost.getURI() + ", e: " + e);
-        } catch (Exception e) {
-            logger.error("Upload: miscellaneous Exception, e: " + e);
-            throw new IOException("Upload: miscellaneous Exception, e: " + e);
-        } finally {
-            response.close();
+            throw new IOException(e);
         }
-
-        logger.debug("postStringToCTS: done");
     }
 
     /**
