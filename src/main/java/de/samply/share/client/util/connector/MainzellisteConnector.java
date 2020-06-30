@@ -2,6 +2,7 @@ package de.samply.share.client.util.connector;
 
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import com.mchange.rmi.NotAuthorizedException;
 import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
@@ -72,7 +73,7 @@ public class MainzellisteConnector {
      * @throws IllegalArgumentException
      * @throws IOException
      */
-    public Bundle getPatientPseudonym(Bundle bundle) throws IllegalArgumentException, NotFoundException, IOException {
+    public Bundle getPatientPseudonym(Bundle bundle) throws IllegalArgumentException, NotFoundException, IOException, NotAuthorizedException {
         for (int i = 0; i < bundle.getEntry().size(); i++) {
             Resource resource = bundle.getEntry().get(i).getResource();
             if (resource.fhirType().equalsIgnoreCase(FHIR_RESOURCE_PATIENT)) {
@@ -188,7 +189,7 @@ public class MainzellisteConnector {
      * @return an encrypted ID
      * @throws IOException
      */
-    private JSONObject getPseudonymFromMainzelliste(JSONObject patient) throws IOException, IllegalArgumentException, NotFoundException {
+    private JSONObject getPseudonymFromMainzelliste(JSONObject patient) throws IOException, IllegalArgumentException, NotFoundException, NotAuthorizedException {
         HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_URL) + GET_ENCRYPTID_URL));
         HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
@@ -203,6 +204,10 @@ public class MainzellisteConnector {
             if (statusCode >= 500 && statusCode < 600) {
                 throw new IOException("Mainzelliste server not responding");
             }
+            if (statusCode == 401) {
+                throw new NotAuthorizedException();
+            }
+
             if (statusCode == 404) {
                 throw new NotFoundException("Mainzelliste Url not found");
             }

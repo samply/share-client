@@ -11,6 +11,7 @@ import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.common.mdrclient.MdrInvalidResponseException;
 import de.samply.config.util.JAXBUtil;
+import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.job.params.QuartzJob;
 import de.samply.share.client.model.EnumConfiguration;
@@ -172,7 +173,7 @@ public class ApplicationBean implements Serializable {
 
         logger.info ("Checking Processing inquiries...");
         checkProcessingInquiries();
-        if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
+        if (ClientFeature.NNGM_CTS.isActive()) {
             loadCtsInfo();
             updateCtsInfo();
             initMainzelliste();
@@ -180,19 +181,12 @@ public class ApplicationBean implements Serializable {
         logger.info("Application Bean initialized");
     }
 
-    private void initMainzelliste() {
+    private static void initMainzelliste() {
         mainzellisteConnector = new MainzellisteConnector();
     }
 
     private static void initCTS() {
         ctsConnector = new CTSConnector();
-    }
-
-    public static CTSConnector getCtsConnector() {
-        if (ApplicationBean.ctsConnector == null) {
-            ApplicationBean.initCTS();
-        }
-        return ctsConnector;
     }
 
     private void checkProcessingInquiries() {
@@ -708,6 +702,20 @@ public class ApplicationBean implements Serializable {
             ApplicationBean.initLdmConnector();
         }
         return ApplicationBean.ldmConnector;
+    }
+
+    public static CTSConnector getCtsConnector() {
+        if (ApplicationBean.ctsConnector == null) {
+            ApplicationBean.initCTS();
+        }
+        return ctsConnector;
+    }
+
+    public static MainzellisteConnector getMainzellisteConnector() {
+        if (ApplicationBean.mainzellisteConnector == null) {
+            ApplicationBean.initMainzelliste();
+        }
+        return mainzellisteConnector;
     }
 
     public static PatientValidator getPatientValidator() {

@@ -2,6 +2,7 @@ package de.samply.share.client.util.connector;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.parser.DataFormatException;
+import com.mchange.rmi.NotAuthorizedException;
 import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
@@ -70,7 +71,7 @@ public class CTSConnector {
      * @throws DataFormatException
      * @throws IllegalArgumentException
      */
-    public Response postPseudonmToCTS(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException, NotFoundException {
+    public Response postPseudonmToCTS(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException, NotFoundException, NotAuthorizedException {
         // Make a call to the PL, and replace patient identifying information in the
         // bundle with a pseudonym.
         Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
@@ -123,9 +124,9 @@ public class CTSConnector {
      * @throws ConfigurationException
      * @throws DataFormatException
      */
-    private Bundle pseudonymiseBundle(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException, NotFoundException {
+    private Bundle pseudonymiseBundle(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException, NotFoundException, NotAuthorizedException {
         Bundle bundle = fhirResource.convertToBundleResource(bundleString, mediaType);
-        MainzellisteConnector mainzellisteConnector = new MainzellisteConnector();
+        MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
         Bundle pseudonymizedBundle = mainzellisteConnector.getPatientPseudonym(bundle);
         return pseudonymizedBundle;
     }
