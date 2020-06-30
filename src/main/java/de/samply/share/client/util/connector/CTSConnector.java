@@ -82,7 +82,7 @@ public class CTSConnector {
         // Set up the API call
         HttpEntity entity = new StringEntity(pseudonymBundleJson, Consts.UTF_8);
         HttpPost httpPost = new HttpPost(ctsBaseUrl);
-        httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir+json; fhirVersion=4.0");
+        httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir-json; fhirVersion=4.0");
         httpPost.setEntity(entity);
         CloseableHttpResponse response;
         try {
