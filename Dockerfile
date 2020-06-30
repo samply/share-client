@@ -1,7 +1,5 @@
 FROM tomcat:8.5.32-jre8-alpine
 
-RUN apk update && apk add --no-cache curl
-
 RUN ["rm", "-fr", "/usr/local/tomcat/webapps"]
 ADD target/connector.war                        /usr/local/tomcat/webapps/ROOT.war
 
