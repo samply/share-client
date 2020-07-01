@@ -135,7 +135,7 @@ public final class Utils {
                     httpProxyHostString = null;
                 }
                 if (SamplyShareUtils.isNullOrEmpty(httpProxyHostString)) {
-                    logger.warn("Attempted to add credentials for nonexistent http proxy. Skipping.");
+                    //logger.warn("Attempted to add credentials for nonexistent http proxy. Skipping.");
                     return;
                 }
                 int httpProxyPort = ApplicationBean.getConfiguration().getProxy().getHTTP().getUrl().getPort();
