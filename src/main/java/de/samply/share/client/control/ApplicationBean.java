@@ -173,7 +173,7 @@ public class ApplicationBean implements Serializable {
 
         logger.info ("Checking Processing inquiries...");
         checkProcessingInquiries();
-        if (ClientFeature.NNGM_CTS.isActive()) {
+        if (ApplicationUtils.isDktk()) {
             loadCtsInfo();
             updateCtsInfo();
             initMainzelliste();
