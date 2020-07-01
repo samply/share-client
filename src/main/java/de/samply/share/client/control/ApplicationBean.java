@@ -11,15 +11,16 @@ import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.common.mdrclient.MdrInvalidResponseException;
 import de.samply.config.util.JAXBUtil;
+import de.samply.share.client.feature.ClientConfiguration;
 import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.job.params.QuartzJob;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.check.ConnectCheckResult;
 import de.samply.share.client.model.common.Bridgehead;
+import de.samply.share.client.model.common.Cts;
 import de.samply.share.client.model.common.Operator;
 import de.samply.share.client.model.common.Urls;
-import de.samply.share.client.model.common.Cts;
 import de.samply.share.client.model.db.enums.*;
 import de.samply.share.client.model.db.tables.pojos.Credentials;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
@@ -47,6 +48,7 @@ import org.quartz.*;
 import org.quartz.ee.servlet.QuartzInitializerListener;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.togglz.core.manager.FeatureManager;
 import org.xml.sax.SAXException;
 
 import javax.annotation.PostConstruct;
@@ -123,6 +125,8 @@ public class ApplicationBean implements Serializable {
 
     private static Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
 
+    private static FeatureManager featureManager;
+
     public static Locale getLocale() {
         return locale;
     }
@@ -137,48 +141,55 @@ public class ApplicationBean implements Serializable {
             logger.fatal("Could not initialize or migrate database", e);
             throw new RuntimeException(e);
         }
+        logger.info("Creating featureManager...");
+        featureManager = new ClientConfiguration().getFeatureManager();
+
         logger.info("Loading common-config.xml...");
         loadCommonConfig();
 
-        logger.info ("Loading Urls...");
+        logger.info("Loading Urls...");
         loadUrls();
         logger.info("Loading operator...");
         loadOperator();
         logger.info("Loading bidgehead info...");
         loadBridgeheadInfo();
-        logger.info ("Loading common urls...");
+        logger.info("Loading common urls...");
         updateCommonUrls();
 
-        logger.info ("Reseting MDR context");
+        logger.info("Reseting MDR context");
         resetMdrContext();
-        logger.info ("Loading patient validator...");
+        logger.info("Loading patient validator...");
         patientValidator = new PatientValidator(MdrContext.getMdrContext().getMdrClient());
 
         // Initialize Quartz scheduler
         try {
-            logger.info ("Initializing scheduler...");
+            logger.info("Initializing scheduler...");
             initScheduler();
         } catch (SchedulerException e) {
             throw new RuntimeException("Could not initialize quartz scheduler.", e);
         }
 
-        logger.info ("Initializing dth validator...");
+        logger.info("Initializing dth validator...");
         initDthValidator();
 
         logger.info("Initializing ldm connector...");
         ApplicationBean.initLdmConnector();
 
-        logger.info ("Inserting event log entry...");
+        logger.info("Inserting event log entry...");
         EventLogUtil.insertEventLogEntry(EventMessageType.E_SYSTEM_STARTUP);
 
-        logger.info ("Checking Processing inquiries...");
+        logger.info("Checking Processing inquiries...");
         checkProcessingInquiries();
-        if (ApplicationUtils.isDktk()) {
+        if (featureManager.getFeatureState(ClientFeature.NNGM_CTS).isEnabled()) {
             loadCtsInfo();
             updateCtsInfo();
             initMainzelliste();
         }
         logger.info("Application Bean initialized");
+    }
+
+    public static FeatureManager getFeatureManager() {
+        return featureManager;
     }
 
     private static void initMainzelliste() {
@@ -571,7 +582,7 @@ public class ApplicationBean implements Serializable {
         }
     }
 
-    public static Urls getUrlsForDirectory(){
+    public static Urls getUrlsForDirectory() {
         return urls;
     }
 
