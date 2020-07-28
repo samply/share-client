@@ -23,6 +23,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.Bundle;
@@ -36,6 +37,7 @@ import java.util.List;
 public class CTSConnector {
 
     private static final Logger logger = LogManager.getLogger(CTSConnector.class);
+    private static final String CONTENT_TYPE_CTS_FHIR_JSON = "application/fhir+json; fhirVersion=4.0";
 
     private transient HttpConnector httpConnector;
     private CloseableHttpClient httpClient;
@@ -80,20 +82,24 @@ public class CTSConnector {
 
         // Set up the API call
         HttpEntity entity = new StringEntity(pseudonymBundleJson, Consts.UTF_8);
-        //@TODO Mohamed: just for testing reasons
-        logger.warn("the origin bundle: " + bundleString);
-        logger.warn("the peseudonymized bundle: " + pseudonymBundleJson);
         HttpPost httpPost = new HttpPost(ctsBaseUrl);
-        httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir-json; fhirVersion=4.0");
+        httpPost.setHeader(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_CTS_FHIR_JSON);
         httpPost.setEntity(entity);
-        CloseableHttpResponse response;
+        CloseableHttpResponse response=null;
         try {
             HttpContext ctsContext = createCtsContext();
             response = httpClient.execute(httpPost, ctsContext);
             int statusCode = response.getStatusLine().getStatusCode();
-            return Response.status(statusCode).entity(response.toString()).build();
+            String message = "CTS server response: statusCode:" + statusCode + "; response: " + response.toString();
+            String responseBody = EntityUtils.toString(response.getEntity(),Consts.UTF_8);
+            if (responseBody != null && !responseBody.isEmpty()) {
+                message += ";body: " + responseBody;
+            }
+            return Response.status(statusCode).entity(message).build();
         } catch (IOException e) {
             throw new IOException(e);
+        } finally {
+            closeResponse(response);
         }
     }
 
@@ -167,14 +173,18 @@ public class CTSConnector {
             HttpClientContext context = new HttpClientContext();
             response = httpClient.execute(httpPost, context);
             int statusCode = response.getStatusLine().getStatusCode();
+            StatusLine statusLine = response.getStatusLine();
+            String reasonPhrase=  statusLine.getReasonPhrase();
             logger.info("CTS authorization status code: " + statusCode);
             if (statusCode >= 500 && statusCode < 600) {
-                logger.error("Authorization: CTS server error, statusCode: " + statusCode + ", status: " + response.toString());
-                throw new IOException("Authorization: CTS server error, statusCode: " + statusCode + ", status: " + response.toString());
+                String bodyResponse= EntityUtils.toString(response.getEntity());
+                logger.error(getMessage( "Authorization: CTS server error", statusCode, reasonPhrase, bodyResponse));
+                throw new IOException(getMessage( "Authorization: CTS server error", statusCode, reasonPhrase, bodyResponse));
             }
             if (statusCode >= 400 && statusCode < 500) {
-                logger.error("Authorization: CTS permission problem, statusCode: " + statusCode + ", status: " + response.toString());
-                throw new IllegalArgumentException("Authorization: CTS permission problem, statusCode: " + statusCode + ", status: " + response.toString());
+                String bodyResponse= EntityUtils.toString(response.getEntity());
+                logger.error(getMessage( "Authorization: CTS permission problem", statusCode, reasonPhrase, bodyResponse));
+                throw new IllegalArgumentException(getMessage( "Authorization: CTS permission problem", statusCode, reasonPhrase, bodyResponse));
             }
             CookieStore cookieStore = context.getCookieStore();
             List<Cookie> cookies = cookieStore.getCookies();
@@ -193,10 +203,37 @@ public class CTSConnector {
             logger.error("Authorization: IOException, URI: " + httpPost.getURI() + ", e: " + e);
             throw new IOException("Authorization: IOException, URI: " + httpPost.getURI() + ", e: " + e);
         } finally {
-            response.close();
+            closeResponse (response);
         }
 
         logger.debug("getCtsInfo: done");
         return ctsAuthorization;
+    }
+
+    /**
+     * print the message from the extern service
+     * @param message
+     * @param statusCode
+     * @param reasonPhrase
+     * @param bodyResponse
+     * @return
+     */
+    private String getMessage(String message, int statusCode, String reasonPhrase, String bodyResponse) {
+        return message + "; statusCode: " + statusCode +"; reason: "+ reasonPhrase+ ";body: "+ bodyResponse;
+    }
+
+    /**
+     * close a response
+     * @param response
+     */
+    public void closeResponse(CloseableHttpResponse response) {
+        if (response != null) {
+            try {
+                EntityUtils.consumeQuietly(response.getEntity());
+                response.close();
+            } catch (IOException e) {
+                logger.error("Get Pseudonym from Mainzelliste: Exception when closing response", e);
+            }
+        }
     }
 }
