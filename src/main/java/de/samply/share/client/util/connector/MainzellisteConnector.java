@@ -102,18 +102,7 @@ public class MainzellisteConnector {
             }
             if (patient != null && coverage != null) {
                 JSONObject jsonIdatObject = createJSONPatient(patient, coverage);
-                try {
-                    encryptedID = getPseudonymFromMainzelliste(jsonIdatObject);
-                } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException(e);
-                } catch (NotFoundException e) {
-                    throw new NotFoundException(e.getMessage());
-                } catch (IOException e) {
-                    throw new IOException(e);
-                } catch (NotAuthorizedException e) {
-                    throw new NotAuthorizedException(e.getMessage());
-                }
-
+                encryptedID = getPseudonymFromMainzelliste(jsonIdatObject);
                 patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedID);
                 bundle.getEntry().get(patientEntryIndex).setResource(patientPseudonym);
                 bundle.getEntry().get(coverageEntryIndex).setResource(coveragePseudonym);

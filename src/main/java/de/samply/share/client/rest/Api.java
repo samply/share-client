@@ -5,6 +5,7 @@ import ca.uhn.fhir.parser.DataFormatException;
 import com.mchange.rmi.NotAuthorizedException;
 import com.sun.jersey.api.NotFoundException;
 import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.model.db.tables.pojos.User;
 import de.samply.share.client.util.connector.CTSConnector;
 import de.samply.share.client.util.db.UserUtil;
@@ -33,6 +34,9 @@ public class Api {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("/postcts")
     public Response postToCTS(String bundle, @Context HttpHeaders httpHeaders) {
+        if(!ApplicationBean.getFeatureManager().getFeatureState(ClientFeature.NNGM_CTS).isEnabled()){
+            return Response.status(403).build();
+        }
         try {
             if (!checkUser(httpHeaders.getRequestHeader(AUTHORIZATION).get(0))) {
                 return Response.status(401).entity("Basic Auth credentials not correct").build();
@@ -45,7 +49,7 @@ public class Api {
         } catch (NotAuthorizedException e) {
             return Response.status(401).entity(e.getMessage()).build();
         } catch (NotFoundException e) {
-            return Response.status(404).entity(e.getMessage()).build();
+            return Response.status(404).entity(e.getResponse().getEntity().toString()).build();
         } catch (IOException e) {
             return Response.status(500).entity(e.getMessage()).build();
         }

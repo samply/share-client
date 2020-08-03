@@ -77,21 +77,7 @@ public class CTSConnector {
         // Make a call to the PL, and replace patient identifying information in the
         // bundle with a pseudonym.
         Bundle pseudonymBundle = null;
-        try {
-            pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
-        } catch (ConfigurationException e) {
-            throw new ConfigurationException(e);
-        } catch (DataFormatException e) {
-            throw new DataFormatException(e);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e);
-        } catch (NotFoundException e) {
-            throw new NotFoundException(e.getMessage());
-        } catch (IOException e) {
-            throw new IOException(e);
-        } catch (NotAuthorizedException e) {
-            throw new NotAuthorizedException(e.getMessage());
-        }
+        pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
         // Serialize into a JSON String
         String pseudonymBundleJson = fhirResource.convertBundleToJson(pseudonymBundle);
 
@@ -151,19 +137,7 @@ public class CTSConnector {
         Bundle bundle = fhirResource.convertToBundleResource(bundleString, mediaType);
         MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
         Bundle pseudonymizedBundle = null;
-        try {
-            pseudonymizedBundle = mainzellisteConnector.getPatientPseudonym(bundle);
-        } catch (ConfigurationException e) {
-            throw new ConfigurationException(e);
-        } catch (DataFormatException e) {
-            throw new DataFormatException(e);
-        } catch (NotFoundException e) {
-            throw new NotFoundException(e.getMessage());
-        } catch (NotAuthorizedException e) {
-            throw new NotAuthorizedException(e.getMessage());
-        } catch (IOException e) {
-            throw new IOException(e);
-        }
+        pseudonymizedBundle = mainzellisteConnector.getPatientPseudonym(bundle);
         return pseudonymizedBundle;
     }
 
