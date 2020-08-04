@@ -76,6 +76,7 @@ public class ReportToMonitoringJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) {
         if (jobParams.anyCheckToPerform()) {
             for (BrokerConnector brokerConnector : brokerConnectors) {
+                logger.debug("sending report to broker: " + brokerConnector.getBroker().getAddress());
                 List<StatusReportItem> statusReportItems = gatherStatusReportItems(brokerConnector);
                 try {
                     brokerConnector.sendStatusReportItems(statusReportItems);
