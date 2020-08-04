@@ -32,7 +32,6 @@ import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.ReportToMonitoringJobParams;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
-import de.samply.share.client.model.db.tables.pojos.Broker;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.LdmConnectorCentraxx;
@@ -47,6 +46,7 @@ import org.quartz.JobExecutionContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This job gathers the amount of patients (total, dktk flagged and for a reference query) and the time it takes to
@@ -55,33 +55,30 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class ReportToMonitoringJob implements Job {
 
-    private static final Logger logger = LogManager.getLogger(ReportToMonitoringJob.class);
-    private static LdmConnector ldmConnector;
-    private static List<BrokerConnector> brokerConnectors = new ArrayList<>();
+    private static final Logger LOGGER = LogManager.getLogger(ReportToMonitoringJob.class);
 
-    private final ReportToMonitoringJobParams jobParams = new ReportToMonitoringJobParams();
+    private final LdmConnector ldmConnector;
+    private final List<BrokerConnector> brokerConnectors;
+    private final ReportToMonitoringJobParams jobParams;
 
     public ReportToMonitoringJob() {
-
         ldmConnector = ApplicationBean.getLdmConnector();
-        for (Broker broker : BrokerUtil.fetchBrokers()) {
-            brokerConnectors.add(new BrokerConnector(broker));
-        }
+        brokerConnectors = BrokerUtil.fetchBrokers().stream().map(BrokerConnector::new).collect(Collectors.toList());
+        jobParams = new ReportToMonitoringJobParams();
 
-        logger.debug(ReportToMonitoringJob.class.getName() + " created");
-
+        LOGGER.debug(ReportToMonitoringJob.class.getName() + " created");
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         if (jobParams.anyCheckToPerform()) {
             for (BrokerConnector brokerConnector : brokerConnectors) {
-                logger.debug("sending report to broker: " + brokerConnector.getBroker().getAddress());
+                LOGGER.debug("sending report to broker: " + brokerConnector.getBroker().getAddress());
                 List<StatusReportItem> statusReportItems = gatherStatusReportItems(brokerConnector);
                 try {
                     brokerConnector.sendStatusReportItems(statusReportItems);
                 } catch (BrokerConnectorException e) {
-                    logger.warn("Caught exception while trying to report to monitoring", e);
+                    LOGGER.warn("Caught exception while trying to report to monitoring", e);
                 }
             }
         }
@@ -183,7 +180,7 @@ public class ReportToMonitoringJob implements Job {
             totalCount.setExit_status("0");
             totalCount.setStatus_text(Integer.toString(count));
         } catch (Exception e) {
-            logger.error(e);
+            LOGGER.error(e);
             totalCount.setExit_status("1");
         }
 
@@ -257,7 +254,7 @@ public class ReportToMonitoringJob implements Job {
      *
      * @return the version string of mdr mapping script
      */
-    private static StatusReportItem getCentraxxMappingVersion() {
+    private StatusReportItem getCentraxxMappingVersion() {
         StatusReportItem centraxxMappingVersion = new StatusReportItem();
         centraxxMappingVersion.setParameter_name(StatusReportItem.PARAMETER_CENTRAXX_MAPPING_VERSION);
         if (!ldmConnector.isLdmCentraxx()) {
@@ -269,7 +266,7 @@ public class ReportToMonitoringJob implements Job {
                 centraxxMappingVersion.setExit_status("0");
                 centraxxMappingVersion.setStatus_text(mappingVersion);
             } catch (Exception e) {
-                logger.error(e);
+                LOGGER.error(e);
                 centraxxMappingVersion.setExit_status("1");
             }
         }
@@ -282,7 +279,7 @@ public class ReportToMonitoringJob implements Job {
      *
      * @return the date string of mdr mapping script
      */
-    private static StatusReportItem getCentraxxMappingDate() {
+    private StatusReportItem getCentraxxMappingDate() {
         StatusReportItem centraxxMappingDate = new StatusReportItem();
         centraxxMappingDate.setParameter_name(StatusReportItem.PARAMETER_CENTRAXX_MAPPING_DATE);
         if (!ldmConnector.isLdmCentraxx()) {
@@ -294,7 +291,7 @@ public class ReportToMonitoringJob implements Job {
                 centraxxMappingDate.setExit_status("0");
                 centraxxMappingDate.setStatus_text(mappingDate);
             } catch (Exception e) {
-                logger.error(e);
+                LOGGER.error(e);
                 centraxxMappingDate.setExit_status("1");
             }
         }
