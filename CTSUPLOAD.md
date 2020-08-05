@@ -31,11 +31,11 @@ Typically, it will look something like this:
 ```
 <com:cts xmlns:com="http://schema.samply.de/config/CtsInfo">
     <com:username>admin</com:username>
-    <com:password>admin</com:password>
+    <com:password>abcdef</com:password>
     <com:url>https://nngm-qat.staging.healex.systems/trial/nNGMv09ccf/import-fhir</com:url>
     <com:profile>http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert</com:profile>
     <com:mainzellisteUrl>https://test.verbis.dkfz.de/mpl</com:mainzellisteUrl>
-    <com:mainzellisteApiKey>nngmTestKey?[8574]</com:mainzellisteApiKey>
+    <com:mainzellisteApiKey>0123456789</com:mainzellisteApiKey>
 </com:cts>
 ```
 
