@@ -45,6 +45,7 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.ccp.*;
 import de.samply.share.model.common.Inquiry;
+import de.samply.share.model.cql.CqlQuery;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -222,11 +223,18 @@ public class TestsBean implements Serializable {
             return;
         }
 
-        AbstractLdmConnectorView<?, ?, ?, ?, ?> ldmConnector = (AbstractLdmConnectorView<?, ?, ?, ?, ?>) ApplicationBean.getLdmConnector();
-        String location;
+        String location = "";
         try {
-            LdmPostQueryParameterView parameter = new LdmPostQueryParameterView(true, null, true, true);
-            location = ldmConnector.postQuery(testInquiry.getQuery(), parameter);
+            if (ApplicationUtils.isLanguageQuery()) {
+                AbstractLdmConnectorView<?, ?, ?, ?, ?> ldmConnector = (AbstractLdmConnectorView<?, ?, ?, ?, ?>) ApplicationBean.getLdmConnector();
+                LdmPostQueryParameterView parameter = new LdmPostQueryParameterView(true, null, true, true);
+                location = ldmConnector.postQuery(testInquiry.getQuery(), parameter);
+            } else if (ApplicationUtils.isLanguageCql()) {
+                LdmConnectorCql ldmConnector = (LdmConnectorCql) ApplicationBean.getLdmConnector();
+                CqlQuery cqlQuery = testInquiry.getCqlQueryList().getQueries().get(0);
+                LdmPostQueryParameterCql ldmPostQueryParameterCql = new LdmPostQueryParameterCql(true, cqlQuery.getEntityType());
+                location = ldmConnector.postQuery(cqlQuery.getCql(), ldmPostQueryParameterCql);
+            }
         } catch (Exception e) {
             checkResult.setSuccess(false);
             checkResult.getMessages().add(new Message("Exception caught while trying to post to local datamanagement: " + e.getMessage(), "fa-bolt"));
@@ -246,8 +254,6 @@ public class TestsBean implements Serializable {
 
     /**
      * Get the export id for a (user-entered) local id from the id manager
-     *
-     *
      */
     public void performRetrieveExportIdCheck() {
         retrieveExportIdsCheckResult = new CheckResult();
@@ -269,13 +275,13 @@ public class TestsBean implements Serializable {
             }
         } catch (IdManagerConnectorException e) {
             retrieveExportIdsCheckResult.setSuccess(false);
-            retrieveExportIdsCheckResult.getMessages().add(new Message("Exception caught: " +e.getMessage(), "fa-bolt") );
+            retrieveExportIdsCheckResult.getMessages().add(new Message("Exception caught: " + e.getMessage(), "fa-bolt"));
         }
     }
 
     /**
      * Check the upload to the central mds db
-     *
+     * <p>
      * 1) Create a very basic dummy patient
      * 2) Upload it with an uniquely prefixed id
      * 3) Delete it from the central mds db
@@ -321,7 +327,7 @@ public class TestsBean implements Serializable {
 
     /**
      * Create and return a dummy patient
-     *
+     * <p>
      * It has one case and one sample with one attribute each
      *
      * @return the created dummy patient

@@ -335,6 +335,7 @@ public class BrokerConnector {
             URI uri = new URI(path);
             HttpGet httpGet = new HttpGet(uri.normalize().toString());
             httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpGet.setHeader(Constants.QUERY_LANGUAGE, ApplicationBean.getBridgeheadInfos().getQueryLanguage());
             result.getMessages().add(new Message(httpGet.getMethod() + " " + path + " " + httpGet.getProtocolVersion(),
                     "fa-long-arrow-right"));
             result.getMessages().add(new Message(httpGet.getFirstHeader(HttpHeaders.AUTHORIZATION).getName() + " " +
