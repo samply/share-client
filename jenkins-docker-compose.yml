@@ -1,0 +1,11 @@
+version: '3.4'
+services:
+  connector-db:
+    container_name: "connector-db"
+    image: "postgres:9.6-alpine"
+    environment:
+      POSTGRES_USER: "samplyweb"
+      POSTGRES_PASSWORD: "samplyweb"
+      POSTGRES_DB: "share_v2"
+    ports:
+      - 5432:5432
