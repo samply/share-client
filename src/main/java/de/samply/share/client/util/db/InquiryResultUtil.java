@@ -87,6 +87,21 @@ public class InquiryResultUtil {
     }
 
     /**
+     * Get the last two inquiry result (patient,specimen) for a cql query
+     *
+     * @param inquiryDetailsId the id of the inquiry details
+     * @return the list of inquiry results
+     */
+    public static List<InquiryResult> fetchLastTwoInquiryResult(int inquiryDetailsId) {
+        DSLContext dslContext = ResourceManager.getDSLContext();
+        return dslContext
+                .selectFrom(Tables.INQUIRY_RESULT)
+                .where(Tables.INQUIRY_RESULT.INQUIRY_DETAILS_ID.equal(inquiryDetailsId))
+                .orderBy(Tables.INQUIRY_RESULT.EXECUTED_AT.desc()).limit(2)
+                .fetchInto(InquiryResult.class);
+    }
+
+    /**
      * Get one inquiry result
      *
      * @param inquiryResultId id of the inquiry result

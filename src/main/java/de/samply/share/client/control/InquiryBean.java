@@ -116,6 +116,7 @@ public class InquiryBean implements Serializable {
     private QueryResultStatistic latestResultStatistics;
     private Result latestQueryResult;
     private TreeModel<Container> patientPageTree;
+    private List<InquiryCriteria> inquiryCriteria;
     private InquiryResultStats latestInquiryResultStats;
     private List<Document> documents;
     private Part newDocument;
@@ -257,6 +258,14 @@ public class InquiryBean implements Serializable {
         this.latestInquiryResultStats = latestInquiryResultStats;
     }
 
+    public List<InquiryCriteria> getInquiryCriteria() {
+        return inquiryCriteria;
+    }
+
+    public void setInquiryCriteria(List<InquiryCriteria> inquiryCriteria) {
+        this.inquiryCriteria = inquiryCriteria;
+    }
+
     public List<Document> getDocuments() {
         return documents;
     }
@@ -283,12 +292,12 @@ public class InquiryBean implements Serializable {
             latestInquiryAnswer = InquiryAnswerUtil.fetchInquiryAnswerByInquiryDetailsId(latestInquiryDetails.getId());
             inquiryResultsList = InquiryResultUtil.fetchInquiryResultsForInquiryDetailsById(latestInquiryDetails.getId());
             UserSeenInquiryUtil.setUserSeenInquiry(loginBean.getUser(), inquiry);
-            InquiryCriteria inquiryCriteria = InquiryCriteriaUtil.getFirstCriteriaOriginal(latestInquiryDetails, QueryLanguageType.QL_QUERY);
             //TODO create criteriaTree with cql query
             if (ApplicationUtils.isLanguageQuery()) {
-                latestOriginalCriteriaTree = populateCriteriaTree(inquiryCriteria.getCriteriaOriginal());
+                this.inquiryCriteria.add(InquiryCriteriaUtil.getFirstCriteriaOriginal(latestInquiryDetails, QueryLanguageType.QL_QUERY));
+                latestOriginalCriteriaTree = populateCriteriaTree(inquiryCriteria.get(0).getCriteriaOriginal());
             } else {
-                latestOriginalCriteriaTree = new ListTreeModel<>();
+                this.inquiryCriteria = InquiryCriteriaUtil.getInquiryCriteriaForInquiryDetails(latestInquiryDetails);
             }
 
             List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
@@ -573,7 +582,7 @@ public class InquiryBean implements Serializable {
 
             return mdrIdDatatypeList;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e);
             return new ArrayList<>();
         }

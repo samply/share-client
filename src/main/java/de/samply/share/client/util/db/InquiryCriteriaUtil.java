@@ -32,6 +32,10 @@ public class InquiryCriteriaUtil {
         return inquiryCriteriaDao;
     }
 
+    public static InquiryCriteria fetchById(int id) {
+        return inquiryCriteriaDao.fetchOneById(id);
+    }
+
     // TODO(CQL): Rename to fetchFirstInquiryCriteriaByDetailsId(int id)
     public static InquiryCriteria fetchInquiryDetailsById(int id) {
         return inquiryCriteriaDao.fetchOneById(id);

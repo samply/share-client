@@ -1,6 +1,7 @@
 package de.samply.share.client.rest;
 
 import com.google.gson.Gson;
+import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.control.InquiryHandlingBean;
 import de.samply.share.client.messages.Messages;
 import de.samply.share.client.model.db.enums.InquiryStatusType;
@@ -13,11 +14,6 @@ import de.samply.share.common.utils.SamplyShareUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -58,14 +54,6 @@ public class Connector {
     @Path("/active")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponses({
-            @APIResponse(responseCode = "200", description = "ok",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = String.class))),
-            @APIResponse(responseCode = "401", description = "Unauthorized")
-    })
-    @Operation(summary = "Get the active inquiries")
     public Response getActiveInquiries(
             @HeaderParam("userid") Integer userId,
             @HeaderParam("Authorization") String authStringBase64) {
@@ -79,14 +67,6 @@ public class Connector {
     @Path("/erroneous")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponses({
-            @APIResponse(responseCode = "200", description = "ok",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = String.class))),
-            @APIResponse(responseCode = "401", description = "Unauthorized")
-    })
-    @Operation(summary = "Get the erroneous inquiries")
     public Response getErroneousInquiries(
             @HeaderParam("userid") Integer userId,
             @HeaderParam("Authorization") String authStringBase64) {
@@ -100,14 +80,6 @@ public class Connector {
     @Path("/archived")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponses({
-            @APIResponse(responseCode = "200", description = "ok",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = String.class))),
-            @APIResponse(responseCode = "401", description = "Unauthorized")
-    })
-    @Operation(summary = "Get the archived inquiries")
     public Response getArchivedInquiries(
             @HeaderParam("userid") Integer userId,
             @HeaderParam("Authorization") String authStringBase64) {
@@ -125,14 +97,6 @@ public class Connector {
     @Path("/log")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponses({
-            @APIResponse(responseCode = "200", description = "ok",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = String.class))),
-            @APIResponse(responseCode = "401", description = "Unauthorized")
-    })
-    @Operation(summary = "Get the event logs")
     public Response getLog(@HeaderParam("Authorization") String authStringBase64) {
         if (!authorize(authStringBase64)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -329,16 +293,25 @@ public class Connector {
     }
 
     private InquiryLine fetchLatestInquiryResultForInquiryDetailsById_WithoutManagementException(InquiryLine inquiryLine, InquiryDetails inquiryDetails) {
-
-        InquiryResult inquiryResult = InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId());
-
-        if (inquiryResult == null) {
-            inquiryLine = addNoResultsToInquiryLine(inquiryLine);
-        } else {
-            inquiryLine = fetchLatestInquiryResultForInquiryDetailsById(inquiryLine, inquiryDetails, inquiryResult);
-            inquiryLine = setAsOf(inquiryLine, inquiryResult);
+        List<InquiryResult> inquiryResultList = new ArrayList<>();
+        if (ApplicationUtils.isLanguageCql()) {
+            inquiryResultList = InquiryResultUtil.fetchLastTwoInquiryResult(inquiryDetails.getId());
+        } else if (ApplicationUtils.isLanguageQuery()) {
+            inquiryResultList.add(InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()));
         }
-
+        StringBuilder result = new StringBuilder();
+        for (InquiryResult inquiryResult : inquiryResultList) {
+            if (inquiryResult == null) {
+                inquiryLine = addNoResultsToInquiryLine(inquiryLine);
+            } else {
+                inquiryLine = fetchLatestInquiryResultForInquiryDetailsById(inquiryLine, inquiryDetails, inquiryResult);
+                inquiryLine = setAsOf(inquiryLine, inquiryResult);
+                if (!result.toString().equals(inquiryLine.getFound())) {
+                    result.append(inquiryLine.getFound());
+                }
+            }
+        }
+        inquiryLine.setFound(result.toString());
         return inquiryLine;
 
     }
@@ -400,6 +373,10 @@ public class Connector {
     private String getSizeOfInquiryResult(InquiryResult inquiryResult, String defaultErrorMessage) {
 
         try {
+            if (ApplicationUtils.isLanguageCql()) {
+                String entityType = InquiryCriteriaUtil.fetchById(inquiryResult.getInquiryCriteriaId()).getEntityType();
+                return entityType + ": " + inquiryResult.getSize() + (" ");
+            }
             return inquiryResult.getSize().toString();
 
         } catch (Exception e) {

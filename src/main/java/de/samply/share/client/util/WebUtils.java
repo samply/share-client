@@ -29,6 +29,7 @@ package de.samply.share.client.util;
 
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
+import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.messages.Messages;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.EnumInquiryStatus;
@@ -73,10 +74,8 @@ public final class WebUtils {
     /**
      * Gets the designation for an dataelement in the mdr
      *
-     * @param dataElement
-     *            the data element id
-     * @param languageCode
-     *            the language code
+     * @param dataElement  the data element id
+     * @param languageCode the language code
      * @return the designation
      */
     public static String getDesignation(String dataElement, String languageCode) {
@@ -86,12 +85,9 @@ public final class WebUtils {
     /**
      * Gets the designation of a certain value of a dataelement.
      *
-     * @param dataElement
-     *          the data element
-     * @param value
-     *          the value
-     * @param languageCode
-     *          the language code
+     * @param dataElement  the data element
+     * @param value        the value
+     * @param languageCode the language code
      * @return the designation
      */
     public static String getValueDesignation(String dataElement, Object value, String languageCode) {
@@ -101,8 +97,7 @@ public final class WebUtils {
     /**
      * Convert a given timestamp to a String in dd.MM.yyyy HH:mm:ss format.
      *
-     * @param time
-     *            the time
+     * @param time the time
      * @return the converted timestamp.
      */
     public static String convertTime(Timestamp time) {
@@ -167,6 +162,7 @@ public final class WebUtils {
      * Gets the id of the server's time zone. This can be used for
      * {@code <f:convertDateTime>} tags that must display the date in the
      * server's time zone.
+     *
      * @return
      */
     public static String getServerTimeZone() {
@@ -189,7 +185,7 @@ public final class WebUtils {
             return (id.substring(0, id.lastIndexOf(separator)));
         }
     }
-    
+
     /**
      * Gets the gender of a given patient (-container).
      *
@@ -200,18 +196,18 @@ public final class WebUtils {
         MdrIdDatatype genderMdrId = new MdrIdDatatype(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_GENDER));
         MdrIdDatatype genderMdrId2 = new MdrIdDatatype("urn:mdr16:dataelement:23:1");
         MdrIdDatatype genderMdrId3 = new MdrIdDatatype("urn:bbmri:dataelement:8:1");
-        List<MdrIdDatatype> mdr= new ArrayList<>();
+        List<MdrIdDatatype> mdr = new ArrayList<>();
         mdr.add(genderMdrId);
         mdr.add(genderMdrId2);
         mdr.add(genderMdrId3);
 
         for (Attribute attribute : container.getAttribute()) {
             MdrIdDatatype mdrId = new MdrIdDatatype(attribute.getMdrKey());
-           if (mdrId.equalsIgnoreVersion(genderMdrId) || mdrId.equalsIgnoreVersion(genderMdrId2) || mdrId.equalsIgnoreVersion(genderMdrId3)) {
+            if (mdrId.equalsIgnoreVersion(genderMdrId) || mdrId.equalsIgnoreVersion(genderMdrId2) || mdrId.equalsIgnoreVersion(genderMdrId3)) {
 
                 return attribute.getValue().getValue().replace("\"", "");
             }
-        }        
+        }
         // Return unknown if nothing was found
         return "U";
     }
@@ -227,8 +223,8 @@ public final class WebUtils {
 
     /**
      * Count how many inquiries of the given status are in the database
-     * @param status
-     *          to differentiate between active, archived and erroneous
+     *
+     * @param status to differentiate between active, archived and erroneous
      * @return the amount of inquiries
      */
     public static long getInquiryCount(EnumInquiryStatus status) {
@@ -246,10 +242,8 @@ public final class WebUtils {
     /**
      * Get a formatted entry line for the log to display on show_inquiry.xhtml
      *
-     * @param logEntry
-     *          the event log entry
+     * @param logEntry the event log entry
      * @return the formatted entry for the log
-     *
      */
     public static String formatInquiryLogEntry(de.samply.share.client.model.db.tables.pojos.EventLog logEntry) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -320,7 +314,7 @@ public final class WebUtils {
 
     /**
      * Config files may contain "localhost" addresses for components. In this case, replace the links
-     *
+     * <p>
      * If the port is also the same, just use the path
      * otherwise, replace the host part with the requestURL host part
      *
@@ -333,7 +327,7 @@ public final class WebUtils {
             URI uri = new URI(in);
             URI requestUri = new URI(origRequest.getRequestURL().toString());
 
-            if ("localhost".equalsIgnoreCase(uri.getHost()) || "127.0.0.1".equals(uri.getHost()) ) {
+            if ("localhost".equalsIgnoreCase(uri.getHost()) || "127.0.0.1".equals(uri.getHost())) {
                 if (requestUri.getPort() == uri.getPort()) {
                     return uri.getPath();
                 } else {
@@ -395,5 +389,9 @@ public final class WebUtils {
             return false;
         }
         return true;
+    }
+
+    public static String getQueryLanguage() {
+        return ApplicationBean.getBridgeheadInfos().getQueryLanguage();
     }
 }
