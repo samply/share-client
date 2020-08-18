@@ -188,6 +188,23 @@
         </job>
     </schedule>
 
+    <schedule>
+        <job>
+            <name>CheckScheduledInquiriesJob</name>
+            <group>MaintenanceGroup</group>
+            <description>Check if an inquiry is executing too long</description>
+            <job-class>de.samply.share.client.job.CheckScheduledInquiriesJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>SHOW</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+
     <!-- Define jobs that won't show on the admin interface. They will only be triggered programmatically -->
 
     <schedule>

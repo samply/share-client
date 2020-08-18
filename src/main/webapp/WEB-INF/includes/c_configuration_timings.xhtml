@@ -123,6 +123,24 @@
             </f:facet>
         </sscl:formEntryElement>
 
+
+        <sscl:formEntryElement labelFor="checkScheduledAtInterval"
+                               labelText="#{msg.configurationTimings_checkScheduledInquiriesInterval}"
+                               labelClasses="col-sm-6 col-md-4" inputClasses="col-sm-6 col-md-8">
+            <f:facet name="input">
+                <div class="input-group">
+                    <h:inputText id="checkScheduledAtInterval" styleClass="form-control"
+                                 converterMessage="Please enter digits only."
+                                 value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_SCHEDULED_INQUIRY_INTERVAL_MINUTES]}">
+                        <f:validator validatorId="positiveIntegerValidator"/>
+                    </h:inputText>
+                    <div class="input-group-addon">
+                        #{msg.configuration_minutes}
+                    </div>
+                </div>
+            </f:facet>
+        </sscl:formEntryElement>
+
     </fieldset>
 
 </ui:composition>

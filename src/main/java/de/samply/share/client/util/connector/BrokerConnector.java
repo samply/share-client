@@ -382,7 +382,7 @@ public class BrokerConnector {
     }
 
     public String getReferenceQueryCql() throws BrokerConnectorException {
-        try (CloseableHttpResponse response = getResponse()){
+        try (CloseableHttpResponse response = getResponse()) {
             int statusCode = response.getStatusLine().getStatusCode();
             HttpEntity entity = response.getEntity();
             String responseString = EntityUtils.toString(entity, Consts.UTF_8);
@@ -410,321 +410,344 @@ public class BrokerConnector {
     }
 
 
-        /**
-         * Retrieve a reference query from the broker
-         * <p>
-         * This query is used to gather performance data to report to monitoring
-         *
-         * @return the reference query
-         */
-        public Query getReferenceQuery () throws BrokerConnectorException {
-            try (CloseableHttpResponse response = getResponse()){
-                int statusCode = response.getStatusLine().getStatusCode();
+    /**
+     * Retrieve a reference query from the broker
+     * <p>
+     * This query is used to gather performance data to report to monitoring
+     *
+     * @return the reference query
+     */
+    public Query getReferenceQuery() throws BrokerConnectorException {
+        try (CloseableHttpResponse response = getResponse()) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            HttpEntity entity = response.getEntity();
+            String responseString = EntityUtils.toString(entity, Consts.UTF_8);
+            EntityUtils.consume(entity);
+            if (statusCode == HttpStatus.SC_OK) {
+                JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
+                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                StringReader stringReader = new StringReader(responseString);
+                JAXBElement<Query> queryElement = unmarshaller.unmarshal(new StreamSource(stringReader), Query.class);
+                return queryElement.getValue();
+            }
+        } catch (IOException | URISyntaxException | JAXBException e) {
+            throw new BrokerConnectorException(e);
+        }
+        return null;
+    }
+
+    /**
+     * Get an inquiry from the broker
+     *
+     * @param inquiryId the inquiry id as known by the broker (source_id in the database)
+     * @return the inquiry
+     */
+    public Inquiry getInquiry(int inquiryId) throws BrokerConnectorException {
+        if (credentials == null) {
+            throw new BrokerConnectorException("No credentials provided for broker " + broker.getId());
+        }
+        try {
+            URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId);
+            HttpGet httpGet = new HttpGet(uri.normalize().toString());
+            httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpGet.addHeader(Constants.HEADER_KEY_QUERY_LANGUAGE, ApplicationBean.getBridgeheadInfos().getQueryLanguage());
+
+            int statusCode;
+            String responseString;
+            try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {
+                statusCode = response.getStatusLine().getStatusCode();
                 HttpEntity entity = response.getEntity();
-                String responseString = EntityUtils.toString(entity, Consts.UTF_8);
+                responseString = EntityUtils.toString(entity, Consts.UTF_8);
                 EntityUtils.consume(entity);
-                if (statusCode == HttpStatus.SC_OK) {
+            }
+
+            if (statusCode == HttpStatus.SC_OK) {
+                try {
                     JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
                     Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
                     StringReader stringReader = new StringReader(responseString);
-                    JAXBElement<Query> queryElement = unmarshaller.unmarshal(new StreamSource(stringReader), Query.class);
-                    return queryElement.getValue();
+                    JAXBElement<Inquiry> inquiryElement = unmarshaller.unmarshal(new StreamSource(stringReader), Inquiry.class);
+                    return inquiryElement.getValue();
+                } catch (JAXBException e) {
+                    throw new BrokerConnectorException(e);
                 }
-            } catch (IOException | URISyntaxException | JAXBException e) {
-                throw new BrokerConnectorException(e);
+            } else {
+                throw new BrokerConnectorException("Unexpected status code received while trying to load inquiry " + inquiryId + ": " + statusCode);
             }
-            return null;
+
+        } catch (IOException | URISyntaxException e) {
+            throw new BrokerConnectorException(e);
+        }
+    }
+
+    /**
+     * Get additional information about the inquiry
+     *
+     * @param inquiryId the inquiry id as known by the broker (source_id in the database)
+     * @return additional information about the inquriry (label, description and revision)
+     */
+    public Info getInquiryInfo(int inquiryId) throws BrokerConnectorException {
+        try {
+            URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId + "/" + Constants.INFO_PATH);
+            HttpGet httpGet = new HttpGet(uri.normalize().toString());
+            httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+
+            int statusCode;
+            String responseString;
+            try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {
+                statusCode = response.getStatusLine().getStatusCode();
+                HttpEntity entity = response.getEntity();
+                responseString = EntityUtils.toString(entity, Consts.UTF_8);
+                EntityUtils.consume(entity);
+            }
+
+            if (statusCode == HttpStatus.SC_OK) {
+                return SamplyShareUtils.unmarshal(responseString, JAXBContext.newInstance(de.samply.share.model.ccp.ObjectFactory.class), Info.class);
+            } else {
+                throw new BrokerConnectorException("Couldn't load info - got status code " + statusCode + " from broker " + broker.getAddress());
+            }
+
+        } catch (IOException | URISyntaxException | JAXBException e) {
+            throw new BrokerConnectorException(e);
+        }
+    }
+
+    /**
+     * Get the contact that created the inquiry
+     *
+     * @param inquiryId the inquiry id as known by the broker (source_id in the database)
+     * @return the contact of the inquirer
+     */
+    public Contact getInquiryContact(int inquiryId) throws BrokerConnectorException {
+        try {
+            URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId + "/" + Constants.CONTACT_PATH);
+            HttpGet httpGet = new HttpGet(uri.normalize().toString());
+            httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+
+            int statusCode;
+            String responseString;
+            try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {
+                statusCode = response.getStatusLine().getStatusCode();
+                HttpEntity entity = response.getEntity();
+                responseString = EntityUtils.toString(entity, Consts.UTF_8);
+                EntityUtils.consume(entity);
+            }
+
+            if (statusCode == HttpStatus.SC_OK) {
+                return SamplyShareUtils.unmarshal(responseString, JAXBContext.newInstance(ObjectFactory.class), Contact.class);
+            } else {
+                throw new BrokerConnectorException("Couldn't load contact - got status code " + statusCode + " from broker " + broker.getAddress());
+            }
+
+        } catch (IOException | URISyntaxException | JAXBException e) {
+            throw new BrokerConnectorException(e);
+        }
+    }
+
+    /**
+     * Check if an expose is available for the inquiry
+     *
+     * @param inquiryId the inquiry id as known by the broker (source_id in the database)
+     * @return true if an expose is available
+     */
+    public boolean inquiryHasExpose(int inquiryId) throws BrokerConnectorException {
+        try {
+            URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId + "/" + Constants.EXPOSE_CHECK_PATH);
+            HttpGet httpGet = new HttpGet(uri.normalize().toString());
+
+            int statusCode;
+            String responseString;
+            try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {
+                statusCode = response.getStatusLine().getStatusCode();
+                HttpEntity entity = response.getEntity();
+                responseString = EntityUtils.toString(entity, Consts.UTF_8);
+                EntityUtils.consume(entity);
+            }
+
+            if (statusCode == HttpStatus.SC_OK) {
+                return true;
+            } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
+                return responseString == null || !responseString.equals(Constants.EXPOSE_UNAVAILABLE);
+            } else {
+                return false;
+            }
+
+        } catch (IOException | URISyntaxException e) {
+            throw new BrokerConnectorException(e);
+        }
+    }
+
+    /**
+     * Send a (disguised) reply to the broker.
+     * <p>
+     * Currently, the format of the reply is not defined. It might just be an integer...or some xml representation of a result set
+     *
+     * @param inquiryDetails the inquiry details object
+     * @param result         the reply to submit to the broker
+     */
+    public void reply(InquiryDetails inquiryDetails, Integer result) throws BrokerConnectorException {
+        try {
+            String replyString = Integer.toString(result);
+
+            reply(inquiryDetails, replyString);
+        } catch (IOException | URISyntaxException e) {
+            throw new BrokerConnectorException(e);
+        }
+    }
+
+    /**
+     * Send a (disguised) reply to the broker.
+     * <p>
+     * Currently, the format of the reply is not defined. It might just be an integer...or some xml representation of a result set
+     *
+     * @param inquiryDetails the inquiry details object
+     * @param result         the reply to submit to the broker
+     */
+    public void reply(InquiryDetails inquiryDetails, ISamplyResult result) throws BrokerConnectorException {
+        ReplyEntity replyDonor = new ReplyEntity();
+        replyDonor.setLabel("Donors");
+        replyDonor.setCount(NumberDisguiser.getDisguisedNumber(result.getNumberOfPatients()));
+        replyDonor.setStratifications(result.getStratificationsOfPatients());
+
+        ReplyEntity replySample = new ReplyEntity();
+        replySample.setLabel("Samples");
+        replySample.setCount(NumberDisguiser.getDisguisedNumber(result.getNumberOfSpecimens()));
+        replySample.setStratifications(result.getStratificationsOfSpecimens());
+
+        Reply reply = new Reply();
+        reply.setDonor(replyDonor);
+        reply.setSample(replySample);
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            reply(inquiryDetails, mapper.writeValueAsString(reply));
+        } catch (URISyntaxException | IOException e) {
+            throw new BrokerConnectorException(e);
+        }
+    }
+
+    private void reply(InquiryDetails inquiryDetails, String replyString) throws URISyntaxException, IOException {
+        de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
+        int inquirySourceId = inquiry.getSourceId();
+
+        URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquirySourceId + "/" + Constants.REPLIES_PATH
+                + "/" + credentials.getUsername());
+        HttpPut httpPut = new HttpPut(uri.normalize().toString());
+        httpPut.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+
+
+        StringEntity entity = new StringEntity(replyString);
+        httpPut.setEntity(entity);
+        int statusCode;
+        try (CloseableHttpResponse response = httpClient.execute(httpHost, httpPut)) {
+            statusCode = response.getStatusLine().getStatusCode();
+            HttpEntity rEntity = response.getEntity();
+            EntityUtils.consume(rEntity);
+            logger.debug("Sending reply got us: " + statusCode);
+            EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_REPLY_SENT_TO_BROKER,
+                    inquiryDetails.getInquiryId(), Integer.toString(statusCode));
         }
 
-        /**
-         * Get an inquiry from the broker
-         *
-         * @param inquiryId the inquiry id as known by the broker (source_id in the database)
-         * @return the inquiry
-         */
-        public Inquiry getInquiry ( int inquiryId) throws BrokerConnectorException {
-            if (credentials == null) {
-                throw new BrokerConnectorException("No credentials provided for broker " + broker.getId());
+        InquiryAnswer inquiryAnswer = new InquiryAnswer();
+        inquiryAnswer.setInquiryDetailsId(inquiryDetails.getId());
+        inquiryAnswer.setContent(replyString);
+        InquiryAnswerUtil.insertInquiryAnswer(inquiryAnswer);
+    }
+
+
+    /**
+     * Set the last checked timestamp for this broker in the database
+     */
+    private void updateLastChecked() {
+        broker.setLastChecked(new Timestamp(new Date().getTime()));
+        broker.setStatus(BrokerStatusType.BS_OK);
+        BrokerUtil.updateBroker(broker);
+    }
+
+    /**
+     * Check the reachability of the broker
+     *
+     * @return a check result object with the outcome of the connection check
+     */
+    public CheckResult checkConnection() {
+        CheckResult result = new CheckResult();
+        result.setExecutionDate(new Date());
+
+        try {
+            HttpGet httpGet = new HttpGet(brokerUrl.getPath());
+            result.getMessages().add(new Message(httpGet.getRequestLine().toString(), "fa-long-arrow-right"));
+            CloseableHttpResponse response = httpClient.execute(httpHost, httpGet);
+            HttpEntity entity = response.getEntity();
+            EntityUtils.consume(entity);
+            result.getMessages().add(new Message(response.getStatusLine().toString(), "fa-long-arrow-left"));
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode >= 200 && statusCode < 400) {
+                result.setSuccess(true);
+            } else {
+                result.setSuccess(false);
+                result.getMessages().add(new Message(EntityUtils.toString(entity), "fa-bolt"));
             }
-            try {
-                URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId);
-                HttpGet httpGet = new HttpGet(uri.normalize().toString());
-                httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
-                httpGet.addHeader(Constants.HEADER_KEY_QUERY_LANGUAGE, ApplicationBean.getBridgeheadInfos().getQueryLanguage());
-
-                int statusCode;
-                String responseString;
-                try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {
-                    statusCode = response.getStatusLine().getStatusCode();
-                    HttpEntity entity = response.getEntity();
-                    responseString = EntityUtils.toString(entity, Consts.UTF_8);
-                    EntityUtils.consume(entity);
-                }
-
-                if (statusCode == HttpStatus.SC_OK) {
-                    try {
-                        JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
-                        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-                        StringReader stringReader = new StringReader(responseString);
-                        JAXBElement<Inquiry> inquiryElement = unmarshaller.unmarshal(new StreamSource(stringReader), Inquiry.class);
-                        return inquiryElement.getValue();
-                    } catch (JAXBException e) {
-                        throw new BrokerConnectorException(e);
-                    }
-                } else {
-                    throw new BrokerConnectorException("Unexpected status code received while trying to load inquiry " + inquiryId + ": " + statusCode);
-                }
-
-            } catch (IOException | URISyntaxException e) {
-                throw new BrokerConnectorException(e);
-            }
+        } catch (IOException e) {
+            result.setSuccess(false);
+            result.getMessages().add(new Message(e.getMessage(), "fa-bolt"));
         }
 
-        /**
-         * Get additional information about the inquiry
-         *
-         * @param inquiryId the inquiry id as known by the broker (source_id in the database)
-         * @return additional information about the inquriry (label, description and revision)
-         */
-        public Info getInquiryInfo ( int inquiryId) throws BrokerConnectorException {
-            try {
-                URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId + "/" + Constants.INFO_PATH);
-                HttpGet httpGet = new HttpGet(uri.normalize().toString());
-                httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+        return result;
+    }
 
-                int statusCode;
-                String responseString;
-                try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {
-                    statusCode = response.getStatusLine().getStatusCode();
-                    HttpEntity entity = response.getEntity();
-                    responseString = EntityUtils.toString(entity, Consts.UTF_8);
-                    EntityUtils.consume(entity);
-                }
-
-                if (statusCode == HttpStatus.SC_OK) {
-                    return SamplyShareUtils.unmarshal(responseString, JAXBContext.newInstance(de.samply.share.model.ccp.ObjectFactory.class), Info.class);
-                } else {
-                    throw new BrokerConnectorException("Couldn't load info - got status code " + statusCode + " from broker " + broker.getAddress());
-                }
-
-            } catch (IOException | URISyntaxException | JAXBException e) {
-                throw new BrokerConnectorException(e);
-            }
-        }
-
-        /**
-         * Get the contact that created the inquiry
-         *
-         * @param inquiryId the inquiry id as known by the broker (source_id in the database)
-         * @return the contact of the inquirer
-         */
-        public Contact getInquiryContact ( int inquiryId) throws BrokerConnectorException {
-            try {
-                URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId + "/" + Constants.CONTACT_PATH);
-                HttpGet httpGet = new HttpGet(uri.normalize().toString());
-                httpGet.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
-
-                int statusCode;
-                String responseString;
-                try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {
-                    statusCode = response.getStatusLine().getStatusCode();
-                    HttpEntity entity = response.getEntity();
-                    responseString = EntityUtils.toString(entity, Consts.UTF_8);
-                    EntityUtils.consume(entity);
-                }
-
-                if (statusCode == HttpStatus.SC_OK) {
-                    return SamplyShareUtils.unmarshal(responseString, JAXBContext.newInstance(ObjectFactory.class), Contact.class);
-                } else {
-                    throw new BrokerConnectorException("Couldn't load contact - got status code " + statusCode + " from broker " + broker.getAddress());
-                }
-
-            } catch (IOException | URISyntaxException | JAXBException e) {
-                throw new BrokerConnectorException(e);
-            }
-        }
-
-        /**
-         * Check if an expose is available for the inquiry
-         *
-         * @param inquiryId the inquiry id as known by the broker (source_id in the database)
-         * @return true if an expose is available
-         */
-        public boolean inquiryHasExpose ( int inquiryId) throws BrokerConnectorException {
-            try {
-                URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquiryId + "/" + Constants.EXPOSE_CHECK_PATH);
-                HttpGet httpGet = new HttpGet(uri.normalize().toString());
-
-                int statusCode;
-                String responseString;
-                try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {
-                    statusCode = response.getStatusLine().getStatusCode();
-                    HttpEntity entity = response.getEntity();
-                    responseString = EntityUtils.toString(entity, Consts.UTF_8);
-                    EntityUtils.consume(entity);
-                }
-
-                if (statusCode == HttpStatus.SC_OK) {
-                    return true;
-                } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
-                    return responseString == null || !responseString.equals(Constants.EXPOSE_UNAVAILABLE);
-                } else {
-                    return false;
-                }
-
-            } catch (IOException | URISyntaxException e) {
-                throw new BrokerConnectorException(e);
-            }
-        }
-
-        /**
-         * Send a (disguised) reply to the broker.
-         * <p>
-         * Currently, the format of the reply is not defined. It might just be an integer...or some xml representation of a result set
-         *
-         * @param inquiryDetails the inquiry details object
-         * @param result         the reply to submit to the broker
-         */
-        public void reply (InquiryDetails inquiryDetails, Integer result) throws BrokerConnectorException {
-            try {
-                String replyString = Integer.toString(result);
-
-                reply(inquiryDetails, replyString);
-            } catch (IOException | URISyntaxException e) {
-                throw new BrokerConnectorException(e);
-            }
-        }
-
-        /**
-         * Send a (disguised) reply to the broker.
-         * <p>
-         * Currently, the format of the reply is not defined. It might just be an integer...or some xml representation of a result set
-         *
-         * @param inquiryDetails the inquiry details object
-         * @param result         the reply to submit to the broker
-         */
-        public void reply (InquiryDetails inquiryDetails, ISamplyResult result) throws BrokerConnectorException {
-            ReplyEntity replyDonor = new ReplyEntity();
-            replyDonor.setLabel("Donors");
-            replyDonor.setCount(NumberDisguiser.getDisguisedNumber(result.getNumberOfPatients()));
-            replyDonor.setStratifications(result.getStratificationsOfPatients());
-
-            ReplyEntity replySample = new ReplyEntity();
-            replySample.setLabel("Samples");
-            replySample.setCount(NumberDisguiser.getDisguisedNumber(result.getNumberOfSpecimens()));
-            replySample.setStratifications(result.getStratificationsOfSpecimens());
-
-            Reply reply = new Reply();
-            reply.setDonor(replyDonor);
-            reply.setSample(replySample);
-
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                reply(inquiryDetails, mapper.writeValueAsString(reply));
-            } catch (URISyntaxException | IOException e) {
-                throw new BrokerConnectorException(e);
-            }
-        }
-
-        private void reply (InquiryDetails inquiryDetails, String replyString) throws URISyntaxException, IOException {
-            de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
-            int inquirySourceId = inquiry.getSourceId();
-
-            URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.INQUIRIES_PATH + "/" + inquirySourceId + "/" + Constants.REPLIES_PATH
-                    + "/" + credentials.getUsername());
+    /**
+     * Transmit a list of status report items to the broker (to relay to monitoring)
+     *
+     * @param statusReportItems the list of items to report
+     */
+    public void sendStatusReportItems(List<StatusReportItem> statusReportItems) throws BrokerConnectorException {
+        try {
+            Gson gson = new Gson();
+            String reportString = gson.toJson(statusReportItems);
+            URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.MONITORING_PATH);
             HttpPut httpPut = new HttpPut(uri.normalize().toString());
             httpPut.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpPut.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
+            StringEntity entity = new StringEntity(reportString);
 
-            StringEntity entity = new StringEntity(replyString);
+            httpPut.setEntity(entity);
+
+            int statusCode;
+            try (CloseableHttpResponse response = httpClient.execute(httpHost, httpPut)) {
+                statusCode = response.getStatusLine().getStatusCode();
+                HttpEntity rEntity = response.getEntity();
+                EntityUtils.consume(rEntity);
+                logger.debug("Sending monitoring info got us: " + statusCode);
+            }
+
+        } catch (IOException | URISyntaxException e) {
+            throw new BrokerConnectorException(e);
+        }
+    }
+
+    /**
+     * Transmit a error message, received from executing an inquiry, to the broker (to relay to monitoring)
+     *
+     * @param errorMessage the error message
+     */
+    public void sendErrorMessage(String errorMessage) throws BrokerConnectorException {
+        try {
+            URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.MONITORING_PATH);
+            HttpPut httpPut = new HttpPut(uri.normalize().toString());
+            httpPut.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+            httpPut.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+            StringEntity entity = new StringEntity(errorMessage);
             httpPut.setEntity(entity);
             int statusCode;
             try (CloseableHttpResponse response = httpClient.execute(httpHost, httpPut)) {
                 statusCode = response.getStatusLine().getStatusCode();
                 HttpEntity rEntity = response.getEntity();
                 EntityUtils.consume(rEntity);
-                logger.debug("Sending reply got us: " + statusCode);
-                EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_REPLY_SENT_TO_BROKER,
-                        inquiryDetails.getInquiryId(), Integer.toString(statusCode));
+                logger.debug("Sending monitoring info got us: " + statusCode);
             }
-
-            InquiryAnswer inquiryAnswer = new InquiryAnswer();
-            inquiryAnswer.setInquiryDetailsId(inquiryDetails.getId());
-            inquiryAnswer.setContent(replyString);
-            InquiryAnswerUtil.insertInquiryAnswer(inquiryAnswer);
+        } catch (IOException | URISyntaxException e) {
+            throw new BrokerConnectorException(e);
         }
-
-
-        /**
-         * Set the last checked timestamp for this broker in the database
-         */
-        private void updateLastChecked () {
-            broker.setLastChecked(new Timestamp(new Date().getTime()));
-            broker.setStatus(BrokerStatusType.BS_OK);
-            BrokerUtil.updateBroker(broker);
-        }
-
-        /**
-         * Check the reachability of the broker
-         *
-         * @return a check result object with the outcome of the connection check
-         */
-        public CheckResult checkConnection () {
-            CheckResult result = new CheckResult();
-            result.setExecutionDate(new Date());
-
-            try {
-                HttpGet httpGet = new HttpGet(brokerUrl.getPath());
-                result.getMessages().add(new Message(httpGet.getRequestLine().toString(), "fa-long-arrow-right"));
-                CloseableHttpResponse response = httpClient.execute(httpHost, httpGet);
-                HttpEntity entity = response.getEntity();
-                EntityUtils.consume(entity);
-                result.getMessages().add(new Message(response.getStatusLine().toString(), "fa-long-arrow-left"));
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode >= 200 && statusCode < 400) {
-                    result.setSuccess(true);
-                } else {
-                    result.setSuccess(false);
-                    result.getMessages().add(new Message(EntityUtils.toString(entity), "fa-bolt"));
-                }
-            } catch (IOException e) {
-                result.setSuccess(false);
-                result.getMessages().add(new Message(e.getMessage(), "fa-bolt"));
-            }
-
-            return result;
-        }
-
-        /**
-         * Transmit a list of status report items to the broker (to relay to monitoring)
-         *
-         * @param statusReportItems the list of items to report
-         */
-        public void sendStatusReportItems (List < StatusReportItem > statusReportItems) throws BrokerConnectorException
-        {
-            try {
-                Gson gson = new Gson();
-                String reportString = gson.toJson(statusReportItems);
-                URI uri = new URI(SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.MONITORING_PATH);
-                HttpPut httpPut = new HttpPut(uri.normalize().toString());
-                httpPut.setHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
-                httpPut.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-
-                StringEntity entity = new StringEntity(reportString);
-
-                httpPut.setEntity(entity);
-
-                int statusCode;
-                try (CloseableHttpResponse response = httpClient.execute(httpHost, httpPut)) {
-                    statusCode = response.getStatusLine().getStatusCode();
-                    HttpEntity rEntity = response.getEntity();
-                    EntityUtils.consume(rEntity);
-                    logger.debug("Sending monitoring info got us: " + statusCode);
-                }
-
-            } catch (IOException | URISyntaxException e) {
-                throw new BrokerConnectorException(e);
-            }
-        }
-
     }
+}

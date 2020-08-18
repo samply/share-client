@@ -24,6 +24,9 @@ import org.omnifaces.model.tree.TreeModel;
 import org.quartz.*;
 import org.quartz.impl.matchers.KeyMatcher;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 import static de.samply.share.client.model.db.enums.InquiryStatusType.IS_LDM_ERROR;
 
 /**
@@ -73,6 +76,7 @@ public abstract class AbstractExecuteInquiryJob<T_LDM_CONNECTOR extends LdmConne
      */
     void setInquiryDetailsStatusAndUpdateInquiryDetails(InquiryStatusType status) {
         Utils.setStatus(inquiryDetails, status);
+        inquiryDetails.setScheduledAt(new Timestamp(new Date().getTime()));
         InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
         if (status.equals(IS_LDM_ERROR)) {
             new InquiryUtils().changeStatusOfInquiryResultToError(inquiryDetails);
