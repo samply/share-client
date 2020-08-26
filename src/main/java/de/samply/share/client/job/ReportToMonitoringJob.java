@@ -28,16 +28,20 @@
 
 package de.samply.share.client.job;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.ReportToMonitoringJobParams;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
+import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
+import de.samply.share.client.util.db.JobScheduleUtil;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -165,7 +169,29 @@ public class ReportToMonitoringJob implements Job {
                 }
             }
         }
+        statusReportItems.add(getJobConfig());
         return statusReportItems;
+    }
+
+    /**
+     * Read the job configs
+     * @return the job configs and the exit status
+     */
+    private StatusReportItem getJobConfig(){
+        JsonArray jsonArray = new JsonArray();
+        StatusReportItem jobConfig = new StatusReportItem();
+        jobConfig.setParameter_name(StatusReportItem.PARAMETER_JOB_CONFIG);
+        List<JobSchedule> jobScheduleList = JobScheduleUtil.getJobSchedules();
+        for(JobSchedule jobSchedule : jobScheduleList){
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("JobName", jobSchedule.getJobKey());
+            jsonObject.addProperty("CronExpression", jobSchedule.getCronExpression());
+            jsonObject.addProperty("Paused", jobSchedule.getPaused());
+            jsonArray.add(jsonObject);
+        }
+        jobConfig.setExit_status("0");
+        jobConfig.setStatus_text(jsonArray.getAsString());
+        return jobConfig;
     }
 
     /**
