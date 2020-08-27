@@ -3,6 +3,7 @@ package de.samply.share.client.fhir;
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
+import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Bundle;
 
 public class FHIRResource {
@@ -22,6 +23,11 @@ public class FHIRResource {
 
     public String convertBundleToJson(Bundle bundle){
         return ctx.newJsonParser().encodeResourceToString(bundle);
+    }
+
+
+    public String convertAuditEventToJson(AuditEvent auditEvent){
+        return ctx.newJsonParser().encodeResourceToString(auditEvent);
     }
 
 }

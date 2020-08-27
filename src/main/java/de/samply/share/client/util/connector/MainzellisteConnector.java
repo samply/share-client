@@ -7,7 +7,10 @@ import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
+import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.util.db.ConfigurationUtil;
+import de.samply.share.client.util.db.EventLogMainzellisteUtil;
+import de.samply.share.client.util.db.EventLogUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import org.apache.http.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -50,7 +53,7 @@ public class MainzellisteConnector {
     private static final String CTS_COVERAGE_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Coverage/nNGM/pseudonymisiert";
     private static final String PATIENT_IDENTIFIER_SYSTEM = "http://uk-koeln.de/fhir/NamingSystem/nNGM/patient-identifier";
     private static final String GET_ENCRYPTID_URL = "/paths/getEncryptId";
-    public static final String HEADER_PARAM_API_KEY = "apiKey";
+    private static final String HEADER_PARAM_API_KEY = "apiKey";
 
     private transient HttpConnector httpConnector;
     private CloseableHttpClient httpClient;
@@ -116,7 +119,7 @@ public class MainzellisteConnector {
 
     /**
      * pseudonymise the Coverage resource
-     *
+     *xxxx
      * @param originalCoverage
      * @return
      */
@@ -277,6 +280,11 @@ public class MainzellisteConnector {
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
             String reasonPhrase = statusLine.getReasonPhrase();
+
+            String ctsUser = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_USERNAME);
+            String auditEventJson = EventLogMainzellisteUtil.getFhirAuditEvent(ctsUser, statusCode);
+            //@TODO E_PATIENT_UPLOAD_RESULT temporär, weil ein neuer Eintrag erfordert ein anderes Projekt anzufassen
+            EventLogUtil.insertEventLogEntryForMainzelliste(EventMessageType.E_PATIENT_UPLOAD_RESULT, auditEventJson);
 
             if (statusCode >= 500 && statusCode < 600) {
                 String bodyResponse = EntityUtils.toString(response.getEntity(), Consts.UTF_8);

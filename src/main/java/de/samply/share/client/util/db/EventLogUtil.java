@@ -210,4 +210,19 @@ public class EventLogUtil {
         Gson gson = new Gson();
         return gson.toJson(eventLogMessage);
     }
+
+    /**
+     * Insert a new event log entry into the database
+     * This entry is the outcome of the communication with the Mainzelliste in nNGM
+     * @param messageType pre-defined event type
+     * @param fhirEventAudit EventAudit in JSON
+     */
+
+    public static void insertEventLogEntryForMainzelliste(EventMessageType messageType, String fhirEventAudit) {
+        EventLog eventLog = new EventLog();
+        eventLog.setEntry(fhirEventAudit);
+        eventLog.setEventType(messageType);
+        insertEventLog(eventLog);
+    }
+
 }
