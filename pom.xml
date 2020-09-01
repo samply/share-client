@@ -6,7 +6,7 @@
     <packaging>war</packaging>
     <artifactId>share-client</artifactId>
     <name>Connector</name>
-    <version>6.5.0-SNAPSHOT</version>
+    <version>6.6.0-SNAPSHOT</version>
 
     <parent>
         <groupId>de.samply</groupId>
@@ -120,6 +120,8 @@
         <directory-sync.version>0.1.0</directory-sync.version>
         <togglz-core.version>2.6.1.Final</togglz-core.version>
         <togglz-jsf.version>2.6.1.Final</togglz-jsf.version>
+        <swagger-ui.version>3.25.0</swagger-ui.version>
+        <microprofile-openapi-api.version>2.0-MR1</microprofile-openapi-api.version>
     </properties>
 
     <build>
@@ -615,6 +617,16 @@
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-r4</artifactId>
             <version>${hapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>swagger-ui</artifactId>
+            <version>${swagger-ui.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.microprofile.openapi</groupId>
+            <artifactId>microprofile-openapi-api</artifactId>
+            <version>${microprofile-openapi-api.version}</version>
         </dependency>
     </dependencies>
 

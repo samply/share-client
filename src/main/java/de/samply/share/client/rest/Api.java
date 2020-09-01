@@ -11,6 +11,9 @@ import de.samply.share.client.util.connector.CTSConnector;
 import de.samply.share.client.util.db.UserUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.ws.rs.Consumes;
@@ -33,8 +36,17 @@ public class Api {
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("/postcts")
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "ok"),
+            @APIResponse(responseCode = "400", description = "Bad Request"),
+            @APIResponse(responseCode = "401", description = "Unauthorized"),
+            @APIResponse(responseCode = "403", description = "Forbidden"),
+            @APIResponse(responseCode = "404", description = "Not Found"),
+            @APIResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    @Operation(summary = "Send a patient bundle to the CTS")
     public Response postToCTS(String bundle, @Context HttpHeaders httpHeaders) {
-        if(!ApplicationBean.getFeatureManager().getFeatureState(ClientFeature.NNGM_CTS).isEnabled()){
+        if (!ApplicationBean.getFeatureManager().getFeatureState(ClientFeature.NNGM_CTS).isEnabled()) {
             return Response.status(403).build();
         }
         try {

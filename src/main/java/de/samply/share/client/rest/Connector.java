@@ -13,6 +13,11 @@ import de.samply.share.common.utils.SamplyShareUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -46,7 +51,6 @@ public class Connector {
     private final static String EMPTY = "";
 
 
-
     private List<InquiryLine> activeInquiryList;
     private List<InquiryLine> erroneousInquiryList;
     private List<InquiryLine> archivedInquiryList;
@@ -54,6 +58,14 @@ public class Connector {
     @Path("/active")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "ok",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = String.class))),
+            @APIResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @Operation(summary = "Get the active inquiries")
     public Response getActiveInquiries(
             @HeaderParam("userid") Integer userId,
             @HeaderParam("Authorization") String authStringBase64) {
@@ -67,6 +79,14 @@ public class Connector {
     @Path("/erroneous")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "ok",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = String.class))),
+            @APIResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @Operation(summary = "Get the erroneous inquiries")
     public Response getErroneousInquiries(
             @HeaderParam("userid") Integer userId,
             @HeaderParam("Authorization") String authStringBase64) {
@@ -80,6 +100,14 @@ public class Connector {
     @Path("/archived")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "ok",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = String.class))),
+            @APIResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @Operation(summary = "Get the archived inquiries")
     public Response getArchivedInquiries(
             @HeaderParam("userid") Integer userId,
             @HeaderParam("Authorization") String authStringBase64) {
@@ -97,6 +125,14 @@ public class Connector {
     @Path("/log")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "ok",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = String.class))),
+            @APIResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @Operation(summary = "Get the event logs")
     public Response getLog(@HeaderParam("Authorization") String authStringBase64) {
         if (!authorize(authStringBase64)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -192,11 +228,11 @@ public class Connector {
 
     }
 
-    private InquiryDetails fetchInquiryDetails(Inquiry inquiry){
+    private InquiryDetails fetchInquiryDetails(Inquiry inquiry) {
         return InquiryDetailsUtil.fetchInquiryDetailsById(inquiry.getLatestDetailsId());
     }
 
-    private InquiryLine fetchInquiryLine(Integer userId, Inquiry inquiry, InquiryDetails inquiryDetails){
+    private InquiryLine fetchInquiryLine(Integer userId, Inquiry inquiry, InquiryDetails inquiryDetails) {
 
         InquiryLine inquiryLine = new InquiryLine();
 
@@ -215,7 +251,7 @@ public class Connector {
 
     }
 
-    private InquiryLine setSeen (Integer userId, Inquiry inquiry, InquiryLine inquiryLine){
+    private InquiryLine setSeen(Integer userId, Inquiry inquiry, InquiryLine inquiryLine) {
 
         boolean seen = (userId != null) ? UserSeenInquiryUtil.hasUserSeenInquiryByIds(userId, inquiry.getId()) : false;
         inquiryLine.setSeen(seen);
@@ -224,7 +260,7 @@ public class Connector {
 
     }
 
-    private InquiryLine setSearchFor (Inquiry inquiry, InquiryLine inquiryLine){
+    private InquiryLine setSearchFor(Inquiry inquiry, InquiryLine inquiryLine) {
 
         List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
         inquiryLine.setSearchFor(getAbbreviatedLabelsFor(requestedEntities));
@@ -233,7 +269,7 @@ public class Connector {
 
     }
 
-    private InquiryLine setName (Inquiry inquiry, InquiryLine inquiryLine){
+    private InquiryLine setName(Inquiry inquiry, InquiryLine inquiryLine) {
 
         if (SamplyShareUtils.isNullOrEmpty(inquiry.getLabel())) {
             inquiryLine.setName(Messages.getString(INQUIRIES_NO_LABEL));
@@ -245,21 +281,21 @@ public class Connector {
 
     }
 
-    private InquiryLine setReceivedAt (InquiryLine inquiryLine, InquiryDetails inquiryDetails){
+    private InquiryLine setReceivedAt(InquiryLine inquiryLine, InquiryDetails inquiryDetails) {
 
         inquiryLine.setReceivedAt(SamplyShareUtils.convertSqlTimestampToString(inquiryDetails.getReceivedAt(), DATE_FORMAT));
         return inquiryLine;
 
     }
 
-    private InquiryLine setAsOf (InquiryLine inquiryLine, InquiryResult inquiryResult){
+    private InquiryLine setAsOf(InquiryLine inquiryLine, InquiryResult inquiryResult) {
 
         inquiryLine.setAsOf(SamplyShareUtils.convertSqlTimestampToString(inquiryResult.getExecutedAt(), DATE_FORMAT));
         return inquiryLine;
 
     }
 
-    private InquiryLine setArchivedAt (Inquiry inquiry, InquiryLine inquiryLine){
+    private InquiryLine setArchivedAt(Inquiry inquiry, InquiryLine inquiryLine) {
 
         if (inquiry.getArchivedAt() != null) {
             inquiryLine.setArchivedAt(
@@ -273,9 +309,9 @@ public class Connector {
 
     }
 
-    private InquiryLine fetchLatestInquiryResultForInquiryDetailsById(InquiryLine inquiryLine, InquiryDetails inquiryDetails){
+    private InquiryLine fetchLatestInquiryResultForInquiryDetailsById(InquiryLine inquiryLine, InquiryDetails inquiryDetails) {
 
-        try{
+        try {
 
             return fetchLatestInquiryResultForInquiryDetailsById_WithoutManagementException(inquiryLine, inquiryDetails);
 
@@ -292,22 +328,22 @@ public class Connector {
 
     }
 
-    private InquiryLine fetchLatestInquiryResultForInquiryDetailsById_WithoutManagementException(InquiryLine inquiryLine, InquiryDetails inquiryDetails){
+    private InquiryLine fetchLatestInquiryResultForInquiryDetailsById_WithoutManagementException(InquiryLine inquiryLine, InquiryDetails inquiryDetails) {
 
-            InquiryResult inquiryResult = InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId());
+        InquiryResult inquiryResult = InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId());
 
-            if  (inquiryResult == null) {
-                inquiryLine = addNoResultsToInquiryLine(inquiryLine);
-            } else {
-                inquiryLine = fetchLatestInquiryResultForInquiryDetailsById (inquiryLine, inquiryDetails, inquiryResult);
-                inquiryLine = setAsOf(inquiryLine, inquiryResult);
-            }
+        if (inquiryResult == null) {
+            inquiryLine = addNoResultsToInquiryLine(inquiryLine);
+        } else {
+            inquiryLine = fetchLatestInquiryResultForInquiryDetailsById(inquiryLine, inquiryDetails, inquiryResult);
+            inquiryLine = setAsOf(inquiryLine, inquiryResult);
+        }
 
-            return inquiryLine;
+        return inquiryLine;
 
     }
 
-    private InquiryLine addNoResultsToInquiryLine (InquiryLine inquiryLine){
+    private InquiryLine addNoResultsToInquiryLine(InquiryLine inquiryLine) {
 
         inquiryLine.setFound(Messages.getString(INQUIRIES_NO_RESULTS));
         inquiryLine.setAsOf("-");
@@ -316,7 +352,7 @@ public class Connector {
 
     }
 
-    private InquiryLine fetchLatestInquiryResultForInquiryDetailsById (InquiryLine inquiryLine, InquiryDetails inquiryDetails, InquiryResult inquiryResult){
+    private InquiryLine fetchLatestInquiryResultForInquiryDetailsById(InquiryLine inquiryLine, InquiryDetails inquiryDetails, InquiryResult inquiryResult) {
 
         String found = EMPTY;
         String errorCode = EMPTY;
@@ -361,7 +397,7 @@ public class Connector {
 
     }
 
-    private String getSizeOfInquiryResult (InquiryResult inquiryResult, String defaultErrorMessage){
+    private String getSizeOfInquiryResult(InquiryResult inquiryResult, String defaultErrorMessage) {
 
         try {
             return inquiryResult.getSize().toString();
@@ -372,21 +408,21 @@ public class Connector {
 
     }
 
-    private InquiryLine setFound (InquiryLine inquiryLine, String found){
+    private InquiryLine setFound(InquiryLine inquiryLine, String found) {
 
         inquiryLine.setFound(found);
         return inquiryLine;
 
     }
 
-    private InquiryLine setErrorCode (InquiryLine inquiryLine, String errorCode){
+    private InquiryLine setErrorCode(InquiryLine inquiryLine, String errorCode) {
 
         inquiryLine.setErrorCode(errorCode);
         return inquiryLine;
 
     }
 
-    private InquiryLine setBrokerName (Inquiry inquiry, InquiryLine inquiryLine){
+    private InquiryLine setBrokerName(Inquiry inquiry, InquiryLine inquiryLine) {
 
         String brokerName = getBrokerName(inquiry);
         inquiryLine.setBrokerName(brokerName);
@@ -396,7 +432,7 @@ public class Connector {
     }
 
 
-    private String getBrokerName (Inquiry inquiry){
+    private String getBrokerName(Inquiry inquiry) {
 
         try {
 
