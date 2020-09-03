@@ -119,7 +119,6 @@ public class MainzellisteConnector {
 
     /**
      * pseudonymise the Coverage resource
-     *xxxx
      * @param originalCoverage
      * @return
      */

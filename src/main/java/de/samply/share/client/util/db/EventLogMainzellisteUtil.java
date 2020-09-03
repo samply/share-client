@@ -1,5 +1,6 @@
 package de.samply.share.client.util.db;
 
+import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.fhir.FHIRResource;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Coding;
@@ -45,8 +46,12 @@ public class EventLogMainzellisteUtil {
         auditEventAgentComponentsList.add(auditEventAgentComponent);
         auditEvent.setAgent(auditEventAgentComponentsList);
         Reference observer = new Reference();
-        //@TODO eintragen, wenn dafür schon etwas in den Config Dateien vorhanden ist
-        observer.setDisplay(OBSERVER_DISPLAY);
+        String siteName=ApplicationBean.getBridgeheadInfos().getName();
+        if(siteName!=null && !siteName.isEmpty()){
+            observer.setDisplay(siteName);
+        }else {
+            observer.setDisplay(OBSERVER_DISPLAY);
+        }
         auditEvent.setSource(new AuditEvent.AuditEventSourceComponent(observer));
         FHIRResource fhirResource = new FHIRResource();
         return fhirResource.convertAuditEventToJson(auditEvent);
