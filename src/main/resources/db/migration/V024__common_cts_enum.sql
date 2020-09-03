@@ -1,0 +1,1 @@
+ALTER TYPE event_message_type ADD VALUE 'E_PATIENT_CTS_UPLOAD';

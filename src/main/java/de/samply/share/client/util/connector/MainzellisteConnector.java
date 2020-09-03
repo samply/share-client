@@ -284,7 +284,7 @@ public class MainzellisteConnector {
             String ctsUser = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_USERNAME);
             String auditEventJson = EventLogMainzellisteUtil.getFhirAuditEvent(ctsUser, statusCode);
             //@TODO E_PATIENT_UPLOAD_RESULT temporär, weil ein neuer Eintrag erfordert ein anderes Projekt anzufassen
-            EventLogUtil.insertEventLogEntryForMainzelliste(EventMessageType.E_PATIENT_UPLOAD_RESULT, auditEventJson);
+            EventLogUtil.insertEventLogEntryForMainzelliste(EventMessageType.E_PATIENT_CTS_UPLOAD, auditEventJson);
 
             if (statusCode >= 500 && statusCode < 600) {
                 String bodyResponse = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
