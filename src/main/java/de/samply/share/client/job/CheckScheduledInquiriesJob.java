@@ -105,7 +105,7 @@ public class CheckScheduledInquiriesJob implements Job {
     private boolean checkScheduledAt(InquiryDetails inquiryDetails) {
         int minutes = ConfigurationUtil.getConfigurationTimingsElement(EnumConfigurationTimings.JOB_CHECK_SCHEDULED_INQUIRY_INTERVAL_MINUTES).getSetting();
         Timestamp scheduledAt = inquiryDetails.getScheduledAt();
-        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(TimeUnit.MINUTES.toMillis(minutes));
+        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(minutes);
         Timestamp maxTime = Timestamp.valueOf(fiveMinutesAgo);
         return maxTime.after(scheduledAt);
     }
