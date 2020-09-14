@@ -4,9 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.10.0 - 2020-09-14]
+### Added
+- Report inquiry count
+
+## [6.9.0 - 2020-09-08]
+### Added
+- CheckScheduledInquiryJob
+
+# [6.8.0 - 2020-09-07]
+### Added
+- Report job config
+- Report job error message
+
+## [6.7.0 - 2020-09-03]
+### Added
+- Added cts audit trail
+
 ## [6.6.0 - 2020-08-12]
 ### Changed
 - Changed some UI representation
+
+## [6.5.0 - 2020-08-10]
+### Added
+- Add tests inquiry for CQL
 
 ## [5.8.0 - 2020-05-26]
 ### Added

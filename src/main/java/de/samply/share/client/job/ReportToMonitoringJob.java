@@ -34,6 +34,7 @@ import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.ReportToMonitoringJobParams;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
+import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
@@ -41,6 +42,7 @@ import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
+import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.client.util.db.JobScheduleUtil;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
 import org.apache.log4j.LogManager;
@@ -170,28 +172,59 @@ public class ReportToMonitoringJob implements Job {
             }
         }
         statusReportItems.add(getJobConfig());
+        statusReportItems.add(getInquiryStats());
         return statusReportItems;
     }
 
     /**
      * Read the job configs
+     *
      * @return the job configs and the exit status
      */
-    private StatusReportItem getJobConfig(){
+    private StatusReportItem getJobConfig() {
         JsonArray jsonArray = new JsonArray();
         StatusReportItem jobConfig = new StatusReportItem();
         jobConfig.setParameter_name(StatusReportItem.PARAMETER_JOB_CONFIG);
-        List<JobSchedule> jobScheduleList = JobScheduleUtil.getJobSchedules();
-        for(JobSchedule jobSchedule : jobScheduleList){
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("JobName", jobSchedule.getJobKey());
-            jsonObject.addProperty("CronExpression", jobSchedule.getCronExpression());
-            jsonObject.addProperty("Paused", jobSchedule.getPaused());
-            jsonArray.add(jsonObject);
+        try {
+            List<JobSchedule> jobScheduleList = JobScheduleUtil.getJobSchedules();
+            for (JobSchedule jobSchedule : jobScheduleList) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("JobName", jobSchedule.getJobKey());
+                jsonObject.addProperty("CronExpression", jobSchedule.getCronExpression());
+                jsonObject.addProperty("Paused", jobSchedule.getPaused());
+                jsonArray.add(jsonObject);
+            }
+            jobConfig.setExit_status("0");
+            jobConfig.setStatus_text(jsonArray.getAsString());
+        } catch (Exception e) {
+            jobConfig.setExit_status("2");
+            jobConfig.setStatus_text(e.getMessage());
         }
-        jobConfig.setExit_status("0");
-        jobConfig.setStatus_text(jsonArray.getAsString());
         return jobConfig;
+    }
+
+    /**
+     * Read the inquiry counts
+     * @return the inquiry count and the exit status
+     */
+    private StatusReportItem getInquiryStats() {
+        JsonObject jsonObject = new JsonObject();
+        StatusReportItem inquiryStats = new StatusReportItem();
+        inquiryStats.setParameter_name(StatusReportItem.PARAMETER_INQUIRY_INFO);
+        try {
+            jsonObject.addProperty("NEW", InquiryUtil.countInquiries(InquiryStatusType.IS_NEW));
+            jsonObject.addProperty("PROCESSING", InquiryUtil.countInquiries(InquiryStatusType.IS_PROCESSING));
+            jsonObject.addProperty("READY", InquiryUtil.countInquiries(InquiryStatusType.IS_READY));
+            jsonObject.addProperty("ABANDONED", InquiryUtil.countInquiries(InquiryStatusType.IS_ABANDONED));
+            jsonObject.addProperty("LDM_ERROR", InquiryUtil.countInquiries(InquiryStatusType.IS_LDM_ERROR));
+            inquiryStats.setStatus_text(jsonObject.getAsString());
+            inquiryStats.setExit_status("0");
+        } catch (Exception e) {
+            inquiryStats.setExit_status("2");
+            inquiryStats.setStatus_text(e.getMessage());
+        }
+        return inquiryStats;
+
     }
 
     /**
