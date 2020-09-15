@@ -48,7 +48,7 @@
 --                '/teiler/' ||
 --                (SELECT teilerIds.INSTANCEIDPLACEHOLDER
 --                        FROM teilerIds)::TEXT ||
---                '/')c
+--                '/')
 -- WHERE name = 'CENTRAL_MDS_DATABASE_PATH';
 --
 -- UPDATE samply.configuration SET setting = 'INSTANCEIDPLACEHOLDER' where name = 'ID_MANAGER_INSTANCE_ID';
