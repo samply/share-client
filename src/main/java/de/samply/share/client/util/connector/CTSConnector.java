@@ -76,8 +76,7 @@ public class CTSConnector {
     public Response postPseudonmToCTS(String bundleString, String mediaType) throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException, NotFoundException, NotAuthorizedException {
         // Make a call to the PL, and replace patient identifying information in the
         // bundle with a pseudonym.
-        Bundle pseudonymBundle = null;
-        pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
+        Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
         // Serialize into a JSON String
         String pseudonymBundleJson = fhirResource.convertBundleToJson(pseudonymBundle);
 
