@@ -33,6 +33,7 @@ import com.google.gson.JsonObject;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.ReportToMonitoringJobParams;
+import de.samply.share.client.model.EnumReportMonitoring;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
 import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.tables.pojos.JobSchedule;
@@ -194,10 +195,10 @@ public class ReportToMonitoringJob implements Job {
                 jsonObject.addProperty("Paused", jobSchedule.getPaused());
                 jsonArray.add(jsonObject);
             }
-            jobConfig.setExit_status("0");
+            jobConfig.setExit_status(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
             jobConfig.setStatus_text(jsonArray.getAsString());
         } catch (Exception e) {
-            jobConfig.setExit_status("2");
+            jobConfig.setExit_status(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
             jobConfig.setStatus_text(e.getMessage());
         }
         return jobConfig;
@@ -218,9 +219,9 @@ public class ReportToMonitoringJob implements Job {
             jsonObject.addProperty("ABANDONED", InquiryUtil.countInquiries(InquiryStatusType.IS_ABANDONED));
             jsonObject.addProperty("LDM_ERROR", InquiryUtil.countInquiries(InquiryStatusType.IS_LDM_ERROR));
             inquiryStats.setStatus_text(jsonObject.getAsString());
-            inquiryStats.setExit_status("0");
+            inquiryStats.setExit_status(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
         } catch (Exception e) {
-            inquiryStats.setExit_status("2");
+            inquiryStats.setExit_status(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
             inquiryStats.setStatus_text(e.getMessage());
         }
         return inquiryStats;
@@ -237,11 +238,11 @@ public class ReportToMonitoringJob implements Job {
         dktkCount.setParameter_name(StatusReportItem.PARAMETER_PATIENTS_DKTKFLAGGED_COUNT);
         try {
             int count = ldmConnector.getPatientCount(true);
-            dktkCount.setExit_status("0");
+            dktkCount.setExit_status(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
             dktkCount.setStatus_text(Integer.toString(count));
         } catch (Exception e) {
             LOGGER.error(e);
-            dktkCount.setExit_status("2");
+            dktkCount.setExit_status(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
             dktkCount.setStatus_text(e.getMessage());
         }
         return dktkCount;
@@ -260,11 +261,11 @@ public class ReportToMonitoringJob implements Job {
         totalCount.setParameter_name(StatusReportItem.PARAMETER_PATIENTS_TOTAL_COUNT);
         try {
             int count = ldmConnector.getPatientCount(false);
-            totalCount.setExit_status("0");
+            totalCount.setExit_status(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
             totalCount.setStatus_text(Integer.toString(count));
         } catch (Exception e) {
             LOGGER.error(e);
-            totalCount.setExit_status("2");
+            totalCount.setExit_status(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
             totalCount.setStatus_text(e.getMessage());
         }
         return totalCount;
@@ -297,11 +298,11 @@ public class ReportToMonitoringJob implements Job {
         referenceQueryCount.setParameter_name(StatusReportItem.PARAMETER_REFERENCE_QUERY_RESULTCOUNT);
 
         if (referenceQueryCheckResult != null && referenceQueryCheckResult.getCount() >= 0) {
-            referenceQueryCount.setExit_status("0");
+            referenceQueryCount.setExit_status(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
             referenceQueryCount.setStatus_text(Integer.toString(referenceQueryCheckResult.getCount()));
         } else {
             LOGGER.error(errorMessage);
-            referenceQueryCount.setExit_status("2");
+            referenceQueryCount.setExit_status(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
             referenceQueryCount.setStatus_text(errorMessage);
         }
         return referenceQueryCount;
@@ -319,11 +320,11 @@ public class ReportToMonitoringJob implements Job {
         referenceQueryTime.setParameter_name(StatusReportItem.PARAMETER_REFERENCE_QUERY_RUNTIME);
 
         if (referenceQueryCheckResult != null && referenceQueryCheckResult.getExecutionTimeMilis() >= 0) {
-            referenceQueryTime.setExit_status("0");
+            referenceQueryTime.setExit_status(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
             referenceQueryTime.setStatus_text(Long.toString(referenceQueryCheckResult.getExecutionTimeMilis()));
         } else {
             LOGGER.error(errorMessage);
-            referenceQueryTime.setExit_status("2");
+            referenceQueryTime.setExit_status(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
             referenceQueryTime.setStatus_text(errorMessage);
         }
         return referenceQueryTime;
@@ -338,16 +339,16 @@ public class ReportToMonitoringJob implements Job {
         StatusReportItem centraxxMappingVersion = new StatusReportItem();
         centraxxMappingVersion.setParameter_name(StatusReportItem.PARAMETER_CENTRAXX_MAPPING_VERSION);
         if (!ldmConnector.isLdmCentraxx()) {
-            centraxxMappingVersion.setExit_status("1");
+            centraxxMappingVersion.setExit_status(EnumReportMonitoring.ICINGA_STATUS_WARNING.getValue());
             centraxxMappingVersion.setStatus_text("Does not apply");
         } else {
             try {
                 String mappingVersion = ((LdmConnectorCentraxx) ldmConnector).getMappingVersion();
-                centraxxMappingVersion.setExit_status("0");
+                centraxxMappingVersion.setExit_status(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
                 centraxxMappingVersion.setStatus_text(mappingVersion);
             } catch (Exception e) {
                 LOGGER.error(e);
-                centraxxMappingVersion.setExit_status("2");
+                centraxxMappingVersion.setExit_status(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
                 centraxxMappingVersion.setStatus_text(e.getMessage());
             }
         }
@@ -363,16 +364,16 @@ public class ReportToMonitoringJob implements Job {
         StatusReportItem centraxxMappingDate = new StatusReportItem();
         centraxxMappingDate.setParameter_name(StatusReportItem.PARAMETER_CENTRAXX_MAPPING_DATE);
         if (!ldmConnector.isLdmCentraxx()) {
-            centraxxMappingDate.setExit_status("1");
+            centraxxMappingDate.setExit_status(EnumReportMonitoring.ICINGA_STATUS_WARNING.getValue());
             centraxxMappingDate.setStatus_text("Does not apply");
         } else {
             try {
                 String mappingDate = ((LdmConnectorCentraxx) ldmConnector).getMappingDate();
-                centraxxMappingDate.setExit_status("0");
+                centraxxMappingDate.setExit_status(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
                 centraxxMappingDate.setStatus_text(mappingDate);
             } catch (Exception e) {
                 LOGGER.error(e);
-                centraxxMappingDate.setExit_status("2");
+                centraxxMappingDate.setExit_status(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
                 centraxxMappingDate.setStatus_text(e.getMessage());
             }
         }
