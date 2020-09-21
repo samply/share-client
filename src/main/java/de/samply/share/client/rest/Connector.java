@@ -14,6 +14,11 @@ import de.samply.share.common.utils.SamplyShareUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -54,6 +59,13 @@ public class Connector {
     @Path("/active")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "A Json String of active inquiries",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON)),
+            @APIResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @Operation(summary = "Get the active inquiries")
     public Response getActiveInquiries(
             @HeaderParam("userid") Integer userId,
             @HeaderParam("Authorization") String authStringBase64) {
@@ -67,6 +79,13 @@ public class Connector {
     @Path("/erroneous")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "A Json String of erroneous inquiries",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON)),
+            @APIResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @Operation(summary = "Get the erroneous inquiries")
     public Response getErroneousInquiries(
             @HeaderParam("userid") Integer userId,
             @HeaderParam("Authorization") String authStringBase64) {
@@ -80,6 +99,13 @@ public class Connector {
     @Path("/archived")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "A Json String of archived inquiries",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON)),
+            @APIResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @Operation(summary = "Get the archived inquiries")
     public Response getArchivedInquiries(
             @HeaderParam("userid") Integer userId,
             @HeaderParam("Authorization") String authStringBase64) {
@@ -97,6 +123,13 @@ public class Connector {
     @Path("/log")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "A Json String of logs",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON)),
+            @APIResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @Operation(summary = "Get the event logs")
     public Response getLog(@HeaderParam("Authorization") String authStringBase64) {
         if (!authorize(authStringBase64)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
