@@ -185,7 +185,7 @@ public class ReportToMonitoringJob implements Job {
      * @return the job configs and the exit status
      */
     private StatusReportItem getJobConfig() {
-        List<Object> records = new ArrayList<>();
+        List<Map<String, String>> records = new ArrayList<>();
         StatusReportItem jobConfig = new StatusReportItem();
         jobConfig.setParameter_name(StatusReportItem.PARAMETER_JOB_CONFIG);
         try {
