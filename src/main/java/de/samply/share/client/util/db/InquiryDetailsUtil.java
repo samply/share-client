@@ -143,4 +143,16 @@ public class InquiryDetailsUtil {
                 )
                 .fetchInto(InquiryDetails.class);
     }
+
+    public static InquiryDetails getLastScheduledInquiry() {
+        DSLContext dslContext = ResourceManager.getDSLContext();
+        return dslContext
+                .selectFrom(Tables.INQUIRY_DETAILS)
+                .where(Tables.INQUIRY_DETAILS.SCHEDULED_AT.equal(
+                        dslContext
+                                .select(DSL.max(Tables.INQUIRY_DETAILS.SCHEDULED_AT))
+                                .from(Tables.INQUIRY_DETAILS)
+                ))
+                .fetchOneInto(InquiryDetails.class);
+    }
 }

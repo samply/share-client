@@ -28,7 +28,6 @@
 
 package de.samply.share.client.job;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
@@ -43,6 +42,7 @@ import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LDMConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
+import de.samply.share.client.util.db.InquiryDetailsUtil;
 import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.client.util.db.JobScheduleUtil;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
@@ -53,7 +53,9 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -183,20 +185,20 @@ public class ReportToMonitoringJob implements Job {
      * @return the job configs and the exit status
      */
     private StatusReportItem getJobConfig() {
-        JsonArray jsonArray = new JsonArray();
+        List<Object> records = new ArrayList<>();
         StatusReportItem jobConfig = new StatusReportItem();
         jobConfig.setParameter_name(StatusReportItem.PARAMETER_JOB_CONFIG);
         try {
             List<JobSchedule> jobScheduleList = JobScheduleUtil.getJobSchedules();
             for (JobSchedule jobSchedule : jobScheduleList) {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("JobName", jobSchedule.getJobKey());
-                jsonObject.addProperty("CronExpression", jobSchedule.getCronExpression());
-                jsonObject.addProperty("Paused", jobSchedule.getPaused());
-                jsonArray.add(jsonObject);
+                Map<String, String> map = new HashMap<>();
+                map.put("JobName", jobSchedule.getJobKey());
+                map.put("CronExpression", jobSchedule.getCronExpression());
+                map.put("Paused", jobSchedule.getPaused().toString());
+                records.add(map);
             }
             jobConfig.setExit_status(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
-            jobConfig.setStatus_text(jsonArray.getAsString());
+            jobConfig.setStatus_text(records.toString());
         } catch (Exception e) {
             jobConfig.setExit_status(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
             jobConfig.setStatus_text(e.getMessage());
@@ -218,7 +220,8 @@ public class ReportToMonitoringJob implements Job {
             jsonObject.addProperty("READY", InquiryUtil.countInquiries(InquiryStatusType.IS_READY));
             jsonObject.addProperty("ABANDONED", InquiryUtil.countInquiries(InquiryStatusType.IS_ABANDONED));
             jsonObject.addProperty("LDM_ERROR", InquiryUtil.countInquiries(InquiryStatusType.IS_LDM_ERROR));
-            inquiryStats.setStatus_text(jsonObject.getAsString());
+            jsonObject.addProperty("Last query execution time", InquiryDetailsUtil.getLastScheduledInquiry().getScheduledAt().toString());
+            inquiryStats.setStatus_text(jsonObject.toString());
             inquiryStats.setExit_status(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
         } catch (Exception e) {
             inquiryStats.setExit_status(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
