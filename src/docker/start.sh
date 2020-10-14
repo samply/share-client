@@ -31,6 +31,10 @@ sed -i "s#{query-language}#${QUERY_LANGUAGE:-QUERY}#"     /usr/local/tomcat/conf
 
 sed -i "s/{level}/${LOG_LEVEL:-info}/"                    /usr/local/tomcat/conf/log4j2.xml
 
+sed -i "s/{feature_BBMRI_DIRECTORY_SYNC}/${feature_BBMRI_DIRECTORY_SYNC:-false}/" /usr/local/tomcat/conf/features.properties.xml
+sed -i "s/{feature_DKTK_CENTRAL_SEARCH}/${feature_DKTK_CENTRAL_SEARCH:-false}/"   /usr/local/tomcat/conf/features.properties.xml
+sed -i "s/{feature_NNGM_CTS}/${feature_NNGM_CTS:-false}/"                         /usr/local/tomcat/conf/features.properties.xml
+
 export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/samply/jmx_prometheus_javaagent-0.3.1.jar=9100:/samply/jmx-exporter.yml"
 
 # Replace start.sh with catalina.sh

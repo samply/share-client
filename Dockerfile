@@ -11,6 +11,7 @@ ADD src/docker/samply_common_config.xml         /usr/local/tomcat/conf/
 ADD src/docker/samply_bridgehead_info.xml       /usr/local/tomcat/conf/
 ADD src/docker/mailSending.xml                  /usr/local/tomcat/conf/
 ADD src/docker/log4j2.xml                       /usr/local/tomcat/conf/
+ADD src/docker/features.properties              /usr/local/tomcat/conf/
 
 # JMX Exporter
 ENV JMX_EXPORTER_VERSION 0.3.1
@@ -20,3 +21,5 @@ ADD https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/$J
 ADD src/docker/start.sh                         /samply/
 RUN chmod +x                                    /samply/start.sh
 CMD ["/samply/start.sh"]
+ADD src/docker/root.sh                          /samply/
+RUN chmod +x                                    /samply/root.sh
