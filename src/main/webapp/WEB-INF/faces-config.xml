@@ -8,6 +8,7 @@
         <locale-config>
             <default-locale>en</default-locale>
             <supported-locale>en</supported-locale>
+            <supported-locale>de</supported-locale>
         </locale-config>
         <resource-bundle>
             <base-name>de.samply.share.client.messages.messages</base-name>
