@@ -1,0 +1,126 @@
+<!--
+  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
+  ~ Universitätsklinikum Frankfurt
+  ~
+  ~ Contact: www.mig-frankfurt.de
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
+  ~
+  ~ Additional permission under GNU GPL version 3 section 7:
+  ~
+  ~ If you modify this Program, or any covered work, by linking or combining it
+  ~ with Jersey (https://jersey.java.net) (or a modified version of that
+  ~ library), containing parts covered by the terms of the General Public
+  ~ License, version 2.0, the licensors of this Program grant you additional
+  ~ permission to convey the resulting work.
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
+                xmlns:wu="http://share.samply.de/webutils">
+
+    <sscl:bootstrapPanel contextClass="panel-info" collapsible="false" headingAsTitle="true" headingText="#{msg.su_details}">
+
+        <f:facet name="bodyContent">
+            <!--Triggered At-->
+            <div class="row">
+                <div class="col-xs-6">
+                    <h:outputText value="#{msg.ull_triggeredAt}:" />
+                </div>
+                <div class="col-xs-6">
+                    <h:outputText value="#{wu:convertTimestamp(uploadBean.selectedUpload.triggeredAt)}" />
+                </div>
+            </div>
+
+            <!--Triggered By-->
+            <div class="row">
+                <div class="col-xs-6">
+                    <h:outputText value="#{msg.ull_triggeredBy}:" />
+                </div>
+                <div class="col-xs-6">
+                    <h:outputText value="#{uploadBean.selectedUpload.triggeredBy}" />
+                </div>
+            </div>
+
+            <!--DKTK Flagged?-->
+            <div class="row">
+                <div class="col-xs-6">
+                    <h:outputText value="#{msg.su_dktk}:" />
+                </div>
+                <div class="col-xs-6">
+                    <ui:fragment rendered="#{uploadBean.selectedUpload.dktkFlagged}">
+                        <i class="fa fa-check text-success" />
+                    </ui:fragment>
+                    <ui:fragment rendered="#{!uploadBean.selectedUpload.dktkFlagged}">
+                        <i class="fa fa-close text-danger" />
+                    </ui:fragment>
+                </div>
+            </div>
+
+            <!--Dryrun?-->
+            <div class="row">
+                <div class="col-xs-6">
+                    <h:outputText value="#{msg.su_dryrun}:" />
+                </div>
+                <div class="col-xs-6">
+                    <ui:fragment rendered="#{uploadBean.selectedUpload.isDryrun}">
+                        <i class="fa fa-check text-success" />
+                    </ui:fragment>
+                    <ui:fragment rendered="#{!uploadBean.selectedUpload.isDryrun}">
+                        <i class="fa fa-close text-danger" />
+                    </ui:fragment>
+                </div>
+            </div>
+
+            <!--Ignore Timestamps?-->
+            <div class="row">
+                <div class="col-xs-6">
+                    <h:outputText value="#{msg.su_fullUpload}:" />
+                </div>
+                <div class="col-xs-6">
+                    <ui:fragment rendered="#{uploadBean.selectedUpload.isFullUpload}">
+                        <i class="fa fa-check text-success" />
+                    </ui:fragment>
+                    <ui:fragment rendered="#{!uploadBean.selectedUpload.isFullUpload}">
+                        <i class="fa fa-close text-danger" />
+                    </ui:fragment>
+                </div>
+            </div>
+
+            <!--Successful uploads-->
+            <div class="row">
+                <div class="col-xs-6">
+                    <h:outputText value="#{msg.su_successfulUploads}:" />
+                </div>
+                <div class="col-xs-6">
+                    <h:outputText value="#{uploadBean.selectedUpload.successCount}" />
+                </div>
+            </div>
+
+            <!--Failed uploads-->
+            <div class="row">
+                <div class="col-xs-6">
+                    <h:outputText value="#{msg.su_failedUploads}:" />
+                </div>
+                <div class="col-xs-6">
+                    <h:outputText value="#{uploadBean.selectedUpload.failureCount}" />
+                </div>
+            </div>
+
+        </f:facet>
+    </sscl:bootstrapPanel>
+</ui:composition>

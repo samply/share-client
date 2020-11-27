@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
+  ~ Universitätsklinikum Frankfurt
+  ~
+  ~ Contact: www.mig-frankfurt.de
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
+  ~
+  ~ Additional permission under GNU GPL version 3 section 7:
+  ~
+  ~ If you modify this Program, or any covered work, by linking or combining it
+  ~ with Jersey (https://jersey.java.net) (or a modified version of that
+  ~ library), containing parts covered by the terms of the General Public
+  ~ License, version 2.0, the licensors of this Program grant you additional
+  ~ permission to convey the resulting work.
+  -->
+
+<ui:composition template="/WEB-INF/templates/globalTemplate.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:wu="http://share.samply.de/webutils"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
+                xmlns:pass="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:param name="adminPage" value="true" />
+
+    <ui:define name="title">#{msg.ull_title}</ui:define>
+
+    <ui:define name="additional-css">
+        <h:outputStylesheet library="webjars" name="datatables/1.10.16/css/dataTables.bootstrap.min.css"/>
+        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css" />
+    </ui:define>
+
+    <ui:define name="additional-js">
+        <h:outputScript library="webjars" name="datatables/1.10.16/js/jquery.dataTables.min.js"/>
+        <h:outputScript library="webjars" name="datatables/1.10.16/js/dataTables.bootstrap.min.js"/>
+        <h:outputScript library="webjars" name="bootstrap-switch/3.3.2/js/bootstrap-switch.min.js" />
+        <h:outputScript library="js" name="pages/upload_list.js"/>
+        <h:outputScript library="js" name="date-de.js"/>
+    </ui:define>
+
+    <ui:define name="main-content">
+        <h:form prependId="false">
+            <o:commandScript name="updateButtonBar" render="upload-button-bar" execute="upload-button-bar" oncomplete="bootstrapSwitchOn()" />
+            <div class="row" style="margin-bottom: 20px;">
+                <ui:fragment rendered="#{wu:isCentralSearchPathSet()}">
+                    <h:panelGroup layout="block" styleClass="col-xs-12" id="upload-button-bar">
+                        <ui:fragment rendered="#{not uploadBean.uploadRunning}">
+                            <fieldset>
+                                <legend>
+                                    <h:outputText value="#{msg.ull_manualUpload}" />
+                                </legend>
+                                <h:selectBooleanCheckbox value="#{uploadBean.dryrun}"
+                                                         id="dryrunSwitch"
+                                                         styleClass="switch"
+                                                         pass:data-handle-width="100"
+                                                         pass:data-label-width="100"
+                                                         pass:data-on-text="#{msg.su_dryrun}"
+                                                         pass:data-off-text="#{msg.su_upload}"
+                                                         pass:data-on-color="default"/>
+
+                                <h:selectBooleanCheckbox value="#{uploadBean.fullUpload}"
+                                                         id="fullSwitch"
+                                                         styleClass="switch"
+                                                         pass:data-wrapper-class="wrapper-margin-left"
+                                                         pass:data-handle-width="100"
+                                                         pass:data-label-width="100"
+                                                         pass:data-on-text="#{msg.su_full}"
+                                                         pass:data-off-text="#{msg.su_incremental}"
+                                                         pass:data-on-color="default"/>
+
+                                <h:selectBooleanCheckbox value="#{uploadBean.dktkFlagged}"
+                                                         id="dktkSwitch"
+                                                         styleClass="switch"
+                                                         readonly="#{not uploadBean.uploadNonDktkAllowed}"
+                                                         pass:data-wrapper-class="wrapper-margin-left"
+                                                         pass:data-handle-width="100"
+                                                         pass:data-label-width="100"
+                                                         pass:data-label-text="#{msg.su_dktk}"
+                                                         pass:data-on-text="#{msg.common_yes}"
+                                                         pass:data-off-text="#{msg.common_no}" />
+
+                                <!--action="#{uploadBean.spawnNewUpload(dryrun.value, ignoreTimestamps.value, dktkFlagged.value)}"-->
+                                <h:commandLink styleClass="btn btn-md btn-default"
+                                               style="margin-left: 20px;"
+                                               value="#{msg.ull_spawnUpload}"
+                                               action="#{uploadBean.spawnNewUpload}"/>
+                            </fieldset>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{uploadBean.uploadRunning}">
+                            <div class="btn-group btn-group-justified" role="group" >
+                                <div class="btn-group" role="group">
+                                    <h:commandLink styleClass="btn btn-md btn-default" value="#{msg.ull_cancelUpload}" action="#{uploadBean.cancelUploadJobs}"/>
+                                </div>
+                            </div>
+                        </ui:fragment>
+                    </h:panelGroup>
+                </ui:fragment>
+                <ui:fragment rendered="#{not wu:isCentralSearchPathSet()}">
+                    <sscl:bootstrapPanel contextClass="panel-danger" headingText="#{msg.configuration_noCentralSearchPath}">
+                        <f:facet name="bodyContent">
+                            <h:outputText value="#{msg.configuration_noCentralSearchPathDetails}" />
+                        </f:facet>
+                    </sscl:bootstrapPanel>
+                </ui:fragment>
+            </div>
+            <table id="upload-table" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#{msg.ull_id}</th>
+                        <th>#{msg.ull_triggeredAt}</th>
+                        <th>#{msg.ull_triggeredBy}</th>
+                        <th>#{msg.ull_status}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ui:repeat var="upload" value="#{uploadBean.uploads}">
+                        <tr>
+                            <td>
+                                <h:link outcome="show_upload" value="#{upload.id}">
+                                    <f:param name="uploadId" value="#{upload.id}" />
+                                </h:link>
+                            </td>
+                            <td>
+                                <h:outputText value="#{wu:convertTime(upload.triggeredAt)}" styleClass="form-control-static"/>
+                            </td>
+                            <td>
+                                <h:outputText value="#{upload.triggeredBy}" styleClass="form-control-static"/>
+                            </td>
+                            <td>
+                                <h:outputText value="#{upload.status}" styleClass="form-control-static"/>
+                            </td>
+                        </tr>
+                    </ui:repeat>
+                </tbody>
+            </table>
+            <h:messages showDetail="true" showSummary="true" id="messages" globalOnly="true"/>
+        </h:form>
+    </ui:define>
+</ui:composition>

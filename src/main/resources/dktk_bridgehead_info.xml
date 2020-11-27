@@ -1,0 +1,10 @@
+<dkt:bridgehead xmlns:dkt="http://schema.samply.de/config/DKTKBridgeheadInfo">
+  <dkt:name>string</dkt:name>
+  <dkt:longname>string</dkt:longname>
+  <dkt:dktkid>string</dkt:dktkid>
+  <dkt:monitor>string</dkt:monitor>
+  <dkt:interval>string</dkt:interval>
+  <dkt:centralsearch>string</dkt:centralsearch>
+  <dkt:decentralsearch>string</dkt:decentralsearch>
+  <dkt:updateserver>string</dkt:updateserver>
+</dkt:bridgehead>

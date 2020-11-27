@@ -1,0 +1,107 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client">
+
+    <ui:param name="showResults" value="#{not configurationBean.getAsBoolean(EnumConfiguration.INQUIRY_HIDE_RESULTS)}" />
+    <ui:param name="resultsReady" value="#{inquiryBean.resultsReady}" />
+    <ui:param name="statsOnly" value="#{inquiryBean.latestInquiryResult.statisticsOnly}" />
+    <ui:param name="errorOccurred" value="#{inquiryBean.latestInquiryResult.isError}" />
+
+    <!--Display of results is disabled in config or database by administrator-->
+    <ui:fragment rendered="#{not showResults}">
+        <h:form>
+            <sscl:bootstrapPanel headingAsTitle="true" headingText="#{msg.si_resultsHidden}" contextClass="panel-warning">
+                <f:facet name="bodyContent">
+                    #{msg.si_resultsHiddenDetails}
+                </f:facet>
+            </sscl:bootstrapPanel>
+        </h:form>
+    </ui:fragment>
+
+    <!--For this inquiry, only statistics were requested-->
+    <ui:fragment rendered="#{showResults and statsOnly}">
+        <h:form>
+            <sscl:bootstrapPanel headingAsTitle="true" headingText="#{msg.si_resultsStatsOnly}" contextClass="panel-info">
+                <f:facet name="bodyContent">
+                    <p>
+                        <h:outputFormat value="#{msg.si_resultsStatsOnlyCount}">
+                            <f:param value="#{inquiryBean.latestInquiryResult.size}" />
+                        </h:outputFormat>
+                    </p>
+                    <p>
+                        <h:outputText value="#{msg.si_resultsStatsOnlyDetails}" />
+                    </p>
+                </f:facet>
+            </sscl:bootstrapPanel>
+        </h:form>
+    </ui:fragment>
+
+    <ui:fragment rendered="#{showResults and not statsOnly and errorOccurred}">
+        <h:form>
+            <sscl:bootstrapPanel headingAsTitle="true" headingText="#{msg.si_resultsError}" contextClass="panel-danger">
+                <f:facet name="bodyContent">
+                    <h:outputText value="#{msg.si_resultsErrorDetails}" />
+                </f:facet>
+            </sscl:bootstrapPanel>
+        </h:form>
+    </ui:fragment>
+
+    <ui:fragment rendered="#{showResults and not statsOnly and not errorOccurred and not resultsReady}">
+        <h:form>
+            <sscl:bootstrapPanel headingAsTitle="true" headingText="#{msg.si_resultsNotDone}" contextClass="panel-warning">
+                <f:facet name="bodyContent">
+                    <h:outputText value="#{msg.si_resultsNotDoneDetails}" />
+                </f:facet>
+            </sscl:bootstrapPanel>
+        </h:form>
+    </ui:fragment>
+
+    <ui:fragment rendered="#{showResults and not statsOnly and not errorOccurred and resultsReady}">
+        <ui:param name="resultCount" value="#{inquiryBean.latestResultStatistics.totalSize}" />
+
+        <ui:fragment rendered="#{resultCount eq 0}">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <h:outputText value="#{msg.si_noResults}" />
+                    </h3>
+                </div>
+            </div>
+        </ui:fragment>
+
+        <ui:fragment rendered="#{resultCount gt 0}">
+            <!--Not using bootstrapPanel component since it seems not possible to use another composite component as facet-->
+            <!--And it is less overhead to repeat the panel code here-->
+            <!--Do not allow to collapse it, since this causes trouble with the patient accordion within-->
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <h:form>
+                            <h:outputFormat value="#{msg.si_matchingResults}">
+                                <f:param value="#{resultCount}" />
+                            </h:outputFormat>
+                        </h:form>
+                    </h3>
+                </div>
+                <div class="panel-body" style="padding: 0;">
+                    <ul id="pagination-results-top" class="pagination-md" />
+                    <h:form id="matchesForm" prependId="false">
+                        <h:inputHidden id="resultPages" value="#{inquiryBean.latestResultStatistics.numberOfPages}" />
+                        <div class="list-group result-list-patient" id="matches" style="min-height: 20px;">
+                            <sscl:resultPatients patientTree="#{inquiryBean.patientPageTree}" />
+                        </div>
+                        <o:commandScript name="changeResultPage" action="#{inquiryBean.changeResultPage()}" render="@form" execute="@form"
+                                         onbegin="blockElement('#resultDiv .panel-body');" oncomplete="unblockElement('#resultDiv .panel-body');">
+                        </o:commandScript>
+
+                    </h:form>
+                    <ul id="pagination-results-bottom" class="pagination-md" />
+                </div>
+            </div>
+        </ui:fragment>
+
+    </ui:fragment>
+</ui:composition>

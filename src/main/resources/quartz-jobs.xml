@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job-scheduling-data
+        xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData
+	http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+        version="1.8">
+
+    <!-- Define jobs whose triggers can be modified by the admin -->
+
+    <schedule>
+        <job>
+            <name>CollectInquiriesJob</name>
+            <group>DecentralSearchGroup</group>
+            <description>This Job collects inquiries from all brokers this instance of share-client is registered to,
+                stores them in the database and spawns ExecuteInquiriesJobs
+            </description>
+            <job-class>de.samply.share.client.job.CollectInquiriesJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>SHOW</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+
+    <schedule>
+        <job>
+            <name>ExecuteInquiriesJob</name>
+            <group>DecentralSearchGroup</group>
+            <description>This Job collects inquiries from all brokers this instance of share-client is registered to,
+                stores them in the database and spawns ExecuteInquiriesJobs
+            </description>
+            <job-class>de.samply.share.client.job.ExecuteInquiriesJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>SHOW</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+
+    <schedule>
+        <job>
+            <name>UploadToCentralMdsDbJobDktkFlag</name>
+            <group>CentralSearchGroup</group>
+            <description>This Job prepares and/or performs an upload to the central mds database, depending on the status. It performs an incremental upload of those patients that gave their explicit consent to be included in the DKTK.</description>
+            <job-class>de.samply.share.client.job.UploadToCentralMdsDbJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>SHOW</key>
+                    <value>true</value>
+                </entry>
+                <!-- When scheduled from here, it is always a new upload -->
+                <entry>
+                    <key>status</key>
+                    <value>US_NEW</value>
+                </entry>
+                <!-- Upload those with DKTK flag. Parameter MUST match Parameter in UploadJobParams.java -->
+                <entry>
+                    <key>dktk_flagged</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+
+    <schedule>
+        <job>
+            <name>UploadToCentralMdsDbJobNoDktkFlag</name>
+            <group>CentralSearchGroup</group>
+            <description>This Job prepares and/or performs an upload to the central mds database, depending on the status. It performs an upload of those patients, that have not explicitly given their consent to be included in DKTK, but can be uploaded due to another given consent.</description>
+            <job-class>de.samply.share.client.job.UploadToCentralMdsDbJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>SHOW</key>
+                    <value>true</value>
+                </entry>
+                <!-- When scheduled from here, it is always a new upload -->
+                <entry>
+                    <key>status</key>
+                    <value>US_NEW</value>
+                </entry>
+                <!-- Upload those with no DKTK flag. Parameter MUST match Parameter in UploadJobParams.java -->
+                <entry>
+                    <key>dktk_flagged</key>
+                    <value>false</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+
+    <schedule>
+        <job>
+            <name>CheckLocalComponentsJob</name>
+            <group>MaintenanceGroup</group>
+            <description>This job checks the other local components (id manager, local datamanagement) for their version and status</description>
+            <job-class>de.samply.share.client.job.CheckLocalComponentsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>SHOW</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+
+    <schedule>
+        <job>
+            <name>DbCleanupJob</name>
+            <group>MaintenanceGroup</group>
+            <description>Do some housekeeping in the database (e.g. mark inquiries as archived after a certain amount of time)</description>
+            <job-class>de.samply.share.client.job.DbCleanupJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>SHOW</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+
+    <schedule>
+        <job>
+            <name>ReportToMonitoringJob</name>
+            <group>MaintenanceGroup</group>
+            <description>This job performs tests to determine values for an amount of patient data available or how long it takes to execute an inquiry</description>
+            <job-class>de.samply.share.client.job.ReportToMonitoringJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>SHOW</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+
+    <schedule>
+        <job>
+            <name>SendNotificationsJob</name>
+            <group>DecentralSearchGroup</group>
+            <description>This job checks if there are inquiry results with a result size greater than zero about which
+                no user has been notified yet. It sends e-mails to the configured users (given that a mail relay is
+                configured) and marks that a notification has been sent
+            </description>
+            <job-class>de.samply.share.client.job.SendNotificationsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>SHOW</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+
+    <!-- Define jobs that won't show on the admin interface. They will only be triggered programmatically -->
+
+    <schedule>
+        <job>
+            <name>ExecuteInquiryJob</name>
+            <group>InquiryGroup</group>
+            <description>This Job posts an inquiry to the local datamanagement, stores the location and spawns a CheckInquiryStatusJob</description>
+            <job-class>de.samply.share.client.job.ExecuteInquiryJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+    </schedule>
+
+    <schedule>
+        <job>
+            <name>CheckInquiryStatusJob</name>
+            <group>InquiryGroup</group>
+            <description>This Job checks the status of the given inquiry and spawns new jobs if necessary</description>
+            <job-class>de.samply.share.client.job.CheckInquiryStatusJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+    </schedule>
+
+    <schedule>
+        <job>
+            <name>GenerateInquiryResultStatsJob</name>
+            <group>InquiryGroup</group>
+            <description>This Job generates statistics (by gender and by age) for an inquiry result</description>
+            <job-class>de.samply.share.client.job.GenerateInquiryResultStatsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+    </schedule>
+
+</job-scheduling-data>

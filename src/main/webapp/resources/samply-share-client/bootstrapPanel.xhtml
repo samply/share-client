@@ -1,0 +1,86 @@
+<!--
+  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
+  ~ Universitätsklinikum Frankfurt
+  ~
+  ~ Contact: www.mig-frankfurt.de
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
+  ~
+  ~ Additional permission under GNU GPL version 3 section 7:
+  ~
+  ~ If you modify this Program, or any covered work, by linking or combining it
+  ~ with Jersey (https://jersey.java.net) (or a modified version of that
+  ~ library), containing parts covered by the terms of the General Public
+  ~ License, version 2.0, the licensors of this Program grant you additional
+  ~ permission to convey the resulting work.
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:cc="http://xmlns.jcp.org/jsf/composite">
+
+    <cc:interface>
+        <cc:attribute name="contextClass" default="panel-default" />
+        <cc:attribute name="collapsible" type="java.lang.Boolean" default="false" shortDescription="adds a chevron icon to collapse the panel body"/>
+        <cc:attribute name="collapsibleStartExpanded" type="java.lang.Boolean" default="true" />
+        <cc:attribute name="headingAsTitle" type="java.lang.Boolean" default="false" />
+        <cc:attribute name="headingText" required="false" />
+        <cc:attribute name="bodyAdditionalStyle" required="false" />
+        <cc:facet name="headerContent" />
+        <cc:facet name="bodyContent" required="true"/>
+        <cc:facet name="footerContent" />
+    </cc:interface>
+
+    <cc:implementation>
+        <div class="panel #{cc.attrs.contextClass} #{cc.attrs.collapsible ? 'collapsiblePanel' : ''}">
+            <ui:fragment rendered="#{not empty cc.attrs.headingText and empty cc.facets.headerContent}">
+                <div class="panel-heading">
+                    <ui:fragment rendered="#{cc.attrs.headingAsTitle}">
+                        <h3 class="panel-title">
+                            <h:outputText value="#{cc.attrs.headingText}"/>
+                            <ui:fragment rendered="#{cc.attrs.collapsible}">
+                                <button type="button" class="close collapseToggle" aria-label="Close" >
+                                    <h:panelGroup rendered="#{cc.attrs.collapsibleStartExpanded}">
+                                        <i class="fa fa-chevron-down" />
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{not cc.attrs.collapsibleStartExpanded}">
+                                        <i class="fa fa-chevron-right" />
+                                    </h:panelGroup>
+                                </button>
+                            </ui:fragment>
+                        </h3>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{not cc.attrs.headingAsTitle}">
+                        <h:outputText value="#{cc.attrs.headingText}"/>
+                    </ui:fragment>
+                </div>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{not empty cc.facets.headerContent}">
+                <cc:renderFacet name="headerContent" />
+            </ui:fragment>
+
+            <div class="panel-body #{cc.attrs.collapsible ? 'collapse ' : ''} #{cc.attrs.collapsibleStartExpanded ? 'in' : ''}" style="#{cc.attrs.bodyAdditionalStyle}" >
+                <cc:renderFacet name="bodyContent" />
+            </div>
+
+            <ui:fragment rendered="#{not empty cc.facets.footerContent}">
+                <div class="panel-footer">
+                    <cc:renderFacet name="footerContent" />
+                </div>
+            </ui:fragment>
+        </div>
+    </cc:implementation>
+</ui:composition>

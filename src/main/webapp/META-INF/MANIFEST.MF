@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: Samply Share Client
+Implementation-Version: 2.1.1
+Built-By: deniz
+Specification-Title: Samply Share Client
+Implementation-Vendor-Id: de.samply
+Samply-Project-Context: dktk
+Created-By: Apache Maven 3.3.9
+Build-Jdk: 1.8.0_162
+Specification-Version: 2.1.1
+

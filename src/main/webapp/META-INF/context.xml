@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/">
+    <Resource name="jdbc/postgres" auth="Container"
+              type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/share_v2"
+              username="samplyweb" password="samplyweb" maxTotal="100" maxIdle="30"
+              maxWaitMillis="30000" removeAbandonedOnBorrow="true" removeAbandonedOnMaintenance="true" removeAbandonedTimeout="120" logAbandoned="true"
+              testOnBorrow="true" validationQuery="select 1"/>
+</Context>
