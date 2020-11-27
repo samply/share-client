@@ -5,7 +5,8 @@
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client">
 
-    <ui:param name="showResults" value="#{not configurationBean.getAsBoolean(EnumConfiguration.INQUIRY_HIDE_RESULTS)}"/>
+    <ui:param name="showResults"
+              value="#{not configurationBean.getAsBoolean(EnumConfiguration.INQUIRY_HIDE_RESULTS)}"/>
     <ui:param name="resultsReady" value="#{inquiryBean.resultsReady}"/>
     <ui:param name="statsOnly" value="#{inquiryBean.latestInquiryResult.statisticsOnly}"/>
     <ui:param name="errorOccurred" value="#{inquiryBean.latestInquiryResult.isError}"/>
@@ -43,7 +44,8 @@
 
     <ui:fragment rendered="#{showResults and not statsOnly and errorOccurred}">
         <h:form>
-            <sscl:bootstrapPanel headingAsTitle="true" headingText="#{msg.si_resultsError}" contextClass="panel-danger">
+            <sscl:bootstrapPanel headingAsTitle="true" headingText="#{msg.si_resultsError}"
+                                 contextClass="panel-danger">
                 <f:facet name="bodyContent">
                     <h:outputText value="#{msg.si_resultsErrorDetails}"/>
                 </f:facet>
@@ -51,7 +53,8 @@
         </h:form>
     </ui:fragment>
 
-    <ui:fragment rendered="#{showResults and not statsOnly and not errorOccurred and not resultsReady}">
+    <ui:fragment
+            rendered="#{showResults and not statsOnly and not errorOccurred and not resultsReady}">
         <h:form>
             <sscl:bootstrapPanel headingAsTitle="true" headingText="#{msg.si_resultsNotDone}"
                                  contextClass="panel-warning">
@@ -92,12 +95,15 @@
                 <div class="panel-body" style="padding: 0;">
                     <ul id="pagination-results-top" class="pagination-md"/>
                     <h:form id="matchesForm" prependId="false">
-                        <h:inputHidden id="resultPages" value="#{inquiryBean.latestResultStatistics.numberOfPages}"/>
-                        <div class="list-group result-list-patient" id="matches" style="min-height: 20px;">
+                        <h:inputHidden id="resultPages"
+                                       value="#{inquiryBean.latestResultStatistics.numberOfPages}"/>
+                        <div class="list-group result-list-patient" id="matches"
+                             style="min-height: 20px;">
                             <sscl:resultPatients patientTree="#{inquiryBean.patientPageTree}"/>
                         </div>
-                        <o:commandScript name="changeResultPage" action="#{inquiryBean.changeResultPage()}"
-                                         render="@form" execute="@form"
+                        <o:commandScript name="changeResultPage"
+                                         action="#{inquiryBean.changeResultPage()}" render="@form"
+                                         execute="@form"
                                          onbegin="blockElement('#resultDiv .panel-body');"
                                          oncomplete="unblockElement('#resultDiv .panel-body');">
                         </o:commandScript>

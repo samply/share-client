@@ -1,32 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
-  ~ Universitätsklinikum Frankfurt
-  ~
-  ~ Contact: www.mig-frankfurt.de
-  ~
-  ~ This program is free software; you can redistribute it and/or modify it under
-  ~ the terms of the GNU Affero General Public License as published by the Free
-  ~ Software Foundation; either version 3 of the License, or (at your option) any
-  ~ later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful, but WITHOUT
-  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-  ~ details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
-  ~
-  ~ Additional permission under GNU GPL version 3 section 7:
-  ~
-  ~ If you modify this Program, or any covered work, by linking or combining it
-  ~ with Jersey (https://jersey.java.net) (or a modified version of that
-  ~ library), containing parts covered by the terms of the General Public
-  ~ License, version 2.0, the licensors of this Program grant you additional
-  ~ permission to convey the resulting work.
-  -->
+
 
 <ui:composition template="/WEB-INF/templates/globalTemplate.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
@@ -43,7 +17,8 @@
 >
 
     <ui:define name="title">
-        <h:outputText value="#{inquiryBean.inquiry.label} " rendered="#{not empty inquiryBean.inquiry.label}"/>
+        <h:outputText value="#{inquiryBean.inquiry.label} "
+                      rendered="#{not empty inquiryBean.inquiry.label}"/>
         <h:outputText value="#{msg.inqs_noLabel} " rendered="#{empty inquiryBean.inquiry.label}"/>
     </ui:define>
 
@@ -59,14 +34,19 @@
     </ui:define>
 
     <ui:define name="additional-css">
-        <h:outputStylesheet library="webjars" name="bootstrap-fileinput/4.4.8/css/fileinput.min.css"/>
+        <h:outputStylesheet library="webjars"
+                            name="bootstrap-fileinput/4.4.8/css/fileinput.min.css"/>
     </ui:define>
 
     <ui:define name="additional-js">
-        <h:outputScript library="webjars" name="jquery-blockui/2.70/jquery.blockUI.js" target="body"/>
-        <h:outputScript library="webjars" name="twbs-pagination/1.4.1/jquery.twbsPagination.min.js" target="body"/>
-        <h:outputScript library="webjars" name="bootstrap-fileinput/4.4.8/js/fileinput.min.js" target="body"/>
-        <h:outputScript library="webjars" name="bootstrap-fileinput/4.4.8/js/locales/de.js" target="body"/>
+        <h:outputScript library="webjars" name="jquery-blockui/2.70/jquery.blockUI.js"
+                        target="body"/>
+        <h:outputScript library="webjars" name="twbs-pagination/1.4.1/jquery.twbsPagination.min.js"
+                        target="body"/>
+        <h:outputScript library="webjars" name="bootstrap-fileinput/4.4.8/js/fileinput.min.js"
+                        target="body"/>
+        <h:outputScript library="webjars" name="bootstrap-fileinput/4.4.8/js/locales/de.js"
+                        target="body"/>
         <h:outputScript library="js" name="pages/show_inquiry.js" target="body"/>
         <h:outputScript library="js" name="documentBox.js" target="body"/>
     </ui:define>
@@ -83,10 +63,12 @@
         <!--Insert a button-grid (usually one row, but two on smaller screens) for exporting, re-executing, replying...-->
         <div class="row" style="margin-bottom: 20px;">
             <h:form>
-                <o:commandScript name="reloadInquiry" action="#{inquiryBean.loadSelectedInquiry()}"/>
+                <o:commandScript name="reloadInquiry"
+                                 action="#{inquiryBean.loadSelectedInquiry()}"/>
                 <o:commandScript name="updateButtons" render="export-and-execute-buttons"/>
                 <h:panelGroup layout="block" id="export-and-execute-buttons">
-                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 btn-group-split-left" style="margin-top: 5px;">
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 btn-group-split-left"
+                         style="margin-top: 5px;">
                         <div class="btn-group btn-group-justified" role="group">
                             <ui:param name="showResults"
                                       value="#{not configurationBean.getAsBoolean(EnumConfiguration.INQUIRY_HIDE_RESULTS)}"/>
@@ -107,9 +89,11 @@
 
                                 <ui:fragment rendered="#{not disableExport}">
                                     <div class="btn-group export-grp" role="group">
-                                        <button type="button" class="btn btn-default btn-lg dropdown-toggle export-base"
+                                        <button type="button"
+                                                class="btn btn-default btn-lg dropdown-toggle export-base"
                                                 data-toggle="dropdown"
-                                                data-loading-text="#{msg.si_generating}..." aria-haspopup="true"
+                                                data-loading-text="#{msg.si_generating}..."
+                                                aria-haspopup="true"
                                                 aria-expanded="false">
                                             #{msg.si_exportResults} <span class="caret"/>
                                         </button>
@@ -147,19 +131,24 @@
                             </ui:fragment>
                             <ui:fragment rendered="#{not disableExecute}">
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-default btn-lg dropdown-toggle"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button type="button"
+                                            class="btn btn-default btn-lg dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">
                                         #{msg.si_executeInquiry} <span class="caret"/>
                                     </button>
                                     <ul class="dropdown-menu" style="width: 100%;">
                                         <li>
-                                            <h:commandLink action="#{inquiryBean.spawnExecuteTask(false)}"
-                                                           type="submit">
+                                            <h:commandLink
+                                                    action="#{inquiryBean.spawnExecuteTask(false)}"
+                                                    type="submit">
                                                 #{msg.si_executeInquiryStatsOnlyFalse}
                                             </h:commandLink>
                                         </li>
                                         <li>
-                                            <h:commandLink action="#{inquiryBean.spawnExecuteTask(true)}" type="submit">
+                                            <h:commandLink
+                                                    action="#{inquiryBean.spawnExecuteTask(true)}"
+                                                    type="submit">
                                                 #{msg.si_executeInquiryStatsOnlyTrue}
                                             </h:commandLink>
                                         </li>
@@ -174,17 +163,20 @@
                             </ui:fragment>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 btn-group-split-right" style="margin-top: 5px;">
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 btn-group-split-right"
+                         style="margin-top: 5px;">
                         <div class="btn-group btn-group-justified" role="group">
                             <div class="btn-group" role="group">
                                 <ui:fragment
                                         rendered="#{empty inquiryBean.latestInquiryAnswer and not empty inquiryBean.latestInquiryResult}">
-                                    <h:commandLink action="#{inquiryBean.reply}" styleClass="btn btn-default btn-lg"
+                                    <h:commandLink action="#{inquiryBean.reply}"
+                                                   styleClass="btn btn-default btn-lg"
                                                    type="submit">
                                         #{msg.si_reply}
                                     </h:commandLink>
                                 </ui:fragment>
-                                <ui:fragment rendered="#{not empty inquiryBean.latestInquiryAnswer}">
+                                <ui:fragment
+                                        rendered="#{not empty inquiryBean.latestInquiryAnswer}">
                                     <button type="button"
                                             class="btn btn-default btn-lg disabled">#{msg.si_replySent}</button>
                                 </ui:fragment>
@@ -195,12 +187,14 @@
                                 </ui:fragment>
                             </div>
                             <div class="btn-group" role="group">
-                                <h:commandLink styleClass="btn btn-default btn-lg archivePopover" value="">
+                                <h:commandLink styleClass="btn btn-default btn-lg archivePopover"
+                                               value="">
                                     #{msg.si_archive}
                                     <f:ajax/>
                                 </h:commandLink>
                                 <h:commandLink id="archive-action" styleClass="archive-action"
-                                               action="#{inquiryBean.archive}" style="display: none;" type="submit"/>
+                                               action="#{inquiryBean.archive}"
+                                               style="display: none;" type="submit"/>
                             </div>
                         </div>
                     </div>
@@ -272,11 +266,15 @@
                 <h:form>
                     <sscl:bootstrapPanel collapsible="true" collapsibleStartExpanded="false"
                                          headingText="#{msg.si_criteria}"
-                                         headingAsTitle="true" bodyAdditionalStyle="padding:0; overflow: hidden;">
+                                         headingAsTitle="true"
+                                         bodyAdditionalStyle="padding:0; overflow: hidden;">
                         <f:facet name="bodyContent">
                             <ui:fragment rendered="#{(wu:getQueryLanguage() == 'CQL')}">
-                                <ui:repeat value="#{inquiryBean.inquiryCriteria}" var="inquiryCriteria">
-                                    <h:outputText value="#{fn:replace(inquiryCriteria.criteriaOriginal,'\\n','&lt;br/&gt;')}" escape="false" />
+                                <ui:repeat value="#{inquiryBean.inquiryCriteria}"
+                                           var="inquiryCriteria">
+                                    <h:outputText
+                                            value="#{fn:replace(inquiryCriteria.criteriaOriginal,'\\n','&lt;br/&gt;')}"
+                                            escape="false"/>
 
                                 </ui:repeat>
                             </ui:fragment>
@@ -293,7 +291,8 @@
         <h:form id="statisticsForm">
 
             <ui:param name="statsReady" value="#{inquiryBean.latestInquiryResultHasStats()}"/>
-            <h:inputHidden id="statsReadyCondition" value="#{inquiryBean.latestInquiryResultHasStats()}"/>
+            <h:inputHidden id="statsReadyCondition"
+                           value="#{inquiryBean.latestInquiryResultHasStats()}"/>
             <o:commandScript name="reloadStatistics" action="#{inquiryBean.reloadStatistics()}"/>
 
             <h:panelGroup id="renderInquiryGraphs">
@@ -309,12 +308,14 @@
         </h:form>
 
         <!--In dktk, show results panel. Check for availability is done in the included facelet-->
-        <ui:fragment rendered="#{(wu:getProjectName() == 'samply' or wu:getProjectName() == 'dktk')}">
+        <ui:fragment
+                rendered="#{(wu:getProjectName() == 'samply' or wu:getProjectName() == 'dktk')}">
             <div class="row">
                 <div class="col-xs-12" id="resultDiv">
                     <ui:include src="../WEB-INF/includes/c_inquiry_results.xhtml"/>
                     <h:form>
-                        <o:commandScript name="lazyLoadResult" autorun="true" actionListener="#{inquiryBean.loadResult}"
+                        <o:commandScript name="lazyLoadResult" autorun="true"
+                                         actionListener="#{inquiryBean.loadResult}"
                                          render=":matchesForm"
                                          onbegin="blockElement('#resultDiv .panel-body');"
                                          oncomplete="unblockElement('#resultDiv .panel-body'); initPagination();"/>

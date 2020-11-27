@@ -1,29 +1,4 @@
-package de.samply.share.client.quality.report.results;/*
-* Copyright (C) 2017 Medizinische Informatik in der Translationalen Onkologie,
-* Deutsches Krebsforschungszentrum in Heidelberg
-*
-* This program is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Affero General Public License as published by the Free
-* Software Foundation; either version 3 of the License, or (at your option) any
-* later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program; if not, see http://www.gnu.org/licenses.
-*
-* Additional permission under GNU GPL version 3 section 7:
-*
-* If you modify this Program, or any covered work, by linking or combining it
-* with Jersey (https://jersey.java.net) (or a modified version of that
-* library), containing parts covered by the terms of the General Public
-* License, version 2.0, the licensors of this Program grant you additional
-* permission to convey the resulting work.
-*/
-
+package de.samply.share.client.quality.report.results;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,69 +6,86 @@ import java.util.Set;
 public class QualityResult {
 
 
-    private int numberOfPatients = 0;
-    private boolean isValid = false;
-    private Set<String> patientLocalIds = new HashSet<>();
-    private Set<String> patientDktkIds = new HashSet<>();
+  private int numberOfPatients = 0;
+  private boolean isValid = false;
+  private Set<String> patientLocalIds = new HashSet<>();
+  private Set<String> patientDktkIds = new HashSet<>();
 
 
-    public int getNumberOfPatients() {
-        return (numberOfPatients > 0) ? numberOfPatients : Math.max(patientLocalIds.size(), patientDktkIds.size());
+  public int getNumberOfPatients() {
+    return (numberOfPatients > 0) ? numberOfPatients
+        : Math.max(patientLocalIds.size(), patientDktkIds.size());
+  }
+
+  public void setNumberOfPatients(int numberOfPatients) {
+    this.numberOfPatients = numberOfPatients;
+  }
+
+  public boolean isValid() {
+    return isValid;
+  }
+
+  public void setValid(boolean valid) {
+    isValid = valid;
+  }
+
+
+  /**
+   * Todo.
+   * @param patientLocalId Todo.
+   */
+  public void addPatientLocalId(String patientLocalId) {
+
+    if (patientLocalId != null) {
+      patientLocalIds.add(patientLocalId);
     }
 
-    public void setNumberOfPatients(int numberOfPatients) {
-        this.numberOfPatients = numberOfPatients;
+  }
+
+  /**
+   * Todo.
+   * @param patientLocalIds Todo.
+   */
+  public void addPatientLocalIds(Set<String> patientLocalIds) {
+
+    if (patientLocalIds != null && patientLocalIds.size() > 0) {
+      this.patientLocalIds.addAll(patientLocalIds);
     }
 
-    public boolean isValid() {
-        return isValid;
+  }
+
+  /**
+   * Todo.
+   * @param patientDktkId Todo.
+   */
+  public void addPatientDktkId(String patientDktkId) {
+
+    if (patientDktkId != null) {
+      patientDktkIds.add(patientDktkId);
     }
 
-    public void setValid(boolean valid) {
-        isValid = valid;
+  }
+
+  /**
+   * Todo.
+   * @param patientDktkIds Todo.
+   */
+  public void addPatientDktkIds(Set<String> patientDktkIds) {
+
+    if (patientDktkIds != null && patientDktkIds.size() > 0) {
+      this.patientDktkIds.addAll(patientDktkIds);
     }
 
-
-    public void addPatientLocalId (String patientLocalId){
-
-        if (patientLocalId != null) {
-            patientLocalIds.add(patientLocalId);
-        }
-
-    }
-
-    public void addPatientLocalIds (Set<String> patientLocalIds){
-
-        if (patientLocalIds != null && patientLocalIds.size() > 0){
-            this.patientLocalIds.addAll(patientLocalIds);
-        }
-
-    }
-
-    public void addPatientDktkId (String patientDktkId){
-
-        if (patientDktkId != null){
-            patientDktkIds.add(patientDktkId);
-        }
-
-    }
-
-    public void addPatientDktkIds (Set<String> patientDktkIds){
-
-        if (patientDktkIds != null && patientDktkIds.size() > 0){
-            this.patientDktkIds.addAll(patientDktkIds);
-        }
-
-    }
+  }
 
 
-    public Set<String> getPatientLocalIds(){
-        return patientLocalIds;
-    }
+  public Set<String> getPatientLocalIds() {
+    return patientLocalIds;
+  }
 
-    public Set<String> getPatientDktkIds(){
-        return patientDktkIds;
-    }
+  public Set<String> getPatientDktkIds() {
+    return patientDktkIds;
+  }
 
 
 }

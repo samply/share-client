@@ -8,13 +8,21 @@ import de.samply.share.client.util.db.InquiryUtil;
 
 public class ReplyRulesApplierUtil {
 
-    public static void handleBrokerConnectorException(BrokerConnectorException e, Integer inquiryDetailsId) {
-        Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetailsId);
+  /**
+   * Handle BrokerConnectorException for a Inquiry.
+   * @param e the BrokerConnectorException
+   * @param inquiryDetailsId the inquiryDetailsId of an Inquiry.
+   */
+  public static void handleBrokerConnectorException(BrokerConnectorException e,
+      Integer inquiryDetailsId) {
+    Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetailsId);
 
-        if (inquiry == null) {
-            EventLogUtil.insertEventLogEntry(EventMessageType.E_BROKER_REPLY_ERROR, e.getMessage());
-        } else {
-            EventLogUtil.insertEventLogEntryForInquiryId(EventMessageType.E_BROKER_REPLY_ERROR, inquiry.getId(), e.getMessage());
-        }
+    if (inquiry == null) {
+      EventLogUtil.insertEventLogEntry(EventMessageType.E_BROKER_REPLY_ERROR, e.getMessage());
+    } else {
+      EventLogUtil
+          .insertEventLogEntryForInquiryId(EventMessageType.E_BROKER_REPLY_ERROR, inquiry.getId(),
+              e.getMessage());
     }
+  }
 }

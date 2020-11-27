@@ -4,19 +4,19 @@ import org.togglz.core.Feature;
 import org.togglz.core.annotation.Label;
 import org.togglz.core.context.FeatureContext;
 
-public enum  ClientFeature implements Feature {
+public enum ClientFeature implements Feature {
 
-    @Label("DKTK Central Search")
-    DKTK_CENTRAL_SEARCH,
+  @Label("DKTK Central Search")
+  DKTK_CENTRAL_SEARCH,
 
-    @Label("BBMRI Directory Sync")
-    BBMRI_DIRECTORY_SYNC,
+  @Label("BBMRI Directory Sync")
+  BBMRI_DIRECTORY_SYNC,
 
-    @Label("NNGM CTS")
-    NNGM_CTS;
+  @Label("NNGM CTS")
+  NNGM_CTS;
 
-    public boolean isActive() {
-        return FeatureContext.getFeatureManager().isActive(this);
-    }
+  public boolean isActive() {
+    return FeatureContext.getFeatureManager().isActive(this);
+  }
 
 }

@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.samply.de/common"
-               xsi:schemaLocation="http://schema.samply.de/common http://schema.samply.de/config/Common.Config.xsd ">
-    <Proxy>
-        <HTTP>
-            <Url/>
-            <Username/>
-            <Password/>
-        </HTTP>
-        <HTTPS>
-            <Url/>
-            <Username/>
-            <Password/>
-        </HTTPS>
-        <Realm/>
-        <NoProxyHosts>
-            <Host/>
-        </NoProxyHosts>
-    </Proxy>
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://schema.samply.de/common"
+  xsi:schemaLocation="http://schema.samply.de/common http://schema.samply.de/config/Common.Config.xsd ">
+  <Proxy>
+    <HTTP>
+      <Password/>
+      <Url/>
+      <Username/>
+    </HTTP>
+    <HTTPS>
+      <Password/>
+      <Url/>
+      <Username/>
+    </HTTPS>
+    <NoProxyHosts>
+      <Host/>
+    </NoProxyHosts>
+    <Realm/>
+  </Proxy>
 </Configuration>

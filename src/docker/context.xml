@@ -18,30 +18,30 @@
 <!-- The contents of this file will be loaded for each web application -->
 <Context>
 
-    <!-- Default set of monitored resources. If one of these changes, the    -->
-    <!-- web application will be reloaded.                                   -->
-    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+  <!-- Default set of monitored resources. If one of these changes, the    -->
+  <!-- web application will be reloaded.                                   -->
+  <Resource
+    auth="Container"
+    driverClassName="org.postgresql.Driver"
+    logAbandoned="true"
+    maxIdle="20"
+    maxTotal="50"
+    maxWaitMillis="-1"
+    name="jdbc/postgres"
+    password="{postgres-pass}"
+    removeAbandonedOnBorrow="true"
+    removeAbandonedOnMaintenance="true"
+    removeAbandonedTimeout="120"
+    testOnBorrow="true"
+    type="javax.sql.DataSource"
+    url="jdbc:postgresql://{postgres-host}:{postgres-port}/{postgres-db}"
+    username="{postgres-user}"
+    validationQuery="select 1"/>
 
-    <!-- Uncomment this to disable session persistence across Tomcat restarts -->
-    <!--
-    <Manager pathname="" />
-    -->
-    <Resource
-            name="jdbc/postgres"
-            auth="Container"
-            type="javax.sql.DataSource"
-            driverClassName="org.postgresql.Driver"
-            url="jdbc:postgresql://{postgres-host}:{postgres-port}/{postgres-db}"
-            username="{postgres-user}"
-            password="{postgres-pass}"
-            maxTotal="50"
-            maxIdle="20"
-            removeAbandonedOnBorrow="true"
-            removeAbandonedOnMaintenance="true"
-            removeAbandonedTimeout="120"
-            logAbandoned="true"
-            maxWaitMillis="-1"
-            testOnBorrow="true"
-            validationQuery="select 1"/>
+  <!-- Uncomment this to disable session persistence across Tomcat restarts -->
+  <!--
+  <Manager pathname="" />
+  -->
+  <WatchedResource>WEB-INF/web.xml</WatchedResource>
 
 </Context>

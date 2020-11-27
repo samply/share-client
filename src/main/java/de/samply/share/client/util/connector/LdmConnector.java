@@ -1,167 +1,141 @@
-/*
- * Copyright (c) 2017 Medical Informatics Group (MIG),
- * Universitätsklinikum Frankfurt
- *
- * Contact: www.mig-frankfurt.de
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see <http://www.gnu.org/licenses>.
- *
- * Additional permission under GNU GPL version 3 section 7:
- *
- * If you modify this Program, or any covered work, by linking or combining it
- * with Jersey (https://jersey.java.net) (or a modified version of that
- * library), containing parts covered by the terms of the General Public
- * License, version 2.0, the licensors of this Program grant you additional
- * permission to convey the resulting work.
- */
-
 package de.samply.share.client.util.connector;
 
 import de.samply.common.ldmclient.model.LdmQueryResult;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
-import de.samply.share.client.util.connector.exception.LDMConnectorException;
+import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.model.common.QueryResultStatistic;
-
 import java.io.IOException;
 
 /**
- * An interface for a connector to local data management systems
+ * An interface for a connector to local data management systems.
  *
- * @param <T_QUERY>             QueryResult type
- * @param <T_POST_PARAMETER>    postQuery parameter type
- * @param <T_RESULT>            Query type
+ * @param <QueryT>         QueryResult type
+ * @param <PostParameterT> postQuery parameter type
+ * @param <T_RESULT>       Query type
  */
-public interface LdmConnector<T_QUERY, T_POST_PARAMETER extends AbstractLdmPostQueryParameter, T_RESULT> {
+public interface LdmConnector<QueryT, PostParameterT extends AbstractLdmPostQueryParameter,
+    T_RESULT> {
 
-    String TEMPDIR = "javax.servlet.context.tempdir";
-    String XML_SUFFIX = ".xml";
+  String TEMPDIR = "javax.servlet.context.tempdir";
+  String XML_SUFFIX = ".xml";
 
-    /**
-     * Posts a query to local datamanagement and returns the location of the result.
-     *
-     * @param query         the query
-     * @param parameter     combines parameters for posting a query
-     * @return              the location of the result
-     * @throws              LDMConnectorException
-     */
-    String postQuery(T_QUERY query, T_POST_PARAMETER parameter) throws LDMConnectorException;
+  /**
+   * Posts a query to local datamanagement and returns the location of the result.
+   *
+   * @param query     the query
+   * @param parameter combines parameters for posting a query
+   * @return the location of the result
+   * @throws LdmConnectorException LdmConnectorException
+   */
+  String postQuery(QueryT query, PostParameterT parameter) throws LdmConnectorException;
 
-    /**
-     * Gets the query result from a given query location.
-     *
-     * @param location the location
-     * @return the results
-     * @throws LDMConnectorException
-     */
-    T_RESULT getResults(String location) throws LDMConnectorException;
+  /**
+   * Gets the query result from a given query location.
+   *
+   * @param location the location
+   * @return the results
+   * @throws LdmConnectorException LdmConnectorException
+   */
+  T_RESULT getResults(String location) throws LdmConnectorException;
 
-    T_RESULT getResultsFromPage(String location, int page) throws LDMConnectorException;
+  T_RESULT getResultsFromPage(String location, int page) throws LdmConnectorException;
 
-    /**
-     * Gets the stats for a query on the given location.
-     *
-     * @param location the location
-     * @return the stats
-     * @throws LDMConnectorException
-     */
-    LdmQueryResult getStatsOrError(String location) throws LDMConnectorException;
+  /**
+   * Gets the stats for a query on the given location.
+   *
+   * @param location the location
+   * @return the stats
+   * @throws LdmConnectorException LdmConnectorException
+   */
+  LdmQueryResult getStatsOrError(String location) throws LdmConnectorException;
 
-    QueryResultStatistic getQueryResultStatistic(String location) throws LDMConnectorException;
+  QueryResultStatistic getQueryResultStatistic(String location) throws LdmConnectorException;
 
-    /**
-     * Gets the result count for a query on a given location.
-     *
-     * @param location the location
-     * @return the result count
-     * @throws LDMConnectorException
-     */
-    Integer getResultCount(String location) throws LDMConnectorException;
+  /**
+   * Gets the result count for a query on a given location.
+   *
+   * @param location the location
+   * @return the result count
+   * @throws LdmConnectorException LdmConnectorException
+   */
+  Integer getResultCount(String location) throws LdmConnectorException;
 
-    /**
-     * Gets the page count for a query on a given location.
-     *
-     * @param location the location
-     * @return the result count
-     * @throws LDMConnectorException
-     */
-    Integer getPageCount(String location) throws LDMConnectorException;
+  /**
+   * Gets the page count for a query on a given location.
+   *
+   * @param location the location
+   * @return the result count
+   * @throws LdmConnectorException LdmConnectorException
+   */
+  Integer getPageCount(String location) throws LdmConnectorException;
 
-    /**
-     * Check if the first result page is available
-     *
-     * @return true if the result is available or if the stats are available and there are 0 results
-     * @throws LDMConnectorException
-     */
-    boolean isFirstResultPageAvailable(String location) throws LDMConnectorException;
+  /**
+   * Check if the first result page is available.
+   *
+   * @return true if the result is available or if the stats are available and there are 0 results
+   * @throws LdmConnectorException LdmConnectorException
+   */
+  boolean isFirstResultPageAvailable(String location) throws LdmConnectorException;
 
-    /**
-     * Check if the last page of the result is already written.
-     *
-     * @return true if the result is available or if the stats are available and there are 0 results
-     * @throws LDMConnectorException
-     */
-    boolean isResultDone(String location, QueryResultStatistic qrs) throws LDMConnectorException;
+  /**
+   * Check if the last page of the result is already written.
+   *
+   * @return true if the result is available or if the stats are available and there are 0 results
+   * @throws LdmConnectorException LdmConnectorException
+   */
+  boolean isResultDone(String location, QueryResultStatistic qrs) throws LdmConnectorException;
 
-    /**
-     * Write a page of transformed patients to disk (used for dryrun)
-     *
-     * @param queryResult
-     * @param index       the number of the page in the result
-     * @throws IOException
-     */
-    void writeQueryResultPageToDisk(T_RESULT queryResult, int index) throws IOException;
+  /**
+   * Write a page of transformed patients to disk (used for dryrun).
+   *
+   * @param queryResult the queryResult
+   * @param index       the number of the page in the result
+   * @throws IOException IOException
+   */
+  void writeQueryResultPageToDisk(T_RESULT queryResult, int index) throws IOException;
 
-    /**
-     * Get the name and version number of the local datamanagement
-     *
-     * @return local datamanagement name and version number, separated by a forward slash
-     */
-    String getUserAgentInfo() throws LDMConnectorException;
+  /**
+   * Get the name and version number of the local datamanagement.
+   *
+   * @return local datamanagement name and version number, separated by a forward slash
+   */
+  String getUserAgentInfo() throws LdmConnectorException;
 
-    /**
-     * Check if the local datamanagement is reachable
-     *
-     * @return CheckResult with outcome and messages
-     */
-    CheckResult checkConnection();
+  /**
+   * Check if the local datamanagement is reachable.
+   *
+   * @return CheckResult with outcome and messages
+   */
+  CheckResult checkConnection();
 
-    /**
-     * Get the amount of patients in centraxx
-     *
-     * @param dktkFlagged when true, only count those with dktk consent. when false, count ALL (not just those without consent)
-     * @return the amount of patients in centraxx
-     */
-    int getPatientCount(boolean dktkFlagged) throws LDMConnectorException, InterruptedException;
+  /**
+   * Get the amount of patients in centraxx.
+   *
+   * @param dktkFlagged when true, only count those with dktk consent. when false, count ALL (not
+   *                    just those without consent)
+   * @return the amount of patients in centraxx
+   */
+  int getPatientCount(boolean dktkFlagged) throws LdmConnectorException, InterruptedException;
 
-    /**
-     * Execute a reference query and return amount of patients and execution time
-     *
-     * @param referenceQuery the query to execute
-     * @return amount of patients and execution time
-     */
-    ReferenceQueryCheckResult getReferenceQueryCheckResult(T_QUERY referenceQuery) throws LDMConnectorException;
+  /**
+   * Execute a reference query and return amount of patients and execution time.
+   *
+   * @param referenceQuery the query to execute
+   * @return amount of patients and execution time
+   */
+  ReferenceQueryCheckResult getReferenceQueryCheckResult(QueryT referenceQuery)
+      throws LdmConnectorException;
 
-    default boolean isLdmCentraxx() {
-        return false;
-    }
+  default boolean isLdmCentraxx() {
+    return false;
+  }
 
-    default boolean isLdmSamplystoreBiobank() {
-        return false;
-    }
+  default boolean isLdmSamplystoreBiobank() {
+    return false;
+  }
 
-    default boolean isLdmCql(){
-        return false;
-    }
+  default boolean isLdmCql() {
+    return false;
+  }
 }

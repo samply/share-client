@@ -1,1 +1,0 @@
-UPDATE samply.job_schedule SET cron_expression ='0/1 * * * * ?' where job_key = 'DecentralSearchGroup.CollectInquiriesJob';

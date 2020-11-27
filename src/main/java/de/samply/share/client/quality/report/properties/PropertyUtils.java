@@ -1,85 +1,66 @@
-package de.samply.share.client.quality.report.properties;/*
- * Copyright (C) 2018 Medizinische Informatik in der Translationalen Onkologie,
- * Deutsches Krebsforschungszentrum in Heidelberg
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses.
- *
- * Additional permission under GNU GPL version 3 section 7:
- *
- * If you modify this Program, or any covered work, by linking or combining it
- * with Jersey (https://jersey.java.net) (or a modified version of that
- * library), containing parts covered by the terms of the General Public
- * License, version 2.0, the licensors of this Program grant you additional
- * permission to convey the resulting work.
- */
+package de.samply.share.client.quality.report.properties;
 
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.util.db.ConfigurationUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class PropertyUtils {
 
-    private static String[] possibleSeparators = {",", ";"};
+  private static String[] possibleSeparators = {",", ";"};
 
-    public static String[] getListOfProperties (EnumConfiguration enumConfiguration){
+  /**
+   * Todo.
+   * @param enumConfiguration Todo.
+   * @return Todo.
+   */
+  public static String[] getListOfProperties(EnumConfiguration enumConfiguration) {
 
-        String configurationElementValue = ConfigurationUtil.getConfigurationElementValue(enumConfiguration);
-        return getListOfProperties(configurationElementValue);
+    String configurationElementValue = ConfigurationUtil
+        .getConfigurationElementValue(enumConfiguration);
+    return getListOfProperties(configurationElementValue);
 
-    }
+  }
 
-    private static String[] getListOfProperties (String propertiesList){
+  private static String[] getListOfProperties(String propertiesList) {
 
-        List<String> properties = new ArrayList<>();
+    List<String> properties = new ArrayList<>();
 
-        if (propertiesList != null && propertiesList.length() > 0){
+    if (propertiesList != null && propertiesList.length() > 0) {
 
-            String separator = getSeparator(propertiesList);
-            if (separator == null){
+      String separator = getSeparator(propertiesList);
+      if (separator == null) {
 
-                properties.add(propertiesList);
+        properties.add(propertiesList);
 
-            } else {
+      } else {
 
-                String[] splittedProperties = propertiesList.split(separator);
+        String[] splittedProperties = propertiesList.split(separator);
 
-                for (String property : splittedProperties){
-                    property = cleanProperty(property);
-                    properties.add(property);
-                }
-
-            }
+        for (String property : splittedProperties) {
+          property = cleanProperty(property);
+          properties.add(property);
         }
 
-        return properties.toArray(new String[properties.size()]);
-
+      }
     }
 
-    private static String cleanProperty (String property){
-        return property.replaceAll("\\s+","");
+    return properties.toArray(new String[properties.size()]);
+
+  }
+
+  private static String cleanProperty(String property) {
+    return property.replaceAll("\\s+", "");
+  }
+
+  private static String getSeparator(String list) {
+
+    for (String separator : possibleSeparators) {
+      if (list.contains(separator)) {
+        return separator;
+      }
     }
 
-    private static String getSeparator (String list){
-
-        for (String separator : possibleSeparators){
-            if (list.contains(separator)){
-                return separator;
-            }
-        }
-
-        return null;
-    }
+    return null;
+  }
 }

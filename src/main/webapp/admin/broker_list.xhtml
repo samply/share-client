@@ -1,32 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
-  ~ Universitätsklinikum Frankfurt
-  ~
-  ~ Contact: www.mig-frankfurt.de
-  ~
-  ~ This program is free software; you can redistribute it and/or modify it under
-  ~ the terms of the GNU Affero General Public License as published by the Free
-  ~ Software Foundation; either version 3 of the License, or (at your option) any
-  ~ later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful, but WITHOUT
-  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-  ~ details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
-  ~
-  ~ Additional permission under GNU GPL version 3 section 7:
-  ~
-  ~ If you modify this Program, or any covered work, by linking or combining it
-  ~ with Jersey (https://jersey.java.net) (or a modified version of that
-  ~ library), containing parts covered by the terms of the General Public
-  ~ License, version 2.0, the licensors of this Program grant you additional
-  ~ permission to convey the resulting work.
-  -->
+
 
 <ui:composition template="/WEB-INF/templates/globalTemplate.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
@@ -42,7 +16,8 @@
     <ui:define name="title">#{msg.bl_title}</ui:define>
 
     <ui:define name="additional-css">
-        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"/>
+        <h:outputStylesheet library="webjars"
+                            name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"/>
     </ui:define>
 
     <ui:define name="additional-js">
@@ -81,18 +56,21 @@
                                           styleClass="form-control-static"/>
                         </td>
 
-                        <ui:fragment rendered="#{broker.status != BrokerStatusType.BS_ACTIVATION_PENDING}">
-                            <td>
-                                <h:outputText value="#{msg[broker.status]}" styleClass="form-control-static"/>
-                            </td>
+                        <ui:fragment
+                                rendered="#{broker.status != BrokerStatusType.BS_ACTIVATION_PENDING}">
+                            <td><h:outputText value="#{msg[broker.status]}"
+                                              styleClass="form-control-static"/></td>
                         </ui:fragment>
-                        <ui:fragment rendered="#{broker.status == BrokerStatusType.BS_ACTIVATION_PENDING}">
+                        <ui:fragment
+                                rendered="#{broker.status == BrokerStatusType.BS_ACTIVATION_PENDING}">
                             <td>
                                 <div class="input-group input-group-sm">
-                                    <h:inputText styleClass="form-control" binding="#{activationCode}" size="8"/>
+                                    <h:inputText styleClass="form-control"
+                                                 binding="#{activationCode}" size="8"/>
                                     <span class="input-group-btn">
-                                                <h:commandButton value="#{msg.bl_completeActivation}"
-                                                                 styleClass="btn btn-default btn-sm">
+                                                <h:commandButton
+                                                        value="#{msg.bl_completeActivation}"
+                                                        styleClass="btn btn-default btn-sm">
                                                     <f:ajax execute="@form" render="@form"
                                                             listener="#{brokerBean.sendActivationCode(broker, activationCode.value)}"/>
                                                 </h:commandButton>
@@ -102,7 +80,8 @@
                         </ui:fragment>
 
                         <td>
-                            <h:outputText value="#{broker.lastChecked}" styleClass="form-control-static"/>
+                            <h:outputText value="#{broker.lastChecked}"
+                                          styleClass="form-control-static"/>
                         </td>
                         <td>
                             <h:commandLink value=""
@@ -130,7 +109,8 @@
                 </f:facet>
             </sscl:formEntryElement>
 
-            <sscl:formEntryElement labelFor="newBrokerEmail" labelText="#{msg.bl_newEmail}" id="newBrokerEmailElement">
+            <sscl:formEntryElement labelFor="newBrokerEmail" labelText="#{msg.bl_newEmail}"
+                                   id="newBrokerEmailElement">
                 <f:facet name="input">
                     <h:inputText styleClass="form-control" value="#{brokerBean.newBrokerEmail}"
                                  id="newBrokerEmail" size="60" required="true"
@@ -138,7 +118,8 @@
                 </f:facet>
             </sscl:formEntryElement>
             <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
-                <sscl:formEntryElement labelFor="newBrokerFullResult" labelText="#{msg.bl_requestFullResults}"
+                <sscl:formEntryElement labelFor="newBrokerFullResult"
+                                       labelText="#{msg.bl_requestFullResults}"
                                        id="newBrokerFullResultElement">
                     <f:facet name="input">
                         <h:selectBooleanCheckbox styleClass="form-control switch"
@@ -151,10 +132,12 @@
             <sscl:formEntryElement labelFor="newBrokerReplyRule" labelText="#{msg.ih_autoReply}"
                                    id="newBrokerReplyRuleElement">
                 <f:facet name="input">
-                    <h:selectOneMenu value="#{brokerBean.newBrokerReplyRule}" styleClass="form-control"
+                    <h:selectOneMenu value="#{brokerBean.newBrokerReplyRule}"
+                                     styleClass="form-control"
                                      id="newBrokerReplyRule">
                         <f:selectItems value="#{applicationBean.replyRuleTypes}" var="replyRule"
-                                       itemValue="#{replyRule}" itemLabel="#{msg[replyRule.literal]}"/>
+                                       itemValue="#{replyRule}"
+                                       itemLabel="#{msg[replyRule.literal]}"/>
                     </h:selectOneMenu>
                 </f:facet>
             </sscl:formEntryElement>

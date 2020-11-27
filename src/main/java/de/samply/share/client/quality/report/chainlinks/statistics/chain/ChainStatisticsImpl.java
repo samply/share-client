@@ -1,272 +1,259 @@
-package de.samply.share.client.quality.report.chainlinks.statistics.chain;/*
-* Copyright (C) 2017 Medizinische Informatik in der Translationalen Onkologie,
-* Deutsches Krebsforschungszentrum in Heidelberg
-*
-* This program is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Affero General Public License as published by the Free
-* Software Foundation; either version 3 of the License, or (at your option) any
-* later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program; if not, see http://www.gnu.org/licenses.
-*
-* Additional permission under GNU GPL version 3 section 7:
-*
-* If you modify this Program, or any covered work, by linking or combining it
-* with Jersey (https://jersey.java.net) (or a modified version of that
-* library), containing parts covered by the terms of the General Public
-* License, version 2.0, the licensors of this Program grant you additional
-* permission to convey the resulting work.
-*/
+package de.samply.share.client.quality.report.chainlinks.statistics.chain;
 
 import de.samply.share.client.quality.report.chainlinks.statistics.chainlink.ChainLinkStatisticsConsumer;
 import de.samply.share.client.util.Utils;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class ChainStatisticsImpl implements ChainStatistics {
 
-    private final static double SECONDS_IN_A_MINUTE = 60.0;
-    private final static int MINUTES_IN_AN_HOUR = 60;
-    private final static int MINUTES_IN_A_DAY = MINUTES_IN_AN_HOUR * 24;
-    private final static double NANOSECONDS_IN_A_SECOND = 1000000000.0;
+  private static final double SECONDS_IN_A_MINUTE = 60.0;
+  private static final int MINUTES_IN_AN_HOUR = 60;
+  private static final int MINUTES_IN_A_DAY = MINUTES_IN_AN_HOUR * 24;
+  private static final double NANOSECONDS_IN_A_SECOND = 1000000000.0;
 
 
-    private List<ChainLinkStatisticsConsumer> chainLinkStatisticsConsumerList = new ArrayList<>();
-    private long startNanoTime;
-    private Date startDate;
-    private Double globalPercentage;
-    private Double minimumPercentageToBeConsidered;
+  private List<ChainLinkStatisticsConsumer> chainLinkStatisticsConsumerList = new ArrayList<>();
+  private long startNanoTime;
+  private Date startDate;
+  private Double globalPercentage;
+  private Double minimumPercentageToBeConsidered;
 
 
-    {
-        startNanoTime = System.nanoTime();
-        startDate = new Date();
-        globalPercentage = 0.0;
-        minimumPercentageToBeConsidered = getMinimumPercentageToBeConsidered();
+  {
+    startNanoTime = System.nanoTime();
+    startDate = new Date();
+    globalPercentage = 0.0;
+    minimumPercentageToBeConsidered = getMinimumPercentageToBeConsidered();
+
+  }
+
+  /**
+   * Todo.
+   * @param chainLinkStatisticsConsumer Todo.
+   */
+  public void addChainLinkStatisticsConsumer(
+      ChainLinkStatisticsConsumer chainLinkStatisticsConsumer) {
+
+    if (chainLinkStatisticsConsumer != null) {
+      chainLinkStatisticsConsumerList.add(chainLinkStatisticsConsumer);
+    }
+
+  }
+
+
+  @Override
+  public int getPercentage() {
+
+    long elapsedTime = System.nanoTime() - startNanoTime;
+    long estimatedNanoTimeToBeCompleted = getEstimatedNanoTimeToBeCompleted();
+
+    double percentage = 100.0 * elapsedTime / (elapsedTime + estimatedNanoTimeToBeCompleted);
+    double maxPercentageToBeShown = getMaxPercentageToBeShown();
+
+    if (globalPercentage < percentage) {
+      globalPercentage = percentage;
+    }
+    if (maxPercentageToBeShown > minimumPercentageToBeConsidered
+        && globalPercentage > maxPercentageToBeShown) {
+      globalPercentage = maxPercentageToBeShown;
+    }
+
+    return globalPercentage.intValue();
+
+  }
+
+  private double getMinimumPercentageToBeConsidered() {
+    return 5.0 + Math.random() * (10.0 - 5.0);
+  }
+
+  private double getMaxPercentageToBeShown() {
+
+    int numberOfConsumers = chainLinkStatisticsConsumerList.size();
+    int numberOfFinalizedConsumers = 0;
+
+    for (ChainLinkStatisticsConsumer chainLinkStatisticsConsumer :
+        chainLinkStatisticsConsumerList) {
+      if (chainLinkStatisticsConsumer.isFinalized()) {
+        numberOfFinalizedConsumers++;
+      }
+    }
+
+    return (numberOfConsumers > 0) ? ((double) (((double) numberOfFinalizedConsumers)
+        / ((double) numberOfConsumers))) : 0;
+
+
+  }
+
+  @Override
+  public String getEstimatedTimeToBeCompleted() {
+
+    int estimatedTimeToBeCompletedInMinutes = getEstimatedTimeToBeCompletedInMinutes();
+    return printTimeInMinutes(estimatedTimeToBeCompletedInMinutes);
+
+  }
+
+  private String printTimeInMinutes(int timeInMinutes) {
+
+    StringBuilder stringBuilder = new StringBuilder();
+
+    if (timeInMinutes >= MINUTES_IN_A_DAY) {
+
+      int estimatedTimeToBeCompletedInDays = timeInMinutes / MINUTES_IN_A_DAY;
+
+      stringBuilder.append(estimatedTimeToBeCompletedInDays);
+      stringBuilder.append(" days ");
+
+      timeInMinutes = timeInMinutes - estimatedTimeToBeCompletedInDays * MINUTES_IN_A_DAY;
 
     }
 
-    public void addChainLinkStatisticsConsumer (ChainLinkStatisticsConsumer chainLinkStatisticsConsumer){
+    if (timeInMinutes >= MINUTES_IN_AN_HOUR) {
 
-        if (chainLinkStatisticsConsumer != null){
-            chainLinkStatisticsConsumerList.add(chainLinkStatisticsConsumer);
+      int estimatedTimeToBeCompletedInHours = timeInMinutes / MINUTES_IN_AN_HOUR;
+
+      stringBuilder.append(estimatedTimeToBeCompletedInHours);
+      stringBuilder.append(" h ");
+
+      timeInMinutes = timeInMinutes - estimatedTimeToBeCompletedInHours * MINUTES_IN_AN_HOUR;
+
+
+    }
+
+    stringBuilder.append(timeInMinutes);
+    stringBuilder.append(" min");
+
+    return stringBuilder.toString();
+
+  }
+
+
+  private int getEstimatedTimeToBeCompletedInMinutes() {
+
+    long estimatedNanoTimeToBeCompleted = getEstimatedNanoTimeToBeCompleted();
+    return convertNanosecondsToMinutes(estimatedNanoTimeToBeCompleted);
+
+  }
+
+  private int convertNanosecondsToMinutes(long nanoseconds) {
+
+    double nanosecondD = (double) nanoseconds;
+
+    double minutesD = nanosecondD / (SECONDS_IN_A_MINUTE * NANOSECONDS_IN_A_SECOND);
+
+    return Double.valueOf(minutesD).intValue();
+
+  }
+
+
+  private long getEstimatedNanoTimeToBeCompleted() {
+
+    long estimatedTimeToBeCompleted = 0;
+
+    for (int i = chainLinkStatisticsConsumerList.size() - 1; i >= 0; i--) {
+
+      ChainLinkStatisticsConsumer chainLinkStatisticsConsumer = chainLinkStatisticsConsumerList
+          .get(i);
+
+      if (!chainLinkStatisticsConsumer.isFinalized()) {
+
+        estimatedTimeToBeCompleted += chainLinkStatisticsConsumer.getRemainingNanoTime();
+
+        if (chainLinkStatisticsConsumer.isProcessingElements()) {
+          return estimatedTimeToBeCompleted;
         }
 
-    }
-
-
-    @Override
-    public int getPercentage() {
-
-        long elapsedTime = System.nanoTime() - startNanoTime;
-        long estimatedNanoTimeToBeCompleted = getEstimatedNanoTimeToBeCompleted();
-
-        double percentage = 100.0 * elapsedTime / (elapsedTime + estimatedNanoTimeToBeCompleted);
-        double maxPercentageToBeShown = getMaxPercentageToBeShown();
-
-        if (globalPercentage < percentage){
-            globalPercentage = percentage;
-        }
-        if (maxPercentageToBeShown > minimumPercentageToBeConsidered && globalPercentage > maxPercentageToBeShown){
-            globalPercentage = maxPercentageToBeShown;
-        }
-
-        return globalPercentage.intValue();
+      }
 
     }
 
-    private double getMinimumPercentageToBeConsidered(){
-        return  5.0 + Math.random() * (10.0 - 5.0);
-    }
+    return estimatedTimeToBeCompleted;
+  }
 
-    private double getMaxPercentageToBeShown(){
+  @Override
+  public boolean isFinalized() {
 
-        int numberOfConsumers = chainLinkStatisticsConsumerList.size();
-        int numberOfFinalizedConsumers = 0;
+    for (ChainLinkStatisticsConsumer chainLinkStatisticsConsumer :
+        chainLinkStatisticsConsumerList) {
 
-        for (ChainLinkStatisticsConsumer chainLinkStatisticsConsumer : chainLinkStatisticsConsumerList){
-            if (chainLinkStatisticsConsumer.isFinalized()){
-                numberOfFinalizedConsumers ++;
-            }
-        }
-
-        return (numberOfConsumers > 0) ? ((double) (((double) numberOfFinalizedConsumers) / ((double) numberOfConsumers))) : 0;
-
+      if (!chainLinkStatisticsConsumer.isFinalized()) {
+        return false;
+      }
 
     }
 
-    @Override
-    public String getEstimatedTimeToBeCompleted() {
+    return true;
+  }
 
-        int estimatedTimeToBeCompletedInMinutes = getEstimatedTimeToBeCompletedInMinutes();
-        return printTimeInMinutes(estimatedTimeToBeCompletedInMinutes);
+  @Override
+  public List<String> getMessages() {
+
+    List<String> messages = new ArrayList<>();
+    for (ChainLinkStatisticsConsumer chainLinkStatisticsConsumer :
+        chainLinkStatisticsConsumerList) {
+
+      if (!chainLinkStatisticsConsumer.isFinalized() && chainLinkStatisticsConsumer
+          .isProcessingElements()) {
+        messages.add(chainLinkStatisticsConsumer.getMessage());
+      }
 
     }
 
-    private String printTimeInMinutes(int timeInMinutes){
+    return messages;
 
-        StringBuilder stringBuilder = new StringBuilder();
+  }
 
-        if (timeInMinutes >= MINUTES_IN_A_DAY) {
+  @Override
+  public boolean isAccurate() {
 
-            int estimatedTimeToBeCompletedInDays = timeInMinutes / MINUTES_IN_A_DAY;
+    return isConsumerWithMaximalWorkloadBeingProcessed();
 
-            stringBuilder.append(estimatedTimeToBeCompletedInDays);
-            stringBuilder.append(" days ");
+  }
 
-            timeInMinutes = timeInMinutes - estimatedTimeToBeCompletedInDays * MINUTES_IN_A_DAY;
+  private boolean isConsumerWithMaximalWorkloadBeingProcessed() {
 
-        }
+    ChainLinkStatisticsConsumer consumerWithMaximalWorkload = null;
 
-        if (timeInMinutes >= MINUTES_IN_AN_HOUR){
+    for (ChainLinkStatisticsConsumer chainLinkStatisticsConsumer :
+        chainLinkStatisticsConsumerList) {
 
-            int estimatedTimeToBeCompletedInHours = timeInMinutes / MINUTES_IN_AN_HOUR;
+      if (consumerWithMaximalWorkload == null) {
 
-            stringBuilder.append(estimatedTimeToBeCompletedInHours);
-            stringBuilder.append(" h ");
+        consumerWithMaximalWorkload = chainLinkStatisticsConsumer;
 
-            timeInMinutes = timeInMinutes - estimatedTimeToBeCompletedInHours * MINUTES_IN_AN_HOUR;
+      } else {
 
-
+        if (chainLinkStatisticsConsumer.getNumberOfItems() > consumerWithMaximalWorkload
+            .getNumberOfItems()) {
+          consumerWithMaximalWorkload = chainLinkStatisticsConsumer;
         }
 
-        stringBuilder.append(timeInMinutes);
-        stringBuilder.append(" min");
+      }
 
-
-        return stringBuilder.toString();
 
     }
 
+    return consumerWithMaximalWorkload.isProcessingElements() || consumerWithMaximalWorkload
+        .isFinalized();
 
-    private int getEstimatedTimeToBeCompletedInMinutes() {
+  }
 
-        long estimatedNanoTimeToBeCompleted = getEstimatedNanoTimeToBeCompleted();
-        return convertNanosecondsToMinutes(estimatedNanoTimeToBeCompleted);
+  @Override
+  public String getTimeConsumed() {
 
-    }
+    long currentNanoTime = System.nanoTime();
+    long elapsedNanoTime = currentNanoTime - startNanoTime;
 
-    private int convertNanosecondsToMinutes (long nanoseconds){
+    int elapsedTimeInMinutes = convertNanosecondsToMinutes(elapsedNanoTime);
 
-        double dNanoseconds = (double) nanoseconds;
+    return printTimeInMinutes(elapsedTimeInMinutes);
 
-        double dMinutes = dNanoseconds / (SECONDS_IN_A_MINUTE * NANOSECONDS_IN_A_SECOND);
+  }
 
-        return Double.valueOf(dMinutes).intValue();
-
-    }
-
-
-    private long getEstimatedNanoTimeToBeCompleted() {
-
-        long estimatedTimeToBeCompleted = 0;
-
-
-        for (int i = chainLinkStatisticsConsumerList.size() - 1 ; i >= 0; i--){
-
-            ChainLinkStatisticsConsumer chainLinkStatisticsConsumer = chainLinkStatisticsConsumerList.get(i);
-
-            if (!chainLinkStatisticsConsumer.isFinalized()){
-
-                estimatedTimeToBeCompleted += chainLinkStatisticsConsumer.getRemainingNanoTime();
-
-                if (chainLinkStatisticsConsumer.isProcessingElements()){
-                    return estimatedTimeToBeCompleted;
-                }
-
-            }
-
-        }
-
-        return estimatedTimeToBeCompleted;
-    }
-
-    @Override
-    public boolean isFinalized() {
-
-        for (ChainLinkStatisticsConsumer chainLinkStatisticsConsumer : chainLinkStatisticsConsumerList){
-
-            if (!chainLinkStatisticsConsumer.isFinalized()){
-                return false;
-            }
-
-        }
-
-        return true;
-    }
-
-    @Override
-    public List<String> getMessages() {
-
-        List<String> messages = new ArrayList<>();
-        for (ChainLinkStatisticsConsumer chainLinkStatisticsConsumer : chainLinkStatisticsConsumerList){
-
-            if (!chainLinkStatisticsConsumer.isFinalized() && chainLinkStatisticsConsumer.isProcessingElements()){
-                messages.add(chainLinkStatisticsConsumer.getMessage());
-            }
-
-        }
-
-        return messages;
-
-    }
-
-    @Override
-    public boolean isAccurate() {
-
-        return isConsumerWithMaximalWorkloadBeingProcessed();
-
-    }
-
-    private boolean isConsumerWithMaximalWorkloadBeingProcessed(){
-
-        ChainLinkStatisticsConsumer consumerWithMaximalWorkload = null;
-
-        for (ChainLinkStatisticsConsumer chainLinkStatisticsConsumer : chainLinkStatisticsConsumerList){
-
-
-            if (consumerWithMaximalWorkload == null){
-
-                consumerWithMaximalWorkload = chainLinkStatisticsConsumer;
-
-            } else{
-
-                if (chainLinkStatisticsConsumer.getNumberOfItems() > consumerWithMaximalWorkload.getNumberOfItems()){
-                    consumerWithMaximalWorkload = chainLinkStatisticsConsumer;
-                }
-
-            }
-
-
-        }
-
-        return consumerWithMaximalWorkload.isProcessingElements() || consumerWithMaximalWorkload.isFinalized();
-
-    }
-
-    @Override
-    public String getTimeConsumed(){
-
-        long currentNanoTime = System.nanoTime();
-        long elapsedNanoTime = currentNanoTime - startNanoTime;
-
-        int elapsedTimeInMinutes = convertNanosecondsToMinutes(elapsedNanoTime);
-
-        return printTimeInMinutes(elapsedTimeInMinutes);
-
-    }
-
-    @Override
-    public String getStartTime(){
-        return Utils.convertDate(startDate);
-    }
+  @Override
+  public String getStartTime() {
+    return Utils.convertDate(startDate);
+  }
 
 }

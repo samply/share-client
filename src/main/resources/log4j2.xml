@@ -1,51 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
-    <Properties>
-        <Property name="logDirLinux">/tmp/log/</Property>
-        <Property name="logDirWindows">C:/ProgramData/dktk/log/</Property>
-        <Property name="fileBaseName">samply.share.client</Property>
-        <Property name="fileNameSuffix">.log</Property>
-    </Properties>
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>
+    </Console>
 
-    <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>
-        </Console>
+    <RollingFile fileName="${logDirLinux}${fileBaseName}${fileNameSuffix}"
+      filePattern="${logDir}$${date:yyyy-MM}/${fileBaseName}-%d{yyyy-MM-dd}-%i${fileNameSuffix}"
+      name="RollingFileLinux">
+      <PatternLayout>
+        <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy/>
+      </Policies>
+    </RollingFile>
 
-        <RollingFile name="RollingFileLinux" fileName="${logDirLinux}${fileBaseName}${fileNameSuffix}"
-                     filePattern="${logDir}$${date:yyyy-MM}/${fileBaseName}-%d{yyyy-MM-dd}-%i${fileNameSuffix}">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy/>
-            </Policies>
-        </RollingFile>
+    <RollingFile fileName="${logDirWindows}${fileBaseName}${fileNameSuffix}"
+      filePattern="${logDir}$${date:yyyy-MM}/${fileBaseName}-%d{yyyy-MM-dd}-%i${fileNameSuffix}"
+      name="RollingFileWindows">
+      <PatternLayout>
+        <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy/>
+      </Policies>
+    </RollingFile>
+  </Appenders>
 
-        <RollingFile name="RollingFileWindows" fileName="${logDirWindows}${fileBaseName}${fileNameSuffix}"
-                     filePattern="${logDir}$${date:yyyy-MM}/${fileBaseName}-%d{yyyy-MM-dd}-%i${fileNameSuffix}">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy/>
-            </Policies>
-        </RollingFile>
-    </Appenders>
-    <Loggers>
-        <Root level="debug">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="RollingFileLinux"/>
-            <AppenderRef ref="RollingFileWindows"/>
-        </Root>
-        <Logger name="org.apache.http" level="warn"/>
-        <Logger name="org.jooq" level="error"/>
-        <Logger name="org.jooq.Constants" level="error"/>
-        <Logger name="org.quartz" level="error"/>
-        <Logger name="org.flywaydb" level="warn"/>
-        <Logger name="de.samply.common.mdrclient" level="error"/>
-        <Logger name="de.samply.share.client.util.Utils" level="error"/>
-        <Logger name="de.samply.config.util.FileFinderUtil" level="warn"/>
-        <Logger name="ca.uhn.fhir" level="warn"/>
-    </Loggers>
+  <Loggers>
+    <Logger level="warn" name="org.apache.http"/>
+    <Logger level="error" name="org.jooq"/>
+    <Logger level="error" name="org.jooq.Constants"/>
+    <Logger level="error" name="org.quartz"/>
+    <Logger level="warn" name="org.flywaydb"/>
+    <Logger level="error" name="de.samply.common.mdrclient"/>
+    <Logger level="error" name="de.samply.share.client.util.Utils"/>
+    <Logger level="warn" name="de.samply.config.util.FileFinderUtil"/>
+    <Logger level="warn" name="ca.uhn.fhir"/>
+    <Root level="debug">
+      <AppenderRef ref="Console"/>
+      <AppenderRef ref="RollingFileLinux"/>
+      <AppenderRef ref="RollingFileWindows"/>
+    </Root>
+  </Loggers>
+  <Properties>
+    <Property name="logDirLinux">/tmp/log/</Property>
+    <Property name="logDirWindows">C:/ProgramData/dktk/log/</Property>
+    <Property name="fileBaseName">samply.share.client</Property>
+    <Property name="fileNameSuffix">.log</Property>
+  </Properties>
 </Configuration>

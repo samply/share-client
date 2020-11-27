@@ -1,31 +1,6 @@
-package de.samply.share.client.quality.report;/*
-* Copyright (C) 2017 Medizinische Informatik in der Translationalen Onkologie,
-* Deutsches Krebsforschungszentrum in Heidelberg
-*
-* This program is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Affero General Public License as published by the Free
-* Software Foundation; either version 3 of the License, or (at your option) any
-* later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program; if not, see http://www.gnu.org/licenses.
-*
-* Additional permission under GNU GPL version 3 section 7:
-*
-* If you modify this Program, or any covered work, by linking or combining it
-* with Jersey (https://jersey.java.net) (or a modified version of that
-* library), containing parts covered by the terms of the General Public
-* License, version 2.0, the licensors of this Program grant you additional
-* permission to convey the resulting work.
-*/
+package de.samply.share.client.quality.report;
 
 import de.samply.share.common.utils.MdrIdDatatype;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -33,30 +8,44 @@ import java.util.Set;
 public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
 
 
-    private Set<String> stringMdrIds = new HashSet<>();
-    private Set<MdrIdDatatype> mdrIds = new HashSet<>();
+  private Set<String> stringMdrIds = new HashSet<>();
+  private Set<MdrIdDatatype> mdrIds = new HashSet<>();
 
-    @Override
-    public Iterator<MdrIdDatatype> iterator() {
-        return mdrIds.iterator();
-    }
+  @Override
+  public Iterator<MdrIdDatatype> iterator() {
+    return mdrIds.iterator();
+  }
 
-    public void add (MdrIdDatatype mdrId){
+  /**
+   * Todo.
+   * @param mdrId Todo.
+   */
+  public void add(MdrIdDatatype mdrId) {
 
-        mdrIds.add(mdrId);
-        stringMdrIds.add(getKey(mdrId));
-    }
+    mdrIds.add(mdrId);
+    stringMdrIds.add(getKey(mdrId));
+  }
 
-    public boolean isIgnored (MdrIdDatatype mdrId){
+  /**
+   * Todo.
+   * @param mdrId Todo.
+   * @return Todo.
+   */
+  public boolean isIgnored(MdrIdDatatype mdrId) {
 
-        String key = getKey(mdrId);
-        return stringMdrIds.contains(key);
-    }
+    String key = getKey(mdrId);
+    return stringMdrIds.contains(key);
+  }
 
-    public String getKey (MdrIdDatatype mdrId){
+  /**
+   * Todo.
+   * @param mdrId Todo.
+   * @return Todo.
+   */
+  public String getKey(MdrIdDatatype mdrId) {
 
-        return (mdrId != null) ? mdrId.getLatestCentraxx() : null;
+    return (mdrId != null) ? mdrId.getLatestCentraxx() : null;
 
-    }
+  }
 
 }

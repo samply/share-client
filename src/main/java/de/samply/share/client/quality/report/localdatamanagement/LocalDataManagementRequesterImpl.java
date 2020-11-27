@@ -1,38 +1,21 @@
-package de.samply.share.client.quality.report.localdatamanagement;/*
- * Copyright (C) 2017 Medizinische Informatik in der Translationalen Onkologie,
- * Deutsches Krebsforschungszentrum in Heidelberg
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses.
- *
- * Additional permission under GNU GPL version 3 section 7:
- *
- * If you modify this Program, or any covered work, by linking or combining it
- * with Jersey (https://jersey.java.net) (or a modified version of that
- * library), containing parts covered by the terms of the General Public
- * License, version 2.0, the licensors of this Program grant you additional
- * permission to convey the resulting work.
- */
+package de.samply.share.client.quality.report.localdatamanagement;
 
-import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.Error;
+import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.model.common.View;
 import de.samply.share.utils.QueryConverter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import org.apache.http.Consts;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -45,285 +28,306 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
+
+public class LocalDataManagementRequesterImpl extends LocalDataManagementConnector implements
+    LocalDataManagementRequester {
 
 
-public class LocalDataManagementRequesterImpl extends LocalDataManagementConnector implements LocalDataManagementRequester {
+  private static final Logger logger = LogManager.getLogger(LocalDataManagementRequesterImpl.class);
+
+  private final QueryResultStatisticClassGetter queryResultStatisticClassGetter =
+      new QueryResultStatisticClassGetter();
+  private final ErrorClassGetter errorClassGetter = new ErrorClassGetter();
 
 
-    private static final Logger logger = LogManager.getLogger(LocalDataManagementRequesterImpl.class);
+  @Override
+  public LocalDataManagementResponse<String> postViewAndGetLocationUrlStatisticsOnly(View view)
+      throws LocalDataManagementRequesterException {
+    return postViewAndGetLocationUrl(view, true);
+  }
 
-    private final QueryResultStatisticClassGetter queryResultStatisticClassGetter = new QueryResultStatisticClassGetter();
-    private final ErrorClassGetter errorClassGetter = new ErrorClassGetter();
+  @Override
+  public LocalDataManagementResponse<String> postViewAndGetLocationUrl(View view)
+      throws LocalDataManagementRequesterException {
+    return postViewAndGetLocationUrl(view, false);
+  }
 
+  private LocalDataManagementResponse<String> postViewAndGetLocationUrl(View view,
+      boolean statisticsOnly) throws LocalDataManagementRequesterException {
+
+    try {
+
+      return postViewAndGetLocationUrlWithoutExceptions(view, statisticsOnly);
+
+    } catch (Exception e) {
+      throw new LocalDataManagementRequesterException(e);
+    }
+  }
+
+  private LocalDataManagementResponse<String> postViewAndGetLocationUrlWithoutExceptions(View view,
+      boolean statisticsOnly)
+      throws JAXBException, UnsupportedEncodingException, LocalDataManagementRequesterException {
+
+    String localDataManagementUrl = SamplyShareUtils.addTrailingSlash(getLocalDataManagementUrl());
+    localDataManagementUrl += getLocalDataManagementUrlBase();
+
+    MyUri myUri = new MyUri(localDataManagementUrl,
+        LocalDataManagementUrlSuffixAndParameters.REQUESTS_URL_SUFFIX);
+    if (statisticsOnly) {
+      myUri.addParameter(LocalDataManagementUrlSuffixAndParameters.STATISTICS_ONLY_PARAMETER,
+          "true");
+    }
+    String uri = myUri.toString();
+
+    de.samply.share.model.ccp.View ccpView = QueryConverter.convertCommonViewToCcpView(view);
+    String ccpViewS = QueryConverter.viewToXml(ccpView);
+    HttpEntity httpEntity = new StringEntity(ccpViewS);
+
+    HttpPost httpPost = createHttpPost(uri, httpEntity);
+
+    return getLocationHeader(localDataManagementUrl, httpPost);
+
+  }
+
+
+  private LocalDataManagementResponse<String> getLocationHeader(String localDataManagementUrl,
+      HttpPost httpPost) throws LocalDataManagementRequesterException {
+
+    try (CloseableHttpResponse response = getResponse(localDataManagementUrl, httpPost)) {
+
+      LocalDataManagementResponse<String> ldmResponse = new LocalDataManagementResponse<>();
+
+      int statusCode = response.getStatusLine().getStatusCode();
+      ldmResponse.setStatusCode(statusCode);
+
+      Header location = response.getFirstHeader("Location");
+      if (location != null) {
+        ldmResponse.setResponse(location.getValue());
+      }
+
+      return ldmResponse;
+
+
+    } catch (Exception e) {
+      throw new LocalDataManagementRequesterException(e);
+    }
+
+  }
+
+  @Override
+  public LocalDataManagementResponse<QueryResultStatistic> getQueryResultStatistic(
+      String locationUrl) throws LocalDataManagementRequesterException {
+
+    MyUri myUri = new MyUri(locationUrl,
+        LocalDataManagementUrlSuffixAndParameters.STATISTICS_URL_SUFFIX);
+
+    return getQueryResultStatistic(myUri);
+  }
+
+  private LocalDataManagementResponse<QueryResultStatistic> getQueryResultStatistic(MyUri myUri)
+      throws LocalDataManagementRequesterException {
+    return getLocalDataManagementResponse(myUri, queryResultStatisticClassGetter);
+  }
+
+  @Override
+  public LocalDataManagementResponse<QueryResult> getQueryResult(String locationUrl, int page)
+      throws LocalDataManagementRequesterException {
+
+    MyUri myUri = new MyUri(locationUrl,
+        LocalDataManagementUrlSuffixAndParameters.RESULTS_URL_SUFFIX);
+    myUri.addParameter(LocalDataManagementUrlSuffixAndParameters.PAGE_PARAMETER,
+        String.valueOf(page));
+
+    return getQueryResult(myUri);
+  }
+
+  private LocalDataManagementResponse<QueryResult> getQueryResult(MyUri myUri)
+      throws LocalDataManagementRequesterException {
+    return getLocalDataManagementResponse(myUri, (x) -> QueryResult.class);
+  }
+
+  @Override
+  public LocalDataManagementResponse<String> getSqlMappingVersion()
+      throws LocalDataManagementRequesterException {
+
+    try {
+      return getSqlMappingVersion_WithoutManagementException();
+    } catch (Exception e) {
+      throw new LocalDataManagementRequesterException(e);
+    }
+
+  }
+
+  private LocalDataManagementResponse<String> getSqlMappingVersion_WithoutManagementException() {
+    if (!ApplicationUtils.isDktk()) {
+      return null;
+    }
+    LdmConnectorCentraxx ldmConnector = (LdmConnectorCentraxx) ApplicationBean.getLdmConnector();
+    String version = ldmConnector.getMappingVersion();
+    LocalDataManagementResponse<String> localDataManagementResponse =
+        new LocalDataManagementResponse<>();
+    localDataManagementResponse.setStatusCode(HttpStatus.SC_OK);
+    localDataManagementResponse.setResponse(version);
+    return localDataManagementResponse;
+  }
+
+  private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(MyUri myUri,
+      ClassGetter classGetter) throws LocalDataManagementRequesterException {
+
+    String uri = myUri.toString();
+    HttpGet httpGet = createHttpGet(uri);
+
+    return getLocalDataManagementResponse(uri, httpGet, classGetter);
+  }
+
+  private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(String url,
+      HttpGet httpGet, ClassGetter classGetter) throws LocalDataManagementRequesterException {
+
+    try (CloseableHttpResponse response = getResponse(url, httpGet)) {
+
+      return getLocalDataManagementResponse(response, classGetter);
+
+    } catch (Exception e) {
+      throw new LocalDataManagementRequesterException(e);
+    }
+
+  }
+
+  private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(
+      CloseableHttpResponse response, ClassGetter classGetter)
+      throws IOException, JAXBException, LocalDataManagementRequesterException {
+
+    int statusCode = response.getStatusLine().getStatusCode();
+
+    HttpEntity ccpEntity = response.getEntity();
+    String entityOutput = EntityUtils.toString(ccpEntity, Consts.UTF_8);
+
+    LocalDataManagementResponse<T> ldmResponse = new LocalDataManagementResponse<>();
+    ldmResponse.setStatusCode(statusCode);
+
+    if (statusCode == HttpStatus.SC_OK) {
+
+      T resp = createTObject(entityOutput, classGetter);
+      ldmResponse.setResponse(resp);
+
+    } else if (statusCode == HttpStatus.SC_UNPROCESSABLE_ENTITY) {
+
+      Error error = createTObject(entityOutput, errorClassGetter);
+      ldmResponse.setError(error);
+    }
+
+    EntityUtils.consume(ccpEntity);
+
+    return ldmResponse;
+
+  }
+
+  private <T> T createTObject(String entity, ClassGetter classGetter)
+      throws JAXBException, LocalDataManagementRequesterException {
+
+    Object object = createObject(entity, classGetter);
+    return (classGetter instanceof ClassGetterWithConverter)
+        ? ((ClassGetterWithConverter<T>) classGetter).convertToOutputClass(object) : (T) object;
+
+  }
+
+  private Object createObject(String entity, ClassGetter classGetter) throws JAXBException {
+
+    try {
+      return createObject_WithoutCastException(entity, classGetter);
+    } catch (ClassCastException exception) {
+
+      logger.info("[--ClassCastExeption-----");
+      logger.info(entity);
+      logger.info("------------------------]");
+
+      throw exception;
+
+    }
+
+  }
+
+  private Object createObject_WithoutCastException(String entity, ClassGetter classGetter)
+      throws JAXBException {
+
+    JAXBContext jaxbContext = JAXBContext.newInstance(classGetter.getInputClass(entity));
+    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+    Object object = jaxbUnmarshaller.unmarshal(new StringReader(entity));
+
+    return (object instanceof JAXBElement) ? ((JAXBElement) object).getValue() : object;
+
+  }
+
+  private interface ClassGetter {
+
+    Class<?> getInputClass(String entity);
+  }
+
+  private interface ClassGetterWithConverter<T> extends ClassGetter {
+
+    T convertToOutputClass(Object object) throws LocalDataManagementRequesterException;
+  }
+
+  private static class QueryResultStatisticClassGetter implements
+      ClassGetterWithConverter<QueryResultStatistic> {
 
     @Override
-    public LocalDataManagementResponse<String> postViewAndGetLocationUrlStatisticsOnly(View view) throws LocalDataManagementRequesterException {
-        return postViewAndGetLocationUrl(view, true);
-    }
+    public QueryResultStatistic convertToOutputClass(Object object) {
 
-    @Override
-    public LocalDataManagementResponse<String> postViewAndGetLocationUrl(View view) throws LocalDataManagementRequesterException {
-        return postViewAndGetLocationUrl(view, false);
-    }
+      QueryResultStatistic result = null;
 
-    private LocalDataManagementResponse<String> postViewAndGetLocationUrl(View view, boolean statisticsOnly) throws LocalDataManagementRequesterException {
+      if (object instanceof QueryResultStatistic) {
 
-        try {
+        result = (QueryResultStatistic) object;
 
-            return postViewAndGetLocationUrlWithoutExceptions(view, statisticsOnly);
+      } else if (object instanceof de.samply.common.ldmclient.centraxx.model.QueryResultStatistic) {
 
-        } catch (Exception e) {
-            throw new LocalDataManagementRequesterException(e);
-        }
-    }
+        result = new QueryResultStatistic();
+        de.samply.common.ldmclient.centraxx.model.QueryResultStatistic input =
+            (de.samply.common.ldmclient.centraxx.model.QueryResultStatistic) object;
 
-    private LocalDataManagementResponse<String> postViewAndGetLocationUrlWithoutExceptions(View view, boolean statisticsOnly) throws JAXBException, UnsupportedEncodingException, LocalDataManagementRequesterException {
+        result.setNumberOfPages(input.getNumberOfPages());
+        result.setRequestId(input.getRequestId());
+        result.setTotalSize(input.getTotalSize());
 
-        String localDataManagementUrl = SamplyShareUtils.addTrailingSlash(getLocalDataManagementUrl());
-        localDataManagementUrl += getLocalDataManagementURLBase();
+      }
 
-        MyUri myUri = new MyUri(localDataManagementUrl, LocalDataManagementUrlSuffixAndParameters.REQUESTS_URL_SUFFIX);
-        if (statisticsOnly) {
-            myUri.addParameter(LocalDataManagementUrlSuffixAndParameters.STATISTICS_ONLY_PARAMETER, "true");
-        }
-        String uri = myUri.toString();
-
-        de.samply.share.model.ccp.View ccpView = QueryConverter.convertCommonViewToCcpView(view);
-        String sCcpView = QueryConverter.viewToXml(ccpView);
-        HttpEntity httpEntity = new StringEntity(sCcpView);
-
-
-        HttpPost httpPost = createHttpPost(uri, httpEntity);
-
-
-        return getLocationHeader(localDataManagementUrl, httpPost);
-
-    }
-
-
-    private LocalDataManagementResponse<String> getLocationHeader(String localDataManagementUrl, HttpPost httpPost) throws LocalDataManagementRequesterException {
-
-        try (CloseableHttpResponse response = getResponse(localDataManagementUrl, httpPost)) {
-
-
-            LocalDataManagementResponse<String> ldmResponse = new LocalDataManagementResponse<>();
-
-            int statusCode = response.getStatusLine().getStatusCode();
-            ldmResponse.setStatusCode(statusCode);
-
-            Header location = response.getFirstHeader("Location");
-            if (location != null) {
-                ldmResponse.setResponse(location.getValue());
-            }
-
-            return ldmResponse;
-
-
-        } catch (Exception e) {
-            throw new LocalDataManagementRequesterException(e);
-        }
+      return result;
 
     }
 
     @Override
-    public LocalDataManagementResponse<QueryResultStatistic> getQueryResultStatistic(String locationUrl) throws LocalDataManagementRequesterException {
-
-        MyUri myUri = new MyUri(locationUrl, LocalDataManagementUrlSuffixAndParameters.STATISTICS_URL_SUFFIX);
-
-        return getQueryResultStatistic(myUri);
-    }
-
-    private LocalDataManagementResponse<QueryResultStatistic> getQueryResultStatistic(MyUri myUri) throws LocalDataManagementRequesterException {
-        return getLocalDataManagementResponse(myUri, queryResultStatisticClassGetter);
-    }
-
-     private static class QueryResultStatisticClassGetter implements ClassGetterWithConverter<QueryResultStatistic> {
-
-        @Override
-        public QueryResultStatistic convertToOutputClass(Object object) {
-
-            QueryResultStatistic result = null;
-
-            if (object instanceof QueryResultStatistic) {
-
-                result = (QueryResultStatistic) object;
-
-            } else if (object instanceof de.samply.common.ldmclient.centraxx.model.QueryResultStatistic) {
-
-                result = new QueryResultStatistic();
-                de.samply.common.ldmclient.centraxx.model.QueryResultStatistic input = (de.samply.common.ldmclient.centraxx.model.QueryResultStatistic) object;
-
-                result.setNumberOfPages(input.getNumberOfPages());
-                result.setRequestId(input.getRequestId());
-                result.setTotalSize(input.getTotalSize());
-
-            }
-
-            return result;
-
-        }
-
-        @Override
-        public Class<?> getInputClass(String entity) {
-            return (entity.contains("http://de.kairos.centraxx/ccp/QueryResultStatistic")) ?
-                    de.samply.common.ldmclient.centraxx.model.QueryResultStatistic.class : QueryResultStatistic.class;
-
-        }
+    public Class<?> getInputClass(String entity) {
+      return (entity.contains("http://de.kairos.centraxx/ccp/QueryResultStatistic"))
+          ? de.samply.common.ldmclient.centraxx.model.QueryResultStatistic.class
+          : QueryResultStatistic.class;
 
     }
 
-    private static class ErrorClassGetter implements ClassGetterWithConverter<Error>{
+  }
 
-        @Override
-        public Class getInputClass(String entity) {
-            return de.samply.share.model.ccp.Error.class;
-        }
+  private static class ErrorClassGetter implements ClassGetterWithConverter<Error> {
 
-        @Override
-        public Error convertToOutputClass(Object object) throws LocalDataManagementRequesterException {
-            de.samply.share.model.ccp.Error error = (de.samply.share.model.ccp.Error) object;
-            return convert(error);
-        }
-
-        private Error convert (de.samply.share.model.ccp.Error error) throws LocalDataManagementRequesterException {
-            try {
-                return QueryConverter.convertCcpErrorToCommonError(error);
-            } catch (JAXBException e) {
-                throw new LocalDataManagementRequesterException(e);
-            }
-        }
+    @Override
+    public Class getInputClass(String entity) {
+      return de.samply.share.model.ccp.Error.class;
     }
 
     @Override
-    public LocalDataManagementResponse<QueryResult> getQueryResult(String locationUrl, int page) throws LocalDataManagementRequesterException {
-
-        MyUri myUri = new MyUri(locationUrl, LocalDataManagementUrlSuffixAndParameters.RESULTS_URL_SUFFIX);
-        myUri.addParameter(LocalDataManagementUrlSuffixAndParameters.PAGE_PARAMETER, String.valueOf(page));
-
-        return getQueryResult(myUri);
+    public Error convertToOutputClass(Object object) throws LocalDataManagementRequesterException {
+      de.samply.share.model.ccp.Error error = (de.samply.share.model.ccp.Error) object;
+      return convert(error);
     }
 
-    @Override
-    public LocalDataManagementResponse<String> getSqlMappingVersion() throws LocalDataManagementRequesterException {
-
-        try {
-            return getSqlMappingVersion_WithoutManagementException();
-        } catch (Exception e) {
-            throw new LocalDataManagementRequesterException(e);
-        }
-
+    private Error convert(de.samply.share.model.ccp.Error error)
+        throws LocalDataManagementRequesterException {
+      try {
+        return QueryConverter.convertCcpErrorToCommonError(error);
+      } catch (JAXBException e) {
+        throw new LocalDataManagementRequesterException(e);
+      }
     }
-
-    private LocalDataManagementResponse<String> getSqlMappingVersion_WithoutManagementException() {
-        if (!ApplicationUtils.isDktk()) {
-            return null;
-        }
-        LdmConnectorCentraxx ldmConnector = (LdmConnectorCentraxx) ApplicationBean.getLdmConnector();
-        String version = ldmConnector.getMappingVersion();
-        LocalDataManagementResponse<String> localDataManagementResponse = new LocalDataManagementResponse<>();
-        localDataManagementResponse.setStatusCode(HttpStatus.SC_OK);
-        localDataManagementResponse.setResponse(version);
-        return localDataManagementResponse;
-    }
-
-    private LocalDataManagementResponse<QueryResult> getQueryResult(MyUri myUri) throws LocalDataManagementRequesterException {
-        return getLocalDataManagementResponse(myUri, (x) -> QueryResult.class);
-    }
-
-    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(MyUri myUri, ClassGetter classGetter) throws LocalDataManagementRequesterException {
-
-        String uri = myUri.toString();
-        HttpGet httpGet = createHttpGet(uri);
-
-        return getLocalDataManagementResponse(uri, httpGet, classGetter);
-    }
-
-    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(String url, HttpGet httpGet, ClassGetter classGetter) throws LocalDataManagementRequesterException {
-
-        try (CloseableHttpResponse response = getResponse(url, httpGet)) {
-
-            return getLocalDataManagementResponse(response, classGetter);
-
-        } catch (Exception e) {
-            throw new LocalDataManagementRequesterException(e);
-        }
-
-    }
-
-    private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(CloseableHttpResponse response, ClassGetter classGetter) throws IOException, JAXBException, LocalDataManagementRequesterException {
-
-        int statusCode = response.getStatusLine().getStatusCode();
-
-        HttpEntity ccpEntity = response.getEntity();
-        String entityOutput = EntityUtils.toString(ccpEntity, Consts.UTF_8);
-
-        LocalDataManagementResponse<T> ldmResponse = new LocalDataManagementResponse<>();
-        ldmResponse.setStatusCode(statusCode);
-
-        if (statusCode == HttpStatus.SC_OK) {
-
-            T resp = createTObject(entityOutput, classGetter);
-            ldmResponse.setResponse(resp);
-
-        } else if (statusCode == HttpStatus.SC_UNPROCESSABLE_ENTITY) {
-
-            Error error = createTObject(entityOutput, errorClassGetter);
-            ldmResponse.setError(error);
-        }
-
-        EntityUtils.consume(ccpEntity);
-
-        return ldmResponse;
-
-    }
-
-    private interface ClassGetter {
-        Class<?> getInputClass(String entity);
-    }
-
-    private interface ClassGetterWithConverter<T> extends ClassGetter {
-        T convertToOutputClass(Object object) throws LocalDataManagementRequesterException;
-    }
-
-    private <T> T createTObject(String entity, ClassGetter classGetter) throws JAXBException, LocalDataManagementRequesterException {
-
-        Object object = createObject(entity, classGetter);
-        return (classGetter instanceof ClassGetterWithConverter) ? ((ClassGetterWithConverter<T>) classGetter).convertToOutputClass(object) : (T) object;
-
-    }
-
-    private Object createObject(String entity, ClassGetter classGetter) throws JAXBException {
-
-        try {
-            return createObject_WithoutCastException(entity, classGetter);
-        } catch (ClassCastException exception) {
-
-            logger.info("[--ClassCastExeption-----");
-            logger.info(entity);
-            logger.info("------------------------]");
-
-            throw exception;
-
-        }
-
-    }
-
-    private Object createObject_WithoutCastException(String entity, ClassGetter classGetter) throws JAXBException {
-
-        JAXBContext jaxbContext = JAXBContext.newInstance(classGetter.getInputClass(entity));
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        Object object = jaxbUnmarshaller.unmarshal(new StringReader(entity));
-
-        return (object instanceof JAXBElement) ? ((JAXBElement) object).getValue() : object;
-
-    }
+  }
 
 
 }

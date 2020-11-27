@@ -14,11 +14,13 @@
     <cc:implementation>
         <div class="row">
             <div class="col-md-2 col-md-offset-2">
-                <h:outputLabel styleClass="exportDatepickerLabel" value="#{cc.attrs.label}" for="lowerBound"/>
+                <h:outputLabel styleClass="exportDatepickerLabel" value="#{cc.attrs.label}"
+                               for="lowerBound"/>
             </div>
             <div class="col-md-2">
                 <div class="input-group datepicker">
-                    <h:inputText id="lowerBound" styleClass="form-control" value="#{cc.attrs.lowerBound}">
+                    <h:inputText id="lowerBound" styleClass="form-control"
+                                 value="#{cc.attrs.lowerBound}">
                         <!-- time zone set to server timezone, so there is no problem with conversion -->
                         <f:convertDateTime timeZone="#{wu:getServerTimeZone()}"
                                            pattern="#{view.locale eq 'de' ? 'dd.MM.yyyy' : 'yyyy/MM/dd'}"/>
@@ -31,7 +33,8 @@
             <div class="col-md-1 exportDatepickerConjunction">#{msg.export_dateConjunction}</div>
             <div class="col-md-2">
                 <div class="input-group datepicker">
-                    <h:inputText id="upperBound" styleClass="form-control" value="#{cc.attrs.upperBound}">
+                    <h:inputText id="upperBound" styleClass="form-control"
+                                 value="#{cc.attrs.upperBound}">
                         <f:convertDateTime timeZone="#{wu:getServerTimeZone()}"
                                            pattern="#{view.locale eq 'de' ? 'dd.MM.yyyy' : 'yyyy/MM/dd'}"/>
                     </h:inputText>

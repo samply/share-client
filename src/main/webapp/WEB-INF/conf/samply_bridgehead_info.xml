@@ -1,6 +1,6 @@
 <bi:bridgehead xmlns:bi="http://schema.samply.de/config/BridgeheadInfo">
-    <bi:name>string</bi:name>
-    <bi:centralsearch>string</bi:centralsearch>
-    <bi:decentralsearch>string</bi:decentralsearch>
-    <bi:queryLanguage>QUERY</bi:queryLanguage>
+  <bi:centralsearch>string</bi:centralsearch>
+  <bi:decentralsearch>string</bi:decentralsearch>
+  <bi:name>string</bi:name>
+  <bi:queryLanguage>CQL</bi:queryLanguage>
 </bi:bridgehead>

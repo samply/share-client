@@ -48,7 +48,7 @@ INSERT INTO samply.inquiry_criteria (details_id,
             details.criteria_modified,
             (SELECT (enum_range(null :: samply.query_language_type))) [ 1 ],
             'Patient + Donor'
-     FROM samply.inquiry_details AS details)
+     FROM samply.inquiry_details AS details);
 
 ALTER TABLE inquiry_details DROP COLUMN criteria_original;
 ALTER TABLE inquiry_details DROP COLUMN criteria_modified;

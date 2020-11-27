@@ -1,375 +1,350 @@
-package de.samply.share.client.quality.report.chainlinks;/*
-* Copyright (C) 2017 Medizinische Informatik in der Translationalen Onkologie,
-* Deutsches Krebsforschungszentrum in Heidelberg
-*
-* This program is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Affero General Public License as published by the Free
-* Software Foundation; either version 3 of the License, or (at your option) any
-* later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program; if not, see http://www.gnu.org/licenses.
-*
-* Additional permission under GNU GPL version 3 section 7:
-*
-* If you modify this Program, or any covered work, by linking or combining it
-* with Jersey (https://jersey.java.net) (or a modified version of that
-* library), containing parts covered by the terms of the General Public
-* License, version 2.0, the licensors of this Program grant you additional
-* permission to convey the resulting work.
-*/
-
+package de.samply.share.client.quality.report.chainlinks;
 
 import de.samply.share.client.quality.report.chainlinks.connector.ChainLinkConnector;
 import de.samply.share.client.quality.report.chainlinks.finalizer.ChainLinkFinalizer;
 import de.samply.share.client.quality.report.chainlinks.statistics.chainlink.ChainLinkStatisticsException;
 import de.samply.share.client.quality.report.chainlinks.statistics.chainlink.ChainLinkStatisticsProducer;
 import de.samply.share.client.quality.report.chainlinks.timer.ChainLinkTimer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
-
-
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
 
+  protected static final Logger logger = LogManager.getLogger(ChainLink.class);
+  protected ConcurrentLinkedDeque<ChainLinkItem> deque = new ConcurrentLinkedDeque<>();
+  private ChainLinkFinalizer chainLinkFinalizer;
+  private ChainLinkStatisticsProducer chainLinkStatisticsProducer;
+  private ChainLinkConnector chainLinkConnector;
+  private int maxAttempts;
+  private ChainLinkTimer chainLinkTimer;
+  private boolean isFinalized = false;
+  private boolean isPreviousChainLinkFinalized = false;
+  private List<ChainLinkError> errors = new ArrayList<>();
 
-    private ChainLinkFinalizer chainLinkFinalizer;
-    private ChainLinkStatisticsProducer chainLinkStatisticsProducer;
-    private ChainLinkConnector chainLinkConnector;
-    private int maxAttempts;
-    private ChainLinkTimer chainLinkTimer;
+  protected abstract String getChainLinkId();
 
-    private boolean isFinalized = false;
-    private boolean isPreviousChainLinkFinalized = false;
-
-    protected ConcurrentLinkedDeque<ChainLinkItem> deque = new ConcurrentLinkedDeque<>();
-    private List<ChainLinkError> errors = new ArrayList<>();
-    protected static final Logger logger = LogManager.getLogger(ChainLink.class);
-
-
-    protected abstract String getChainLinkId();
-    protected abstract I process (I item) throws ChainLinkException;
+  protected abstract I process(I item) throws ChainLinkException;
 
 
+  @Override
+  public void run() {
 
-    @Override
-    public void run() {
+    logStartChainLink();
 
-        logStartChainLink();
+    while (!isFinalized && !isPreviousChainLinkFinalizedAndIsInputProcessed()) {
 
-        while (!isFinalized && !isPreviousChainLinkFinalizedAndIsInputProcessed()){
+      processItem();
 
-            processItem();
+    }
+
+    finalizeChainLink();
+
+  }
+
+  private void logStartChainLink() {
+    logger.info(getChainLinkId() + " started");
+  }
+
+  private void logEndChainLink() {
+    logger.info(getChainLinkId() + " ended");
+  }
+
+  private void processItem() {
+
+    ChainLinkItem item = getItem();
+
+    if (item != null) {
+
+      item = processItem(item);
+      ChainLinkError error = item.getChainLinkError();
+
+      if (error != null) {
+        addError(error);
+      }
+
+    } else {
+      chainLinkTimer.myWait();
+    }
+  }
+
+  private ChainLinkItem processItem(ChainLinkItem item) {
+
+    startStatistics();
+
+    item = processItemAndAddElapsedTime(item);
+
+    item.incrementAttempt();
+
+    if (item.isToBeRepeated() && !isMaxAttempt(item)) {
+
+      item.resetConfigurationValues();
+
+      if (item.isAlreadyUsed()) {
+        addItemFirst(item);
+      } else {
+        addItem(item);
+      }
+
+      item = sleepAndAddElapsedTime(item);
+
+    } else if (!item.isToBeRepeated()) {
+
+      item.setAlreadyUsed();
+
+      if (item.isToBeForwarded()) {
+
+        addItemToNextChainLink(item);
+
+        if (item.isToBeReused()) {
+
+          item.resetConfigurationValues();
+          item.resetAttempt();
+          addItemFirst(item);
 
         }
 
-        finalizeChainLink();
+      }
 
     }
 
-    private void logStartChainLink(){
-        logger.info(getChainLinkId()+" started");
-    }
+    addStatistics(item);
 
-    private void logEndChainLink(){
-        logger.info(getChainLinkId() + " ended");
-    }
+    return item;
 
-    private void processItem()  {
+  }
 
-        ChainLinkItem item = getItem();
+  private void logErrors() {
 
-        if (item != null){
+    if (errors.size() > 0) {
 
-            item = processItem(item);
-            ChainLinkError error = item.getChainLinkError();
+      logger.error("Errors in current ChainLink: \n");
 
-            if (error != null){
-                addError(error);
-            }
+      for (ChainLinkError error : errors) {
 
-        } else {
-            chainLinkTimer.myWait();
-        }
+        logger.error("Class: " + error.getChainLinkItem().getClass());
+        logger.error("MdrKey: " + error.getError().getMdrKey().toString());
+        logger.error("Error Code: " + error.getError().getErrorCode());
+        logger.error("Error Description: " + error.getError().getDescription());
+        logger.error("Error Extension:" + error.getError().getExtension());
+        logger.error("Attempt:" + error.getChainLinkItem().getAttempt());
+      }
 
     }
+  }
 
-    private void logErrors(){
+  private boolean isPreviousChainLinkFinalizedAndIsInputProcessed() {
+    return isPreviousChainLinkFinalized && deque.size() == 0;
+  }
 
-        if (errors.size() > 0) {
+  protected void logStartProcess(ChainLinkItem item) {
+    logger
+        .info(getChainLinkId() + ": Start chain link process (attempt:" + item.getAttempt() + ")");
+  }
 
-            logger.error("Errors in current ChainLink: \n");
+  protected void logEndProcess(ChainLinkItem item) {
+    logger.info(getChainLinkId() + ": End chain link process");
+  }
 
-            for (ChainLinkError error : errors) {
 
-                logger.error("Class: " + error.getChainLinkItem().getClass());
-                logger.error("MdrKey: " + error.getError().getMdrKey().toString());
-                logger.error("Error Code: " + error.getError().getErrorCode());
-                logger.error("Error Description: " + error.getError().getDescription());
-                logger.error("Error Extension:" + error.getError().getExtension());
-                logger.error("Attempt:" +error.getChainLinkItem().getAttempt());
-            }
+  private void startStatistics() {
 
-        }
+    if (chainLinkStatisticsProducer != null) {
+      chainLinkStatisticsProducer.setFirstElementBeingProcessed();
     }
 
-    private boolean isPreviousChainLinkFinalizedAndIsInputProcessed (){
-        return isPreviousChainLinkFinalized && deque.size() == 0;
-    }
+  }
 
+  private void addStatistics(ChainLinkItem chainLinkItem) {
 
-    private ChainLinkItem processItem(ChainLinkItem item) {
+    if (chainLinkStatisticsProducer != null) {
 
-        startStatistics();
+      chainLinkStatisticsProducer
+          .addTimeProProcess(chainLinkItem.getElapsedNanoTime(), chainLinkItem.isToBeRepeated);
 
-        item = processItemAndAddElapsedTime(item);
-
-        item.incrementAttempt();
-
-        if (item.isToBeRepeated() && !isMaxAttempt(item)){
-
-            item.resetConfigurationValues();
-
-            if (item.isAlreadyUsed()){
-                addItemFirst(item);
-            } else{
-                addItem(item);
-            }
-
-
-            item = sleepAndAddElapsedTime(item);
-
-        }  else if (!item.isToBeRepeated()){
-
-            item.setAlreadyUsed();
-
-            if (item.isToBeForwarded()){
-
-                addItemToNextChainLink(item);
-
-                if (item.isToBeReused()){
-
-                    item.resetConfigurationValues();
-                    item.resetAttempt();
-                    addItemFirst(item);
-
-                }
-
-            }
-
-        }
-
-        addStatistics(item);
-
-        return item;
+      int numberOfItemsToBeProcessed = getNumberOfItemsToBeProcessed();
+      chainLinkStatisticsProducer.setNumberOfElementsToBeProcessed(numberOfItemsToBeProcessed);
 
     }
 
-    protected void logStartProcess(ChainLinkItem item){
-        logger.info(getChainLinkId()+": Start chain link process (attempt:"+ item.getAttempt() +")");
+  }
+
+  protected int getNumberOfItemsToBeProcessed() {
+    return deque.size();
+  }
+
+
+  private void finalizeStatistics() {
+
+    try {
+
+      finalizeStatisticsWithoutExceptionManagement();
+
+    } catch (ChainLinkStatisticsException chainLinkStatisticsExeption) {
+      logger.error(chainLinkStatisticsExeption);
     }
 
-    protected void logEndProcess(ChainLinkItem item){
-        logger.info(getChainLinkId()+": End chain link process");
+  }
+
+  private void finalizeStatisticsWithoutExceptionManagement() throws ChainLinkStatisticsException {
+
+    if (chainLinkStatisticsProducer != null) {
+      chainLinkStatisticsProducer.finalizeProducer();
     }
 
-
-    private void startStatistics (){
-
-        if (chainLinkStatisticsProducer != null){
-            chainLinkStatisticsProducer.setFirstElementBeingProcessed();
-        }
-
-    }
-    private void addStatistics(ChainLinkItem chainLinkItem){
-
-        if (chainLinkStatisticsProducer != null){
-
-            chainLinkStatisticsProducer.addTimeProProcess(chainLinkItem.getElapsedNanoTime(), chainLinkItem.isToBeRepeated);
-
-            int numberOfItemsToBeProcessed = getNumberOfItemsToBeProcessed();
-            chainLinkStatisticsProducer.setNumberOfElementsToBeProcessed(numberOfItemsToBeProcessed);
-
-        }
-
-    }
-
-    protected int getNumberOfItemsToBeProcessed(){
-        return deque.size();
-    }
+  }
 
 
+  private ChainLinkItem processItemAndAddElapsedTime(ChainLinkItem chainLinkItem) {
+    logStartProcess(chainLinkItem);
 
-    private void finalizeStatistics (){
+    chainLinkItem = processAndManageExceptions(chainLinkItem);
 
-        try {
+    logEndProcess(chainLinkItem);
+    long endTime = System.nanoTime();
 
-            finalizeStatisticsWithoutExceptionManagement();
+    long startTime = System.nanoTime();
+    chainLinkItem.addElapsedNanoTime(endTime - startTime);
 
-        } catch (ChainLinkStatisticsException chainLinkStatisticsExeption) {
-            logger.error(chainLinkStatisticsExeption);
-        }
+    return chainLinkItem;
 
+  }
+
+  private ChainLinkItem processAndManageExceptions(ChainLinkItem chainLinkItem) {
+
+    try {
+
+      return process((I) chainLinkItem);
+
+    } catch (ChainLinkException e) {
+
+      logger.error(e);
+      chainLinkItem.setToBeRepeated();
+
+      return chainLinkItem;
     }
 
-    private void finalizeStatisticsWithoutExceptionManagement() throws ChainLinkStatisticsException {
+  }
 
-        if (chainLinkStatisticsProducer != null) {
-            chainLinkStatisticsProducer.finalizeProducer();
-        }
+  private ChainLinkItem sleepAndAddElapsedTime(ChainLinkItem chainLinkItem) {
 
+    long startTime = System.nanoTime();
+    chainLinkTimer.mySleep(chainLinkItem.getAttempt());
+    long endTime = System.nanoTime();
+
+    chainLinkItem.addElapsedNanoTime(endTime - startTime);
+
+    return chainLinkItem;
+
+  }
+
+  private void addItemToNextChainLink(ChainLinkItem chainLinkItem) {
+
+    if (chainLinkConnector != null) {
+      chainLinkConnector.addItemToNextChainLink(chainLinkItem);
     }
 
+  }
 
-    private ChainLinkItem processItemAndAddElapsedTime (ChainLinkItem chainLinkItem)  {
+  private boolean isMaxAttempt(ChainLinkItem chainLinkItem) {
+    return (chainLinkItem.getAttempt() > maxAttempts);
+  }
 
-        long startTime = System.nanoTime();
-        logStartProcess(chainLinkItem);
+  /**
+   * Todo.
+   * @param chainLinkItem Todo.
+   */
+  public void addItem(ChainLinkItem chainLinkItem) {
 
-        chainLinkItem = processAndManageExceptions(chainLinkItem);
+    deque.addLast(chainLinkItem);
+    chainLinkTimer.myNotify();
 
-        logEndProcess(chainLinkItem);
-        long endTime = System.nanoTime();
-
-        chainLinkItem.addElapsedNanoTime(endTime - startTime);
-
-        return chainLinkItem;
-
+    if (!this.isAlive()) {
+      this.start();
     }
 
-    private ChainLinkItem processAndManageExceptions (ChainLinkItem chainLinkItem){
+  }
 
-        try {
+  public void addItemFirst(ChainLinkItem chainLinkItem) {
+    deque.addFirst(chainLinkItem);
+  }
 
-            return process((I)chainLinkItem);
+  private ChainLinkItem getItem() {
+    return deque.pollFirst();
+  }
 
-        } catch (ChainLinkException e) {
+  /**
+   * Todo.
+   */
+  public synchronized void finalizeChainLink() {
 
-            logger.error(e);
-            chainLinkItem.setToBeRepeated();
+    if (!isFinalized) {
 
-            return chainLinkItem;
-        }
+      isFinalized = true;
 
-    }
+      if (chainLinkConnector != null) {
+        chainLinkConnector.setPreviousChainLinkFinalized();
+      }
 
-    private ChainLinkItem sleepAndAddElapsedTime (ChainLinkItem chainLinkItem){
+      if (chainLinkFinalizer != null) {
+        chainLinkFinalizer.setChainLinkAsFinalized(this);
+      }
 
-        long startTime = System.nanoTime();
-        chainLinkTimer.mySleep(chainLinkItem.getAttempt());
-        long endTime = System.nanoTime();
+      finalizeStatistics();
+      chainLinkTimer.myNotify();
 
-        chainLinkItem.addElapsedNanoTime(endTime - startTime);
+      logErrors();
+      logEndChainLink();
 
-        return chainLinkItem;
-
-    }
-
-    private void addItemToNextChainLink(ChainLinkItem chainLinkItem){
-
-        if (chainLinkConnector != null) {
-            chainLinkConnector.addItemToNextChainLink(chainLinkItem);
-        }
-
-    }
-
-    private boolean isMaxAttempt (ChainLinkItem chainLinkItem){
-        return (chainLinkItem.getAttempt() > maxAttempts);
-    }
-
-    public void addItem(ChainLinkItem chainLinkItem){
-
-        deque.addLast(chainLinkItem);
-        chainLinkTimer.myNotify();
-
-
-        if (!this.isAlive()){
-            this.start();
-        }
-
-    }
-
-    public void addItemFirst (ChainLinkItem chainLinkItem){
-        deque.addFirst(chainLinkItem);
-    }
-
-    private ChainLinkItem getItem(){
-        return deque.pollFirst();
-    }
-
-    public synchronized void finalizeChainLink(){
-
-        if (!isFinalized) {
-
-
-            isFinalized = true;
-
-            if (chainLinkConnector != null){
-                chainLinkConnector.setPreviousChainLinkFinalized();
-            }
-
-            if (chainLinkFinalizer != null) {
-                chainLinkFinalizer.setChainLinkAsFinalized(this);
-            }
-
-            finalizeStatistics();
-            chainLinkTimer.myNotify();
-
-            logErrors();
-            logEndChainLink();
-
-
-        }
 
     }
 
-    public synchronized List<ChainLinkError> getErrors() {
-        return errors;
+  }
+
+  public synchronized List<ChainLinkError> getErrors() {
+    return errors;
+  }
+
+  private synchronized void addError(ChainLinkError error) {
+    errors.add(error);
+  }
+
+  public void setMaxAttempts(int maxAttempts) {
+    this.maxAttempts = maxAttempts;
+  }
+
+  public void setChainLinkTimer(ChainLinkTimer chainLinkTimer) {
+    this.chainLinkTimer = chainLinkTimer;
+  }
+
+  public void setChainLinkConnector(ChainLinkConnector chainLinkConnector) {
+    this.chainLinkConnector = chainLinkConnector;
+  }
+
+  public void setPreviousChainLinkFinalized() {
+    isPreviousChainLinkFinalized = true;
+    chainLinkTimer.myNotify();
+  }
+
+  public void setChainLinkStatisticsProducer(
+      ChainLinkStatisticsProducer chainLinkStatisticsProducer) {
+    this.chainLinkStatisticsProducer = chainLinkStatisticsProducer;
+  }
+
+  /**
+   * Todo.
+   * @param chainLinkFinalizer Todo.
+   */
+  public void setChainLinkFinalizer(ChainLinkFinalizer chainLinkFinalizer) {
+
+    this.chainLinkFinalizer = chainLinkFinalizer;
+    if (chainLinkFinalizer != null) {
+      chainLinkFinalizer.addChainLink(this);
     }
 
-    private synchronized void addError (ChainLinkError error){
-        errors.add(error);
-    }
-
-    public void setMaxAttempts(int maxAttempts) {
-        this.maxAttempts = maxAttempts;
-    }
-
-    public void setChainLinkTimer(ChainLinkTimer chainLinkTimer) {
-        this.chainLinkTimer = chainLinkTimer;
-    }
-
-    public void setChainLinkConnector(ChainLinkConnector chainLinkConnector) {
-        this.chainLinkConnector = chainLinkConnector;
-    }
-
-    public void setPreviousChainLinkFinalized() {
-        isPreviousChainLinkFinalized = true;
-        chainLinkTimer.myNotify();
-    }
-
-    public void setChainLinkStatisticsProducer(ChainLinkStatisticsProducer chainLinkStatisticsProducer) {
-        this.chainLinkStatisticsProducer = chainLinkStatisticsProducer;
-    }
-
-    public void setChainLinkFinalizer(ChainLinkFinalizer chainLinkFinalizer) {
-
-        this.chainLinkFinalizer = chainLinkFinalizer;
-        if (chainLinkFinalizer != null){
-            chainLinkFinalizer.addChainLink(this);
-        }
-
-    }
+  }
 
 }

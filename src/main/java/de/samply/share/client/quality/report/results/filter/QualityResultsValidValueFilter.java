@@ -1,97 +1,73 @@
-package de.samply.share.client.quality.report.results.filter;/*
-* Copyright (C) 2017 Medizinische Informatik in der Translationalen Onkologie,
-* Deutsches Krebsforschungszentrum in Heidelberg
-*
-* This program is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Affero General Public License as published by the Free
-* Software Foundation; either version 3 of the License, or (at your option) any
-* later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program; if not, see http://www.gnu.org/licenses.
-*
-* Additional permission under GNU GPL version 3 section 7:
-*
-* If you modify this Program, or any covered work, by linking or combining it
-* with Jersey (https://jersey.java.net) (or a modified version of that
-* library), containing parts covered by the terms of the General Public
-* License, version 2.0, the licensors of this Program grant you additional
-* permission to convey the resulting work.
-*/
+package de.samply.share.client.quality.report.results.filter;
 
 import de.samply.share.client.quality.report.results.QualityResult;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.common.utils.MdrIdDatatype;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 public abstract class QualityResultsValidValueFilter extends QualityResultsFilter {
 
-    private Map<MdrIdDatatype, ValidValueFilterQualityResults> filteredQualityResults = new HashMap<>();
+  private Map<MdrIdDatatype, ValidValueFilterQualityResults> filteredQualityResults =
+      new HashMap<>();
 
-    protected abstract boolean isFilterCondition(MdrIdDatatype mdrId);
+  public QualityResultsValidValueFilter(QualityResults qualityResults) {
+    super(qualityResults);
+  }
 
+  protected abstract boolean isFilterCondition(MdrIdDatatype mdrId);
 
-    public QualityResultsValidValueFilter(QualityResults qualityResults) {
-        super(qualityResults);
-    }
+  @Override
+  public Set<String> getValues(MdrIdDatatype mdrId) {
 
-    @Override
-    public Set<String> getValues(MdrIdDatatype mdrId) {
+    if (isFilterCondition(mdrId)) {
 
-        if (isFilterCondition(mdrId)){
+      filterValidValues(mdrId);
+      return filteredQualityResults.get(mdrId).getValues();
 
-            filterValidValues(mdrId);
-            return filteredQualityResults.get(mdrId).getValues();
+    } else {
 
-        } else{
-
-            return super.getValues(mdrId);
-
-        }
+      return super.getValues(mdrId);
 
     }
 
-    @Override
-    public QualityResult getResult(MdrIdDatatype mdrId, String value) {
+  }
 
-        if (isFilterCondition(mdrId)){
+  @Override
+  public QualityResult getResult(MdrIdDatatype mdrId, String value) {
 
-            filterValidValues(mdrId);
-            return filteredQualityResults.get(mdrId).getResult(value);
+    if (isFilterCondition(mdrId)) {
 
-        } else{
+      filterValidValues(mdrId);
+      return filteredQualityResults.get(mdrId).getResult(value);
 
-            return super.getResult(mdrId,value);
+    } else {
 
-        }
+      return super.getResult(mdrId, value);
+
+    }
+
+  }
+
+  private void filterValidValues(MdrIdDatatype mdrId) {
+
+    if (!filteredQualityResults.containsKey(mdrId)) {
+
+      ValidValueFilterQualityResults validFilterQualityResults =
+          new ValidValueFilterQualityResults();
+
+      for (String value : super.getValues(mdrId)) {
+
+        QualityResult qualityResult = super.getResult(mdrId, value);
+        validFilterQualityResults.addValueAndQualityResult(value, qualityResult);
+
+      }
+
+      filteredQualityResults.put(mdrId, validFilterQualityResults);
 
     }
 
-    private void filterValidValues (MdrIdDatatype mdrId){
-
-        if (!filteredQualityResults.containsKey(mdrId)) {
-
-            ValidValueFilterQualityResults validFilterQualityResults = new ValidValueFilterQualityResults();
-
-            for (String value : super.getValues(mdrId)) {
-
-                QualityResult qualityResult = super.getResult(mdrId, value);
-                validFilterQualityResults.addValueAndQualityResult(value, qualityResult);
-
-            }
-
-            filteredQualityResults.put(mdrId, validFilterQualityResults);
-
-        }
-
-    }
+  }
 
 }

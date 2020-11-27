@@ -1,32 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
-  ~ Universitätsklinikum Frankfurt
-  ~
-  ~ Contact: www.mig-frankfurt.de
-  ~
-  ~ This program is free software; you can redistribute it and/or modify it under
-  ~ the terms of the GNU Affero General Public License as published by the Free
-  ~ Software Foundation; either version 3 of the License, or (at your option) any
-  ~ later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful, but WITHOUT
-  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-  ~ details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
-  ~
-  ~ Additional permission under GNU GPL version 3 section 7:
-  ~
-  ~ If you modify this Program, or any covered work, by linking or combining it
-  ~ with Jersey (https://jersey.java.net) (or a modified version of that
-  ~ library), containing parts covered by the terms of the General Public
-  ~ License, version 2.0, the licensors of this Program grant you additional
-  ~ permission to convey the resulting work.
-  -->
+
 
 <ui:composition template="/WEB-INF/templates/globalTemplate.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
@@ -42,8 +16,10 @@
     <ui:define name="title">#{msg.ull_title}</ui:define>
 
     <ui:define name="additional-css">
-        <h:outputStylesheet library="webjars" name="datatables/1.10.16/css/dataTables.bootstrap.min.css"/>
-        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"/>
+        <h:outputStylesheet library="webjars"
+                            name="datatables/1.10.16/css/dataTables.bootstrap.min.css"/>
+        <h:outputStylesheet library="webjars"
+                            name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"/>
     </ui:define>
 
     <ui:define name="additional-js">
@@ -56,8 +32,8 @@
 
     <ui:define name="main-content">
         <h:form prependId="false">
-            <o:commandScript name="updateButtonBar" render="upload-button-bar" execute="upload-button-bar"
-                             oncomplete="bootstrapSwitchOn()"/>
+            <o:commandScript name="updateButtonBar" render="upload-button-bar"
+                             execute="upload-button-bar" oncomplete="bootstrapSwitchOn()"/>
             <div class="row" style="margin-bottom: 20px;">
                 <ui:fragment rendered="#{wu:isCentralSearchPathSet()}">
                     <h:panelGroup layout="block" styleClass="col-xs-12" id="upload-button-bar">
@@ -106,7 +82,8 @@
                         <ui:fragment rendered="#{uploadBean.uploadRunning}">
                             <div class="btn-group btn-group-justified" role="group">
                                 <div class="btn-group" role="group">
-                                    <h:commandLink styleClass="btn btn-md btn-default" value="#{msg.ull_cancelUpload}"
+                                    <h:commandLink styleClass="btn btn-md btn-default"
+                                                   value="#{msg.ull_cancelUpload}"
                                                    action="#{uploadBean.cancelUploadJobs}"/>
                                 </div>
                             </div>
@@ -144,10 +121,12 @@
                                           styleClass="form-control-static"/>
                         </td>
                         <td>
-                            <h:outputText value="#{upload.triggeredBy}" styleClass="form-control-static"/>
+                            <h:outputText value="#{upload.triggeredBy}"
+                                          styleClass="form-control-static"/>
                         </td>
                         <td>
-                            <h:outputText value="#{upload.status}" styleClass="form-control-static"/>
+                            <h:outputText value="#{upload.status}"
+                                          styleClass="form-control-static"/>
                         </td>
                     </tr>
                 </ui:repeat>

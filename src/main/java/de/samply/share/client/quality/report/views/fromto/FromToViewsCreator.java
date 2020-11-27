@@ -1,29 +1,4 @@
-package de.samply.share.client.quality.report.views.fromto;/*
-* Copyright (C) 2017 Medizinische Informatik in der Translationalen Onkologie,
-* Deutsches Krebsforschungszentrum in Heidelberg
-*
-* This program is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Affero General Public License as published by the Free
-* Software Foundation; either version 3 of the License, or (at your option) any
-* later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program; if not, see http://www.gnu.org/licenses.
-*
-* Additional permission under GNU GPL version 3 section 7:
-*
-* If you modify this Program, or any covered work, by linking or combining it
-* with Jersey (https://jersey.java.net) (or a modified version of that
-* library), containing parts covered by the terms of the General Public
-* License, version 2.0, the licensors of this Program grant you additional
-* permission to convey the resulting work.
-*/
-
+package de.samply.share.client.quality.report.views.fromto;
 
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.MdrIdAndValidations;
@@ -34,179 +9,185 @@ import de.samply.share.client.quality.report.views.ViewsCreator;
 import de.samply.share.client.quality.report.views.fromto.scheduler.ViewFromToScheduler;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
-import de.samply.share.model.common.*;
-
-import javax.xml.bind.JAXBElement;
+import de.samply.share.model.common.And;
+import de.samply.share.model.common.Attribute;
+import de.samply.share.model.common.Geq;
+import de.samply.share.model.common.Lt;
+import de.samply.share.model.common.ObjectFactory;
+import de.samply.share.model.common.Query;
+import de.samply.share.model.common.View;
+import de.samply.share.model.common.ViewFields;
+import de.samply.share.model.common.Where;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
 
-public class FromToViewsCreator implements ViewsCreator{
+public class FromToViewsCreator implements ViewsCreator {
 
 
+  private ViewFromToScheduler viewFromToScheduler;
+  private ObjectFactory objectFactory = new ObjectFactory();
+  private MdrIgnoredElements ignoredElements;
+  private MdrMappedElements mdrMappedElements;
 
-    private ViewFromToScheduler viewFromToScheduler;
-    private ObjectFactory objectFactory = new ObjectFactory();
-    private MdrIgnoredElements ignoredElements;
-    private MdrMappedElements mdrMappedElements;
+  public FromToViewsCreator(ViewFromToScheduler viewFromToScheduler) {
+    this.viewFromToScheduler = viewFromToScheduler;
+  }
 
-    public FromToViewsCreator(ViewFromToScheduler viewFromToScheduler) {
-        this.viewFromToScheduler = viewFromToScheduler;
-    }
+  @Override
+  public List<View> createViews(Model model) {
 
-    @Override
-    public List<View> createViews(Model model) {
+    List<ViewFromTo> viewFromTos = viewFromToScheduler.createViewFromTos();
+    return createViews(viewFromTos, model);
 
-        List<ViewFromTo> viewFromTos = viewFromToScheduler.createViewFromTos();
-        return createViews(viewFromTos, model);
+  }
 
-    }
+  private List<View> createViews(List<ViewFromTo> viewFromTos, Model model) {
 
-    private List<View> createViews (List<ViewFromTo> viewFromTos, Model model){
+    List<View> viewsList = new ArrayList<>();
 
-        List<View> viewsList = new ArrayList<>();
+    ViewFields viewFields = createViewFields(model);
 
-        ViewFields viewFields = createViewFields(model);
+    for (ViewFromTo viewFromTo : viewFromTos) {
 
-        for (ViewFromTo viewFromTo : viewFromTos){
-
-            View view = createView(viewFromTo, viewFields);
-            viewsList.add(view);
-
-        }
-
-        return viewsList;
+      View view = createView(viewFromTo, viewFields);
+      viewsList.add(view);
 
     }
 
+    return viewsList;
 
-    private ViewFields createViewFields (Model model){
-
-        ViewFields viewFields = objectFactory.createViewFields();
-
-        for (MdrIdAndValidations mdrIdAndValidations : model.getMdrIdAndValidations()) {
-
-            if (!isIgnoredElement(mdrIdAndValidations.getMdrId()) && isMappedElement(mdrIdAndValidations.getMdrId())) {
-
-                String mdrKey = getMdrKey(mdrIdAndValidations.getMdrId());
-                viewFields.getMdrKey().add(mdrKey);
-
-            }
-
-        }
-
-        return viewFields;
-
-    }
-
-    private boolean isMappedElement (MdrIdDatatype mdrId){
-        return (mdrMappedElements != null) ? mdrMappedElements.isMapped(mdrId) : true;
-    }
-
-    private boolean isIgnoredElement (MdrIdDatatype mdrId){
-        return (ignoredElements != null) ? ignoredElements.isIgnored(mdrId) : false;
-    }
-
-    private boolean isSameMdrId(MdrIdDatatype m1, MdrIdDatatype m2){
-        return m1 != null && m2!= null && m1.getMajor().equalsIgnoreCase(m2.getMajor());
-    }
+  }
 
 
-    private View createView (ViewFromTo viewFromTo, ViewFields viewFields){
+  private ViewFields createViewFields(Model model) {
 
-        Query viewFromToQuery = createViewFromToQuery(viewFromTo);
-        return createView(viewFromToQuery, viewFields);
+    ViewFields viewFields = objectFactory.createViewFields();
+
+    for (MdrIdAndValidations mdrIdAndValidations : model.getMdrIdAndValidations()) {
+
+      if (!isIgnoredElement(mdrIdAndValidations.getMdrId()) && isMappedElement(
+          mdrIdAndValidations.getMdrId())) {
+
+        String mdrKey = getMdrKey(mdrIdAndValidations.getMdrId());
+        viewFields.getMdrKey().add(mdrKey);
+
+      }
 
     }
 
-    private View createView (Query query, ViewFields viewFields){
+    return viewFields;
 
-        View view = objectFactory.createView();
+  }
 
-        view.setQuery(query);
-        view.setViewFields(viewFields);
+  private boolean isMappedElement(MdrIdDatatype mdrId) {
+    return (mdrMappedElements != null) ? mdrMappedElements.isMapped(mdrId) : true;
+  }
 
-        return view;
+  private boolean isIgnoredElement(MdrIdDatatype mdrId) {
+    return (ignoredElements != null) ? ignoredElements.isIgnored(mdrId) : false;
+  }
 
-    }
-
-    private Query createViewFromToQuery (ViewFromTo viewFromTo){
-
-        Attribute fromAttribute = createFromAttribute(viewFromTo);
-        Attribute toAttribute = createToAttribute(viewFromTo);
-
-        Geq geq = objectFactory.createGeq();
-        geq.setAttribute(fromAttribute);
-
-        Lt lt = objectFactory.createLt();
-        lt.setAttribute(toAttribute);
-
-        And and = objectFactory.createAnd();
-        List<Serializable> andOrEqOrLike = and.getAndOrEqOrLike();
-        andOrEqOrLike.add(geq);
-        andOrEqOrLike.add(lt);
-
-        Where where = objectFactory.createWhere();
-        List<Serializable> andOrEqOrLike1 = where.getAndOrEqOrLike();
-        andOrEqOrLike1.add(and);
-
-        Query query = objectFactory.createQuery();
-        query.setWhere(where);
-
-        return query;
-
-    }
-
-    private Attribute createFromAttribute (ViewFromTo viewFromTo){
+  private boolean isSameMdrId(MdrIdDatatype m1, MdrIdDatatype m2) {
+    return m1 != null && m2 != null && m1.getMajor().equalsIgnoreCase(m2.getMajor());
+  }
 
 
-        MdrIdDatatype mdrId = getMdrKeyUploadFrom();
-        return createAttribute(mdrId, viewFromTo.getFrom());
+  private View createView(ViewFromTo viewFromTo, ViewFields viewFields) {
 
-    }
+    Query viewFromToQuery = createViewFromToQuery(viewFromTo);
+    return createView(viewFromToQuery, viewFields);
 
-    private Attribute createToAttribute (ViewFromTo viewFromTo){
+  }
 
-        MdrIdDatatype mdrId = getMdrKeyUploadTo();
-        return createAttribute(mdrId, viewFromTo.getTo());
+  private View createView(Query query, ViewFields viewFields) {
 
-    }
+    View view = objectFactory.createView();
 
-    private MdrIdDatatype getMdrKeyUploadFrom (){
-        return getMdrKey(EnumConfiguration.MDR_KEY_UPLOAD_FROM);
-    }
+    view.setQuery(query);
+    view.setViewFields(viewFields);
 
-    private MdrIdDatatype getMdrKeyUploadTo(){
-        return getMdrKey(EnumConfiguration.MDR_KEY_UPLOAD_TO);
-    }
+    return view;
 
-    private MdrIdDatatype getMdrKey (EnumConfiguration enumConfiguration){
-        return new MdrIdDatatype(ConfigurationUtil.getConfigurationElementValue(enumConfiguration));
-    }
+  }
 
-    private Attribute createAttribute (MdrIdDatatype mdrId, String value){
+  private Query createViewFromToQuery(ViewFromTo viewFromTo) {
 
-        Attribute attribute = objectFactory.createAttribute();
-        attribute.setMdrKey(getMdrKey(mdrId));
+    Attribute fromAttribute = createFromAttribute(viewFromTo);
+    Attribute toAttribute = createToAttribute(viewFromTo);
 
-        JAXBElement<String> value1 = objectFactory.createValue(value);
-        attribute.setValue(value1);
+    Geq geq = objectFactory.createGeq();
+    geq.setAttribute(fromAttribute);
 
-        return attribute;
+    Lt lt = objectFactory.createLt();
+    lt.setAttribute(toAttribute);
 
-    }
+    And and = objectFactory.createAnd();
+    List<Serializable> andOrEqOrLike = and.getAndOrEqOrLike();
+    andOrEqOrLike.add(geq);
+    andOrEqOrLike.add(lt);
 
-    private String getMdrKey(MdrIdDatatype mdrIdDatatype){
-        return mdrIdDatatype.getLatestCentraxx();
-    }
+    Where where = objectFactory.createWhere();
+    List<Serializable> andOrEqOrLike1 = where.getAndOrEqOrLike();
+    andOrEqOrLike1.add(and);
+
+    Query query = objectFactory.createQuery();
+    query.setWhere(where);
+
+    return query;
+
+  }
+
+  private Attribute createFromAttribute(ViewFromTo viewFromTo) {
+
+    MdrIdDatatype mdrId = getMdrKeyUploadFrom();
+    return createAttribute(mdrId, viewFromTo.getFrom());
+
+  }
+
+  private Attribute createToAttribute(ViewFromTo viewFromTo) {
+
+    MdrIdDatatype mdrId = getMdrKeyUploadTo();
+    return createAttribute(mdrId, viewFromTo.getTo());
+
+  }
+
+  private MdrIdDatatype getMdrKeyUploadFrom() {
+    return getMdrKey(EnumConfiguration.MDR_KEY_UPLOAD_FROM);
+  }
+
+  private MdrIdDatatype getMdrKeyUploadTo() {
+    return getMdrKey(EnumConfiguration.MDR_KEY_UPLOAD_TO);
+  }
+
+  private MdrIdDatatype getMdrKey(EnumConfiguration enumConfiguration) {
+    return new MdrIdDatatype(ConfigurationUtil.getConfigurationElementValue(enumConfiguration));
+  }
+
+  private String getMdrKey(MdrIdDatatype mdrIdDatatype) {
+    return mdrIdDatatype.getLatestCentraxx();
+  }
+
+  private Attribute createAttribute(MdrIdDatatype mdrId, String value) {
+
+    Attribute attribute = objectFactory.createAttribute();
+    attribute.setMdrKey(getMdrKey(mdrId));
+
+    JAXBElement<String> value1 = objectFactory.createValue(value);
+    attribute.setValue(value1);
+
+    return attribute;
+
+  }
 
 
-    public void setIgnoredElements(MdrIgnoredElements ignoredElements) {
-        this.ignoredElements = ignoredElements;
-    }
+  public void setIgnoredElements(MdrIgnoredElements ignoredElements) {
+    this.ignoredElements = ignoredElements;
+  }
 
-    public void setMdrMappedElements(MdrMappedElements mdrMappedElements) {
-        this.mdrMappedElements = mdrMappedElements;
-    }
+  public void setMdrMappedElements(MdrMappedElements mdrMappedElements) {
+    this.mdrMappedElements = mdrMappedElements;
+  }
 
 }

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.0.0 - 2020-11-27]
+- Github release
+### Changed
+- Samply parent 11.1.0
+## Added
+- Github Actions
+- Google Code Style
+### Bugfix
+- fixed functional tests for BLAZE
+
 ## [6.13.0 - 2020-10-14]
 ### Changed
 - changed locale default from de to en

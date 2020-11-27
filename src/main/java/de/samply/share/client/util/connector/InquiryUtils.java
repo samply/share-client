@@ -8,13 +8,19 @@ import de.samply.share.common.utils.SamplyShareUtils;
 
 public class InquiryUtils {
 
-    public void changeStatusOfInquiryResultToError(InquiryDetails inquiryDetails) {
-        InquiryResult inquiryResult = new InquiryResult();
-        inquiryResult.setErrorCode(Integer.toString(LdmClientCentraxx.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE));
-        inquiryResult.setExecutedAt(SamplyShareUtils.getCurrentSqlTimestamp());
-        inquiryResult.setInquiryDetailsId(inquiryDetails.getId());
-        inquiryResult.setIsError(true);
-        InquiryResultUtil.insertInquiryResult(inquiryResult);
-    }
+  /**
+   * Change the status of the InquiryResult to error.
+   *
+   * @param inquiryDetails the InquiryDetails of the inquiry
+   */
+  public void changeStatusOfInquiryResultToError(InquiryDetails inquiryDetails) {
+    InquiryResult inquiryResult = new InquiryResult();
+    inquiryResult
+        .setErrorCode(Integer.toString(LdmClientCentraxx.ERROR_CODE_UNCLASSIFIED_WITH_STACKTRACE));
+    inquiryResult.setExecutedAt(SamplyShareUtils.getCurrentSqlTimestamp());
+    inquiryResult.setInquiryDetailsId(inquiryDetails.getId());
+    inquiryResult.setIsError(true);
+    InquiryResultUtil.insertInquiryResult(inquiryResult);
+  }
 
 }

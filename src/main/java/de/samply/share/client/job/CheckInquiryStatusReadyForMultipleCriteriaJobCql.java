@@ -17,96 +17,108 @@ import de.samply.share.client.util.db.InquiryCriteriaUtil;
 import de.samply.share.client.util.db.InquiryDetailsUtil;
 import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.model.cql.CqlResult;
+import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.quartz.*;
-
-import java.util.function.Consumer;
+import org.quartz.DateBuilder;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobKey;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 
 public class CheckInquiryStatusReadyForMultipleCriteriaJobCql implements Job {
 
-    private static final Logger logger = LogManager.getLogger(CheckInquiryStatusReadyForMultipleCriteriaJobCql.class);
+  private static final Logger logger = LogManager
+      .getLogger(CheckInquiryStatusReadyForMultipleCriteriaJobCql.class);
 
-    private static final int DELAY_RESCHEDULING = 10;
-    private static final int DELAY_FIRST = 1;
+  private static final int DELAY_RESCHEDULING = 10;
+  private static final int DELAY_FIRST = 1;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private CheckInquiryStatusReadyForMultipleCriteriaJobParams jobParams;
-    private InquiryDetails inquiryDetails;
+  @SuppressWarnings("FieldCanBeLocal")
+  private CheckInquiryStatusReadyForMultipleCriteriaJobParams jobParams;
+  private InquiryDetails inquiryDetails;
 
-    static void spawnNewJob(InquiryDetails inquiryDetails) {
-        spawnNewJob(inquiryDetails, DELAY_FIRST);
+  static void spawnNewJob(InquiryDetails inquiryDetails) {
+    spawnNewJob(inquiryDetails, DELAY_FIRST);
+  }
+
+  private static void spawnNewJob(InquiryDetails inquiryDetails, int initialDelay) {
+    try {
+      Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
+
+      JobKey jobKey = JobKey.jobKey(
+          CheckInquiryStatusReadyForMultipleCriteriaJobParams.JOBNAME_CQL,
+          CheckInquiryStatusReadyForMultipleCriteriaJobParams.JOBGROUP);
+
+      JobDataMap jobDataMap = new JobDataMap();
+      jobDataMap.put(CheckInquiryStatusReadyForMultipleCriteriaJobParams.INQUIRY_DETAILS_ID,
+          inquiryDetails.getId());
+
+      logger.info(
+          "Give CheckInquiryStatusReadyForMultipleCriteria Job to scheduler for inquiry with id "
+              + inquiry.getId());
+
+      Trigger trigger = TriggerBuilder.newTrigger()
+          .startAt(DateBuilder.futureDate(initialDelay, DateBuilder.IntervalUnit.SECOND))
+          .forJob(jobKey)
+          .usingJobData(jobDataMap)
+          .build();
+
+      ApplicationBean.getScheduler().scheduleJob(trigger);
+    } catch (SchedulerException e) {
+      logger.error("Error spawning CheckInquiryStatusReadyForMultipleCriteria Job", e);
+    }
+  }
+
+  @Override
+  public void execute(JobExecutionContext jobExecutionContext) {
+    prepareExecute(jobExecutionContext);
+
+    if (inquiryDetails.getStatus() == InquiryStatusType.IS_READY) {
+      return;
     }
 
-    private static void spawnNewJob(InquiryDetails inquiryDetails, int initialDelay) {
-        try {
-            Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
-
-            JobKey jobKey = JobKey.jobKey(
-                    CheckInquiryStatusReadyForMultipleCriteriaJobParams.JOBNAME_CQL,
-                    CheckInquiryStatusReadyForMultipleCriteriaJobParams.JOBGROUP);
-
-            JobDataMap jobDataMap = new JobDataMap();
-            jobDataMap.put(CheckInquiryStatusReadyForMultipleCriteriaJobParams.INQUIRY_DETAILS_ID, inquiryDetails.getId());
-
-            logger.info("Give CheckInquiryStatusReadyForMultipleCriteria Job to scheduler for inquiry with id " + inquiry.getId());
-
-            Trigger trigger = TriggerBuilder.newTrigger()
-                    .startAt(DateBuilder.futureDate(initialDelay, DateBuilder.IntervalUnit.SECOND))
-                    .forJob(jobKey)
-                    .usingJobData(jobDataMap)
-                    .build();
-
-            ApplicationBean.getScheduler().scheduleJob(trigger);
-        } catch (SchedulerException e) {
-            logger.error("Error spawning CheckInquiryStatusReadyForMultipleCriteria Job", e);
-        }
+    for (InquiryCriteria inquiryCriteria : InquiryCriteriaUtil
+        .getInquiryCriteriaForInquiryDetails(inquiryDetails)) {
+      if (inquiryCriteria.getStatus() != InquiryCriteriaStatusType.ICS_READY) {
+        spawnNewJob(inquiryDetails, DELAY_RESCHEDULING);
+        return;
+      }
     }
 
-    @Override
-    public void execute(JobExecutionContext jobExecutionContext) {
-        prepareExecute(jobExecutionContext);
+    inquiryDetails.setStatus(InquiryStatusType.IS_READY);
+    InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
 
-        if (inquiryDetails.getStatus() == InquiryStatusType.IS_READY) {
-            return;
-        }
+    new ReplyRulesApplier(getProcessReplyRuleMethod()).processReplyRules(inquiryDetails);
+  }
 
-        for (InquiryCriteria inquiryCriteria : InquiryCriteriaUtil.getInquiryCriteriaForInquiryDetails(inquiryDetails)) {
-            if (inquiryCriteria.getStatus() != InquiryCriteriaStatusType.ICS_READY) {
-                spawnNewJob(inquiryDetails, DELAY_RESCHEDULING);
-                return;
-            }
-        }
+  private Consumer<BrokerConnector> getProcessReplyRuleMethod() {
+    return brokerConnector -> {
+      if (!ApplicationUtils.isLanguageCql() || !ApplicationUtils.isSamply()) {
+        logger.error("Job " + getClass().getSimpleName()
+            + " can only be applied in the context of CQL and Samply");
+        return;
+      }
 
-        inquiryDetails.setStatus(InquiryStatusType.IS_READY);
-        InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
+      try {
+        CqlResult queryResult = new CqlResultFactory(inquiryDetails).createCqlResult();
+        brokerConnector.reply(inquiryDetails, queryResult);
+      } catch (BrokerConnectorException e) {
+        ReplyRulesApplierUtil.handleBrokerConnectorException(e, inquiryDetails.getId());
+      }
+    };
+  }
 
-        new ReplyRulesApplier(getProcessReplyRuleMethod()).processReplyRules(inquiryDetails);
-    }
+  private void prepareExecute(JobExecutionContext jobExecutionContext) {
+    JobKey jobKey = jobExecutionContext.getJobDetail().getKey();
+    JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();
+    jobParams = new CheckInquiryStatusReadyForMultipleCriteriaJobParams(dataMap);
+    logger.debug(jobKey.toString() + " " + jobParams);
 
-    private Consumer<BrokerConnector> getProcessReplyRuleMethod() {
-        return brokerConnector -> {
-            if (!ApplicationUtils.isLanguageCql() || !ApplicationUtils.isSamply()) {
-                logger.error("Job " + getClass().getSimpleName() + " can only be applied in the context of CQL and Samply");
-                return;
-            }
-
-            try {
-                CqlResult queryResult = new CqlResultFactory(inquiryDetails).createCqlResult();
-                brokerConnector.reply(inquiryDetails, queryResult);
-            } catch (BrokerConnectorException e) {
-                ReplyRulesApplierUtil.handleBrokerConnectorException(e, inquiryDetails.getId());
-            }
-        };
-    }
-
-    private void prepareExecute(JobExecutionContext jobExecutionContext) {
-        JobKey jobKey = jobExecutionContext.getJobDetail().getKey();
-        JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();
-        jobParams = new CheckInquiryStatusReadyForMultipleCriteriaJobParams(dataMap);
-        logger.debug(jobKey.toString() + " " + jobParams);
-
-        inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(jobParams.getInquiryDetailsId());
-    }
+    inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(jobParams.getInquiryDetailsId());
+  }
 
 }

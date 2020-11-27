@@ -1,32 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
-  ~ Universitätsklinikum Frankfurt
-  ~
-  ~ Contact: www.mig-frankfurt.de
-  ~
-  ~ This program is free software; you can redistribute it and/or modify it under
-  ~ the terms of the GNU Affero General Public License as published by the Free
-  ~ Software Foundation; either version 3 of the License, or (at your option) any
-  ~ later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful, but WITHOUT
-  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-  ~ details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
-  ~
-  ~ Additional permission under GNU GPL version 3 section 7:
-  ~
-  ~ If you modify this Program, or any covered work, by linking or combining it
-  ~ with Jersey (https://jersey.java.net) (or a modified version of that
-  ~ library), containing parts covered by the terms of the General Public
-  ~ License, version 2.0, the licensors of this Program grant you additional
-  ~ permission to convey the resulting work.
-  -->
+
 
 <ui:composition template="/WEB-INF/templates/globalTemplate.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
@@ -42,7 +16,8 @@
     <ui:define name="title">#{msg.ul_title}</ui:define>
 
     <ui:define name="additional-css">
-        <h:outputStylesheet library="webjars" name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"/>
+        <h:outputStylesheet library="webjars"
+                            name="bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"/>
     </ui:define>
 
     <ui:define name="additional-js">
@@ -62,7 +37,8 @@
                     <th>#{msg.common_email}</th>
                     <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
                         <th><i class="fa fa-flask fa-fw" title="#{msg.ul_notifyBiomaterial}"/></th>
-                        <th><i class="fa fa-file-excel-o fa-fw" title="#{msg.ul_notifyClinicalData}"/></th>
+                        <th><i class="fa fa-file-excel-o fa-fw"
+                               title="#{msg.ul_notifyClinicalData}"/></th>
                         <th><i class="fa fa-users fa-fw" title="#{msg.ul_notifyPatients}"/></th>
                     </ui:fragment>
                     <th>#{msg.ul_setNewPassword}</th>
@@ -73,12 +49,8 @@
                 <ui:repeat var="user" value="#{userBean.userList}">
                     <ui:fragment rendered="#{user.username != 'exporter'}">
                         <tr class="#{userStatus.odd ? 'background-color: #E0E0E0; margin: 0;' : 'margin: 0;'}">
-                            <td>
-                                <h:outputText value="#{user.username}"/>
-                            </td>
-                            <td>
-                                <h:outputText value="#{user.email}"/>
-                            </td>
+                            <td><h:outputText value="#{user.username}"/></td>
+                            <td><h:outputText value="#{user.email}"/></td>
                             <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
                                 <td>
                                     <h:selectBooleanCheckbox
@@ -106,9 +78,10 @@
                                 </td>
                             </ui:fragment>
                             <td>
-                                    <a href="#"
-                                       onclick="$('#changeUserPassword .modal-footer :input').val('#{user.username}'); $('#changeUserPassword').modal();"
-                                       class="btn btn-default btn-sm"><span class="fa fa-gear"></span></a>
+                                <a href="#"
+                                   onclick="$('#changeUserPassword .modal-footer :input').val('#{user.username}'); $('#changeUserPassword').modal();"
+                                   class="btn btn-default btn-sm"><span
+                                        class="fa fa-gear"></span></a>
                             </td>
                             <td>
                                 <h:commandLink value="" rendered="#{!user.adminPrivilege}"
@@ -134,7 +107,8 @@
                              components="newUserPassElement:newUserPass newUserPassRepeatElement:newUserPassRepeat"
                              message="#{msg.common_passwordMismatch}"/>
 
-            <sscl:formEntryElement labelFor="newUserName" labelText="#{msg.common_username}" id="newUserNameElement">
+            <sscl:formEntryElement labelFor="newUserName" labelText="#{msg.common_username}"
+                                   id="newUserNameElement">
                 <f:facet name="input">
                     <h:inputText styleClass="form-control" value="#{userBean.newUser.username}"
                                  id="newUserName" size="60" required="true"
@@ -142,14 +116,16 @@
                 </f:facet>
             </sscl:formEntryElement>
 
-            <sscl:formEntryElement labelFor="newEmail" labelText="#{msg.common_email}" id="newEmailElement">
+            <sscl:formEntryElement labelFor="newEmail" labelText="#{msg.common_email}"
+                                   id="newEmailElement">
                 <f:facet name="input">
                     <h:inputText styleClass="form-control" value="#{userBean.newUser.email}"
                                  id="newEmail" size="60"/>
                 </f:facet>
             </sscl:formEntryElement>
 
-            <sscl:formEntryElement labelFor="newUserPass" labelText="#{msg.common_password}" id="newUserPassElement">
+            <sscl:formEntryElement labelFor="newUserPass" labelText="#{msg.common_password}"
+                                   id="newUserPassElement">
                 <f:facet name="input">
                     <h:inputSecret styleClass="form-control" value="#{userBean.password}"
                                    id="newUserPass" size="40" redisplay="true" required="true"
@@ -168,7 +144,8 @@
 
             <!--Notification Settings-->
             <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
-                <sscl:formEntryElement labelFor="newUserBiomaterial" labelText="#{msg.ul_notifyBiomaterial}"
+                <sscl:formEntryElement labelFor="newUserBiomaterial"
+                                       labelText="#{msg.ul_notifyBiomaterial}"
                                        id="newUserBiomaterialElement">
                     <f:facet name="input">
                         <h:selectBooleanCheckbox id="newUserBiomaterial"
@@ -177,7 +154,8 @@
                     </f:facet>
                 </sscl:formEntryElement>
 
-                <sscl:formEntryElement labelFor="newUserClinicalData" labelText="#{msg.ul_notifyClinicalData}"
+                <sscl:formEntryElement labelFor="newUserClinicalData"
+                                       labelText="#{msg.ul_notifyClinicalData}"
                                        id="newUserClinicalDataElement">
                     <f:facet name="input">
                         <h:selectBooleanCheckbox id="newUserClinicalData"
@@ -186,7 +164,8 @@
                     </f:facet>
                 </sscl:formEntryElement>
 
-                <sscl:formEntryElement labelFor="newUserPatients" labelText="#{msg.ul_notifyPatients}"
+                <sscl:formEntryElement labelFor="newUserPatients"
+                                       labelText="#{msg.ul_notifyPatients}"
                                        id="newUserPatientsElement">
                     <f:facet name="input">
                         <h:selectBooleanCheckbox id="newUserPatients"
@@ -200,7 +179,8 @@
 
             <h:panelGroup layout="block" styleClass="form-group">
                 <h:panelGroup layout="block" styleClass="col-sm-offset-2 col-sm-6">
-                    <h:commandButton id="newUserCreate" value="#{msg.ul_createBtn}" styleClass="btn btn-default btn-sm"
+                    <h:commandButton id="newUserCreate" value="#{msg.ul_createBtn}"
+                                     styleClass="btn btn-default btn-sm"
                                      action="#{userBean.storeNewUser}">
                     </h:commandButton>
                 </h:panelGroup>

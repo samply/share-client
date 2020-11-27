@@ -7,49 +7,57 @@ import de.samply.share.client.util.db.InquiryCriteriaUtil;
 import de.samply.share.client.util.db.InquiryResultUtil;
 import de.samply.share.model.common.result.Stratification;
 import de.samply.share.model.cql.CqlResult;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 public class CqlResultFactory {
 
-    private final InquiryDetails inquiryDetails;
+  private final InquiryDetails inquiryDetails;
 
-    public CqlResultFactory(InquiryDetails inquiryDetails) {
-        this.inquiryDetails = inquiryDetails;
+  public CqlResultFactory(InquiryDetails inquiryDetails) {
+    this.inquiryDetails = inquiryDetails;
+  }
+
+  /**
+   * Todo.
+   * @return CqlResult
+   */
+  public CqlResult createCqlResult() {
+    List<InquiryCriteria> inquiryCriteriaList = InquiryCriteriaUtil
+        .getInquiryCriteriaForInquiryDetails(inquiryDetails);
+    CqlResult queryResult = new CqlResult();
+
+    for (InquiryCriteria inquiryCriteria : inquiryCriteriaList) {
+      InquiryResult inquiryResult = InquiryResultUtil
+          .fetchLatestInquiryResultForInquiryCriteriaById(inquiryCriteria.getId());
+      if (InquiryCriteriaEntityType.PATIENT.getName().equals(inquiryCriteria.getEntityType())) {
+        queryResult.setNumberOfPatients(inquiryResult.getSize());
+        List<Stratification> stratifications = readStratifications(inquiryResult);
+        queryResult.setStratificationsOfPatients(stratifications);
+      } else if (InquiryCriteriaEntityType.SPECIMEN.getName()
+          .equals(inquiryCriteria.getEntityType())) {
+        queryResult.setNumberOfSpecimens(inquiryResult.getSize());
+        List<Stratification> stratifications = readStratifications(inquiryResult);
+        queryResult.setStratificationsOfSpecimens(stratifications);
+      }
     }
 
-    public CqlResult createCqlResult() {
-        List<InquiryCriteria> inquiryCriteriaList = InquiryCriteriaUtil.getInquiryCriteriaForInquiryDetails(inquiryDetails);
-        CqlResult queryResult = new CqlResult();
+    return queryResult;
+  }
 
-        for (InquiryCriteria inquiryCriteria : inquiryCriteriaList) {
-            InquiryResult inquiryResult = InquiryResultUtil.fetchLatestInquiryResultForInquiryCriteriaById(inquiryCriteria.getId());
-            if (InquiryCriteriaEntityType.PATIENT.getName().equals(inquiryCriteria.getEntityType())) {
-                queryResult.setNumberOfPatients(inquiryResult.getSize());
-                List<Stratification> stratifications = readStratifications(inquiryResult);
-                queryResult.setStratificationsOfPatients(stratifications);
-            } else if (InquiryCriteriaEntityType.SPECIMEN.getName().equals(inquiryCriteria.getEntityType())) {
-                queryResult.setNumberOfSpecimens(inquiryResult.getSize());
-                List<Stratification> stratifications = readStratifications(inquiryResult);
-                queryResult.setStratificationsOfSpecimens(stratifications);
-            }
-        }
+  private List<Stratification> readStratifications(InquiryResult inquiryResult) {
+    ObjectMapper mapper = new ObjectMapper();
 
-        return queryResult;
+    try {
+      return mapper
+          .readValue(inquiryResult.getStratifications(), new TypeReference<List<Stratification>>() {
+          });
+    } catch (IOException e) {
+      return new ArrayList<>();
     }
-
-    private List<Stratification> readStratifications(InquiryResult inquiryResult) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            return mapper.readValue(inquiryResult.getStratifications(), new TypeReference<List<Stratification>>(){});
-        } catch (IOException e) {
-            return new ArrayList<>();
-        }
-    }
+  }
 
 }

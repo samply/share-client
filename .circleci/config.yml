@@ -17,6 +17,6 @@ jobs:
       - run: mvn -B install -Psamply
 
       - setup_remote_docker
-      - run: docker build -t martinbreu/samply-connector:latest .
+      - run: docker build -t martinbreu/samply-connector:${CIRCLE_SHA1} .
       - run: docker login -u martinbreu -p "${DOCKER_HUB_PASSWD}"
-      - run: docker push martinbreu/samply-connector:latest
+      - run: docker push martinbreu/samply-connector:${CIRCLE_SHA1}

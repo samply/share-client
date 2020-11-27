@@ -18,7 +18,8 @@ The following application wide constants are available via this template:
 <c:set var="_apiURL"
        value="http://omnifaces.org/docs/javadoc/#{app.snapshot ? 'current' : app.version.substring(0, 3)}/"
        scope="application"/>
-<c:set var="_vdlURL" value="http://omnifaces.org/docs/vdldoc/#{app.snapshot ? 'current' : app.version.substring(0, 3)}/"
+<c:set var="_vdlURL"
+       value="http://omnifaces.org/docs/vdldoc/#{app.snapshot ? 'current' : app.version.substring(0, 3)}/"
        scope="application"/>
 <c:set var="_srcURL"
        value="https://github.com/omnifaces/omnifaces/blob/#{app.snapshot ? 'master' : app.version}/src/main/java/"
@@ -27,9 +28,7 @@ The following application wide constants are available via this template:
 <ui:insert name="meta"/>
 
 <h:head>
-    <title>
-        <ui:insert name="title">#{applicationBean.getDisplayName()} - Error</ui:insert>
-    </title>
+    <title><ui:insert name="title">#{applicationBean.getDisplayName()} - Error</ui:insert></title>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 
     <h:outputStylesheet library="webjars" name="bootstrap/3.3.7-1/css/bootstrap.min-jsf.css"/>
@@ -46,8 +45,7 @@ The following application wide constants are available via this template:
     <div class="page-wrapper">
         <sw:menu/>
 
-        <div id="poweredBy">Server (re)started at #{of:formatDateWithTimezone(startup, 'd MMM yyyy HH:mm', 'UTC')} UTC
-        </div>
+        <div id="poweredBy">Server (re)started at #{of:formatDateWithTimezone(startup, 'd MMM yyyy HH:mm', 'UTC')} UTC</div>
 
         <div id="content" style="margin-top: 60px;">
             <h2 id="contentTitle">

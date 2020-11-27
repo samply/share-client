@@ -1,6 +1,6 @@
 <com:urls xmlns:com="http://schema.samply.de/common">
-    <com:shareUrl>http://www.company.org/cum/sonoras</com:shareUrl>
-    <com:idmanagerUrl>http://172.22.53.221:8180/ID-Manager</com:idmanagerUrl>
-    <com:ldmUrl>http://172.22.53.221:8080/centraxx</com:ldmUrl>
-    <com:mdrUrl>https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr</com:mdrUrl>
+  <com:idmanagerUrl>http://172.22.53.221:8180/ID-Manager</com:idmanagerUrl>
+  <com:ldmUrl>http://172.22.53.221:8080/centraxx</com:ldmUrl>
+  <com:mdrUrl>https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr</com:mdrUrl>
+  <com:shareUrl>http://www.company.org/cum/sonoras</com:shareUrl>
 </com:urls>

@@ -14,7 +14,8 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title" id="myModalLabel">#{msg.export_saveModalTitle}</h4>
+                                <h4 class="modal-title"
+                                    id="myModalLabel">#{msg.export_saveModalTitle}</h4>
                             </div>
                             <div class="modal-body">
                                 <div class="container-fluid">
@@ -23,15 +24,16 @@
                                             <h:outputText value="#{msg.export_setName}"/>
                                         </div>
                                         <div class="col-lg-12">
-                                            <h:inputText value="#{exportController.exportDefinition.name}"
-                                                         styleClass="form-control"/>
+                                            <h:inputText
+                                                    value="#{exportController.exportDefinition.name}"
+                                                    styleClass="form-control"/>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">#{msg.common_cancel}
-                                </button>
+                                <button type="button" class="btn btn-danger"
+                                        data-dismiss="modal">#{msg.common_cancel}</button>
                                 <h:commandButton class="btn btn-success"
                                                  action="#{exportController.save()}"
                                                  value="#{msg.common_save}"/>

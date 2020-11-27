@@ -1,88 +1,62 @@
 package de.samply.share.client.quality.report.centraxx;
 
-/*
-* Copyright (C) 2017 Medizinische Informatik in der Translationalen Onkologie,
-* Deutsches Krebsforschungszentrum in Heidelberg
-*
-* This program is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Affero General Public License as published by the Free
-* Software Foundation; either version 3 of the License, or (at your option) any
-* later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program; if not, see http://www.gnu.org/licenses.
-*
-* Additional permission under GNU GPL version 3 section 7:
-*
-* If you modify this Program, or any covered work, by linking or combining it
-* with Jersey (https://jersey.java.net) (or a modified version of that
-* library), containing parts covered by the terms of the General Public
-* License, version 2.0, the licensors of this Program grant you additional
-* permission to convey the resulting work.
-*/
-
 import de.samply.share.common.utils.MdrIdDatatype;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class AttributeValueKey {
 
-    private String mdrId;
-    private String value;
+  private String mdrId;
+  private String value;
 
 
-    public AttributeValueKey(String mdrId, String value) {
-        this.mdrId = mdrId;
-        this.value = value;
+  public AttributeValueKey(String mdrId, String value) {
+    this.mdrId = mdrId;
+    this.value = value;
+  }
+
+  public AttributeValueKey(MdrIdDatatype mdrId, String value) {
+    this.value = value;
+    this.mdrId = mdrId.toString();
+  }
+
+  @Override
+  public int hashCode() {
+
+    HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+    hashCodeBuilder.append(mdrId);
+    hashCodeBuilder.append(value);
+
+    return hashCodeBuilder.toHashCode();
+
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+
+    if (obj == null || !(obj instanceof AttributeValueKey)) {
+      return false;
     }
 
-    public AttributeValueKey(MdrIdDatatype mdrId, String value) {
-        this.value = value;
-        this.mdrId = mdrId.toString();
+    if (obj == this) {
+      return true;
     }
 
-    @Override
-    public int hashCode() {
+    AttributeValueKey attributeValueKey = (AttributeValueKey) obj;
 
-        HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
-        hashCodeBuilder.append(mdrId);
-        hashCodeBuilder.append(value);
+    EqualsBuilder equalsBuilder = new EqualsBuilder();
+    equalsBuilder.append(mdrId, attributeValueKey.getMdrId());
+    equalsBuilder.append(value, attributeValueKey.getValue());
 
-        return hashCodeBuilder.toHashCode();
+    return equalsBuilder.isEquals();
 
-    }
+  }
 
-    @Override
-    public boolean equals(Object obj) {
+  public String getMdrId() {
+    return mdrId;
+  }
 
-        if (obj == null || !(obj instanceof AttributeValueKey)){
-            return false;
-        }
-
-        if (obj == this){
-            return true;
-        }
-
-        AttributeValueKey attributeValueKey = (AttributeValueKey) obj;
-
-        EqualsBuilder equalsBuilder = new EqualsBuilder();
-        equalsBuilder.append(mdrId, attributeValueKey.getMdrId());
-        equalsBuilder.append(value, attributeValueKey.getValue());
-
-        return equalsBuilder.isEquals();
-
-    }
-
-    public String getMdrId() {
-        return mdrId;
-    }
-
-    public String getValue() {
-        return value;
-    }
+  public String getValue() {
+    return value;
+  }
 }

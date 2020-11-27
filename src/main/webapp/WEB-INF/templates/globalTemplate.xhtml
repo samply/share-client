@@ -1,31 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright (c) 2017 Medical Informatics Group (MIG),
-  ~ Universitätsklinikum Frankfurt
-  ~
-  ~ Contact: www.mig-frankfurt.de
-  ~
-  ~ This program is free software; you can redistribute it and/or modify it under
-  ~ the terms of the GNU Affero General Public License as published by the Free
-  ~ Software Foundation; either version 3 of the License, or (at your option) any
-  ~ later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful, but WITHOUT
-  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-  ~ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-  ~ details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
-  ~
-  ~ Additional permission under GNU GPL version 3 section 7:
-  ~
-  ~ If you modify this Program, or any covered work, by linking or combining it
-  ~ with Jersey (https://jersey.java.net) (or a modified version of that
-  ~ library), containing parts covered by the terms of the General Public
-  ~ License, version 2.0, the licensors of this Program grant you additional
-  ~ permission to convey the resulting work.
-  -->
+
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -58,8 +32,8 @@
     <ui:insert name="additional-css"/>
 
     <h:outputScript target="body">
-        maxInitValues(#{session.lastAccessedTime}, #{session.maxInactiveInterval} -30, '#{msg.session_timeout_one}',
-                '#{msg.session_timeout_two}', '#{msg.session_timeout_two_min}', '#{msg.session_timeout_one_under}');
+        maxInitValues(#{session.lastAccessedTime}, #{session.maxInactiveInterval} - 30, '#{msg.session_timeout_one}',
+        '#{msg.session_timeout_two}', '#{msg.session_timeout_two_min}', '#{msg.session_timeout_one_under}');
     </h:outputScript>
 
     <h:outputScript library="webjars" name="jquery/3.3.1-1/jquery.min.js"/>
@@ -82,10 +56,12 @@
 
         <div class="page-wrapper #{pageWrapperAdditionalClass}">
             <sscl:menu activePage="#{view.viewId}"/>
-            <ui:fragment rendered="#{adminPage and not fn:containsIgnoreCase(view.viewId, 'dashboard')}">
+            <ui:fragment
+                    rendered="#{adminPage and not fn:containsIgnoreCase(view.viewId, 'dashboard')}">
                 <sscl:sideNav admin="true"/>
             </ui:fragment>
-            <ui:fragment rendered="#{not adminPage and not fn:containsIgnoreCase(view.viewId, 'dashboard')}">
+            <ui:fragment
+                    rendered="#{not adminPage and not fn:containsIgnoreCase(view.viewId, 'dashboard')}">
                 <sscl:sideNav admin="false"/>
             </ui:fragment>
 

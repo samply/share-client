@@ -1,11 +1,11 @@
 <bi:bridgehead xmlns:bi="http://schema.samply.de/config/BridgeheadInfo">
-    <bi:name>string</bi:name>
-    <bi:longname>string</bi:longname>
-    <bi:dktkid>string</bi:dktkid>
-    <bi:monitor>string</bi:monitor>
-    <bi:interval>string</bi:interval>
-    <bi:centralsearch>string</bi:centralsearch>
-    <bi:decentralsearch>string</bi:decentralsearch>
-    <bi:updateserver>string</bi:updateserver>
-    <bi:queryLanguage>{query-language}</bi:queryLanguage>
+  <bi:centralsearch>string</bi:centralsearch>
+  <bi:decentralsearch>string</bi:decentralsearch>
+  <bi:dktkid>string</bi:dktkid>
+  <bi:interval>string</bi:interval>
+  <bi:longname>string</bi:longname>
+  <bi:monitor>string</bi:monitor>
+  <bi:name>string</bi:name>
+  <bi:queryLanguage>{query-language}</bi:queryLanguage>
+  <bi:updateserver>string</bi:updateserver>
 </bi:bridgehead>

@@ -1,39 +1,40 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<faces-config version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+<faces-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2"
+  xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
     http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
 
-    <application>
-        <locale-config>
-            <default-locale>en</default-locale>
-            <supported-locale>en</supported-locale>
-            <supported-locale>de</supported-locale>
-        </locale-config>
-        <resource-bundle>
-            <base-name>de.samply.share.client.messages.messages</base-name>
-            <var>msg</var>
-        </resource-bundle>
+  <application>
+    <locale-config>
+      <default-locale>en</default-locale>
+      <supported-locale>en</supported-locale>
+      <supported-locale>de</supported-locale>
+    </locale-config>
+    <resource-bundle>
+      <base-name>de.samply.share.client.messages.messages</base-name>
+      <var>msg</var>
+    </resource-bundle>
 
-        <resource-handler>org.omnifaces.resourcehandler.UnmappedResourceHandler</resource-handler>
-    </application>
+    <resource-handler>org.omnifaces.resourcehandler.UnmappedResourceHandler</resource-handler>
+  </application>
 
-    <factory>
-        <exception-handler-factory>org.omnifaces.exceptionhandler.FullAjaxExceptionHandlerFactory</exception-handler-factory>
-    </factory>
+  <factory>
+    <exception-handler-factory>org.omnifaces.exceptionhandler.FullAjaxExceptionHandlerFactory
+    </exception-handler-factory>
+  </factory>
 
-    <!-- Register the custom renderers to use bootstrap message(s) -->
-    <render-kit>
-        <renderer>
-            <component-family>javax.faces.Message</component-family>
-            <renderer-type>javax.faces.Message</renderer-type>
-            <renderer-class>de.samply.common.web.jsf.renderer.BootstrapMessageRenderer</renderer-class>
-        </renderer>
-        <renderer>
-            <component-family>javax.faces.Messages</component-family>
-            <renderer-type>javax.faces.Messages</renderer-type>
-            <renderer-class>de.samply.common.web.jsf.renderer.BootstrapMessagesRenderer</renderer-class>
-        </renderer>
-    </render-kit>
-  
+  <!-- Register the custom renderers to use bootstrap message(s) -->
+  <render-kit>
+    <renderer>
+      <component-family>javax.faces.Message</component-family>
+      <renderer-class>de.samply.common.web.jsf.renderer.BootstrapMessageRenderer</renderer-class>
+      <renderer-type>javax.faces.Message</renderer-type>
+    </renderer>
+    <renderer>
+      <component-family>javax.faces.Messages</component-family>
+      <renderer-class>de.samply.common.web.jsf.renderer.BootstrapMessagesRenderer</renderer-class>
+      <renderer-type>javax.faces.Messages</renderer-type>
+    </renderer>
+  </render-kit>
+
 </faces-config>
