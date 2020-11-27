@@ -1,4 +1,3 @@
-UNMERGED BRANCH -CHANGES FROM OTHER SAMPLY TEAMS MISSING
 # Connector
 
 The Connector (or "Samply Share Client" or "Teiler" ) connects the [Blaze](https://github.com/life-research/blaze) store and the central Sample-Locator which consists of two modules, [UI](https://github.com/samply/sample-locator) and [backend](https://github.com/samply/share-broker-rest), as part of the [Bridgehead-Deployment](https://github.com/samply/bridgehead-deployment).
@@ -10,6 +9,10 @@ To register a Searchbroker, see [Bridgehead-Deployment](https://github.com/sampl
 ## Building
 
 Check [GETTINGSTARTED.md](https://github.com/samply/share-client/blob/master/GETTINGSTARTED.md) for the detailed steps.
+
+## State of Fork Integration
+
+This repository reflects the joint development status of the German Biobank Alliance and German Cancer Consortium, which is considered to be the most complete and compatible Samply fork.
 
 ## License
         
