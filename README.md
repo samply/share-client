@@ -12,7 +12,7 @@ Check [GETTINGSTARTED.md](https://github.com/samply/share-client/blob/master/GET
 
 ## State of Fork Integration
 
-This repository reflects the joint development status of the German Biobank Alliance and German Cancer Consortium, which is considered to be the most complete and compatible Samply fork.
+This repository reflects the joint development status of the German Biobank Alliance and German Cancer Consortium, which is considered to be the most complete and compatible Samply fork. Yet unmerged with changes from other samply teams. Merge in progress.
 
 ## License
         
