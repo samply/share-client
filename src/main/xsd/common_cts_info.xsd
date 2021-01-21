@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  elementFormDefault="qualified" targetNamespace="http://schema.samply.de/common"
-  version="1.0" xmlns="http://schema.samply.de/common">
-
-  <xs:complexType name="cts">
-    <xs:all>
-      <xs:element minOccurs="0" name="username" type="xs:string"/>
-      <xs:element minOccurs="0" name="password" type="xs:string"/>
-      <xs:element minOccurs="0" name="url" type="xs:anyURI"/>
-      <xs:element minOccurs="0" name="profile" type="xs:anyURI"/>
-      <xs:element minOccurs="0" name="mainzellisteUrl" type="xs:anyURI"/>
-      <xs:element minOccurs="0" name="mainzellisteApiKey" type="xs:string"/>
-    </xs:all>
-  </xs:complexType>
-
-  <xs:element name="cts" type="cts"/>
+<xs:schema elementFormDefault="qualified"
+           targetNamespace="http://schema.samply.de/config/CtsInfo"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="cts">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="username" type="xs:string"/>
+        <xs:element name="password" type="xs:string"/>
+        <xs:element name="url" type="xs:anyURI"/>
+        <xs:element name="profile" type="xs:anyURI"/>
+        <xs:element name="mainzellisteUrl" type="xs:anyURI"/>
+        <xs:element name="mainzellisteApiKey" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>
