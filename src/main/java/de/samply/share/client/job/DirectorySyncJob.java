@@ -57,7 +57,7 @@ public class DirectorySyncJob implements Job {
     }
     Credentials credentials = credentialsList.get(0);
     return DirectoryApi.createWithLogin(HttpClients.createDefault(),
-        ApplicationBean.getUrlsForDirectory().getDirecotryUrl(), credentials.getUsername(),
+        ApplicationBean.getUrlsForDirectory().getDirectoryUrl(), credentials.getUsername(),
         credentials.getPasscode());
   }
 

@@ -15,7 +15,10 @@
     <packaging>war</packaging>
 
     <name>Connector</name>
-    <description>Samply Share Client is part of a bridgehead infrastructure. It poses as the interface between the local components (mainly, the local datamanagement) and central components like searchbrokers for the decentral search infrastructure</description>
+    <description>Samply Share Client is part of a bridgehead infrastructure. It poses as the interface between the local
+        components (mainly, the local datamanagement) and central components like searchbrokers for the decentral search
+        infrastructure
+    </description>
     <url>https://github.com/samply/share-client</url>
     <organization>
         <name>Samply Community</name>
@@ -110,6 +113,7 @@
         <junit.version>4.12</junit.version>
         <jsf-api.version>2.2.15</jsf-api.version>
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+        <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -441,8 +445,8 @@
                             <configuration>
                                 <target>
                                     <copy file="docs/faces-config-${project.context}.xml"
-                                      toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml"
-                                      overwrite="true"/>
+                                          toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml"
+                                          overwrite="true"/>
                                 </target>
                             </configuration>
                         </execution>
@@ -614,6 +618,30 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <!-- Generation of Java classes from xsd -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>${jaxb2-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>xjc</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <packageName>de.samply.share.client.model.common</packageName>
+                    <sources>
+                        <source>src/main/xsd</source>
+                    </sources>
+                    <addGeneratedAnnotation>true</addGeneratedAnnotation>
+                    <noPackageLevelAnnotations>true</noPackageLevelAnnotations>
+                    <locale>en_GB</locale>
                 </configuration>
             </plugin>
         </plugins>

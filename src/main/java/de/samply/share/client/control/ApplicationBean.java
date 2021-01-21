@@ -395,7 +395,7 @@ public class ApplicationBean implements Serializable {
         de.samply.share.client.model.db.tables.pojos.Configuration directoryConfigElement =
             new de.samply.share.client.model.db.tables.pojos.Configuration();
         directoryConfigElement.setName(EnumConfiguration.DIRECTORY_URL.name());
-        directoryConfigElement.setSetting(urls.getDirecotryUrl());
+        directoryConfigElement.setSetting(urls.getDirectoryUrl());
         ConfigurationUtil.insertOrUpdateConfigurationElement(directoryConfigElement);
       }
     }
