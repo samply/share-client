@@ -13,7 +13,8 @@ public class DoubleExcelCellElement extends ExcelCellElement<Double> {
 
   /**
    * Todo.
-   * @param element Todo.
+   *
+   * @param element          Todo.
    * @param numberOfDecimals Todo.
    */
   public DoubleExcelCellElement(Double element, int numberOfDecimals) {

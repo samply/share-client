@@ -7,8 +7,8 @@ import de.samply.share.client.quality.report.chainlinks.statistics.file.ChainLin
 public class ChainLinkStatistics implements ChainLinkStatisticsConsumer,
     ChainLinkStatisticsProducer {
 
-  private ChainLinkStatisticKey chainLinkStatisticKey;
-  private ChainLinkStaticStatisticsFileManager chainLinkStaticStatisticsFileManager;
+  private final ChainLinkStatisticKey chainLinkStatisticKey;
+  private final ChainLinkStaticStatisticsFileManager chainLinkStaticStatisticsFileManager;
 
   private long averageNanoTimeOfProcess = 18L * 1000000000L;
   private long totalProcessedNanoTime;
@@ -20,7 +20,8 @@ public class ChainLinkStatistics implements ChainLinkStatisticsConsumer,
 
   /**
    * Todo.
-   * @param chainLinkStatisticKey Todo.
+   *
+   * @param chainLinkStatisticKey                Todo.
    * @param chainLinkStaticStatisticsFileManager Todo.
    */
   public ChainLinkStatistics(ChainLinkStatisticKey chainLinkStatisticKey,
@@ -118,6 +119,7 @@ public class ChainLinkStatistics implements ChainLinkStatisticsConsumer,
 
   /**
    * Todo.
+   *
    * @param averageNanoTimeOfProcess Todo.
    */
   public void setAverageNanoTimeOfProcess(Long averageNanoTimeOfProcess) {

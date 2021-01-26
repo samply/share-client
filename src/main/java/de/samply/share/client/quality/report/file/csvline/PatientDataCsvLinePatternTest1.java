@@ -22,6 +22,7 @@ public class PatientDataCsvLinePatternTest1 extends CsvLineImpl {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public MdrIdDatatype getMdrId() {
@@ -45,6 +46,7 @@ public class PatientDataCsvLinePatternTest1 extends CsvLineImpl {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public Boolean isValid() {
@@ -68,6 +70,7 @@ public class PatientDataCsvLinePatternTest1 extends CsvLineImpl {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public Integer getNumberOfPatients() {

@@ -5,7 +5,7 @@ import de.samply.share.client.quality.report.chainlinks.timer.ChainLinkTimer002;
 
 public class ChainLinkTimerFactory002 implements ChainLinkTimerFactory {
 
-  private long maxTimeToWaitInMillis;
+  private final long maxTimeToWaitInMillis;
 
   public ChainLinkTimerFactory002(long maxTimeToWaitInMillis) {
     this.maxTimeToWaitInMillis = maxTimeToWaitInMillis;

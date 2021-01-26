@@ -22,6 +22,7 @@ public class EventLogMainzellisteUtil {
 
   /**
    * Todo.
+   *
    * @param userId     the cts User-Id
    * @param statusCode statusCode of the http response
    * @return FHIR-AuditEvent in JSON
@@ -60,6 +61,7 @@ public class EventLogMainzellisteUtil {
 
   /**
    * Todo.
+   *
    * @param statusCode statusCode from the http response
    * @return -https://terminology.hl7.org/1.0.0/ValueSet-audit-event-outcome.html
    */

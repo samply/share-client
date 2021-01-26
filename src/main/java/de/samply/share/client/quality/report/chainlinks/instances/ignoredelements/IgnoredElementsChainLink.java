@@ -17,13 +17,14 @@ public class IgnoredElementsChainLink<I extends ChainLinkItem & QualityResultsCo
     ChainLink<I> {
 
   private static final String EMPTY_VALUE = "";
-  private MdrIgnoredElements ignoredElements;
-  private ModelSearcher modelSearcher;
+  private final MdrIgnoredElements ignoredElements;
+  private final ModelSearcher modelSearcher;
 
   /**
    * Todo.
+   *
    * @param ignoredElements Todo.
-   * @param modelSearcher Todo.
+   * @param modelSearcher   Todo.
    */
   public IgnoredElementsChainLink(MdrIgnoredElements ignoredElements,
       ModelSearcher modelSearcher) {

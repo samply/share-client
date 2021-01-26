@@ -19,7 +19,7 @@ public class InquiryUtil {
 
   private static final Logger logger = LogManager.getLogger(InquiryUtil.class);
 
-  private static InquiryDao inquiryDao;
+  private static final InquiryDao inquiryDao;
 
   static {
     inquiryDao = new InquiryDao(ResourceManager.getConfiguration());

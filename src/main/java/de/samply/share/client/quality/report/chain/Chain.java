@@ -4,6 +4,6 @@ import de.samply.share.client.quality.report.chainlinks.statistics.chain.ChainSt
 
 public interface Chain extends Runnable {
 
-  public ChainStatistics getChainStatistics();
+  ChainStatistics getChainStatistics();
 
 }

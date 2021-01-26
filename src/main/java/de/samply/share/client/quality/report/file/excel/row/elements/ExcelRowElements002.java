@@ -153,9 +153,10 @@ public class ExcelRowElements002 extends ExcelRowElements {
 
   /**
    * Todo.
-   * @param isValid Todo.
+   *
+   * @param isValid          Todo.
    * @param numberOfPatients Todo.
-   * @param cellReference Todo.
+   * @param cellReference    Todo.
    */
   public void setValid(boolean isValid, int numberOfPatients, CellReference cellReference) {
 
@@ -182,6 +183,7 @@ public class ExcelRowElements002 extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param numberOfPatients Todo.
    */
   public void setNumberOfPatients(int numberOfPatients) {
@@ -191,6 +193,7 @@ public class ExcelRowElements002 extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param percentageOfPatientsWithDataElement Todo.
    */
   public void setPercentageOutOfPatientsWithDataElement(
@@ -212,6 +215,7 @@ public class ExcelRowElements002 extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param percentageOfTotalPatients Todo.
    */
   public void setPercentageOutOfTotalPatients(Double percentageOfTotalPatients) {

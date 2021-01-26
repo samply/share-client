@@ -25,6 +25,7 @@ public class EventLogLine implements Serializable {
 
   /**
    * Todo.
+   *
    * @param eventLog Todo.
    */
   public EventLogLine(EventLog eventLog) {

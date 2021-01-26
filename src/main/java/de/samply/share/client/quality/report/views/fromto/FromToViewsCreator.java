@@ -26,8 +26,8 @@ import javax.xml.bind.JAXBElement;
 public class FromToViewsCreator implements ViewsCreator {
 
 
-  private ViewFromToScheduler viewFromToScheduler;
-  private ObjectFactory objectFactory = new ObjectFactory();
+  private final ViewFromToScheduler viewFromToScheduler;
+  private final ObjectFactory objectFactory = new ObjectFactory();
   private MdrIgnoredElements ignoredElements;
   private MdrMappedElements mdrMappedElements;
 
@@ -82,11 +82,11 @@ public class FromToViewsCreator implements ViewsCreator {
   }
 
   private boolean isMappedElement(MdrIdDatatype mdrId) {
-    return (mdrMappedElements != null) ? mdrMappedElements.isMapped(mdrId) : true;
+    return mdrMappedElements == null || mdrMappedElements.isMapped(mdrId);
   }
 
   private boolean isIgnoredElement(MdrIdDatatype mdrId) {
-    return (ignoredElements != null) ? ignoredElements.isIgnored(mdrId) : false;
+    return ignoredElements != null && ignoredElements.isIgnored(mdrId);
   }
 
   private boolean isSameMdrId(MdrIdDatatype m1, MdrIdDatatype m2) {

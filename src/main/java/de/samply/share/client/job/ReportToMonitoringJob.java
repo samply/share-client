@@ -10,7 +10,7 @@ import de.samply.share.client.model.db.enums.InquiryStatusType;
 import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
+import de.samply.share.client.util.connector.LdmConnectorCentraxxExtension;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
@@ -237,9 +237,9 @@ public class ReportToMonitoringJob implements Job {
   }
 
   /**
-   * Get the total amount of patients from local datamanagement.
-   * This will only count patients with a DKTK site pseudonym that fit the ldm-defined criteria. As
-   * of now, this includes patients with a C.* or certain D.* diagnoses.
+   * Get the total amount of patients from local datamanagement. This will only count patients with
+   * a DKTK site pseudonym that fit the ldm-defined criteria. As of now, this includes patients with
+   * a C.* or certain D.* diagnoses.
    *
    * @return the amount of patients and the exit status
    */
@@ -336,12 +336,12 @@ public class ReportToMonitoringJob implements Job {
   private StatusReportItem getCentraxxMappingVersion() {
     StatusReportItem centraxxMappingVersion = new StatusReportItem();
     centraxxMappingVersion.setParameterName(StatusReportItem.PARAMETER_CENTRAXX_MAPPING_VERSION);
-    if (!ldmConnector.isLdmCentraxx()) {
+    if (!(ldmConnector instanceof LdmConnectorCentraxxExtension)) {
       centraxxMappingVersion.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_WARNING.getValue());
       centraxxMappingVersion.setStatusText("Does not apply");
     } else {
       try {
-        String mappingVersion = ((LdmConnectorCentraxx) ldmConnector).getMappingVersion();
+        String mappingVersion = ((LdmConnectorCentraxxExtension) ldmConnector).getMappingVersion();
         centraxxMappingVersion.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
         centraxxMappingVersion.setStatusText(mappingVersion);
       } catch (Exception e) {
@@ -361,12 +361,12 @@ public class ReportToMonitoringJob implements Job {
   private StatusReportItem getCentraxxMappingDate() {
     StatusReportItem centraxxMappingDate = new StatusReportItem();
     centraxxMappingDate.setParameterName(StatusReportItem.PARAMETER_CENTRAXX_MAPPING_DATE);
-    if (!ldmConnector.isLdmCentraxx()) {
+    if (!(ldmConnector instanceof LdmConnectorCentraxxExtension)) {
       centraxxMappingDate.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_WARNING.getValue());
       centraxxMappingDate.setStatusText("Does not apply");
     } else {
       try {
-        String mappingDate = ((LdmConnectorCentraxx) ldmConnector).getMappingDate();
+        String mappingDate = ((LdmConnectorCentraxxExtension) ldmConnector).getMappingDate();
         centraxxMappingDate.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
         centraxxMappingDate.setStatusText(mappingDate);
       } catch (Exception e) {

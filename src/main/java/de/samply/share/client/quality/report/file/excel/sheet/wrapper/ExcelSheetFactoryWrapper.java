@@ -8,7 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public abstract class ExcelSheetFactoryWrapper implements ExcelSheetFactory {
 
-  private ExcelSheetFactory excelSheetFactory;
+  private final ExcelSheetFactory excelSheetFactory;
 
   public ExcelSheetFactoryWrapper(ExcelSheetFactory excelSheetFactory) {
     this.excelSheetFactory = excelSheetFactory;

@@ -13,6 +13,7 @@ public class GetResultsChainLink<I extends ChainLinkItem & ResultContext> extend
 
   /**
    * Todo.
+   *
    * @param localDataManagementRequester Todo.
    */
   public GetResultsChainLink(LocalDataManagementRequester localDataManagementRequester) {

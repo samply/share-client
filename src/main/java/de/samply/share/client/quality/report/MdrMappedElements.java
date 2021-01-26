@@ -1,7 +1,7 @@
 package de.samply.share.client.quality.report;
 
 import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
+import de.samply.share.client.util.connector.LdmConnectorCentraxxExtension;
 import de.samply.share.client.util.connector.centraxx.CxxMappingElement;
 import de.samply.share.common.utils.MdrIdDatatype;
 import java.util.HashMap;
@@ -10,10 +10,11 @@ import java.util.Map;
 
 public class MdrMappedElements {
 
-  private Map<MdrIdDatatype, CxxMappingElement> mdrIdCxxMappingElementMap = new HashMap<>();
+  private final Map<MdrIdDatatype, CxxMappingElement> mdrIdCxxMappingElementMap = new HashMap<>();
 
   /**
    * Todo.
+   *
    * @param ldmConnector Todo.
    */
   public MdrMappedElements(LdmConnector ldmConnector) {
@@ -24,9 +25,9 @@ public class MdrMappedElements {
 
   private void addMappedElements(LdmConnector<?, ?, ?> ldmConnector) {
 
-    if (ldmConnector.isLdmCentraxx()) {
+    if (ldmConnector instanceof LdmConnectorCentraxxExtension) {
 
-      List<CxxMappingElement> mapping = ((LdmConnectorCentraxx) ldmConnector).getMapping();
+      List<CxxMappingElement> mapping = ((LdmConnectorCentraxxExtension) ldmConnector).getMapping();
 
       for (CxxMappingElement mappingElement : mapping) {
 
@@ -47,6 +48,7 @@ public class MdrMappedElements {
 
   /**
    * Todo.
+   *
    * @param mdrId Todo.
    * @return Todo.
    */

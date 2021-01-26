@@ -4,6 +4,6 @@ import de.samply.share.client.quality.report.chainlinks.timer.ChainLinkTimer;
 
 public interface ChainLinkTimerFactory {
 
-  public ChainLinkTimer createChainLinkTimer();
+  ChainLinkTimer createChainLinkTimer();
 
 }

@@ -15,8 +15,8 @@ public class QualityResultsValidator {
 
   private static final Logger logger = LogManager.getLogger(QualityResultsValidator.class);
 
-  private QueryValidator queryValidator;
-  private MdrValidator mdrValidator;
+  private final QueryValidator queryValidator;
+  private final MdrValidator mdrValidator;
 
 
   public QualityResultsValidator(MdrValidator dthValidator, QueryValidator queryValidator) {
@@ -26,6 +26,7 @@ public class QualityResultsValidator {
 
   /**
    * Todo.
+   *
    * @param qualityResults Todo.
    * @return Todo.
    * @throws QualityResultsValidatorException Todo.

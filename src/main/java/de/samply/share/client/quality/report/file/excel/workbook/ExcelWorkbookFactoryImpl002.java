@@ -34,19 +34,20 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
   public static final String PATIENT_DKTK_IDS_SHEET_TITLE = "patient dktk ids";
   public static final String DATA_ELEMENT_STATISTICS = "data element stats";
   protected static final Logger logger = LogManager.getLogger(ExcelWorkbookFactoryImpl002.class);
-  private ExcelRowContextFactory002 excelRowContextFactory;
-  private DataElementStatsExcelRowContextFactory dataElementStatsExcelRowContextFactory;
-  private PatientLocalIdsExcelRowContextFactory patientLocalIdsExcelRowContextFactory;
-  private PatientDktkIdsExcelRowContextFactory patientDktkIdsExcelRowContextFactory;
-  private ExcelSheetFactory excelSheetFactory;
-  private ExplanatoryExcelSheetFactory explanatoryExcelSheetFactory;
-  private ModelSearcher modelSearcher;
-  private DktkIdMdrIdConverter dktkIdManager;
-  private MdrMappedElements mdrMappedElements;
+  private final ExcelRowContextFactory002 excelRowContextFactory;
+  private final DataElementStatsExcelRowContextFactory dataElementStatsExcelRowContextFactory;
+  private final PatientLocalIdsExcelRowContextFactory patientLocalIdsExcelRowContextFactory;
+  private final PatientDktkIdsExcelRowContextFactory patientDktkIdsExcelRowContextFactory;
+  private final ExcelSheetFactory excelSheetFactory;
+  private final ExplanatoryExcelSheetFactory explanatoryExcelSheetFactory;
+  private final ModelSearcher modelSearcher;
+  private final DktkIdMdrIdConverter dktkIdManager;
+  private final MdrMappedElements mdrMappedElements;
 
 
   /**
    * Todo.
+   *
    * @param parameters Todo.
    */
   public ExcelWorkbookFactoryImpl002(ExcelWorkbookFactoryParameters002 parameters) {

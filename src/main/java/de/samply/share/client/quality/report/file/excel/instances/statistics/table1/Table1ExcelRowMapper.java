@@ -6,8 +6,9 @@ public class Table1ExcelRowMapper {
 
   /**
    * Todo.
+   *
    * @param dataElementGroup Todo.
-   * @param percentage Todo.
+   * @param percentage       Todo.
    * @return Todo.
    */
   public ExcelRowElements createExcelRowElements(String dataElementGroup, Double percentage) {

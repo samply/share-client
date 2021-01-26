@@ -28,20 +28,21 @@ import de.samply.share.client.quality.report.model.searcher.ModelSearcher;
 
 public class ExcelPattern001 implements ExcelPattern {
 
-  private Model model;
-  private MdrClient mdrClient;
-  private CentraxxMapper centraXxMapper;
-  private DktkIdMdrIdConverter dktkIdManager;
-  private MdrMappedElements mdrMappedElements;
-  private ExcelRowMapperUtils excelRowMapperUtils;
+  private final Model model;
+  private final MdrClient mdrClient;
+  private final CentraxxMapper centraXxMapper;
+  private final DktkIdMdrIdConverter dktkIdManager;
+  private final MdrMappedElements mdrMappedElements;
+  private final ExcelRowMapperUtils excelRowMapperUtils;
 
 
   /**
    * Todo.
-   * @param model Todo.
-   * @param mdrClient Todo.
-   * @param centraXxMapper Todo.
-   * @param dktkIdManager Todo.
+   *
+   * @param model             Todo.
+   * @param mdrClient         Todo.
+   * @param centraXxMapper    Todo.
+   * @param dktkIdManager     Todo.
    * @param mdrMappedElements Todo.
    */
   public ExcelPattern001(Model model, MdrClient mdrClient, CentraxxMapper centraXxMapper,
@@ -86,7 +87,7 @@ public class ExcelPattern001 implements ExcelPattern {
         createExplanatoryExcelSheetFactory();
     DataElementStatsExcelRowContextFactory dataElementStatsExcelRowContextFactory =
         new DataElementStatsExcelRowContextFactory(
-        excelRowMapperUtils, dktkIdManager, centraXxMapper);
+            excelRowMapperUtils, dktkIdManager, centraXxMapper);
 
     excelWorkbookFactoryParameters.setExcelSheetFactory(excelSheetFactory);
     excelWorkbookFactoryParameters.setExplanatoryExcelSheetFactory(explanatoryExcelSheetFactory);
@@ -132,7 +133,7 @@ public class ExcelPattern001 implements ExcelPattern {
 
     FirstRowCellReferenceFactoryForOneSheet firstRowCellReferenceFactoryForOneSheet =
         new FirstRowCellReferenceFactoryForOneSheet(
-        ExcelWorkbookFactoryImpl002.PATIENT_LOCAL_IDS_SHEET_TITLE);
+            ExcelWorkbookFactoryImpl002.PATIENT_LOCAL_IDS_SHEET_TITLE);
     return new ExcelRowMapper002(centraXxMapper, dktkIdManager,
         firstRowCellReferenceFactoryForOneSheet, mdrMappedElements, excelRowMapperUtils);
 

@@ -8,6 +8,7 @@ public abstract class ConfigurationChainLink extends ChainLink {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public static String getChainLinkTask() {

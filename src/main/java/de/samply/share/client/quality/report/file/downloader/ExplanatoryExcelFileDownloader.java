@@ -27,6 +27,7 @@ public class ExplanatoryExcelFileDownloader extends FileDownloaderImpl {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public String getFilePath() {
@@ -42,6 +43,7 @@ public class ExplanatoryExcelFileDownloader extends FileDownloaderImpl {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public File getFile() {

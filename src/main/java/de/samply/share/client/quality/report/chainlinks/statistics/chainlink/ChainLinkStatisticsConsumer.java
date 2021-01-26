@@ -3,14 +3,14 @@ package de.samply.share.client.quality.report.chainlinks.statistics.chainlink;
 public interface ChainLinkStatisticsConsumer {
 
 
-  public long getRemainingNanoTime();
+  long getRemainingNanoTime();
 
-  public String getMessage();
+  String getMessage();
 
-  public boolean isFinalized();
+  boolean isFinalized();
 
-  public boolean isProcessingElements();
+  boolean isProcessingElements();
 
-  public int getNumberOfItems();
+  int getNumberOfItems();
 
 }

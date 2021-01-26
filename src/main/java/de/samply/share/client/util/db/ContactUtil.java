@@ -15,7 +15,7 @@ public class ContactUtil {
 
   private static final Logger logger = LogManager.getLogger(ContactUtil.class);
 
-  private static ContactDao contactDao;
+  private static final ContactDao contactDao;
 
   static {
     contactDao = new ContactDao(ResourceManager.getConfiguration());

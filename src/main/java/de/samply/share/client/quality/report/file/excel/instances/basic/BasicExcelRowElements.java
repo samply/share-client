@@ -10,10 +10,11 @@ import java.util.List;
 public class BasicExcelRowElements extends ExcelRowElements {
 
   private int nextElementToBeInsertedPosition = 0;
-  private List<BasicExcelColumnMetaInfo> metaInfos;
+  private final List<BasicExcelColumnMetaInfo> metaInfos;
 
   /**
    * Todo.
+   *
    * @param metaInfos Todo.
    */
   public BasicExcelRowElements(List<BasicExcelColumnMetaInfo> metaInfos) {

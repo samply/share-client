@@ -69,6 +69,7 @@ public class ChainLinkItem implements Cloneable {
 
   /**
    * Todo.
+   *
    * @param elapsedNanoTime Todo.
    */
   public void addElapsedNanoTime(long elapsedNanoTime) {
@@ -79,6 +80,7 @@ public class ChainLinkItem implements Cloneable {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public long getElapsedNanoTime() {
@@ -95,6 +97,7 @@ public class ChainLinkItem implements Cloneable {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public ChainLinkItem clone() {
@@ -111,6 +114,7 @@ public class ChainLinkItem implements Cloneable {
 
   /**
    * Todo.
+   *
    * @return Todo.
    * @throws CloneNotSupportedException Todo.
    */

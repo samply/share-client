@@ -83,6 +83,7 @@ public class QualityReportChainFactory implements ChainFactory {
 
   /**
    * Todo.
+   *
    * @return Todo.
    * @throws ChainFactoryException Todo.
    */

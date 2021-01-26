@@ -54,9 +54,8 @@ public class AccessControlFilterUser extends HttpFilter {
 
   /**
    * Generate a String to put into the url as parameter, so that a redirect to the correct page is
-   * possible from login.
-   * Escape the parameter separator - & - with "__" so that it will be recognized as one parameter
-   * later.
+   * possible from login. Escape the parameter separator - & - with "__" so that it will be
+   * recognized as one parameter later.
    *
    * @param request the servlet request
    * @return an escaped parameter string to pass to the login page

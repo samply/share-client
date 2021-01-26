@@ -7,14 +7,15 @@ import java.util.Map;
 
 public class CentraxxMapperImpl implements CentraxxMapper {
 
-  private Map<String, String> centraXxDataElements = new HashMap<>();
-  private Map<AttributeValueKey, String> centraXxAttributeValues = new HashMap<>();
-  private GeneralRehearsalPriorization generalRehearsalPriorization =
+  private final Map<String, String> centraXxDataElements = new HashMap<>();
+  private final Map<AttributeValueKey, String> centraXxAttributeValues = new HashMap<>();
+  private final GeneralRehearsalPriorization generalRehearsalPriorization =
       new GeneralRehearsalPriorization();
-  private FileLoader fileLoader = new FileLoader();
+  private final FileLoader fileLoader = new FileLoader();
 
   /**
    * Todo.
+   *
    * @throws CentraxxMapperException Todo.
    */
   public CentraxxMapperImpl() throws CentraxxMapperException {

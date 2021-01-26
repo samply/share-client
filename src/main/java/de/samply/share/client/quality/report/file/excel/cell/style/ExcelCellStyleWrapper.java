@@ -5,7 +5,7 @@ import org.apache.poi.ss.usermodel.Cell;
 
 public class ExcelCellStyleWrapper implements ExcelCellStyle {
 
-  private ExcelCellStyle excelCellStyle;
+  private final ExcelCellStyle excelCellStyle;
 
 
   public ExcelCellStyleWrapper(ExcelCellStyle excelCellStyle) {

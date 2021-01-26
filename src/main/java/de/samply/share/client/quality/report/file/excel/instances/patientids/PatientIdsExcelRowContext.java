@@ -21,13 +21,14 @@ import org.apache.logging.log4j.Logger;
 public abstract class PatientIdsExcelRowContext implements ExcelRowContext {
 
   protected static final Logger logger = LogManager.getLogger(PatientIdsExcelRowContext.class);
-  private String mdrLinkPrefix;
-  private Integer maxNumberOfPatientIdsToBeShown;
-  private PatientIdsList patientIdsList = new PatientIdsList();
-  private List<BasicExcelColumnMetaInfo> metaInfos = new ArrayList<>();
+  private final String mdrLinkPrefix;
+  private final Integer maxNumberOfPatientIdsToBeShown;
+  private final PatientIdsList patientIdsList = new PatientIdsList();
+  private final List<BasicExcelColumnMetaInfo> metaInfos = new ArrayList<>();
 
   /**
    * Todo.
+   *
    * @param qualityResults Todo.
    */
   public PatientIdsExcelRowContext(AlphabeticallySortedMismatchedQualityResults qualityResults) {
@@ -166,7 +167,7 @@ public abstract class PatientIdsExcelRowContext implements ExcelRowContext {
 
   private class PatientIdsExcelContextIterator implements Iterator<ExcelRowElements> {
 
-    private Iterator<List<String>> iterator;
+    private final Iterator<List<String>> iterator;
 
     public PatientIdsExcelContextIterator() {
       iterator = patientIdsList.iterator();

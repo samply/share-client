@@ -124,8 +124,7 @@ public class CredentialsBean implements Serializable {
 
 
   /**
-   * Get all defined Auth Schemes.
-   * Definition is done via an ENUM in the database.
+   * Get all defined Auth Schemes. Definition is done via an ENUM in the database.
    *
    * @return an array of defined auth schemes
    */

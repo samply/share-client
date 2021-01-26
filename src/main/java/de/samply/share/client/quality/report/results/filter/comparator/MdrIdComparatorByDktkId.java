@@ -7,7 +7,7 @@ import de.samply.share.common.utils.MdrIdDatatype;
 public class MdrIdComparatorByDktkId extends MdrIdComparator<DktkIdType> {
 
 
-  private DktkIdMdrIdConverter dktkIdManager;
+  private final DktkIdMdrIdConverter dktkIdManager;
 
   public MdrIdComparatorByDktkId(DktkIdMdrIdConverter dktkIdManager) {
     this.dktkIdManager = dktkIdManager;

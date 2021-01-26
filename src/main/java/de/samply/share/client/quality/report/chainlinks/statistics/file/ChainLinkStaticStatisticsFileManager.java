@@ -13,7 +13,7 @@ import java.io.File;
 public class ChainLinkStaticStatisticsFileManager {
 
 
-  private AnonymTxtColumnFileManager anonymTxtColumnFileManager;
+  private final AnonymTxtColumnFileManager anonymTxtColumnFileManager;
 
   /**
    * Todo.
@@ -28,6 +28,7 @@ public class ChainLinkStaticStatisticsFileManager {
 
   /**
    * Todo.
+   *
    * @param chainLinkStatisticTxtColumn Todo.
    * @throws ChainLinkStaticStatisticsFileManagerException Todo.
    */
@@ -89,7 +90,8 @@ public class ChainLinkStaticStatisticsFileManager {
 
   /**
    * Todo.
-   * @param chainLinkStatisticKey Todo.
+   *
+   * @param chainLinkStatisticKey               Todo.
    * @param chainLinkStaticStatisticsParameters Todo.
    * @throws ChainLinkStaticStatisticsFileManagerException Todo.
    */
@@ -109,6 +111,7 @@ public class ChainLinkStaticStatisticsFileManager {
 
   /**
    * Todo.
+   *
    * @return Todo.
    * @throws ChainLinkStaticStatisticsFileManagerException Todo.
    */

@@ -13,14 +13,15 @@ public class Table2ExcelRowContext extends ExcelRowContextImpl<Table2ExcelRowPar
 
 
   protected static final Logger logger = LogManager.getLogger(Table2ExcelRowContext.class);
-  private Table2ExcelRowMapper excelRowMapper;
+  private final Table2ExcelRowMapper excelRowMapper;
 
 
   /**
    * Todo.
-   * @param qualityResults Todo.
+   *
+   * @param qualityResults           Todo.
    * @param qualityResultsStatistics Todo.
-   * @param excelRowMapper Todo.
+   * @param excelRowMapper           Todo.
    */
   public Table2ExcelRowContext(QualityResults qualityResults,
       QualityResultsStatistics qualityResultsStatistics, Table2ExcelRowMapper excelRowMapper) {

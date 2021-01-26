@@ -12,6 +12,7 @@ public class CentraXxMapperTest {
 
   /**
    * Todo.
+   *
    * @return Todo.
    * @throws CentraxxMapperException Todo.
    */

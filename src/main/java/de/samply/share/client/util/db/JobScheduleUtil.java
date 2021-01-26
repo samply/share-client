@@ -14,7 +14,7 @@ public class JobScheduleUtil {
 
   private static final Logger logger = LogManager.getLogger(JobScheduleUtil.class);
 
-  private static JobScheduleDao jobScheduleDao;
+  private static final JobScheduleDao jobScheduleDao;
 
   static {
     jobScheduleDao = new JobScheduleDao(ResourceManager.getConfiguration());

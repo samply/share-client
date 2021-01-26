@@ -7,9 +7,9 @@ import de.samply.share.common.utils.MdrIdDatatype;
 
 public interface QualityResultCsvLineManager extends QualityReportFilePattern {
 
-  public String createLine(MdrIdDatatype mdrId, String value, QualityResult qualityResult)
+  String createLine(MdrIdDatatype mdrId, String value, QualityResult qualityResult)
       throws QualityResultCsvLineManagerException;
 
-  public QualityResults parseLineAndAddToQualityResults(String line, QualityResults qualityResults);
+  QualityResults parseLineAndAddToQualityResults(String line, QualityResults qualityResults);
 
 }

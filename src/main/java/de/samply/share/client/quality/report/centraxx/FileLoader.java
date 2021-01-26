@@ -13,8 +13,9 @@ public class FileLoader {
 
   /**
    * Todo.
+   *
    * @param filenameReader Todo.
-   * @param loader Todo.
+   * @param loader         Todo.
    * @throws CentraxxMapperException Todo.
    */
   public void load(FilenameReader filenameReader, LineLoader loader)
@@ -74,12 +75,12 @@ public class FileLoader {
 
   public interface FilenameReader {
 
-    public String getFilename();
+    String getFilename();
   }
 
   public interface LineLoader {
 
-    public void load(String line);
+    void load(String line);
   }
 
 }

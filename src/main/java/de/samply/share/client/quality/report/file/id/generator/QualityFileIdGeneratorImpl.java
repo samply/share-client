@@ -6,10 +6,11 @@ import java.security.SecureRandom;
 public class QualityFileIdGeneratorImpl implements QualityFileIdGenerator {
 
 
-  private SecureRandom random = new SecureRandom();
+  private final SecureRandom random = new SecureRandom();
 
   /**
    * Todo.
+   *
    * @param args Todo.
    */
   public static void main(String[] args) {

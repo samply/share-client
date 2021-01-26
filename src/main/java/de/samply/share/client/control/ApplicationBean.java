@@ -13,6 +13,9 @@ import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.common.mdrclient.MdrInvalidResponseException;
 import de.samply.config.util.JaxbUtil;
+import de.samply.project.directory.client.DktkProjectDirectory;
+import de.samply.project.directory.client.DktkProjectDirectoryParameters;
+import de.samply.project.directory.client.ProjectDirectory;
 import de.samply.share.client.feature.ClientConfiguration;
 import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
@@ -47,6 +50,22 @@ import de.samply.share.client.util.connector.MainzellisteConnector;
 import de.samply.share.client.util.connector.StoreConnector;
 import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
+import de.samply.share.client.util.connector.idmanagement.connector.IdManagementConnector;
+import de.samply.share.client.util.connector.idmanagement.connector.MagicPlConnector;
+import de.samply.share.client.util.connector.idmanagement.ldmswitch.LdmBasicConnectorSwitch;
+import de.samply.share.client.util.connector.idmanagement.ldmswitch.LdmBasicConnectorSwitchFactory;
+import de.samply.share.client.util.connector.idmanagement.ldmswitch.LdmBasicConnectorSwitchFactoryImpl;
+import de.samply.share.client.util.connector.idmanagement.ldmswitch.LdmBasicConnectorSwitchFactoryParameters;
+import de.samply.share.client.util.connector.idmanagement.ldmswitch.LdmConnectorSwitch;
+import de.samply.share.client.util.connector.idmanagement.ldmswitch.LdmQueryLocationMapper;
+import de.samply.share.client.util.connector.idmanagement.query.LdmQueryConverter;
+import de.samply.share.client.util.connector.idmanagement.query.LdmQueryConverterFactoryImpl;
+import de.samply.share.client.util.connector.idmanagement.query.LdmQueryConverterFactoryParameters;
+import de.samply.share.client.util.connector.idmanagement.results.CentraXXundIdManagementResultBuilder;
+import de.samply.share.client.util.connector.idmanagement.results.IdManagementResultGetter;
+import de.samply.share.client.util.connector.idmanagement.results.IdManagementResultGetterException;
+import de.samply.share.client.util.connector.idmanagement.results.LdmResultBuilder;
+import de.samply.share.client.util.connector.idmanagement.utils.ProjectDirectoryUtils;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.CredentialsUtil;
 import de.samply.share.client.util.db.EventLogUtil;
@@ -99,8 +118,8 @@ import org.togglz.core.manager.FeatureManager;
 import org.xml.sax.SAXException;
 
 /**
- * Backing Bean that is valid during the whole runtime of the application.
- * Holds methods that are needed system-wide.
+ * Backing Bean that is valid during the whole runtime of the application. Holds methods that are
+ * needed system-wide.
  */
 @ManagedBean(name = "applicationBean", eager = true)
 @ApplicationScoped
@@ -108,6 +127,7 @@ public class ApplicationBean implements Serializable {
 
   private static final Logger logger = LogManager.getLogger(ApplicationBean.class);
 
+  private static final String PROJECT_DIRECTORY_FILENAME = "projectDirectory.json";
   private static final String COMMON_CONFIG_FILENAME_SUFFIX = "_common_config.xml";
   private static final String COMMON_URLS_FILENAME_SUFFIX = "_common_urls.xml";
   private static final String COMMON_OPERATOR_FILENAME_SUFFIX = "_common_operator.xml";
@@ -119,6 +139,9 @@ public class ApplicationBean implements Serializable {
   private static final int TIMEOUT_IN_SECONDS = 60;
   private static final ConnectCheckResult shareAvailability = new ConnectCheckResult(true,
       "Samply.Share.Client", ProjectInfo.INSTANCE.getVersionString());
+  private static final ChainStatisticsManager chainStatisticsManager = new ChainStatisticsManager();
+  private static final ChainFinalizer chainFinalizer = new ChainFinalizerImpl();
+  private static final Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
   private static Urls urls;
   private static Operator operator;
   private static Bridgehead infos;
@@ -129,17 +152,16 @@ public class ApplicationBean implements Serializable {
   private static Scheduler scheduler;
   private static UserAgent userAgent;
   private static PatientValidator patientValidator;
-  private static ChainStatisticsManager chainStatisticsManager = new ChainStatisticsManager();
-  private static ChainFinalizer chainFinalizer = new ChainFinalizerImpl();
   private static MdrConnection mdrConnection;
   private static MdrValidator mdrValidator;
   private static LdmConnector ldmConnector;
   private static MainzellisteConnector mainzellisteConnector;
   private static CtsConnector ctsConnector;
-  private static Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+  private static ProjectDirectoryUtils projectDirectoryUtils;
+  private static IdManagementConnector idManagementConnector;
   private static FeatureManager featureManager;
-  private ConnectCheckResult ldmAvailability = new ConnectCheckResult();
-  private ConnectCheckResult idmAvailability = new ConnectCheckResult();
+  private final ConnectCheckResult ldmAvailability = new ConnectCheckResult();
+  private final ConnectCheckResult idmAvailability = new ConnectCheckResult();
 
   public static Locale getLocale() {
     return locale;
@@ -175,6 +197,10 @@ public class ApplicationBean implements Serializable {
         } else {
           ApplicationBean.ldmConnector = new LdmConnectorCentraxx(false);
         }
+
+        ApplicationBean.ldmConnector = integrateSwitchInLdmConnectorCentraXX(
+            (LdmConnectorCentraxx) ApplicationBean.ldmConnector, mdrClient);
+
         break;
 
       case SAMPLY:
@@ -198,6 +224,15 @@ public class ApplicationBean implements Serializable {
       default:
         break;
     }
+  }
+
+  private static LdmConnector integrateSwitchInLdmConnectorCentraXX(
+      LdmConnectorCentraxx ldmConnectorCentraxx, MdrClient mdrClient) {
+
+    LdmBasicConnectorSwitch ldmBasicConnectorSwitch = createLdmBasicConnectorSwitch(
+        idManagementConnector, projectDirectoryUtils, ldmConnectorCentraxx, mdrClient);
+    return new LdmConnectorSwitch(ldmConnectorCentraxx, ldmBasicConnectorSwitch);
+
   }
 
   /**
@@ -348,31 +383,30 @@ public class ApplicationBean implements Serializable {
   private static void updateCommonUrls() {
     if (urls != null) {
       if (ApplicationUtils.isDktk()) {
-        de.samply.share.client.model.db.tables.pojos.Configuration idmanagerConfigElement =
-            new de.samply.share.client.model.db.tables.pojos.Configuration();
-        idmanagerConfigElement.setName(EnumConfiguration.ID_MANAGER_URL.name());
-        idmanagerConfigElement.setSetting(urls.getIdmanagerUrl());
-        ConfigurationUtil.insertOrUpdateConfigurationElement(idmanagerConfigElement);
+
+        insertOrUpdateConfigurationElement(EnumConfiguration.ID_MANAGER_URL,
+            urls.getIdmanagerUrl());
+        insertOrUpdateConfigurationElement(EnumConfiguration.ID_MANAGER_API_KEY,
+            urls.getIdmanagerApiKey());
+
       }
 
-      de.samply.share.client.model.db.tables.pojos.Configuration ldmConfigElement =
-          new de.samply.share.client.model.db.tables.pojos.Configuration();
-      ldmConfigElement.setName(EnumConfiguration.LDM_URL.name());
-      ldmConfigElement.setSetting(urls.getLdmUrl());
-      ConfigurationUtil.insertOrUpdateConfigurationElement(ldmConfigElement);
+      insertOrUpdateConfigurationElement(EnumConfiguration.LDM_URL, urls.getLdmUrl());
+      insertOrUpdateConfigurationElement(EnumConfiguration.SHARE_URL, urls.getShareUrl());
+      insertOrUpdateConfigurationElement(EnumConfiguration.MDR_URL, urls.getMdrUrl());
 
-      de.samply.share.client.model.db.tables.pojos.Configuration shareConfigElement =
-          new de.samply.share.client.model.db.tables.pojos.Configuration();
-      shareConfigElement.setName(EnumConfiguration.SHARE_URL.name());
-      shareConfigElement.setSetting(urls.getShareUrl());
-      ConfigurationUtil.insertOrUpdateConfigurationElement(shareConfigElement);
-
-      de.samply.share.client.model.db.tables.pojos.Configuration mdrConfigElement =
-          new de.samply.share.client.model.db.tables.pojos.Configuration();
-      mdrConfigElement.setName(EnumConfiguration.MDR_URL.name());
-      mdrConfigElement.setSetting(urls.getMdrUrl());
-      ConfigurationUtil.insertOrUpdateConfigurationElement(mdrConfigElement);
     }
+  }
+
+  private static void insertOrUpdateConfigurationElement(EnumConfiguration enumConfiguration,
+      String value) {
+
+    de.samply.share.client.model.db.tables.pojos.Configuration configElement =
+        new de.samply.share.client.model.db.tables.pojos.Configuration();
+    configElement.setName(enumConfiguration.name());
+    configElement.setSetting(value);
+    ConfigurationUtil.insertOrUpdateConfigurationElement(configElement);
+
   }
 
   /**
@@ -390,6 +424,7 @@ public class ApplicationBean implements Serializable {
             cts.getMainzellisteUrl());
         insertConfigElement(EnumConfiguration.CTS_MAINZELLISTE_API_KEY.name(),
             cts.getMainzellisteApiKey());
+        insertConfigElement(EnumConfiguration.CTS_SEARCH_ID_TYPE.name(), cts.getSearchIdType());
       }
       if (ApplicationUtils.isSamply()) {
         de.samply.share.client.model.db.tables.pojos.Configuration directoryConfigElement =
@@ -527,6 +562,7 @@ public class ApplicationBean implements Serializable {
 
   /**
    * Create an HttpConnector with a custom timeout.
+   *
    * @param timeout timeout in seconds
    * @return HttpConnector with custom timeout
    */
@@ -544,6 +580,7 @@ public class ApplicationBean implements Serializable {
 
   /**
    * Create an HttpConnector for a targetType.
+   *
    * @param targetType the tagetType like local data management or httpProxy
    * @return HttpConnector for the targetType
    */
@@ -553,8 +590,9 @@ public class ApplicationBean implements Serializable {
 
   /**
    * Create an HttpConnector for a targetType and a custom timeout.
+   *
    * @param targetType the tagetType like local data management or httpProxy
-   * @param timeout timeout in seconds
+   * @param timeout    timeout in seconds
    * @return HttpConnector for the targetType and a custom timeout
    */
   public static HttpConnector createHttpConnector(TargetType targetType, int timeout) {
@@ -588,6 +626,7 @@ public class ApplicationBean implements Serializable {
 
   /**
    * Create a default UserAgent if not existing.
+   *
    * @return the new UserAgent
    */
   public static UserAgent getUserAgent() {
@@ -617,6 +656,7 @@ public class ApplicationBean implements Serializable {
 
   /**
    * Return LdmConnector. If no one exists then create one.
+   *
    * @return LdmConnector
    */
   public static LdmConnector getLdmConnector() {
@@ -628,6 +668,7 @@ public class ApplicationBean implements Serializable {
 
   /**
    * Return CtsConnector. If no one exists then create one.
+   *
    * @return CtsConnector
    */
   public static CtsConnector getCtsConnector() {
@@ -639,6 +680,7 @@ public class ApplicationBean implements Serializable {
 
   /**
    * Return MainzellisteConnector. If no one exists then create one.
+   *
    * @return MainzellisteConnector
    */
   public static MainzellisteConnector getMainzellisteConnector() {
@@ -662,6 +704,88 @@ public class ApplicationBean implements Serializable {
 
   static MdrValidator getMdrValidator() {
     return mdrValidator;
+  }
+
+  private static LdmBasicConnectorSwitch createLdmBasicConnectorSwitch(
+      IdManagementConnector idManagementConnector, ProjectDirectoryUtils projectDirectoryUtils,
+      LdmConnectorCentraxx ldmConnectorCentraxx, MdrClient mdrClient) {
+
+    LdmQueryConverter ldmQueryConverter = createLdmQueryConverter(idManagementConnector,
+        projectDirectoryUtils);
+    LdmBasicConnectorSwitchFactoryParameters ldmBasicConnectorSwitchFactoryParameters =
+        new LdmBasicConnectorSwitchFactoryParameters();
+    LdmQueryLocationMapper ldmQueryLocationMapper = new LdmQueryLocationMapper();
+    IdManagementResultGetter idManagementResultGetter = createIdManagementResultGetter(
+        idManagementConnector, projectDirectoryUtils, mdrClient);
+    LdmResultBuilder ldmResultBuilder = new CentraXXundIdManagementResultBuilder(
+        ldmConnectorCentraxx, idManagementResultGetter);
+
+    ldmBasicConnectorSwitchFactoryParameters.setLdmConnectorCentraxx(ldmConnectorCentraxx);
+    ldmBasicConnectorSwitchFactoryParameters.setLdmQueryConverter(ldmQueryConverter);
+    ldmBasicConnectorSwitchFactoryParameters.setLdmQueryLocationMapper(ldmQueryLocationMapper);
+    ldmBasicConnectorSwitchFactoryParameters.setLdmResultBuilder(ldmResultBuilder);
+
+    LdmBasicConnectorSwitchFactory ldmBasicConnectorSwitchFactory =
+        new LdmBasicConnectorSwitchFactoryImpl(ldmBasicConnectorSwitchFactoryParameters);
+
+    return ldmBasicConnectorSwitchFactory.createLdmBasicConnectorSwitch();
+
+  }
+
+  private static IdManagementResultGetter createIdManagementResultGetter(
+      IdManagementConnector idManagementConnector, ProjectDirectoryUtils projectDirectoryUtils,
+      MdrClient mdrClient) {
+    try {
+      return new IdManagementResultGetter(idManagementConnector, projectDirectoryUtils, mdrClient);
+    } catch (IdManagementResultGetterException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static LdmQueryConverter createLdmQueryConverter(
+      IdManagementConnector idManagementConnector, ProjectDirectoryUtils projectDirectoryUtils) {
+
+    LdmQueryConverterFactoryParameters ldmQueryConverterFactoryParameters =
+        new LdmQueryConverterFactoryParameters();
+    ldmQueryConverterFactoryParameters.setIdManagementConnector(idManagementConnector);
+    ldmQueryConverterFactoryParameters.setProjectDirectoryUtils(projectDirectoryUtils);
+
+    LdmQueryConverterFactoryImpl ldmQueryConverterFactory = new LdmQueryConverterFactoryImpl(
+        ldmQueryConverterFactoryParameters);
+
+    return ldmQueryConverterFactory.createLdmQueryConverter();
+
+  }
+
+  public static IdManagementConnector getIdManagementConnector() {
+    return idManagementConnector;
+  }
+
+  private static ProjectDirectory createProjectDirectory() {
+
+    DktkProjectDirectoryParameters projectDirectoryParameters =
+        new DktkProjectDirectoryParameters();
+
+    String destinationFilePath =
+        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_DIRECTORY)
+            + File.separator + PROJECT_DIRECTORY_FILENAME;
+    String sourceFilePath = ConfigurationUtil
+        .getConfigurationElementValue(EnumConfiguration.PROJECT_DIRECTORY_URL);
+    HttpConnector httpConnector = createHttpConnector();
+
+    projectDirectoryParameters.setDestinationFilePath(destinationFilePath);
+    projectDirectoryParameters.setSourceFilePath(sourceFilePath);
+    projectDirectoryParameters.setHttpConnector(httpConnector);
+
+    return new DktkProjectDirectory(projectDirectoryParameters);
+
+  }
+
+  private static ProjectDirectoryUtils createProjectDirectoryUtils() {
+
+    ProjectDirectory projectDirectory = createProjectDirectory();
+    return new ProjectDirectoryUtils(projectDirectory);
+
   }
 
   /**
@@ -691,6 +815,10 @@ public class ApplicationBean implements Serializable {
     loadBridgeheadInfo();
     logger.info("Loading common urls...");
     updateCommonUrls();
+    logger.info("Loading project directory...");
+    loadProjectDirectoryClient();
+    logger.info("Loading id management connector");
+    loadIdManagementConnector();
 
     logger.info("Reseting MDR context");
     resetMdrContext();
@@ -724,6 +852,14 @@ public class ApplicationBean implements Serializable {
     logger.info("Application Bean initialized");
   }
 
+  private void loadProjectDirectoryClient() {
+    projectDirectoryUtils = createProjectDirectoryUtils();
+  }
+
+  private void loadIdManagementConnector() {
+    idManagementConnector = new MagicPlConnector();
+  }
+
   private void checkProcessingInquiries() {
     List<InquiryDetails> inquiryDetailsList = InquiryDetailsUtil
         .getInquiryDetailsByStatus(InquiryStatusType.IS_PROCESSING);
@@ -746,8 +882,7 @@ public class ApplicationBean implements Serializable {
   }
 
   /**
-   * Initialize the Quartz Scheduler.
-   * The configuration is done via web.xml and quartz.properties.
+   * Initialize the Quartz Scheduler. The configuration is done via web.xml and quartz.properties.
    */
   private void initScheduler() throws SchedulerException {
     logger.info("Initializing FacesContext...");
@@ -792,8 +927,7 @@ public class ApplicationBean implements Serializable {
   }
 
   /**
-   * Reinitialize the MdrClient.
-   * Create a new MdrClient and clean the cache.
+   * Reinitialize the MdrClient. Create a new MdrClient and clean the cache.
    */
   private void resetMdrContext() {
     String mdrUrl;
@@ -875,10 +1009,9 @@ public class ApplicationBean implements Serializable {
   }
 
   /**
-   * Get the array of defined reply rule types.
-   * This should not be necessary, since it is possible to reference the Enum Class from the xhtml
-   * page directly. However, in this case, the translations were not working - so this workaround is
-   * chosen.
+   * Get the array of defined reply rule types. This should not be necessary, since it is possible
+   * to reference the Enum Class from the xhtml page directly. However, in this case, the
+   * translations were not working - so this workaround is chosen.
    *
    * @return an array of all implemented reply rules TODO: change this, when "reply with data" is
    *        defined

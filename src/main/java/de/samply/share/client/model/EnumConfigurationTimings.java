@@ -1,5 +1,3 @@
-
-
 package de.samply.share.client.model;
 
 /**

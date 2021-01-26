@@ -25,6 +25,7 @@ public class CheckResult {
 
   /**
    * Set the value of success.
+   *
    * @param success if the result of the check was a success or not
    */
   public void setSuccess(boolean success) {

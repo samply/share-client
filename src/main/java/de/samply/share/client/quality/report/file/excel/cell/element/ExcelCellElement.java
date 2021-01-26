@@ -17,6 +17,7 @@ public abstract class ExcelCellElement<T> {
 
   /**
    * Todo.
+   *
    * @param row Todo.
    * @return Todo.
    */

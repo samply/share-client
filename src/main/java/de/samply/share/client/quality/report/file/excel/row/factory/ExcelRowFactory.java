@@ -6,10 +6,10 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 public interface ExcelRowFactory {
 
-  public XSSFSheet addRowTitles(XSSFSheet sheet, ExcelRowContext excelRowContext)
+  XSSFSheet addRowTitles(XSSFSheet sheet, ExcelRowContext excelRowContext)
       throws ExcelRowFactoryException;
 
-  public XSSFSheet addRow(XSSFSheet sheet, ExcelRowElements excelRowElements)
+  XSSFSheet addRow(XSSFSheet sheet, ExcelRowElements excelRowElements)
       throws ExcelRowFactoryException;
 
 }

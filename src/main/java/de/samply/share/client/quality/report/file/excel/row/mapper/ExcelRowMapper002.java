@@ -13,19 +13,20 @@ import de.samply.share.common.utils.MdrIdDatatype;
 public class ExcelRowMapper002 {
 
 
-  private ExcelRowMapperUtils excelRowMapperUtils;
-  private CentraxxMapper centraXxMapper;
-  private DktkIdMdrIdConverter dktkIdManager;
-  private FirstRowCellReferenceFactoryForOneSheet cellReferenceFactory;
-  private MdrMappedElements mdrMappedElements;
+  private final ExcelRowMapperUtils excelRowMapperUtils;
+  private final CentraxxMapper centraXxMapper;
+  private final DktkIdMdrIdConverter dktkIdManager;
+  private final FirstRowCellReferenceFactoryForOneSheet cellReferenceFactory;
+  private final MdrMappedElements mdrMappedElements;
 
   /**
    * Todo.
-   * @param centraXxMapper Todo.
-   * @param dktkIdManager Todo.
+   *
+   * @param centraXxMapper       Todo.
+   * @param dktkIdManager        Todo.
    * @param cellReferenceFactory Todo.
-   * @param mdrMappedElements Todo.
-   * @param excelRowMapperUtils Todo.
+   * @param mdrMappedElements    Todo.
+   * @param excelRowMapperUtils  Todo.
    */
   public ExcelRowMapper002(CentraxxMapper centraXxMapper, DktkIdMdrIdConverter dktkIdManager,
       FirstRowCellReferenceFactoryForOneSheet cellReferenceFactory,
@@ -41,6 +42,7 @@ public class ExcelRowMapper002 {
 
   /**
    * Todo.
+   *
    * @param excelRowParameters Todo.
    * @return Todo.
    * @throws ExcelRowMapperException Todo.

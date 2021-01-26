@@ -10,11 +10,11 @@ import java.util.Set;
 public class QualityResultsStatisticsImpl implements QualityResultsStatistics,
     GeneralRehearsalStatistics {
 
-  private QualityResults qualityResults;
-  private MdrMappedElements mdrMappedElements;
+  private final QualityResults qualityResults;
+  private final MdrMappedElements mdrMappedElements;
 
-  private AndConditionsEvaluator andConditionsEvaluator = new AndConditionsEvaluator();
-  private OrConditionsEvaluator orConditionsEvaluator = new OrConditionsEvaluator();
+  private final AndConditionsEvaluator andConditionsEvaluator = new AndConditionsEvaluator();
+  private final OrConditionsEvaluator orConditionsEvaluator = new OrConditionsEvaluator();
 
   private Integer totalNumberOfPatients;
 

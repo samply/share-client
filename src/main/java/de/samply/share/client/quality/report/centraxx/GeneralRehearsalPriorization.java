@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class GeneralRehearsalPriorization {
 
-  private Map<String, String> mdrIdKeyPriorizationMap = new HashMap<>();
+  private final Map<String, String> mdrIdKeyPriorizationMap = new HashMap<>();
 
   private String getMdrIdKey(MdrIdDatatype mdrId) {
     return (mdrId != null) ? mdrId.getNamespace() + ':' + mdrId.getId() : null;
@@ -14,6 +14,7 @@ public class GeneralRehearsalPriorization {
 
   /**
    * Todo.
+   *
    * @param mdrId Todo.
    * @return Todo.
    */

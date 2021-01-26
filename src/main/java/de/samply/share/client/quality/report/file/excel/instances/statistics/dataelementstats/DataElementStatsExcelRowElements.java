@@ -31,7 +31,8 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * Todo.
-   * @param link Todo.
+   *
+   * @param link  Todo.
    * @param mdrId Todo.
    */
   public void setMdrLink(String link, MdrIdDatatype mdrId) {
@@ -58,6 +59,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param dktkId Todo.
    */
   public void setDktkId(String dktkId) {
@@ -69,6 +71,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param mdrDatenElement Todo.
    */
   public void setMdrDatenElement(String mdrDatenElement) {
@@ -80,6 +83,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param cxxDatenElement Todo.
    */
   public void setCxxDatenElement(String cxxDatenElement) {
@@ -91,6 +95,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param numberOfPatientsWithDataElement Todo.
    */
   public void setNumberOfPatientsWithDataElement(Integer numberOfPatientsWithDataElement) {
@@ -103,6 +108,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param percentageOfPatientsWithDataElementOutOfTotalPatients Todo.
    */
   public void setPercentageOfPatientsWithDataElementOutOfTotalPatients(
@@ -117,6 +123,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param numberOfPatientsWithMatchOnlyForDataElement Todo.
    */
   public void setNumberOfPatientsWithMatchOnlyForDataElement(
@@ -131,6 +138,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param percentageOfPatientsWithMatchOnlyForDataElementOutOfPatientsWithDataElement Todo.
    */
   public void setPercentageOfPatientsWithMatchOnlyForDataElementOutOfPatientsWithDataElement(
@@ -146,6 +154,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param percentageOfPatientsWithMatchOnlyForDataElementOutOfTotalPatients Todo.
    */
   public void setPercentageOfPatientsWithMatchOnlyForDataElementOutOf_TotalPatients(
@@ -161,6 +170,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param numberOfPatientsWithAnyMismatchForDataElement Todo.
    */
   public void setNumberOfPatientsWithAnyMismatchForDataElement(
@@ -175,6 +185,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param percentageOfPatientsWithAnyMismatchForDataElementOutOfPatientsWithDataElement Todo.
    */
   public void setPercentageOfPatientsWithAnyMismatchForDataElementOutOfPatientsWithDataElement(
@@ -190,6 +201,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * ToDo.
+   *
    * @param percentageOfPatientsWithAnyMismatchForDataElementOutOfTotalPatients ToDo.
    */
   public void setPercentageOfPatientsWithAnyMismatchForDataElementOutOfTotalPatients(
@@ -205,6 +217,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * ToDo.
+   *
    * @param priorization ToDo.
    */
   public void setGeneralRehearsalPriorization(String priorization) {
@@ -216,6 +229,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * ToDo.
+   *
    * @param value ToDo.
    */
   public void setGeneralRehearsalAContainedInQR(boolean value) {
@@ -227,6 +241,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * ToDo.
+   *
    * @param value ToDo.
    */
   public void setGeneralRehearsalBLowMismatch(boolean value) {
@@ -239,6 +254,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   /**
    * ToDo.
+   *
    * @param value ToDo.
    */
   public void setGeneralRehearsalAAndB(boolean value) {

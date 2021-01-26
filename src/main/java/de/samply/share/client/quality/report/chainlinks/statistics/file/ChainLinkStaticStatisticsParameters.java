@@ -12,6 +12,7 @@ public class ChainLinkStaticStatisticsParameters {
 
   /**
    * Todo.
+   *
    * @param line Todo.
    */
   public ChainLinkStaticStatisticsParameters(String line) {
@@ -31,6 +32,7 @@ public class ChainLinkStaticStatisticsParameters {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public String toString() {

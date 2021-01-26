@@ -16,14 +16,15 @@ public class DataElementStatsExcelRowContext extends
 
   protected static final Logger logger = LogManager
       .getLogger(DataElementStatsExcelRowContext.class);
-  private DataElementStatsExcelRowMapper excelRowMapper;
+  private final DataElementStatsExcelRowMapper excelRowMapper;
 
 
   /**
    * Todo.
-   * @param qualityResults Todo.
+   *
+   * @param qualityResults           Todo.
    * @param qualityResultsStatistics Todo.
-   * @param excelRowMapper Todo.
+   * @param excelRowMapper           Todo.
    */
   public DataElementStatsExcelRowContext(QualityResults qualityResults,
       QualityResultsStatistics qualityResultsStatistics,

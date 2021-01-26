@@ -15,8 +15,8 @@ public class MetadataQualityReportFileWriterChainLink<I extends ChainLinkItem & 
     ChainLink<I> {
 
 
-  private QualityReportMetadataFileManager qualityReportMetadataFileManager;
-  private LocalDataManagementRequester localDataManagementRequester;
+  private final QualityReportMetadataFileManager qualityReportMetadataFileManager;
+  private final LocalDataManagementRequester localDataManagementRequester;
 
   public MetadataQualityReportFileWriterChainLink(
       QualityReportMetadataFileManager qualityReportMetadataFileManager,

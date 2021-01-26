@@ -9,13 +9,14 @@ import de.samply.share.client.quality.report.results.statistics.QualityResultsSt
 public class DataElementStatsExcelRowContextFactory {
 
 
-  private DataElementStatsExcelRowMapper excelRowMapper;
+  private final DataElementStatsExcelRowMapper excelRowMapper;
 
   /**
    * Todo.
+   *
    * @param excelRowMapperUtils Todo.
-   * @param dktkIdManager Todo.
-   * @param centraXxMapper Todo.
+   * @param dktkIdManager       Todo.
+   * @param centraXxMapper      Todo.
    */
   public DataElementStatsExcelRowContextFactory(ExcelRowMapperUtils excelRowMapperUtils,
       DktkIdMdrIdConverter dktkIdManager, CentraxxMapper centraXxMapper) {
@@ -27,7 +28,8 @@ public class DataElementStatsExcelRowContextFactory {
 
   /**
    * Todo.
-   * @param qualityResults Todo.
+   *
+   * @param qualityResults           Todo.
    * @param qualityResultsStatistics Todo.
    * @return Todo.
    */

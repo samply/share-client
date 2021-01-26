@@ -6,6 +6,7 @@ public class FirstRowCellReferenceFactory {
 
   /**
    * Todo.
+   *
    * @param ordinal Todo.
    * @return Todo.
    */
@@ -20,7 +21,8 @@ public class FirstRowCellReferenceFactory {
 
   /**
    * Todo.
-   * @param sheetName Todo.
+   *
+   * @param sheetName     Todo.
    * @param columnOrdinal Todo.
    * @return Todo.
    */

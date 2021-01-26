@@ -2,8 +2,8 @@ package de.samply.share.client.quality.report.file.csvline;
 
 public interface CsvLine {
 
-  public String createLine();
+  String createLine();
 
-  public void parseValuesOfLine(String line);
+  void parseValuesOfLine(String line);
 
 }

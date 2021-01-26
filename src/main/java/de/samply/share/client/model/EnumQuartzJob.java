@@ -8,6 +8,7 @@ public enum EnumQuartzJob {
 
   /**
    * Create a Quartz job enum by name.
+   *
    * @param name name of the Quartz job.
    */
   EnumQuartzJob(final String name) {

@@ -1,6 +1,8 @@
 package de.samply.share.client.util.connector;
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mchange.rmi.NotAuthorizedException;
 import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
@@ -37,9 +39,6 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
-import org.jooq.tools.json.JSONObject;
-import org.jooq.tools.json.JSONParser;
-import org.jooq.tools.json.ParseException;
 
 public class MainzellisteConnector {
 
@@ -63,9 +62,10 @@ public class MainzellisteConnector {
       "http://uk-koeln.de/fhir/StructureDefinition/Coverage/nNGM/pseudonymisiert";
   private static final String PATIENT_IDENTIFIER_SYSTEM =
       "http://uk-koeln.de/fhir/NamingSystem/nNGM/patient-identifier";
-  private static final String GET_ENCRYPTID_URL = "/paths/getEncryptId";
+  private static final String GET_ENCRYPT_ID_URL = "/paths/getEncryptId";
+  private static final String GET_ENCRYPT_ID_WITH_PATIENT_ID_URL = "/paths/getEncryptIdWithId";
   private static final String HEADER_PARAM_API_KEY = "apiKey";
-
+  private final JsonParser parser = new JsonParser();
   private transient HttpConnector httpConnector;
   private CloseableHttpClient httpClient;
   private String mainzellisteBaseUrl;
@@ -102,7 +102,7 @@ public class MainzellisteConnector {
     Patient patientPseudonym = null;
     Coverage coverage = null;
     Coverage coveragePseudonym = null;
-    JSONObject encryptedID;
+    JsonObject encryptedID;
     int patientEntryIndex = 0;
     int coverageEntryIndex = 0;
     for (int i = 0; i < bundle.getEntry().size(); i++) {
@@ -117,7 +117,7 @@ public class MainzellisteConnector {
         coverageEntryIndex = i;
       }
       if (patient != null && coverage != null) {
-        JSONObject jsonIdatObject = createJsonPatient(patient, coverage);
+        JsonObject jsonIdatObject = createJsonPatient(patient, coverage);
         encryptedID = getPseudonymFromMainzelliste(jsonIdatObject);
         patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedID);
         bundle.getEntry().get(patientEntryIndex).setResource(patientPseudonym);
@@ -193,9 +193,9 @@ public class MainzellisteConnector {
    * @param encryptedID encryptedID
    * @return the pseudonymized patient
    */
-  private Patient addPseudonymToPatient(Patient patient, JSONObject encryptedID) {
+  private Patient addPseudonymToPatient(Patient patient, JsonObject encryptedID) {
     patient.getIdentifierFirstRep()
-        .setValue(encryptedID.get(MAINZELLISTE_IDTYPE_ENC_ID).toString());
+        .setValue(encryptedID.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
     return patient;
   }
 
@@ -207,13 +207,13 @@ public class MainzellisteConnector {
    * @return A patient with the attributes from the original patient
    * @throws NullPointerException NullPointerException
    */
-  private JSONObject createJsonPatient(Patient patient, Coverage coverage)
+  private JsonObject createJsonPatient(Patient patient, Coverage coverage)
       throws NullPointerException {
-    JSONObject jsonIdatObject = new JSONObject();
+    JsonObject jsonIdatObject = new JsonObject();
     try {
-      jsonIdatObject.put(IDAT_VORNAME,
+      jsonIdatObject.addProperty(IDAT_VORNAME,
           checkIfAttributeExist(patient.getNameFirstRep().getGivenAsSingleString(), IDAT_VORNAME));
-      jsonIdatObject.put(IDAT_NACHNAME,
+      jsonIdatObject.addProperty(IDAT_NACHNAME,
           checkIfAttributeExist(patient.getNameFirstRep().getFamily(), IDAT_NACHNAME));
       DateType birthDateElement = patient.getBirthDateElement();
       checkIfAttributeExist(birthDateElement.asStringValue(), IDAT_GEBURTSDATUM);
@@ -228,25 +228,28 @@ public class MainzellisteConnector {
       if (birthMonth < 10) {
         month = String.format("%02d", birthMonth);
       }
-      jsonIdatObject.put(IDAT_GEBURTSTAG, checkIfAttributeExist(day, IDAT_GEBURTSTAG));
-      jsonIdatObject.put(IDAT_GEBURTSMONAT, checkIfAttributeExist(month, IDAT_GEBURTSMONAT));
-      jsonIdatObject.put(IDAT_GEBURTSJAHR,
+      jsonIdatObject.addProperty(IDAT_GEBURTSTAG, checkIfAttributeExist(day, IDAT_GEBURTSTAG));
+      jsonIdatObject
+          .addProperty(IDAT_GEBURTSMONAT, checkIfAttributeExist(month, IDAT_GEBURTSMONAT));
+      jsonIdatObject.addProperty(IDAT_GEBURTSJAHR,
           checkIfAttributeExist(birthDateElement.getYear().toString(), IDAT_GEBURTSJAHR));
       if (!patient.getAddressFirstRep().isEmpty()) {
         if (patient.getAddressFirstRep().hasCity()) {
-          jsonIdatObject.put(IDAT_ADRESSE_STADT, patient.getAddressFirstRep().getCity());
+          jsonIdatObject.addProperty(IDAT_ADRESSE_STADT, patient.getAddressFirstRep().getCity());
         }
         if (patient.getAddressFirstRep().hasPostalCode()) {
-          jsonIdatObject.put(IDAT_ADRESSE_PLZ, patient.getAddressFirstRep().getPostalCode());
+          jsonIdatObject
+              .addProperty(IDAT_ADRESSE_PLZ, patient.getAddressFirstRep().getPostalCode());
         }
         if (patient.getAddressFirstRep().hasLine()) {
           jsonIdatObject
-              .put(IDAT_ADRESSE_STRASSE, patient.getAddressFirstRep().getLine().get(0).getValue());
+              .addProperty(IDAT_ADRESSE_STRASSE,
+                  patient.getAddressFirstRep().getLine().get(0).getValue());
         }
       }
-      jsonIdatObject.put(IDAT_REQUESTED_ID_TYPE, IDAT_CTSID);
+      jsonIdatObject.addProperty(IDAT_REQUESTED_ID_TYPE, IDAT_CTSID);
       if (coverage != null && coverage.hasIdentifier()) {
-        jsonIdatObject.put(IDAT_VERSICHERUNGSNUMMER,
+        jsonIdatObject.addProperty(IDAT_VERSICHERUNGSNUMMER,
             checkIfAttributeExist(coverage.getIdentifierFirstRep().getValue(),
                 IDAT_VERSICHERUNGSNUMMER));
       }
@@ -293,77 +296,129 @@ public class MainzellisteConnector {
    * @return an encrypted ID
    * @throws IOException IOException
    */
-  private JSONObject getPseudonymFromMainzelliste(JSONObject patient)
+  private JsonObject getPseudonymFromMainzelliste(JsonObject patient)
       throws IOException, IllegalArgumentException, NotFoundException, NotAuthorizedException {
-    HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(
-        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_URL)
-            + GET_ENCRYPTID_URL));
+    HttpPost httpPost = createHttpPost(GET_ENCRYPT_ID_URL);
     HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
-    httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
-    httpPost.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-    httpPost.setHeader(HEADER_PARAM_API_KEY,
-        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_API_KEY));
     httpPost.setEntity(entity);
     CloseableHttpResponse response = null;
-    JSONObject encryptedID = new JSONObject();
+    JsonObject encryptedID;
     try {
       response = httpClient.execute(httpPost);
       StatusLine statusLine = response.getStatusLine();
       int statusCode = statusLine.getStatusCode();
       String reasonPhrase = statusLine.getReasonPhrase();
-
-      String ctsUser = ConfigurationUtil
-          .getConfigurationElementValue(EnumConfiguration.CTS_USERNAME);
-      String auditEventJson = EventLogMainzellisteUtil.getFhirAuditEvent(ctsUser, statusCode);
-      EventLogUtil.insertEventLogEntryForMainzelliste(EventMessageType.E_PATIENT_CTS_UPLOAD,
-          auditEventJson);
-
-      if (statusCode >= 500 && statusCode < 600) {
-        String bodyResponse = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
-        String message = getMessage("Mainzelliste server not responding", statusCode,
-            reasonPhrase, bodyResponse);
-        logger.error(message);
-        throw new IOException(message);
-      }
-      if (statusCode == 401) {
-        String bodyResponse = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
-        logger.error(getMessage("Mainzelliste credentials not correct", statusCode,
-            reasonPhrase, bodyResponse));
-        throw new NotAuthorizedException(
-            getMessage("Mainzelliste credentials not correct", statusCode, reasonPhrase,
-                bodyResponse));
-      }
-      if (statusCode == 404) {
-        String bodyResponse = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
-        logger.error(
-            getMessage("Mainzelliste Url not found", statusCode, reasonPhrase,
-                bodyResponse));
-        throw new NotFoundException(
-            getMessage("Mainzelliste Url not found", statusCode, reasonPhrase,
-                bodyResponse));
-      }
-      if (statusCode >= 400 && statusCode < 500) {
-        String bodyResponse = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
-        logger.error(
-            getMessage("Invalid patient bundle posted to Mainzelliste", statusCode,
-                reasonPhrase, bodyResponse));
-        throw new IllegalArgumentException(
-            getMessage("Invalid patient bundle posted to Mainzelliste", statusCode,
-                reasonPhrase, bodyResponse));
-      }
+      insertEventLog(statusCode);
+      checkStatusCode(response, statusCode, reasonPhrase);
       String encryptedIdString = EntityUtils.toString(response.getEntity());
-      JSONParser parser = new JSONParser();
-      encryptedID = (JSONObject) parser.parse(encryptedIdString);
+      encryptedID = (JsonObject) parser.parse(encryptedIdString);
     } catch (IOException e) {
       logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
       throw new IOException(e);
-    } catch (ParseException e) {
-      logger.error("Get Pseudonym from Mainzelliste: ParseException: e: " + e);
-      e.printStackTrace();
     } finally {
       closeResponse(response);
     }
     return encryptedID;
+  }
+
+  /**
+   * Post the patient id to the Mainzelliste to get the encryptedId and replace it with the patient
+   * id.
+   *
+   * @param patient the local cts patient
+   * @return the patient with the replaced id
+   */
+  public JsonObject getPatientWithPseudonymId(String patient)
+      throws IOException, IllegalArgumentException,
+      NotFoundException, NotAuthorizedException {
+    JsonObject patientAsJson = (JsonObject) parser.parse(patient);
+    JsonObject jsonEntity = new JsonObject();
+    jsonEntity.addProperty("searchIdType",
+        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_SEARCH_ID_TYPE));
+    jsonEntity.addProperty("searchIdString", patientAsJson.get("patid").getAsString());
+    jsonEntity.addProperty("requestedIdType", "ctsid");
+    HttpPost httpPost = createHttpPost(GET_ENCRYPT_ID_WITH_PATIENT_ID_URL);
+    HttpEntity entity = new StringEntity(jsonEntity.toString(), Consts.UTF_8);
+    httpPost.setEntity(entity);
+    CloseableHttpResponse response = null;
+    try {
+      response = httpClient.execute(httpPost);
+      StatusLine statusLine = response.getStatusLine();
+      int statusCode = statusLine.getStatusCode();
+      String reasonPhrase = statusLine.getReasonPhrase();
+      insertEventLog(statusCode);
+      checkStatusCode(response, statusCode, reasonPhrase);
+      String encryptedIdString = EntityUtils.toString(response.getEntity());
+      addEncryptedIdToPatient(patientAsJson, encryptedIdString);
+    } catch (IOException e) {
+      logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
+      throw new IOException(e);
+    } finally {
+      closeResponse(response);
+    }
+    return patientAsJson;
+  }
+
+  private void addEncryptedIdToPatient(JsonObject patientAsJson,
+      String encryptedIdString) {
+    JsonObject encryptedID = (JsonObject) parser.parse(encryptedIdString);
+    patientAsJson.addProperty("patid", encryptedID.get("EncID").getAsString());
+  }
+
+  private HttpPost createHttpPost(String path) {
+    HttpPost httpPost = new HttpPost(SamplyShareUtils.addTrailingSlash(
+        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_URL)
+            + path));
+    httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
+    httpPost.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
+    httpPost.setHeader(HEADER_PARAM_API_KEY,
+        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_API_KEY));
+    return httpPost;
+  }
+
+  private void insertEventLog(int statusCode) {
+    String ctsUser = ConfigurationUtil
+        .getConfigurationElementValue(EnumConfiguration.CTS_USERNAME);
+    String auditEventJson = EventLogMainzellisteUtil.getFhirAuditEvent(ctsUser, statusCode);
+    EventLogUtil.insertEventLogEntryForMainzelliste(EventMessageType.E_PATIENT_CTS_UPLOAD,
+        auditEventJson);
+  }
+
+  private void checkStatusCode(CloseableHttpResponse response, int statusCode, String reasonPhrase)
+      throws IOException, NotAuthorizedException {
+    if (statusCode >= 500 && statusCode < 600) {
+      String bodyResponse = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
+      String message = getMessage("Mainzelliste server not responding", statusCode,
+          reasonPhrase, bodyResponse);
+      logger.error(message);
+      throw new IOException(message);
+    }
+    if (statusCode == 401) {
+      String bodyResponse = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
+      logger.error(getMessage("Mainzelliste credentials not correct", statusCode,
+          reasonPhrase, bodyResponse));
+      throw new NotAuthorizedException(
+          getMessage("Mainzelliste credentials not correct", statusCode, reasonPhrase,
+              bodyResponse));
+    }
+    if (statusCode == 404) {
+      String bodyResponse = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
+      logger.error(
+          getMessage("Mainzelliste Url not found", statusCode, reasonPhrase,
+              bodyResponse));
+      throw new NotFoundException(
+          getMessage("Mainzelliste Url not found", statusCode, reasonPhrase,
+              bodyResponse));
+    }
+    if (statusCode >= 400 && statusCode < 500) {
+      String bodyResponse = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
+      logger.error(
+          getMessage("Invalid patient data posted to Mainzelliste", statusCode,
+              reasonPhrase, bodyResponse));
+      throw new IllegalArgumentException(
+          getMessage("Invalid patient data posted to Mainzelliste", statusCode,
+              reasonPhrase, bodyResponse));
+    }
   }
 
   /**
@@ -396,4 +451,5 @@ public class MainzellisteConnector {
       }
     }
   }
+
 }

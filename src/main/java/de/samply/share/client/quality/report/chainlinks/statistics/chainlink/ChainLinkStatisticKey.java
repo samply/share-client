@@ -26,8 +26,8 @@ public enum ChainLinkStatisticKey {
       "sending views with option 'only statistics' to local data management...");
 
   private static Map<String, ChainLinkStatisticKey> mapByFileKey;
-  private String message;
-  private String fileKey;
+  private final String message;
+  private final String fileKey;
 
   ChainLinkStatisticKey(String fileKey, String message) {
 

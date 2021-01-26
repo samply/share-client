@@ -41,6 +41,7 @@ public class MdrConnectionFactory {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public MdrConnection getMdrConnection() {
@@ -73,7 +74,7 @@ public class MdrConnectionFactory {
     AUTH_URL(EnumConfiguration.QUALITY_REPORT_MDR_AUTH_URL),
     AUTH_PRIVATE_KEY_BASE_64(EnumConfiguration.QUALITY_REPORT_MDR_AUTH_PRIVATE_KEY_BASE_64);
 
-    private EnumConfiguration enumConfiguration;
+    private final EnumConfiguration enumConfiguration;
 
     Properties(EnumConfiguration enumConfiguration) {
       this.enumConfiguration = enumConfiguration;

@@ -17,7 +17,7 @@ import org.jooq.DSLContext;
  */
 public class InquiryCriteriaUtil {
 
-  private static InquiryCriteriaDao inquiryCriteriaDao;
+  private static final InquiryCriteriaDao inquiryCriteriaDao;
 
   static {
     inquiryCriteriaDao = new InquiryCriteriaDao(ResourceManager.getConfiguration());
@@ -59,6 +59,7 @@ public class InquiryCriteriaUtil {
 
   /**
    * Insert the InquiryCriteria into the database.
+   *
    * @param inquiryCriteria the InquiryCriteria
    * @return id of the record
    */
@@ -75,8 +76,9 @@ public class InquiryCriteriaUtil {
 
   /**
    * Todo.
+   *
    * @param inquiryDetails Todo.
-   * @param languageType Todo.
+   * @param languageType   Todo.
    * @return Todo.
    */
   public static InquiryCriteria getFirstCriteriaOriginal(InquiryDetails inquiryDetails,
@@ -92,8 +94,9 @@ public class InquiryCriteriaUtil {
 
   /**
    * Todo.
+   *
    * @param inquiryDetails Todo.
-   * @param languageType Todo.
+   * @param languageType   Todo.
    * @return Todo.
    */
   public static InquiryCriteria getFirstCriteriaOriginal(InquiryDetails inquiryDetails,

@@ -12,7 +12,7 @@ public abstract class SortedQualityResultsImpl extends QualityResultsFilter impl
     SortedQualityResults {
 
 
-  private ArrayList<MdrIdValue> sortedMdrIdValues;
+  private final ArrayList<MdrIdValue> sortedMdrIdValues;
 
   public SortedQualityResultsImpl(QualityResults qualityResults) {
     super(qualityResults);
@@ -52,7 +52,7 @@ public abstract class SortedQualityResultsImpl extends QualityResultsFilter impl
 
   private class SortedQualityResultsIterator implements Iterator<QualityResult> {
 
-    private Iterator<MdrIdValue> mdrIdValueIterator;
+    private final Iterator<MdrIdValue> mdrIdValueIterator;
 
     public SortedQualityResultsIterator() {
       this.mdrIdValueIterator = sortedMdrIdValues.iterator();

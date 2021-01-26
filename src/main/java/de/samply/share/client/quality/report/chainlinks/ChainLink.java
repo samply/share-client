@@ -23,7 +23,7 @@ public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
   private ChainLinkTimer chainLinkTimer;
   private boolean isFinalized = false;
   private boolean isPreviousChainLinkFinalized = false;
-  private List<ChainLinkError> errors = new ArrayList<>();
+  private final List<ChainLinkError> errors = new ArrayList<>();
 
   protected abstract String getChainLinkId();
 
@@ -255,6 +255,7 @@ public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
 
   /**
    * Todo.
+   *
    * @param chainLinkItem Todo.
    */
   public void addItem(ChainLinkItem chainLinkItem) {
@@ -336,6 +337,7 @@ public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
 
   /**
    * Todo.
+   *
    * @param chainLinkFinalizer Todo.
    */
   public void setChainLinkFinalizer(ChainLinkFinalizer chainLinkFinalizer) {

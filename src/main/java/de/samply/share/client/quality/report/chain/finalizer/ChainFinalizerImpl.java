@@ -6,7 +6,7 @@ import de.samply.share.client.quality.report.timeout.TimeoutJob;
 
 public class ChainFinalizerImpl implements ChainFinalizer {
 
-  private ChainLinkFinalizer chainLinkFinalizer = new ChainLinkFinalizerImpl();
+  private final ChainLinkFinalizer chainLinkFinalizer = new ChainLinkFinalizerImpl();
 
   @Override
   public void finalizeChain() {

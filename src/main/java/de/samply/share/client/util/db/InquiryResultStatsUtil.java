@@ -16,7 +16,7 @@ public class InquiryResultStatsUtil {
 
   private static final Logger logger = LogManager.getLogger(InquiryResultStatsUtil.class);
 
-  private static InquiryResultStatsDao inquiryResultStatsDao;
+  private static final InquiryResultStatsDao inquiryResultStatsDao;
 
   static {
     inquiryResultStatsDao = new InquiryResultStatsDao(ResourceManager.getConfiguration());

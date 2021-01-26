@@ -12,6 +12,7 @@ public class ChainStatisticsManager {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public ChainStatistics getChainStatistics() {
@@ -36,6 +37,7 @@ public class ChainStatisticsManager {
 
   /**
    * Todo.
+   *
    * @param chainStatistics Todo.
    */
   public void setChainStatistics(ChainStatistics chainStatistics) {
@@ -52,6 +54,7 @@ public class ChainStatisticsManager {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public boolean isStatusChanged() {

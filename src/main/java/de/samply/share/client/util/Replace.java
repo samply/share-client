@@ -6,6 +6,7 @@ public class Replace {
 
   /**
    * Todo.
+   *
    * @param originalString Todo.
    * @return Todo.
    */

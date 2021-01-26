@@ -12,7 +12,7 @@ public class ExcelSheetWithAutoSizeColumnFactory extends ExcelSheetFactoryWrappe
 
   protected static final Logger logger = LogManager
       .getLogger(ExcelSheetWithAutoSizeColumnFactory.class);
-  private Set<Integer> excludedColumnsForAutoSize = new HashSet<>();
+  private final Set<Integer> excludedColumnsForAutoSize = new HashSet<>();
 
   public ExcelSheetWithAutoSizeColumnFactory(ExcelSheetFactory excelSheetFactory) {
     super(excelSheetFactory);

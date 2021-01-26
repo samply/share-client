@@ -4,6 +4,6 @@ import java.net.Proxy;
 
 public interface ProxyFactory {
 
-  public Proxy getProxy();
+  Proxy getProxy();
 
 }

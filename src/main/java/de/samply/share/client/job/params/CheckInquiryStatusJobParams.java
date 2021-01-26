@@ -4,8 +4,8 @@ import de.samply.share.client.control.ApplicationUtils;
 import org.quartz.JobDataMap;
 
 /**
- * The settings for an CheckInquiryStatusJob are kept in an instance of this class.
- * Takes the JobDataMap that is associated with the instance of the job.
+ * The settings for an CheckInquiryStatusJob are kept in an instance of this class. Takes the
+ * JobDataMap that is associated with the instance of the job.
  */
 public class CheckInquiryStatusJobParams {
 
@@ -30,6 +30,7 @@ public class CheckInquiryStatusJobParams {
 
   /**
    * Set the configuration for the CheckInquiryJob.
+   *
    * @param dataMap the configuration with the inquiry attributes.
    */
   public CheckInquiryStatusJobParams(JobDataMap dataMap) {
@@ -44,6 +45,7 @@ public class CheckInquiryStatusJobParams {
 
   /**
    * Get the job class name depends on the project name.
+   *
    * @return the job class name for checking the inquires.
    */
   public static String getJobName() {

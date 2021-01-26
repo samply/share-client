@@ -6,10 +6,10 @@ import de.samply.share.common.utils.MdrIdDatatype;
 
 public interface SortedQualityResults extends QualityResults, Iterable<QualityResult> {
 
-  public int getOrdinal(MdrIdDatatype mdrId, String value);
+  int getOrdinal(MdrIdDatatype mdrId, String value);
 
-  public MdrIdDatatype getMdrId(int ordinal);
+  MdrIdDatatype getMdrId(int ordinal);
 
-  public String getValue(int ordinal);
+  String getValue(int ordinal);
 
 }

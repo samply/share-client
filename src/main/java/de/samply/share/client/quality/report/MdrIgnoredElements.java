@@ -8,8 +8,8 @@ import java.util.Set;
 public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
 
 
-  private Set<String> stringMdrIds = new HashSet<>();
-  private Set<MdrIdDatatype> mdrIds = new HashSet<>();
+  private final Set<String> stringMdrIds = new HashSet<>();
+  private final Set<MdrIdDatatype> mdrIds = new HashSet<>();
 
   @Override
   public Iterator<MdrIdDatatype> iterator() {
@@ -18,6 +18,7 @@ public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
 
   /**
    * Todo.
+   *
    * @param mdrId Todo.
    */
   public void add(MdrIdDatatype mdrId) {
@@ -28,6 +29,7 @@ public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
 
   /**
    * Todo.
+   *
    * @param mdrId Todo.
    * @return Todo.
    */
@@ -39,6 +41,7 @@ public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
 
   /**
    * Todo.
+   *
    * @param mdrId Todo.
    * @return Todo.
    */

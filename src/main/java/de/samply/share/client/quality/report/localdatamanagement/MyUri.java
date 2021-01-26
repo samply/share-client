@@ -10,7 +10,7 @@ public class MyUri {
   private String urlSuffix;
 
 
-  private Map<String, String> parameters = new HashMap<>();
+  private final Map<String, String> parameters = new HashMap<>();
 
 
   public MyUri(String basicUrl, String urlSuffix) {
@@ -32,6 +32,7 @@ public class MyUri {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public String toString() {

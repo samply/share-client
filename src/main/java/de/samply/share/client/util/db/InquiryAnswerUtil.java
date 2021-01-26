@@ -12,7 +12,7 @@ public class InquiryAnswerUtil {
 
   private static final Logger logger = LogManager.getLogger(InquiryAnswerUtil.class);
 
-  private static InquiryAnswerDao inquiryAnswerDao;
+  private static final InquiryAnswerDao inquiryAnswerDao;
 
   static {
     inquiryAnswerDao = new InquiryAnswerDao(ResourceManager.getConfiguration());

@@ -37,13 +37,13 @@ public class QualityReportController implements Serializable {
 
 
   private static final Logger logger = LogManager.getLogger(QualityReportController.class);
-  private IdPathManager002 idPathManager = new IdPathManager002();
-  private QualityFileIdGenerator qualityFileIdGenerator = new QualityFileIdGeneratorImpl();
+  private final IdPathManager002 idPathManager = new IdPathManager002();
+  private final QualityFileIdGenerator qualityFileIdGenerator = new QualityFileIdGeneratorImpl();
   private ChainFactory qualityReportChainFactory;
-  private QualityReportFileInfoManager qualityReportFileInfoManager;
-  private ChainStatisticsManager chainStatisticsManager = ApplicationBean
+  private final QualityReportFileInfoManager qualityReportFileInfoManager;
+  private final ChainStatisticsManager chainStatisticsManager = ApplicationBean
       .getChainStatisticsManager();
-  private ChainFinalizer chainFinalizer = ApplicationBean.getChainFinalizer();
+  private final ChainFinalizer chainFinalizer = ApplicationBean.getChainFinalizer();
   private boolean isLoading = true;
 
 

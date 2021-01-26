@@ -9,14 +9,15 @@ import java.util.Set;
 public class CentraxxMapperImplV2 implements CentraxxMapper {
 
   private static final String CXX_VALUES_SEPARATOR = " | ";
-  private MdrMappedElements mdrMappedElements;
-  private FileLoader fileLoader = new FileLoader();
-  private GeneralRehearsalPriorization generalRehearsalPriorization =
+  private final MdrMappedElements mdrMappedElements;
+  private final FileLoader fileLoader = new FileLoader();
+  private final GeneralRehearsalPriorization generalRehearsalPriorization =
       new GeneralRehearsalPriorization();
 
 
   /**
    * Todo.
+   *
    * @param mdrMappedElements Todo.
    * @throws CentraxxMapperException Todo.
    */

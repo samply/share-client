@@ -6,8 +6,8 @@ import org.apache.commons.collections.FastHashMap;
 public abstract class TxtColumnImpl implements TxtColumn {
 
   private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-  private int maxNumberOfElements;
-  private Map<Integer, String> elements = new FastHashMap();
+  private final int maxNumberOfElements;
+  private final Map<Integer, String> elements = new FastHashMap();
 
   public TxtColumnImpl(int maxNumberOfElements) {
     this.maxNumberOfElements = maxNumberOfElements;

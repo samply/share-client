@@ -12,15 +12,16 @@ import de.samply.share.common.utils.MdrIdDatatype;
 public class DataElementStatsExcelRowMapper {
 
 
-  private ExcelRowMapperUtils excelRowMapperUtils;
-  private DktkIdMdrIdConverter dktkIdManager;
-  private CentraxxMapper centraXxMapper;
+  private final ExcelRowMapperUtils excelRowMapperUtils;
+  private final DktkIdMdrIdConverter dktkIdManager;
+  private final CentraxxMapper centraXxMapper;
 
   /**
    * ToDo.
-   * @param dktkIdManager ToDo.
+   *
+   * @param dktkIdManager       ToDo.
    * @param excelRowMapperUtils ToDo.
-   * @param centraXxMapper ToDo.
+   * @param centraXxMapper      ToDo.
    */
   public DataElementStatsExcelRowMapper(DktkIdMdrIdConverter dktkIdManager,
       ExcelRowMapperUtils excelRowMapperUtils, CentraxxMapper centraXxMapper) {
@@ -33,6 +34,7 @@ public class DataElementStatsExcelRowMapper {
 
   /**
    * ToDo.
+   *
    * @param excelRowParameters ToDo.
    * @return ToDo.
    * @throws ExcelRowMapperException ToDo.

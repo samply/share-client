@@ -19,6 +19,7 @@ public final class CsvLine002 extends CsvLineImpl {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public MdrIdDatatype getMdrId() {
@@ -38,6 +39,7 @@ public final class CsvLine002 extends CsvLineImpl {
 
   /**
    * Todo.
+   *
    * @param attributeValue Todo.
    */
   public void setAttributeValue(String attributeValue) {
@@ -46,6 +48,7 @@ public final class CsvLine002 extends CsvLineImpl {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public Boolean isValid() {
@@ -61,6 +64,7 @@ public final class CsvLine002 extends CsvLineImpl {
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public Integer getNumberOfPatients() {

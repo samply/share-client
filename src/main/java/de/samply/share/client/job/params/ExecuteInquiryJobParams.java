@@ -8,8 +8,8 @@ import java.util.List;
 import org.quartz.JobDataMap;
 
 /**
- * The settings for an ExecuteInquiryJob are kept in an instance of this class.
- * Takes the JobDataMap that is associated with the instance of the job.
+ * The settings for an ExecuteInquiryJob are kept in an instance of this class. Takes the JobDataMap
+ * that is associated with the instance of the job.
  */
 public class ExecuteInquiryJobParams {
 
@@ -32,6 +32,7 @@ public class ExecuteInquiryJobParams {
 
   /**
    * Set the configuration for the ExecuteInquiryJob.
+   *
    * @param dataMap the configuration with the inquiry attributes.
    */
   public ExecuteInquiryJobParams(JobDataMap dataMap) {
@@ -51,6 +52,7 @@ public class ExecuteInquiryJobParams {
 
   /**
    * Get the job class name depends on the project name.
+   *
    * @return the job class name for executing the inquires.
    */
   public static String getJobName() {

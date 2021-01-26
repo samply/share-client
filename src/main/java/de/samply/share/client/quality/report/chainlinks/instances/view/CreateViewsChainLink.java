@@ -10,12 +10,13 @@ import java.util.List;
 
 public class CreateViewsChainLink<I extends ChainLinkItem & ViewsContext> extends ChainLink<I> {
 
-  private Model model;
-  private ViewsCreator viewsCreator;
+  private final Model model;
+  private final ViewsCreator viewsCreator;
 
   /**
    * Todo.
-   * @param model Todo.
+   *
+   * @param model        Todo.
    * @param viewsCreator Todo.
    */
   public CreateViewsChainLink(Model model, ViewsCreator viewsCreator) {

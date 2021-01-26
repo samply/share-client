@@ -2,6 +2,7 @@ package de.samply.share.client.util.connector;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.parser.DataFormatException;
+import com.google.gson.JsonObject;
 import com.mchange.rmi.NotAuthorizedException;
 import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
@@ -113,6 +114,44 @@ public class CtsConnector {
   }
 
   /**
+   * Post a local CTS patient to the central CTS.
+   *
+   * @param patient the local patient
+   * @return if the post was successfull
+   * @throws IOException              IOException
+   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws NotAuthorizedException   NotAuthorizedException
+   */
+  public Response postLocalPatientToCentralCts(String patient)
+      throws IOException, IllegalArgumentException,
+      NotFoundException, NotAuthorizedException {
+    MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
+    JsonObject pseudonimisedPatient = mainzellisteConnector.getPatientWithPseudonymId(patient);
+    // Set up the API call
+    HttpEntity entity = new StringEntity(pseudonimisedPatient.toString(), Consts.UTF_8);
+    HttpPost httpPost = new HttpPost(ctsBaseUrl);
+    httpPost.setHeader(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_CTS_FHIR_JSON);
+    httpPost.setEntity(entity);
+    CloseableHttpResponse response = null;
+    try {
+      HttpContext ctsContext = createCtsContext();
+      response = httpClient.execute(httpPost, ctsContext);
+      int statusCode = response.getStatusLine().getStatusCode();
+      String message =
+          "CTS server response: statusCode:" + statusCode + "; response: " + response.toString();
+      String responseBody = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
+      if (responseBody != null && !responseBody.isEmpty()) {
+        message += ";body: " + responseBody;
+      }
+      return Response.status(statusCode).entity(message).build();
+    } catch (IOException e) {
+      throw new IOException(e);
+    } finally {
+      closeResponse(response);
+    }
+  }
+
+  /**
    * Create a BasicHttpContext for CTS upload, with the cookies needed for authorization.
    *
    * @return
@@ -150,6 +189,7 @@ public class CtsConnector {
     pseudonymizedBundle = mainzellisteConnector.getPatientPseudonym(bundle);
     return pseudonymizedBundle;
   }
+
 
   /**
    * Returns CTS code and CTS user.

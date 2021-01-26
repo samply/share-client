@@ -15,8 +15,8 @@ public class RequestedEntityUtil {
 
   private static final Logger logger = LogManager.getLogger(BrokerUtil.class);
 
-  private static RequestedEntityDao requestedEntityDao;
-  private static InquiryRequestedEntityDao inquiryRequestedEntityDao;
+  private static final RequestedEntityDao requestedEntityDao;
+  private static final InquiryRequestedEntityDao inquiryRequestedEntityDao;
 
   static {
     requestedEntityDao = new RequestedEntityDao(ResourceManager.getConfiguration());

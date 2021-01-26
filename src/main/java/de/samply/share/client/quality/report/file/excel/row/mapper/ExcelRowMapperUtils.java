@@ -18,15 +18,16 @@ import java.util.concurrent.ExecutionException;
 
 public class ExcelRowMapperUtils {
 
-  private String languageCode;
-  private String mdrLinkPrefix; // = "https://mdr.ccp-it.dktk.dkfz.de/detail.xhtml?urn=";
-  private ModelSearcher modelSearcher;
-  private MdrClient mdrClient;
-  private Map<MdrIdDatatype, String> mdrDatenElements = new HashMap<>();
+  private final String languageCode;
+  private final String mdrLinkPrefix; // = "https://mdr.ccp-it.dktk.dkfz.de/detail.xhtml?urn=";
+  private final ModelSearcher modelSearcher;
+  private final MdrClient mdrClient;
+  private final Map<MdrIdDatatype, String> mdrDatenElements = new HashMap<>();
 
   /**
    * Todo.
-   * @param model Todo.
+   *
+   * @param model     Todo.
    * @param mdrClient Todo.
    */
   public ExcelRowMapperUtils(Model model, MdrClient mdrClient) {
@@ -48,6 +49,7 @@ public class ExcelRowMapperUtils {
 
   /**
    * Todo.
+   *
    * @param mdrId Todo.
    * @return Todo.
    * @throws ExcelRowMapperException Todo.
@@ -94,6 +96,7 @@ public class ExcelRowMapperUtils {
 
   /**
    * Todo.
+   *
    * @param mdrId Todo.
    * @return Todo.
    */
