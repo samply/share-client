@@ -17,9 +17,9 @@ public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
   }
 
   /**
-   * Todo.
+   * Returns a list of the mdr ids to be ignored.
    *
-   * @param mdrId Todo.
+   * @param mdrId List of mrd ids to be ignored.
    */
   public void add(MdrIdDatatype mdrId) {
 
@@ -28,10 +28,10 @@ public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
   }
 
   /**
-   * Todo.
+   * Checks if an mdr id should be ignored.
    *
-   * @param mdrId Todo.
-   * @return Todo.
+   * @param mdrId Mdr Id to be checked .
+   * @return Check.
    */
   public boolean isIgnored(MdrIdDatatype mdrId) {
 
@@ -40,10 +40,10 @@ public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
   }
 
   /**
-   * Todo.
+   * Returns key for the latest centraxx version of an mdr id.
    *
-   * @param mdrId Todo.
-   * @return Todo.
+   * @param mdrId mdr id in question.
+   * @return Key for the latest centraxx version of an mdr id.
    */
   public String getKey(MdrIdDatatype mdrId) {
 

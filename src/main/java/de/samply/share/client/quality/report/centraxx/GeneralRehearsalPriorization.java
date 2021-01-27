@@ -13,10 +13,10 @@ public class GeneralRehearsalPriorization {
   }
 
   /**
-   * Todo.
+   * Gets the priority of an mdr id.
    *
-   * @param mdrId Todo.
-   * @return Todo.
+   * @param mdrId mdr id in question.
+   * @return priority of the mdr id.
    */
   public String getPriorization(MdrIdDatatype mdrId) {
 

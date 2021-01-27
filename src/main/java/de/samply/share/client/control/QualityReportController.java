@@ -48,7 +48,7 @@ public class QualityReportController implements Serializable {
 
 
   /**
-   * Todo.
+   * Controller used in frontend in order to generate quality reports.
    */
   public QualityReportController() {
 
@@ -74,7 +74,7 @@ public class QualityReportController implements Serializable {
   }
 
   /**
-   * Todo.
+   * Triggers the generation of a quality report.
    */
   public void generate() throws QualityReportControllerException {
 
@@ -143,7 +143,8 @@ public class QualityReportController implements Serializable {
   }
 
   /**
-   * Todo.
+   * Gets file info related to a quality report (filename, timestamp, version,...).
+   * This information will be shown in frontend.
    */
   public List<QualityReportFileInfo> getQualityReportFileInfos() {
 
@@ -159,7 +160,7 @@ public class QualityReportController implements Serializable {
   }
 
   /**
-   * Todo.
+   * Downloads a quality report via browser.
    */
   public void download(String filePath, String filename) {
 

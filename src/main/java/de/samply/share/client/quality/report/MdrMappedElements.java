@@ -13,9 +13,9 @@ public class MdrMappedElements {
   private final Map<MdrIdDatatype, CxxMappingElement> mdrIdCxxMappingElementMap = new HashMap<>();
 
   /**
-   * Todo.
+   * Represents the mdr data elements mapped in CentraXX.
    *
-   * @param ldmConnector Todo.
+   * @param ldmConnector LDM Connector for CentraXX.
    */
   public MdrMappedElements(LdmConnector ldmConnector) {
 
@@ -47,7 +47,7 @@ public class MdrMappedElements {
   }
 
   /**
-   * Todo.
+   * Checks if an mdr id is mapped in CentraXX.
    *
    * @param mdrId Todo.
    * @return Todo.

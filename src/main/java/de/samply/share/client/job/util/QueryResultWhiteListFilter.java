@@ -18,10 +18,10 @@ public class QueryResultWhiteListFilter {
 
 
   /**
-   * Todo.
+   * Filters attributes of a query result.
    *
-   * @param queryResult Todo.
-   * @return Todo.
+   * @param queryResult Query Result to be filtered.
+   * @return Query Result already filtered.
    */
   public QueryResult filter(QueryResult queryResult) {
 

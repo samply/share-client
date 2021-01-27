@@ -52,10 +52,10 @@ public class QualityReportChain implements Chain {
 
 
   /**
-   * Todo.
+   * Chain of processes in order to create a quality report.
    *
-   * @param chainParameters Todo.
-   * @throws QualityReportChainException Todo.
+   * @param chainParameters Encapsulates parameters of the class.
+   * @throws QualityReportChainException Encapsulates exceptions of the class.
    */
   public QualityReportChain(ChainParameters chainParameters) throws QualityReportChainException {
 

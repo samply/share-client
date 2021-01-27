@@ -254,9 +254,9 @@ public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
   }
 
   /**
-   * Todo.
+   * Add chain link item to the chain link.
    *
-   * @param chainLinkItem Todo.
+   * @param chainLinkItem It contains relevant information for the chain link.
    */
   public void addItem(ChainLinkItem chainLinkItem) {
 
@@ -278,7 +278,7 @@ public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
   }
 
   /**
-   * Todo.
+   * Finalizes the chain link.
    */
   public synchronized void finalizeChainLink() {
 
@@ -336,9 +336,9 @@ public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
   }
 
   /**
-   * Todo.
+   * Set the Chain link finalizer of the chain link.
    *
-   * @param chainLinkFinalizer Todo.
+   * @param chainLinkFinalizer Chain link finalizer.
    */
   public void setChainLinkFinalizer(ChainLinkFinalizer chainLinkFinalizer) {
 

@@ -14,9 +14,9 @@ public class CentraxxMapperImpl implements CentraxxMapper {
   private final FileLoader fileLoader = new FileLoader();
 
   /**
-   * Todo.
+   * Represents the CentraXX Mapping with the MDR.
    *
-   * @throws CentraxxMapperException Todo.
+   * @throws CentraxxMapperException Encapsulates exceptions of the class.
    */
   public CentraxxMapperImpl() throws CentraxxMapperException {
 

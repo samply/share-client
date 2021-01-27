@@ -82,10 +82,10 @@ public class QualityReportChainFactory implements ChainFactory {
   }
 
   /**
-   * Todo.
+   * Returns the model of the quality report (mdr ids and validations).
    *
-   * @return Todo.
-   * @throws ChainFactoryException Todo.
+   * @return Model of the quality report.
+   * @throws ChainFactoryException Encapsulates exceptions of the class.
    */
   public Model getModel() throws ChainFactoryException {
     try {

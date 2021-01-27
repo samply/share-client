@@ -16,10 +16,10 @@ public class CentraxxMapperImplV2 implements CentraxxMapper {
 
 
   /**
-   * Todo.
+   * Represents the CentraXX Mapping with the MDR..
    *
-   * @param mdrMappedElements Todo.
-   * @throws CentraxxMapperException Todo.
+   * @param mdrMappedElements List of mdr data elements mapped in CentraXX.
+   * @throws CentraxxMapperException Encapsulates exceptions of this class.
    */
   public CentraxxMapperImplV2(MdrMappedElements mdrMappedElements) throws CentraxxMapperException {
 
