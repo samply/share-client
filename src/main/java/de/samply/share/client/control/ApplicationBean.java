@@ -16,6 +16,7 @@ import de.samply.config.util.JaxbUtil;
 import de.samply.project.directory.client.DktkProjectDirectory;
 import de.samply.project.directory.client.DktkProjectDirectoryParameters;
 import de.samply.project.directory.client.ProjectDirectory;
+import de.samply.share.client.crypt.Crypt;
 import de.samply.share.client.feature.ClientConfiguration;
 import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
@@ -79,7 +80,9 @@ import de.samply.share.common.utils.ProjectInfo;
 import de.samply.web.mdrfaces.MdrContext;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -160,8 +163,9 @@ public class ApplicationBean implements Serializable {
   private static ProjectDirectoryUtils projectDirectoryUtils;
   private static IdManagementConnector idManagementConnector;
   private static FeatureManager featureManager;
-  private final ConnectCheckResult ldmAvailability = new ConnectCheckResult();
-  private final ConnectCheckResult idmAvailability = new ConnectCheckResult();
+  private ConnectCheckResult ldmAvailability = new ConnectCheckResult();
+  private ConnectCheckResult idmAvailability = new ConnectCheckResult();
+  private static Crypt crypt;
 
   public static Locale getLocale() {
     return locale;
@@ -706,6 +710,11 @@ public class ApplicationBean implements Serializable {
     return mdrValidator;
   }
 
+  public static Crypt getCrypt() {
+    return crypt;
+  }
+
+
   private static LdmBasicConnectorSwitch createLdmBasicConnectorSwitch(
       IdManagementConnector idManagementConnector, ProjectDirectoryUtils projectDirectoryUtils,
       LdmConnectorCentraxx ldmConnectorCentraxx, MdrClient mdrClient) {
@@ -848,8 +857,17 @@ public class ApplicationBean implements Serializable {
       loadCtsInfo();
       updateCtsInfo();
       initMainzelliste();
+      initCrypt();
     }
     logger.info("Application Bean initialized");
+  }
+
+  private static void initCrypt() {
+    try {
+      crypt = new Crypt();
+    } catch (GeneralSecurityException | IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private void loadProjectDirectoryClient() {

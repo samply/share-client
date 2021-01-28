@@ -1,6 +1,7 @@
 package de.samply.share.client.util.connector;
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mchange.rmi.NotAuthorizedException;
@@ -16,6 +17,7 @@ import de.samply.share.common.utils.SamplyShareUtils;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +27,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -64,12 +67,17 @@ public class MainzellisteConnector {
       "http://uk-koeln.de/fhir/NamingSystem/nNGM/patient-identifier";
   private static final String GET_ENCRYPT_ID_URL = "/paths/getEncryptId";
   private static final String GET_ENCRYPT_ID_WITH_PATIENT_ID_URL = "/paths/getEncryptIdWithId";
+  private static final String ENCRYPT_ID_JSON_URL = "/paths/getEncryptIdWithId";
+  private static final String DECRYPT_ID_JSON_URL = "/paths/getEncryptIdWithId";
   private static final String HEADER_PARAM_API_KEY = "apiKey";
-  private final JsonParser parser = new JsonParser();
+  private static final String PATIENTLIST_API_KEY = "mainzellisteSecretTESTSTANDORT";
+  private static final String PATIENTLIST_URL = "http://e260-verbis-test.inet.dkfz-heidelberg.de/mainzelliste";
+
   private transient HttpConnector httpConnector;
   private CloseableHttpClient httpClient;
   private String mainzellisteBaseUrl;
   private HttpHost mainzellisteHost;
+  private final JsonParser parser = new JsonParser();
 
 
   public MainzellisteConnector() {
@@ -359,6 +367,127 @@ public class MainzellisteConnector {
     return patientAsJson;
   }
 
+  /**
+   * Post the patient id to the Mainzelliste to get the encryptedId.
+   *
+   * @param id patientId
+   * @return the patient with the replaced id
+   */
+  public String getEncryptedIdWithPatientId(String id)
+      throws IOException, IllegalArgumentException,
+      NotFoundException, NotAuthorizedException {
+    JsonObject jsonEntity = new JsonObject();
+    jsonEntity.addProperty("searchIdType",
+        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_SEARCH_ID_TYPE));
+    jsonEntity.addProperty("searchIdString", id);
+    jsonEntity.addProperty("requestedIdType", "ctsid");
+    HttpPost httpPost = createHttpPost(GET_ENCRYPT_ID_WITH_PATIENT_ID_URL);
+    HttpEntity entity = new StringEntity(jsonEntity.toString(), Consts.UTF_8);
+    httpPost.setEntity(entity);
+    CloseableHttpResponse response = null;
+    try {
+      response = httpClient.execute(httpPost);
+      StatusLine statusLine = response.getStatusLine();
+      int statusCode = statusLine.getStatusCode();
+      String reasonPhrase = statusLine.getReasonPhrase();
+      insertEventLog(statusCode);
+      checkStatusCode(response, statusCode, reasonPhrase);
+      return EntityUtils.toString(response.getEntity());
+    } catch (IOException e) {
+      logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
+      throw new IOException(e);
+    } finally {
+      closeResponse(response);
+    }
+  }
+
+  /**
+   * Post the patient id to the Mainzelliste to get the localId.
+   *
+   * @param ctsIds ctsIds
+   * @return the patient with the replaced id
+   */
+  public String getLocalId(List<String> ctsIds)
+      throws IOException, IllegalArgumentException,
+      NotFoundException, NotAuthorizedException {
+    String uri = getMainzellisteSessionUri();
+    String tokenId = getMainzellisteReadToken(uri, ctsIds);
+    HttpGet httpGet = new HttpGet(PATIENTLIST_URL + "/patients/tokenId/" + tokenId);
+    CloseableHttpResponse response = null;
+    try {
+      response = httpClient.execute(httpGet);
+      StatusLine statusLine = response.getStatusLine();
+      int statusCode = statusLine.getStatusCode();
+      String reasonPhrase = statusLine.getReasonPhrase();
+      insertEventLog(statusCode);
+      checkStatusCode(response, statusCode, reasonPhrase);
+      return EntityUtils.toString(response.getEntity());
+    } catch (IOException e) {
+      logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
+      throw new IOException(e);
+    } finally {
+      closeResponse(response);
+    }
+  }
+
+  private String getMainzellisteSessionUri() throws IOException {
+    HttpPost httpPost = createHttpPost(PATIENTLIST_URL + "/sessions");
+    httpPost.setHeader("mainzellisteApiKey", PATIENTLIST_API_KEY);
+    CloseableHttpResponse response = null;
+    try {
+      response = httpClient.execute(httpPost);
+      JsonParser jsonParser = new JsonParser();
+      JsonObject jsonObject = (JsonObject) jsonParser
+          .parse(EntityUtils.toString(response.getEntity()));
+      return jsonObject.get("uri").getAsString();
+    } catch (IOException e) {
+      logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
+      throw new IOException(e);
+    }
+  }
+
+  private String getMainzellisteReadToken(String sessionUrl, List<String> ctsIds)
+      throws IOException {
+    HttpPost httpPost = createHttpPost(sessionUrl + "/tokens");
+    httpPost.setHeader("mainzellisteApiKey", PATIENTLIST_API_KEY);
+    HttpEntity entity = new StringEntity(createJsonObject(ctsIds).toString(), Consts.UTF_8);
+    httpPost.setEntity(entity);
+    CloseableHttpResponse response = null;
+    try {
+      response = httpClient.execute(httpPost);
+      JsonParser jsonParser = new JsonParser();
+      JsonObject jsonObject = (JsonObject) jsonParser
+          .parse(EntityUtils.toString(response.getEntity()));
+      return jsonObject.get("tokenId").getAsString();
+    } catch (IOException e) {
+      logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
+      throw new IOException(e);
+    }
+  }
+
+  private JsonObject createJsonObject(List<String> ctsIds) {
+    JsonArray searchIdsArray = new JsonArray();
+    for (String id : ctsIds) {
+      JsonObject searchIds = new JsonObject();
+      searchIds.addProperty("idType", "ctsid");
+      searchIds.addProperty("idString", Base64.getUrlEncoder().encodeToString(id.getBytes()));
+      searchIdsArray.add(searchIds);
+    }
+
+    JsonObject data = new JsonObject();
+    data.addProperty("searchIds", String.valueOf(searchIdsArray));
+    JsonArray jsonArray = new JsonArray();
+    jsonArray
+        .add(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_SEARCH_ID_TYPE));
+    jsonArray.add("ctsid");
+    data.addProperty("resultIds", String.valueOf(jsonArray));
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("type", "readPatients");
+    jsonObject.addProperty("data", String.valueOf(data));
+    return jsonObject;
+  }
+
   private void addEncryptedIdToPatient(JsonObject patientAsJson,
       String encryptedIdString) {
     JsonObject encryptedID = (JsonObject) parser.parse(encryptedIdString);
@@ -372,7 +501,8 @@ public class MainzellisteConnector {
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
     httpPost.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
     httpPost.setHeader(HEADER_PARAM_API_KEY,
-        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_API_KEY));
+        ConfigurationUtil
+            .getConfigurationElementValue(EnumConfiguration.CTS_MAINZELLISTE_API_KEY));
     return httpPost;
   }
 
@@ -418,6 +548,40 @@ public class MainzellisteConnector {
       throw new IllegalArgumentException(
           getMessage("Invalid patient data posted to Mainzelliste", statusCode,
               reasonPhrase, bodyResponse));
+    }
+  }
+
+  /**
+   * Encrypt or decrypt resource ids.
+   *
+   * @param string  json file
+   * @param encrypt if the ids should encrypted
+   * @return json file with encrypted/decrypted ids.
+   * @throws IOException IOException
+   */
+  public String decryptAndEncryptString(String string, boolean encrypt) throws IOException {
+    HttpPost httpPost;
+    if (encrypt) {
+      httpPost = createHttpPost(ENCRYPT_ID_JSON_URL);
+    } else {
+      httpPost = createHttpPost(DECRYPT_ID_JSON_URL);
+    }
+    HttpEntity entity = new StringEntity(string, Consts.UTF_8);
+    httpPost.setEntity(entity);
+    CloseableHttpResponse response = null;
+    try {
+      response = httpClient.execute(httpPost);
+      StatusLine statusLine = response.getStatusLine();
+      int statusCode = statusLine.getStatusCode();
+      String reasonPhrase = statusLine.getReasonPhrase();
+      insertEventLog(statusCode);
+      checkStatusCode(response, statusCode, reasonPhrase);
+      return EntityUtils.toString(response.getEntity());
+    } catch (IOException | NotAuthorizedException e) {
+      logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
+      throw new IOException(e);
+    } finally {
+      closeResponse(response);
     }
   }
 
