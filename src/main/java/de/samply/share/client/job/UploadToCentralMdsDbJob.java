@@ -28,7 +28,7 @@ import de.samply.share.client.model.db.tables.pojos.Upload;
 import de.samply.share.client.util.UploadUtils;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.CentralSearchConnector;
-import de.samply.share.client.util.connector.IdManagerConnector;
+import de.samply.share.client.util.connector.IdManagerBasicInfoConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.CentralSearchConnectorException;
 import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
@@ -363,7 +363,7 @@ public class UploadToCentralMdsDbJob implements Job {
             EnumConfiguration.CENTRAL_MDS_DATABASE_UPLOAD_RANDOMIZE_EXPORT_IDS)) {
       return getRandomExportIds(idsFromQueryResult);
     } else {
-      IdManagerConnector idManagerConnector = new IdManagerConnector();
+      IdManagerBasicInfoConnector idManagerConnector = new IdManagerBasicInfoConnector();
       return idManagerConnector.getExportIds(idsFromQueryResult);
     }
   }

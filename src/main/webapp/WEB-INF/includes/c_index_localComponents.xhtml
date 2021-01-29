@@ -1,30 +1,50 @@
-
-
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:wu="http://share.samply.de/webutils"
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client">
 
-    <h:outputLink value="login.xhtml" target="_blank">
-        <sscl:localComponentPanel title="#{msg.index_teiler}"
-                                  checkResult="#{applicationBean.shareAvailability}"
-                                  cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-6"
-                                  iconSizeClass="fa-3x"/>
-    </h:outputLink>
+    <div class="row panel-body">
+        <h:outputLink value="login.xhtml" target="_blank">
+            <sscl:localComponentPanel title="#{msg.index_teiler}"
+                                      checkResult="#{applicationBean.shareAvailability}"
+                                      cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-12"
+                                      iconSizeClass="fa-3x"/>
+        </h:outputLink>
 
-    <h:outputLink value="#{wu:replaceLocalhost(applicationBean.urls.ldmUrl)}" target="_blank">
-        <sscl:localComponentPanel title="#{msg.index_ldm}"
-                                  checkResult="#{applicationBean.ldmAvailability}"
-                                  cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-6"
-                                  iconSizeClass="fa-3x"/>
-    </h:outputLink>
+        <h:outputLink value="#{wu:replaceLocalhost(applicationBean.urls.ldmUrl)}" target="_blank">
+            <sscl:localComponentPanel title="#{msg.index_ldm}"
+                                      checkResult="#{applicationBean.ldmAvailability}"
+                                      cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-12"
+                                      iconSizeClass="fa-3x"/>
+        </h:outputLink>
 
-    <h:outputLink rendered="#{(wu:getProjectName() == 'dktk')}"
-                  value="#{wu:replaceLocalhost(applicationBean.urls.idmanagerUrl)}" target="_blank">
-        <sscl:localComponentPanel title="#{msg.index_idmanager}"
-                                  checkResult="#{applicationBean.idmAvailability}"
-                                  cssClass="col-lg-4 col-md-4 col-sm-6 col-xs-6"
-                                  iconSizeClass="fa-3x"/>
-    </h:outputLink>
+        <h:outputLink rendered="#{(wu:getProjectName() == 'dktk')}"
+                      value="#{wu:replaceLocalhost(applicationBean.urls.idmanagerUrl)}"
+                      target="_blank">
+            <sscl:localComponentPanel title="#{msg.index_idmanager}"
+                                      checkResult="#{applicationBean.idmAvailability}"
+                                      cssClass="col-lg-4 col-md-4 col-sm-12 col-xs-12"
+                                      iconSizeClass="fa-3x"/>
+        </h:outputLink>
+    </div>
+    <div class="row panel-body">
+        <h:outputLink rendered="#{(wu:getProjectName() == 'dktk')}"
+                      value="#{wu:replaceLocalhost(applicationBean.urls.patientlistUrl)}"
+                      target="_blank">
+            <sscl:localComponentPanel title="#{msg.index_patientlist}"
+                                      checkResult="#{applicationBean.patientListAvailability}"
+                                      cssClass="col-lg-6 col-md-6 col-sm-6 col-xs-12"
+                                      iconSizeClass="fa-3x"/>
+        </h:outputLink>
+
+        <h:outputLink rendered="#{(wu:getProjectName() == 'dktk')}"
+                      value="#{wu:replaceLocalhost(applicationBean.urls.projectPseudonymisationUrl)}"
+                      target="_blank">
+            <sscl:localComponentPanel title="#{msg.index_project_pseudonymisation}"
+                                      checkResult="#{applicationBean.projectPseudonAvailability}"
+                                      cssClass="col-lg-6 col-md-6 col-sm-6 col-xs-12"
+                                      iconSizeClass="fa-3x"/>
+        </h:outputLink>
+    </div>
 </ui:composition>

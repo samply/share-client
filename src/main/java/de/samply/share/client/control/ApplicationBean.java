@@ -17,6 +17,7 @@ import de.samply.share.client.feature.ClientConfiguration;
 import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.job.params.QuartzJob;
+import de.samply.share.client.model.ComponentInfo;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.check.ConnectCheckResult;
 import de.samply.share.client.model.common.Bridgehead;
@@ -38,14 +39,17 @@ import de.samply.share.client.quality.report.chainlinks.statistics.manager.Chain
 import de.samply.share.client.util.PatientValidator;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.CtsConnector;
-import de.samply.share.client.util.connector.IdManagerConnector;
+import de.samply.share.client.util.connector.IcomponentBasicInfoConnector;
+import de.samply.share.client.util.connector.IdManagerBasicInfoConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.LdmConnectorCql;
 import de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank;
 import de.samply.share.client.util.connector.MainzellisteConnector;
+import de.samply.share.client.util.connector.PatientListBasicInfoConnector;
+import de.samply.share.client.util.connector.ProjectPseudonymizationBasicInfoConnector;
 import de.samply.share.client.util.connector.StoreConnector;
-import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
+import de.samply.share.client.util.connector.exception.ComponentConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.CredentialsUtil;
@@ -98,6 +102,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.togglz.core.manager.FeatureManager;
 import org.xml.sax.SAXException;
 
+
 /**
  * Backing Bean that is valid during the whole runtime of the application.
  * Holds methods that are needed system-wide.
@@ -105,9 +110,9 @@ import org.xml.sax.SAXException;
 @ManagedBean(name = "applicationBean", eager = true)
 @ApplicationScoped
 public class ApplicationBean implements Serializable {
-
+  
   private static final Logger logger = LogManager.getLogger(ApplicationBean.class);
-
+  
   private static final String COMMON_CONFIG_FILENAME_SUFFIX = "_common_config.xml";
   private static final String COMMON_URLS_FILENAME_SUFFIX = "_common_urls.xml";
   private static final String COMMON_OPERATOR_FILENAME_SUFFIX = "_common_operator.xml";
@@ -115,7 +120,7 @@ public class ApplicationBean implements Serializable {
   private static final String CTS_FILENAME_SUFFIX = "_cts_info.xml";
   private static final List<String> NAMESPACES = new ArrayList<>(
       Arrays.asList("dktk", "adt", "marker"));
-
+  
   private static final int TIMEOUT_IN_SECONDS = 60;
   private static final ConnectCheckResult shareAvailability = new ConnectCheckResult(true,
       "Samply.Share.Client", ProjectInfo.INSTANCE.getVersionString());
@@ -140,23 +145,25 @@ public class ApplicationBean implements Serializable {
   private static FeatureManager featureManager;
   private ConnectCheckResult ldmAvailability = new ConnectCheckResult();
   private ConnectCheckResult idmAvailability = new ConnectCheckResult();
-
+  private ConnectCheckResult patientListAvailability = new ConnectCheckResult();
+  private ConnectCheckResult projectPseudonAvailability = new ConnectCheckResult();
+  
   public static Locale getLocale() {
     return locale;
   }
-
+  
   public static FeatureManager getFeatureManager() {
     return featureManager;
   }
-
+  
   private static void initMainzelliste() {
     mainzellisteConnector = new MainzellisteConnector();
   }
-
+  
   private static void initCts() {
     ctsConnector = new CtsConnector();
   }
-
+  
   /**
    * Initialize a ldmConnector. Depends on which profile is selected.
    */
@@ -176,7 +183,7 @@ public class ApplicationBean implements Serializable {
           ApplicationBean.ldmConnector = new LdmConnectorCentraxx(false);
         }
         break;
-
+      
       case SAMPLY:
         if (ApplicationUtils.isLanguageCql()) {
           ApplicationBean.ldmConnector = new LdmConnectorCql(false);
@@ -199,7 +206,7 @@ public class ApplicationBean implements Serializable {
         break;
     }
   }
-
+  
   /**
    * Load the common config xml file from disk and apply the proxy settings.
    */
@@ -208,15 +215,18 @@ public class ApplicationBean implements Serializable {
       JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
       configuration = JaxbUtil
           .findUnmarshall(
-              ProjectInfo.INSTANCE.getProjectName().toLowerCase() + COMMON_CONFIG_FILENAME_SUFFIX,
-              jaxbContext, Configuration.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
+              ProjectInfo.INSTANCE.getProjectName().toLowerCase()
+                  + COMMON_CONFIG_FILENAME_SUFFIX,
+              jaxbContext, Configuration.class,
+              ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
               System.getProperty("catalina.base") + File.separator + "conf",
               getServletContext().getRealPath("/WEB-INF"));
       CredentialsUtil.updateProxyCredentials(configuration);
       updateProxiesInDb();
     } catch (FileNotFoundException e) {
       logger.error(
-          "No config file found by using samply.common.config for project " + ProjectInfo.INSTANCE
+          "No config file found by using samply.common.config for project "
+              + ProjectInfo.INSTANCE
               .getProjectName());
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal config file");
@@ -224,7 +234,7 @@ public class ApplicationBean implements Serializable {
       e.printStackTrace();
     }
   }
-
+  
   /**
    * Load the common urls xml file from disk.
    */
@@ -234,7 +244,8 @@ public class ApplicationBean implements Serializable {
           .newInstance(de.samply.share.client.model.common.ObjectFactory.class);
       urls = JaxbUtil
           .findUnmarshall(
-              ProjectInfo.INSTANCE.getProjectName().toLowerCase() + COMMON_URLS_FILENAME_SUFFIX,
+              ProjectInfo.INSTANCE.getProjectName().toLowerCase()
+                  + COMMON_URLS_FILENAME_SUFFIX,
               jaxbContext, Urls.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
               System.getProperty("catalina.base") + File.separator + "conf",
               getServletContext().getRealPath("/WEB-INF"));
@@ -247,7 +258,7 @@ public class ApplicationBean implements Serializable {
       e.printStackTrace();
     }
   }
-
+  
   /**
    * Load the common operator xml file from disk.
    */
@@ -257,8 +268,10 @@ public class ApplicationBean implements Serializable {
           .newInstance(de.samply.share.client.model.common.ObjectFactory.class);
       operator = JaxbUtil
           .findUnmarshall(
-              ProjectInfo.INSTANCE.getProjectName().toLowerCase() + COMMON_OPERATOR_FILENAME_SUFFIX,
-              jaxbContext, Operator.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
+              ProjectInfo.INSTANCE.getProjectName().toLowerCase()
+                  + COMMON_OPERATOR_FILENAME_SUFFIX,
+              jaxbContext, Operator.class, ProjectInfo.INSTANCE.getProjectName()
+                  .toLowerCase(),
               System.getProperty("catalina.base") + File.separator + "conf",
               getServletContext().getRealPath("/WEB-INF"));
     } catch (FileNotFoundException e) {
@@ -270,7 +283,7 @@ public class ApplicationBean implements Serializable {
       e.printStackTrace();
     }
   }
-
+  
   /**
    * Load the bridgehead info xml file from disk.
    */
@@ -280,12 +293,15 @@ public class ApplicationBean implements Serializable {
           .newInstance(de.samply.share.client.model.common.ObjectFactory.class);
       infos = JaxbUtil
           .findUnmarshall(
-              ProjectInfo.INSTANCE.getProjectName().toLowerCase() + COMMON_INFOS_FILENAME_SUFFIX,
-              jaxbContext, Bridgehead.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
+              ProjectInfo.INSTANCE.getProjectName().toLowerCase()
+                  + COMMON_INFOS_FILENAME_SUFFIX,
+              jaxbContext, Bridgehead.class, ProjectInfo.INSTANCE.getProjectName()
+                  .toLowerCase(),
               System.getProperty("catalina.base") + File.separator + "conf",
               getServletContext().getRealPath("/WEB-INF"));
     } catch (FileNotFoundException e) {
-      logger.error("No common bridgehead info file found by using samply.common.config for project "
+      logger.error("No common bridgehead info file found by using samply.common.config for "
+          + "project "
           + ProjectInfo.INSTANCE.getProjectName());
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal bridgehead_info file", ue);
@@ -293,7 +309,7 @@ public class ApplicationBean implements Serializable {
       e.printStackTrace();
     }
   }
-
+  
   /**
    * Load the CTS info xml file from disk.
    */
@@ -302,7 +318,8 @@ public class ApplicationBean implements Serializable {
       JAXBContext jaxbContext = JAXBContext
           .newInstance(de.samply.share.client.model.common.ObjectFactory.class);
       cts = JaxbUtil
-          .findUnmarshall(ProjectInfo.INSTANCE.getProjectName().toLowerCase() + CTS_FILENAME_SUFFIX,
+          .findUnmarshall(ProjectInfo.INSTANCE.getProjectName().toLowerCase()
+                  + CTS_FILENAME_SUFFIX,
               jaxbContext, Cts.class, ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
               System.getProperty("catalina.base") + File.separator + "conf",
               getServletContext().getRealPath("/WEB-INF"));
@@ -316,7 +333,7 @@ public class ApplicationBean implements Serializable {
       e.printStackTrace();
     }
   }
-
+  
   /**
    * Update the proxy information in the db with the settings read from the config file.
    */
@@ -327,7 +344,7 @@ public class ApplicationBean implements Serializable {
       httpProxyConfigElement.setName(EnumConfiguration.HTTP_PROXY.name());
       httpProxyConfigElement.setSetting(configuration.getProxy().getHttp().getUrl().toString());
       ConfigurationUtil.insertOrUpdateConfigurationElement(httpProxyConfigElement);
-
+      
       de.samply.share.client.model.db.tables.pojos.Configuration httpsProxyConfigElement =
           new de.samply.share.client.model.db.tables.pojos.Configuration();
       httpsProxyConfigElement.setName(EnumConfiguration.HTTPS_PROXY.name());
@@ -335,12 +352,14 @@ public class ApplicationBean implements Serializable {
       ConfigurationUtil.insertOrUpdateConfigurationElement(httpsProxyConfigElement);
     } catch (NullPointerException npe) {
       logger.debug(
-          "Caught nullpointer exception while trying to update proxies. This will most likely "
-              + "just mean that there is no proxy set in the config file. It is safe to ignore"
+          "Caught nullpointer exception while trying to update proxies. "
+              + "This will most likely "
+              + "just mean that there is no proxy set in the config file. "
+              + "It is safe to ignore"
               + " this.");
     }
   }
-
+  
   /**
    * Update the URLs to the local components in the db with the settings read from the corresponding
    * xml file.
@@ -353,20 +372,25 @@ public class ApplicationBean implements Serializable {
         idmanagerConfigElement.setName(EnumConfiguration.ID_MANAGER_URL.name());
         idmanagerConfigElement.setSetting(urls.getIdmanagerUrl());
         ConfigurationUtil.insertOrUpdateConfigurationElement(idmanagerConfigElement);
+        
+        insertOrUpdateConfigurationElement(
+            EnumConfiguration.PATIENTLIST_URL, urls.getPatientlistUrl());
+        insertOrUpdateConfigurationElement(EnumConfiguration.PROJECT_PSEUDONYMISATION_URL,
+            urls.getProjectPseudonymisationUrl());
       }
-
+      
       de.samply.share.client.model.db.tables.pojos.Configuration ldmConfigElement =
           new de.samply.share.client.model.db.tables.pojos.Configuration();
       ldmConfigElement.setName(EnumConfiguration.LDM_URL.name());
       ldmConfigElement.setSetting(urls.getLdmUrl());
       ConfigurationUtil.insertOrUpdateConfigurationElement(ldmConfigElement);
-
+      
       de.samply.share.client.model.db.tables.pojos.Configuration shareConfigElement =
           new de.samply.share.client.model.db.tables.pojos.Configuration();
       shareConfigElement.setName(EnumConfiguration.SHARE_URL.name());
       shareConfigElement.setSetting(urls.getShareUrl());
       ConfigurationUtil.insertOrUpdateConfigurationElement(shareConfigElement);
-
+      
       de.samply.share.client.model.db.tables.pojos.Configuration mdrConfigElement =
           new de.samply.share.client.model.db.tables.pojos.Configuration();
       mdrConfigElement.setName(EnumConfiguration.MDR_URL.name());
@@ -374,7 +398,19 @@ public class ApplicationBean implements Serializable {
       ConfigurationUtil.insertOrUpdateConfigurationElement(mdrConfigElement);
     }
   }
-
+  
+  private static void insertOrUpdateConfigurationElement(EnumConfiguration enumConfiguration,
+                                                         String value) {
+    
+    de.samply.share.client.model.db.tables.pojos.Configuration configElement =
+        new de.samply.share.client.model.db.tables.pojos.Configuration();
+    configElement.setName(enumConfiguration.name());
+    configElement.setSetting(value);
+    ConfigurationUtil.insertOrUpdateConfigurationElement(configElement);
+    
+  }
+  
+  
   /**
    * Update the information associated with the CTS in the db with the settings read from the
    * corresponding xml file.
@@ -395,12 +431,12 @@ public class ApplicationBean implements Serializable {
         de.samply.share.client.model.db.tables.pojos.Configuration directoryConfigElement =
             new de.samply.share.client.model.db.tables.pojos.Configuration();
         directoryConfigElement.setName(EnumConfiguration.DIRECTORY_URL.name());
-        directoryConfigElement.setSetting(urls.getDirecotryUrl());
+        directoryConfigElement.setSetting(urls.getDirectoryUrl());
         ConfigurationUtil.insertOrUpdateConfigurationElement(directoryConfigElement);
       }
     }
   }
-
+  
   private static void insertConfigElement(String name, String value) {
     de.samply.share.client.model.db.tables.pojos.Configuration configElement =
         new de.samply.share.client.model.db.tables.pojos.Configuration();
@@ -408,7 +444,7 @@ public class ApplicationBean implements Serializable {
     configElement.setSetting(value);
     ConfigurationUtil.insertOrUpdateConfigurationElement(configElement);
   }
-
+  
   /**
    * Unschedule all jobs in a given group.
    *
@@ -428,7 +464,7 @@ public class ApplicationBean implements Serializable {
       throw new RuntimeException(e);
     }
   }
-
+  
   /**
    * Cancel all jobs that are linked with an upload.
    */
@@ -448,7 +484,7 @@ public class ApplicationBean implements Serializable {
       throw new RuntimeException(e);
     }
   }
-
+  
   /**
    * Get the list of scheduled jobs from the database and arrange starting them.
    */
@@ -460,7 +496,7 @@ public class ApplicationBean implements Serializable {
       rescheduleJobFromDatabase(quartzJob);
     }
   }
-
+  
   /**
    * Add the trigger with the cron expression that is defined in the database to a job.
    *
@@ -471,7 +507,7 @@ public class ApplicationBean implements Serializable {
     try {
       JobKey jobKey = JobKey.jobKey(job.getJobName(), job.getJobGroup());
       List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
-
+      
       // If there's not exactly one trigger, remove all and add the new trigger anyway
       if (triggers.size() != 1) {
         for (Trigger trigger : triggers) {
@@ -486,12 +522,12 @@ public class ApplicationBean implements Serializable {
           scheduler.unscheduleJob(cronTrigger.getKey());
         }
       }
-
+      
       if (!CronExpression.isValidExpression(job.getCronExpression())) {
         throw new ValidatorException(
             new FacesMessage("Invalid Cron Expression: " + job.getCronExpression()));
       }
-
+      
       CronTrigger newTrigger = TriggerBuilder
           .newTrigger()
           .withIdentity(job.getJobName() + ":trigger", job.getJobGroup())
@@ -500,123 +536,129 @@ public class ApplicationBean implements Serializable {
           )
           .forJob(jobKey)
           .build();
-
+      
       // You can't add a trigger in a paused state. So schedule it and immediately pause if
       // necessary
       scheduler.scheduleJob(newTrigger);
       if (job.isPaused()) {
         scheduler.pauseJob(jobKey);
       }
-
+      
     } catch (SchedulerException e) {
       throw new ValidatorException(new FacesMessage(e.getLocalizedMessage()));
     }
   }
-
+  
   public static Urls getUrlsForDirectory() {
     return urls;
   }
-
+  
   public static Bridgehead getBridgeheadInfos() {
     return infos;
   }
-
+  
   public static HttpConnector createHttpConnector() {
     return createHttpConnector(TIMEOUT_IN_SECONDS);
   }
-
+  
   /**
    * Create an HttpConnector with a custom timeout.
+   *
    * @param timeout timeout in seconds
    * @return HttpConnector with custom timeout
    */
   public static HttpConnector createHttpConnector(int timeout) {
     CredentialsProvider credentialsProvider = Utils.prepareCredentialsProvider();
-
+    
     HttpConnector httpConnector = new HttpConnector(
         ConfigurationUtil.getHttpConfigParams(configuration), credentialsProvider, timeout);
     httpConnector.setUserAgent(getUserAgent().toString());
     httpConnector
         .addCustomHeader(Constants.HEADER_XML_NAMESPACE, Constants.VALUE_XML_NAMESPACE_COMMON);
-
+    
     return httpConnector;
   }
-
+  
   /**
    * Create an HttpConnector for a targetType.
+   *
    * @param targetType the tagetType like local data management or httpProxy
    * @return HttpConnector for the targetType
    */
   public static HttpConnector createHttpConnector(TargetType targetType) {
     return createHttpConnector(targetType, TIMEOUT_IN_SECONDS);
   }
-
+  
   /**
    * Create an HttpConnector for a targetType and a custom timeout.
+   *
    * @param targetType the tagetType like local data management or httpProxy
-   * @param timeout timeout in seconds
+   * @param timeout    timeout in seconds
    * @return HttpConnector for the targetType and a custom timeout
    */
   public static HttpConnector createHttpConnector(TargetType targetType, int timeout) {
     HttpConnector httpConnector = createHttpConnector(timeout);
-
+    
     List<Credentials> credentialsByTarget = CredentialsUtil.getCredentialsByTarget(targetType);
     if (credentialsByTarget.isEmpty()) {
       logger.warn("No credentials for target type '" + targetType
-          + "' found. Using default HttpConnector without credentials for '" + targetType + "'.");
+          + "' found. Using default HttpConnector without credentials for '" + targetType
+          + "'.");
       return createHttpConnector();
     }
-
+    
     Credentials firstCredentials = credentialsByTarget.get(0);
     httpConnector.addCustomHeader(HttpHeaders.AUTHORIZATION, "Basic " + StoreConnector
         .getBase64Credentials(firstCredentials.getUsername(), firstCredentials.getPasscode()));
-
+    
     return httpConnector;
   }
-
+  
   public static MdrClient getMdrClient() {
     return mdrClient;
   }
-
+  
   public static Configuration getConfiguration() {
     return configuration;
   }
-
+  
   public static void setConfiguration(Configuration configuration) {
     ApplicationBean.configuration = configuration;
   }
-
+  
   /**
    * Create a default UserAgent if not existing.
+   *
    * @return the new UserAgent
    */
   public static UserAgent getUserAgent() {
     if (userAgent == null) {
       return getDefaultUserAgent();
     }
-
+    
     return userAgent;
   }
-
+  
   public static void setUserAgent(UserAgent userAgent) {
     ApplicationBean.userAgent = userAgent;
   }
-
+  
   public static UserAgent getDefaultUserAgent() {
     return new UserAgent(ProjectInfo.INSTANCE.getProjectName(), "Samply.Share",
         ProjectInfo.INSTANCE.getVersionString());
   }
-
+  
   public static Scheduler getScheduler() {
     return scheduler;
   }
-
+  
   public static String getDisplayName() {
     return ApplicationUtils.getConnectorType().getDisplayName();
   }
-
+  
   /**
    * Return LdmConnector. If no one exists then create one.
+   *
    * @return LdmConnector
    */
   public static LdmConnector getLdmConnector() {
@@ -625,9 +667,10 @@ public class ApplicationBean implements Serializable {
     }
     return ApplicationBean.ldmConnector;
   }
-
+  
   /**
    * Return CtsConnector. If no one exists then create one.
+   *
    * @return CtsConnector
    */
   public static CtsConnector getCtsConnector() {
@@ -636,9 +679,10 @@ public class ApplicationBean implements Serializable {
     }
     return ctsConnector;
   }
-
+  
   /**
    * Return MainzellisteConnector. If no one exists then create one.
+   *
    * @return MainzellisteConnector
    */
   public static MainzellisteConnector getMainzellisteConnector() {
@@ -647,23 +691,23 @@ public class ApplicationBean implements Serializable {
     }
     return mainzellisteConnector;
   }
-
+  
   public static PatientValidator getPatientValidator() {
     return patientValidator;
   }
-
+  
   static ChainStatisticsManager getChainStatisticsManager() {
     return chainStatisticsManager;
   }
-
+  
   static ChainFinalizer getChainFinalizer() {
     return chainFinalizer;
   }
-
+  
   static MdrValidator getMdrValidator() {
     return mdrValidator;
   }
-
+  
   /**
    * Initialize the settings for the share client.
    */
@@ -679,10 +723,10 @@ public class ApplicationBean implements Serializable {
     }
     logger.info("Creating featureManager...");
     featureManager = new ClientConfiguration().getFeatureManager();
-
+    
     logger.info("Loading common-config.xml...");
     loadCommonConfig();
-
+    
     logger.info("Loading Urls...");
     loadUrls();
     logger.info("Loading operator...");
@@ -691,12 +735,12 @@ public class ApplicationBean implements Serializable {
     loadBridgeheadInfo();
     logger.info("Loading common urls...");
     updateCommonUrls();
-
+    
     logger.info("Reseting MDR context");
     resetMdrContext();
     logger.info("Loading patient validator...");
     patientValidator = new PatientValidator(MdrContext.getMdrContext().getMdrClient());
-
+    
     // Initialize Quartz scheduler
     try {
       logger.info("Initializing scheduler...");
@@ -704,16 +748,16 @@ public class ApplicationBean implements Serializable {
     } catch (SchedulerException e) {
       throw new RuntimeException("Could not initialize quartz scheduler.", e);
     }
-
+    
     logger.info("Initializing dth validator...");
     initDthValidator();
-
+    
     logger.info("Initializing ldm connector...");
     ApplicationBean.initLdmConnector();
-
+    
     logger.info("Inserting event log entry...");
     EventLogUtil.insertEventLogEntry(EventMessageType.E_SYSTEM_STARTUP);
-
+    
     logger.info("Checking Processing inquiries...");
     checkProcessingInquiries();
     if (featureManager.getFeatureState(ClientFeature.NNGM_CTS).isEnabled()) {
@@ -723,7 +767,7 @@ public class ApplicationBean implements Serializable {
     }
     logger.info("Application Bean initialized");
   }
-
+  
   private void checkProcessingInquiries() {
     List<InquiryDetails> inquiryDetailsList = InquiryDetailsUtil
         .getInquiryDetailsByStatus(InquiryStatusType.IS_PROCESSING);
@@ -732,11 +776,11 @@ public class ApplicationBean implements Serializable {
     for (InquiryDetails inquiryDetails : inquiryDetailsList) {
       inquiryDetails.setStatus(InquiryStatusType.IS_NEW);
       InquiryDetailsUtil.updateInquiryDetails(inquiryDetails);
-
+      
       setInquiryCriteriaStatusNew(inquiryDetails);
     }
   }
-
+  
   private void setInquiryCriteriaStatusNew(InquiryDetails inquiryDetails) {
     for (InquiryCriteria inquiryCriteria : InquiryCriteriaUtil
         .getInquiryCriteriaForInquiryDetails(inquiryDetails)) {
@@ -744,7 +788,7 @@ public class ApplicationBean implements Serializable {
       InquiryCriteriaUtil.updateInquiryCriteria(inquiryCriteria);
     }
   }
-
+  
   /**
    * Initialize the Quartz Scheduler.
    * The configuration is done via web.xml and quartz.properties.
@@ -753,12 +797,12 @@ public class ApplicationBean implements Serializable {
     logger.info("Initializing FacesContext...");
     ServletContext servletContext = (ServletContext) FacesContext
         .getCurrentInstance().getExternalContext().getContext();
-
+    
     //Get QuartzInitializerListener
     logger.info("Initializing Quartz Listener...");
     StdSchedulerFactory stdSchedulerFactory = (StdSchedulerFactory) servletContext
         .getAttribute(QuartzInitializerListener.QUARTZ_FACTORY_KEY);
-
+    
     logger.info("Getting scheduler...");
     scheduler = stdSchedulerFactory.getScheduler();
     while (!scheduler.isStarted()) {
@@ -771,10 +815,10 @@ public class ApplicationBean implements Serializable {
     logger.info("Scheduling jobs...");
     scheduleJobsFromDatabase();
   }
-
+  
   private void initDthValidator() {
     try {
-
+      
       mdrConnection = new MdrConnection(
           ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_URL),
           null,
@@ -790,34 +834,35 @@ public class ApplicationBean implements Serializable {
       logger.error("Error initializing DTH Validator", e);
     }
   }
-
+  
   /**
    * Reinitialize the MdrClient.
    * Create a new MdrClient and clean the cache.
    */
   private void resetMdrContext() {
     String mdrUrl;
-
+    
     mdrUrl = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_URL);
     mdrClient = new MdrClient(mdrUrl, createHttpConnector().getJerseyClient(mdrUrl));
     mdrClient.cleanCache();
     MdrContext.getMdrContext().init(mdrClient);
     logger.debug(
-        "Reinitialized MDR Client with url " + mdrUrl + " - base uri is " + mdrClient.getBaseUri());
+        "Reinitialized MDR Client with url " + mdrUrl + " - base uri is " + mdrClient
+            .getBaseUri());
   }
-
+  
   public Urls getUrls() {
     return urls;
   }
-
+  
   public Operator getOperator() {
     return operator;
   }
-
+  
   public Bridgehead getInfos() {
     return infos;
   }
-
+  
   /**
    * Check the versions and availability of local datamanagement and id manager.
    */
@@ -836,44 +881,60 @@ public class ApplicationBean implements Serializable {
     } catch (LdmConnectorException e) {
       ldmAvailability.setReachable(false);
     }
-
+    
+    //TODO Dependency Injection
+    setComponentInfoViewModel(new IdManagerBasicInfoConnector(), idmAvailability);
+    setComponentInfoViewModel(new PatientListBasicInfoConnector(), patientListAvailability);
+    setComponentInfoViewModel(new ProjectPseudonymizationBasicInfoConnector(),
+        projectPseudonAvailability);
+  }
+  
+  private void setComponentInfoViewModel(IcomponentBasicInfoConnector basicInfoConnector,
+                                         ConnectCheckResult connectCheckResult) {
     try {
-      IdManagerConnector idManagerConnector = new IdManagerConnector();
-      String idManagerUserAgentInfo = idManagerConnector.getUserAgentInfo();
-      List<String> list = Splitter.on('/').splitToList(idManagerUserAgentInfo);
-      if (list.size() == 2) {
-        idmAvailability.setName(list.get(0));
-        idmAvailability.setVersion(list.get(1));
-      } else if (list.size() == 1) {
-        idmAvailability.setName(list.get(0));
-        idmAvailability.setVersion("");
+      ComponentInfo componentInfo = basicInfoConnector.getComponentInfo();
+      
+      if (componentInfo.getDistname() != null) {
+        connectCheckResult.setName(componentInfo.getDistname());
       }
-      idmAvailability.setReachable(true);
-    } catch (IdManagerConnectorException e) {
-      idmAvailability.setReachable(false);
+      if (componentInfo.getVersion() != null) {
+        connectCheckResult.setVersion(componentInfo.getVersion());
+      }
+      connectCheckResult.setReachable(true);
+      
+    } catch (ComponentConnectorException e) {
+      connectCheckResult.setReachable(false);
     }
   }
-
+  
   public boolean isQrTaskRunning() {
     return qrTaskRunning;
   }
-
+  
   public static void setQrTaskRunning(boolean qrTaskRunning) {
     ApplicationBean.qrTaskRunning = qrTaskRunning;
   }
-
+  
   public ConnectCheckResult getShareAvailability() {
     return shareAvailability;
   }
-
+  
   public ConnectCheckResult getLdmAvailability() {
     return ldmAvailability;
   }
-
+  
   public ConnectCheckResult getIdmAvailability() {
     return idmAvailability;
   }
-
+  
+  public ConnectCheckResult getPatientListAvailability() {
+    return patientListAvailability;
+  }
+  
+  public ConnectCheckResult getProjectPseudonAvailability() {
+    return projectPseudonAvailability;
+  }
+  
   /**
    * Get the array of defined reply rule types.
    * This should not be necessary, since it is possible to reference the Enum Class from the xhtml
@@ -881,7 +942,7 @@ public class ApplicationBean implements Serializable {
    * chosen.
    *
    * @return an array of all implemented reply rules TODO: change this, when "reply with data" is
-   *        defined
+   *     defined
    */
   public ReplyRuleType[] getReplyRuleTypes() {
     ReplyRuleType[] replyRuleTypes = new ReplyRuleType[2];
