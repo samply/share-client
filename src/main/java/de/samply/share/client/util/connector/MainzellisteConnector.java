@@ -42,12 +42,14 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.Composition;
 
 public class MainzellisteConnector {
 
   private static final Logger logger = LogManager.getLogger(MainzellisteConnector.class);
   private static final String FHIR_RESOURCE_PATIENT = "patient";
   private static final String FHIR_RESOURCE_COVERAGE = "coverage";
+  private static final String FHIR_RESOURCE_COMPOSITION = "composition";
   private static final String MAINZELLISTE_IDTYPE_ENC_ID = "EncID";
   private static final String IDAT_VORNAME = "vorname";
   private static final String IDAT_NACHNAME = "nachname";
@@ -70,8 +72,11 @@ public class MainzellisteConnector {
   private static final String ENCRYPT_ID_JSON_URL = "/paths/getEncryptIdWithId";
   private static final String DECRYPT_ID_JSON_URL = "/paths/getEncryptIdWithId";
   private static final String HEADER_PARAM_API_KEY = "apiKey";
-  private static final String PATIENTLIST_API_KEY = "mainzellisteSecretTESTSTANDORT";
-  private static final String PATIENTLIST_URL = "http://e260-verbis-test.inet.dkfz-heidelberg.de/mainzelliste";
+  private static final String STAMMDATEN_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Stammdaten-pseudonymisiert";
+  private static final String ANTRAG_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Antrag-pseudonymisiert";
+  private static final String TNM_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/TNM-pseudonymisiert";
+  private static final String BEFUND_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/molpatho-befund-pseudonymisiert";
+  private static final String THERAPIE_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Therapie-pseudonymisiert";
 
   private transient HttpConnector httpConnector;
   private CloseableHttpClient httpClient;
@@ -110,12 +115,19 @@ public class MainzellisteConnector {
     Patient patientPseudonym = null;
     Coverage coverage = null;
     Coverage coveragePseudonym = null;
+    Composition composition = null;
+    Composition compositionPseudonym = null;
     JsonObject encryptedID;
     int patientEntryIndex = 0;
     int coverageEntryIndex = 0;
+    int compositionEntryIndex = 0;
     for (int i = 0; i < bundle.getEntry().size(); i++) {
       Resource resource = bundle.getEntry().get(i).getResource();
-      if (resource.fhirType().equalsIgnoreCase(FHIR_RESOURCE_PATIENT)) {
+      if (resource.fhirType().equalsIgnoreCase(FHIR_RESOURCE_COMPOSITION)) {
+        composition = (Composition) resource;
+        compositionPseudonym = pseudonymComposition(composition);
+        compositionEntryIndex = i;
+      }else if (resource.fhirType().equalsIgnoreCase(FHIR_RESOURCE_PATIENT)) {
         patient = (Patient) resource;
         patientPseudonym = createPseudonymizedPatient(patient);
         patientEntryIndex = i;
@@ -124,10 +136,12 @@ public class MainzellisteConnector {
         coveragePseudonym = pseudonymCoverage(coverage);
         coverageEntryIndex = i;
       }
-      if (patient != null && coverage != null) {
+      if (patient != null && coverage != null && composition != null) {
         JsonObject jsonIdatObject = createJsonPatient(patient, coverage);
         encryptedID = getPseudonymFromMainzelliste(jsonIdatObject);
         patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedID);
+        compositionPseudonym = addPseudonymToComposition(compositionPseudonym, encryptedID);
+        bundle.getEntry().get(compositionEntryIndex).setResource(compositionPseudonym);
         bundle.getEntry().get(patientEntryIndex).setResource(patientPseudonym);
         bundle.getEntry().get(coverageEntryIndex).setResource(coveragePseudonym);
         return bundle;
@@ -135,6 +149,7 @@ public class MainzellisteConnector {
     }
     checkNonNull(patient, "The required patient resource is empty");
     checkNonNull(coverage, "The required coverage resource is empty");
+    checkNonNull(composition, "The required composition resource is empty");
     return bundle;
   }
 
@@ -157,6 +172,51 @@ public class MainzellisteConnector {
     coveragePseudonym.getIdentifier().clear();
     return coveragePseudonym;
   }
+
+    /**
+     * Pseudonymise the Composition resource.
+     *
+     * @param originalComposition originalComposition
+     * @return Coverage
+     */
+
+    private Composition pseudonymComposition(Composition originalComposition) {
+      Composition compositionPseudonym = originalComposition.copy();
+
+      Meta meta = new Meta();
+      String canoicalPseudonymizedProfile="";
+      if(originalComposition.hasMeta()){
+        canoicalPseudonymizedProfile = getCanonicalPseudonymProfile(originalComposition.getMeta().getProfile().get(0).getValue());
+      }
+      if(compositionPseudonym.hasTitle()){
+        compositionPseudonym.setTitle("");
+      }
+      meta.addProfile(canoicalPseudonymizedProfile);
+      compositionPseudonym.setMeta(meta);
+      if(compositionPseudonym.hasCategory()){
+        compositionPseudonym.getCategoryFirstRep().getCoding().get(0).setCode("psn");
+      }
+      return compositionPseudonym;
+    }
+
+    /**
+     * @param idatCompositionProfile
+     * @return
+     */
+    private String getCanonicalPseudonymProfile(String  idatCompositionProfile) {
+        if(idatCompositionProfile.contains("Stammdaten")){
+            return STAMMDATEN_PSEUDONYMISIERT_PROFILE;
+        }else if(idatCompositionProfile.contains("Antrag")){
+            return ANTRAG_PSEUDONYMISIERT_PROFILE;
+        } else if(idatCompositionProfile.contains("TNM")){
+            return TNM_PSEUDONYMISIERT_PROFILE;
+        } else if(idatCompositionProfile.contains("molpatho")){
+            return BEFUND_PSEUDONYMISIERT_PROFILE;
+        } else if(idatCompositionProfile.contains("Therapie")){
+            return THERAPIE_PSEUDONYMISIERT_PROFILE;
+        }
+        return idatCompositionProfile;
+    }
 
 
   /**
@@ -207,6 +267,18 @@ public class MainzellisteConnector {
     return patient;
   }
 
+  /**
+   * @param composition  the composition
+   * @param encryptedID encryptedID
+   * @return  composition with subject identifier
+   */
+  private Composition addPseudonymToComposition(Composition composition, JsonObject encryptedID) {
+    Identifier identifier= new Identifier();
+    identifier.setSystem("http://uk-koeln.de/fhir/NamingSystem/nNGM/patient-identifier");
+    composition.getSubject().setIdentifier(identifier);
+    composition.getSubject().getIdentifier().setValue(encryptedID.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
+    return composition;
+  }
 
   /**
    * Extract from the patient only the necessary attributes for the Mainzelliste.
