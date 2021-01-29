@@ -13,9 +13,11 @@ public class ModelSearcher {
   Map<String, Validations> mdrIdAndValidationsMap = new HashMap<>();
 
   /**
-   * Todo.
+   * Encapsulates a model, that consists of a list of mdr ids and its validations,
+   * ans offers search methods like getValidation per mdr id or get centraxx key of
+   * an mdr id.
    *
-   * @param model Todo.
+   * @param model model that consists of a list of mdr ids and validations.
    */
   public ModelSearcher(Model model) {
 
@@ -31,10 +33,10 @@ public class ModelSearcher {
   }
 
   /**
-   * Todo.
+   * Get validations of an mdr id.
    *
-   * @param mdrId Todo.
-   * @return Todo.
+   * @param mdrId mdr id.
+   * @return validations of the mdr id.
    */
   public Validations getValidations(MdrIdDatatype mdrId) {
 

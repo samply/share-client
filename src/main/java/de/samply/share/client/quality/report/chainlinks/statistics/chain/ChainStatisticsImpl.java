@@ -31,9 +31,9 @@ public class ChainStatisticsImpl implements ChainStatistics {
   }
 
   /**
-   * Todo.
+   * Adds a consumer of statistics about execution of a chain link.
    *
-   * @param chainLinkStatisticsConsumer Todo.
+   * @param chainLinkStatisticsConsumer consumer of statistics about execution of a chain link.
    */
   public void addChainLinkStatisticsConsumer(
       ChainLinkStatisticsConsumer chainLinkStatisticsConsumer) {
