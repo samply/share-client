@@ -13,9 +13,9 @@ public class BasicExcelRowElements extends ExcelRowElements {
   private final List<BasicExcelColumnMetaInfo> metaInfos;
 
   /**
-   * Todo.
+   * Contains information (title and eventually link) of each cell of an excel row.
    *
-   * @param metaInfos Todo.
+   * @param metaInfos information (title and eventually link) of each cell of an excel row.
    */
   public BasicExcelRowElements(List<BasicExcelColumnMetaInfo> metaInfos) {
 

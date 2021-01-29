@@ -9,6 +9,10 @@ import de.samply.share.client.quality.report.file.excel.cell.element.StringExcel
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
 import de.samply.share.common.utils.MdrIdDatatype;
 
+/**
+ * Statistics of quality report. More information on: Methods Inf Med 2019; 58(02/03): 086-093 DOI:
+ * 10.1055/s-0039-1693685
+ */
 public class DataElementStatsExcelRowElements extends ExcelRowElements {
 
   public DataElementStatsExcelRowElements() {
@@ -30,10 +34,10 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set link for a mdr data element.
    *
-   * @param link  Todo.
-   * @param mdrId Todo.
+   * @param link  link of an mdr data element.
+   * @param mdrId id of the mdr data element.
    */
   public void setMdrLink(String link, MdrIdDatatype mdrId) {
 
@@ -58,9 +62,9 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set the mdr data element slot DKTK-ID.
    *
-   * @param dktkId Todo.
+   * @param dktkId DKTK-ID.
    */
   public void setDktkId(String dktkId) {
 
@@ -70,9 +74,9 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set mdr designation of mdr data element.
    *
-   * @param mdrDatenElement Todo.
+   * @param mdrDatenElement mdr data element designation.
    */
   public void setMdrDatenElement(String mdrDatenElement) {
 
@@ -82,9 +86,9 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * set centraxx data element.
    *
-   * @param cxxDatenElement Todo.
+   * @param cxxDatenElement centraxx data element.
    */
   public void setCxxDatenElement(String cxxDatenElement) {
 
@@ -94,9 +98,9 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set number of patients with mdr data element.
    *
-   * @param numberOfPatientsWithDataElement Todo.
+   * @param numberOfPatientsWithDataElement number of patients with mdr data element.
    */
   public void setNumberOfPatientsWithDataElement(Integer numberOfPatientsWithDataElement) {
 
@@ -107,9 +111,10 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set percentage of patients with data element out of total patients.
    *
-   * @param percentageOfPatientsWithDataElementOutOfTotalPatients Todo.
+   * @param percentageOfPatientsWithDataElementOutOfTotalPatients percentage of patients with data
+   *                                                              element out of total patients.
    */
   public void setPercentageOfPatientsWithDataElementOutOfTotalPatients(
       Double percentageOfPatientsWithDataElementOutOfTotalPatients) {
@@ -122,9 +127,10 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * SEt number of patients with match only for data element.
    *
-   * @param numberOfPatientsWithMatchOnlyForDataElement Todo.
+   * @param numberOfPatientsWithMatchOnlyForDataElement number of patients with match only for data
+   *                                                    element.
    */
   public void setNumberOfPatientsWithMatchOnlyForDataElement(
       Integer numberOfPatientsWithMatchOnlyForDataElement) {
@@ -137,9 +143,16 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set percentage of patients with match only for data element out of patients with data element.
    *
-   * @param percentageOfPatientsWithMatchOnlyForDataElementOutOfPatientsWithDataElement Todo.
+   * @param percentageOfPatientsWithMatchOnlyForDataElementOutOfPatientsWithDataElement Set percentage
+   *                                                                                    of patients
+   *                                                                                    with match
+   *                                                                                    only for data
+   *                                                                                    element out
+   *                                                                                    of patients
+   *                                                                                    with data
+   *                                                                                    element.
    */
   public void setPercentageOfPatientsWithMatchOnlyForDataElementOutOfPatientsWithDataElement(
       Double percentageOfPatientsWithMatchOnlyForDataElementOutOfPatientsWithDataElement) {
@@ -153,7 +166,7 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set percentage of patients with match only for data element out of total patients.
    *
    * @param percentageOfPatientsWithMatchOnlyForDataElementOutOfTotalPatients Todo.
    */
@@ -169,9 +182,10 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set number of patients with any mismatch for data element.
    *
-   * @param numberOfPatientsWithAnyMismatchForDataElement Todo.
+   * @param numberOfPatientsWithAnyMismatchForDataElement number of patients with any mismatch for
+   *                                                      data element.
    */
   public void setNumberOfPatientsWithAnyMismatchForDataElement(
       Integer numberOfPatientsWithAnyMismatchForDataElement) {
@@ -184,9 +198,18 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set percentage of patients with any mismatch for data element out of patients with data
+   * element.
    *
-   * @param percentageOfPatientsWithAnyMismatchForDataElementOutOfPatientsWithDataElement Todo.
+   * @param percentageOfPatientsWithAnyMismatchForDataElementOutOfPatientsWithDataElement Set percentage
+   *                                                                                      of patients
+   *                                                                                      with any
+   *                                                                                      mismatch
+   *                                                                                      for data
+   *                                                                                      element
+   *                                                                                      out of patients
+   *                                                                                      with data
+   *                                                                                      element.
    */
   public void setPercentageOfPatientsWithAnyMismatchForDataElementOutOfPatientsWithDataElement(
       Double percentageOfPatientsWithAnyMismatchForDataElementOutOfPatientsWithDataElement) {
@@ -200,9 +223,12 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * ToDo.
+   * Set percentage of patients with any mismatch for data elemento out of total patients.
    *
-   * @param percentageOfPatientsWithAnyMismatchForDataElementOutOfTotalPatients ToDo.
+   * @param percentageOfPatientsWithAnyMismatchForDataElementOutOfTotalPatients percentage of patients
+   *                                                                            with any mismatch
+   *                                                                            for data elemento
+   *                                                                            out of total patients.
    */
   public void setPercentageOfPatientsWithAnyMismatchForDataElementOutOfTotalPatients(
       Double percentageOfPatientsWithAnyMismatchForDataElementOutOfTotalPatients) {
@@ -216,9 +242,9 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * ToDo.
+   * Set general rehearsal priorization.
    *
-   * @param priorization ToDo.
+   * @param priorization general rehearsal priorization.
    */
   public void setGeneralRehearsalPriorization(String priorization) {
 
@@ -228,9 +254,9 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * ToDo.
+   * Set general rehearsal a contained in quality report.
    *
-   * @param value ToDo.
+   * @param value general rehearsal a contained in quality report.
    */
   public void setGeneralRehearsalAContainedInQR(boolean value) {
     NaturalLanguageBooleanExcelCellElement excelCellElement =
@@ -240,9 +266,9 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * ToDo.
+   * Set general rehearsal b low mismatch.
    *
-   * @param value ToDo.
+   * @param value general rehearsal b low mismatch.
    */
   public void setGeneralRehearsalBLowMismatch(boolean value) {
 
@@ -253,9 +279,9 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * ToDo.
+   * Set general rehearsal A and B.
    *
-   * @param value ToDo.
+   * @param value general rehearsal A and B.
    */
   public void setGeneralRehearsalAAndB(boolean value) {
 

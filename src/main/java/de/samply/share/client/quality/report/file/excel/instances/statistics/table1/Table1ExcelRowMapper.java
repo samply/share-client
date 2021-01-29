@@ -5,9 +5,9 @@ import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowEle
 public class Table1ExcelRowMapper {
 
   /**
-   * Todo.
+   * Creates excel row elements.
    *
-   * @param dataElementGroup Todo.
+   * @param dataElementGroup mdr data element group.
    * @param percentage       Todo.
    * @return Todo.
    */
