@@ -3,7 +3,9 @@ package de.samply.share.client.util.connector;
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.parser.DataFormatException;
 import com.google.gson.JsonObject;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
 import com.mchange.rmi.NotAuthorizedException;
 import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
@@ -97,7 +99,8 @@ public class CtsConnector {
     // bundle with a pseudonym.
     Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
     // Serialize into a JSON String
-    String pseudonymBundleJson = fhirResource.convertBundleToJson(pseudonymBundle);
+    String pseudonymBundleJson = fhirResource.convertBundleToXml(pseudonymBundle)
+        .replace("><",">\r\n<");
     String encryptedIds = searchForIds(pseudonymBundleJson, true);
 
     // Set up the API call
@@ -133,7 +136,6 @@ public class CtsConnector {
    * @throws IllegalArgumentException IllegalArgumentException
    * @throws NotFoundException        NotFoundException
    * @throws NotAuthorizedException   NotAuthorizedException
-   * @throws ParseException           ParseException
    */
   public Response postLocalPatientToCentralCts(String patient)
       throws IOException, IllegalArgumentException,
@@ -192,13 +194,12 @@ public class CtsConnector {
     httpPost.setEntity(entity);
     CloseableHttpResponse response = null;
     try {
-      HttpContext ctsContext = createCtsContext();
-      response = httpClient.execute(httpPost, ctsContext);
+      response = httpClient.execute(httpPost);
       int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode == 200 || statusCode == 201) {
-        String message = readIds(EntityUtils.toString(response.getEntity(), Consts.UTF_8),
+        String patients = readIds(EntityUtils.toString(response.getEntity(), Consts.UTF_8),
             response.getFirstHeader("X-BK-pseudonym-jsonpaths").getValue(), true);
-        return Response.status(statusCode).entity(message).build();
+        return Response.status(statusCode).entity(patients).build();
       }
       String message =
           "CTS server response: statusCode:" + statusCode + "; response: " + response.toString();
@@ -330,7 +331,8 @@ public class CtsConnector {
     headerIdKeyString = headerIdKeyString.substring(headerIdKeyString.indexOf("$"),
         headerIdKeyString.indexOf("\"]"));
     String patientJson = json;
-    List<String> ids = JsonPath.read(patientJson, headerIdKeyString);
+    Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST);
+    List<String> ids = JsonPath.using(conf).parse(patientJson).read(headerIdKeyString);
     patientJson = replaceIdsWithEncryptedIds(patientJson, ids, response);
     return patientJson;
   }
@@ -338,17 +340,19 @@ public class CtsConnector {
   private String replaceIdsWithEncryptedIds(String patientJson, List<String> ids, boolean response)
       throws IOException, NotAuthorizedException {
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
-    for (String id : ids) {
-      if (!response) {
-        patientJson = patientJson
-            .replace(id, mainzellisteConnector.getEncryptedIdWithPatientId(id));
-      } else {
+    if (!response) {
+      for (String id : ids) {
+
         patientJson = patientJson
             .replace(id, mainzellisteConnector.getEncryptedIdWithPatientId(id));
       }
+    } else {
+      //      patientJson = patientJson
+      //          .replace(id, mainzellisteConnector.getLocalId(ids));
     }
     return patientJson;
   }
+
 
   /**
    * Search for the resource ids inside the bundle and encrypt or decrypt it.
