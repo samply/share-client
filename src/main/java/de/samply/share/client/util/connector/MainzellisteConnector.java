@@ -72,6 +72,8 @@ public class MainzellisteConnector {
   private static final String ENCRYPT_ID_JSON_URL = "/paths/getEncryptIdWithId";
   private static final String DECRYPT_ID_JSON_URL = "/paths/getEncryptIdWithId";
   private static final String HEADER_PARAM_API_KEY = "apiKey";
+  private static final String PATIENTLIST_API_KEY = "mainzellisteSecretTESTSTANDORT";
+  private static final String PATIENTLIST_URL = "http://e260-verbis-test.inet.dkfz-heidelberg.de/mainzelliste";
   private static final String STAMMDATEN_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Stammdaten-pseudonymisiert";
   private static final String ANTRAG_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Antrag-pseudonymisiert";
   private static final String TNM_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/TNM-pseudonymisiert";
