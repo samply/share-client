@@ -178,13 +178,15 @@ public class Api {
   }
 
   private HashMap<String, Object> filter(MultivaluedMap multivaluedMap) {
-    String headersToPropagate = "X-CDS-";
+    String[] headersToPropagate = {"x-cds-", "x-bk-api-version"};
     MultivaluedMap<String, String> headersFromRequest = multivaluedMap;
     HashMap<String, Object> headerMapToSend = new HashMap<>();
     for (String key : headersFromRequest.keySet()) {
-      if (key.toUpperCase().contains(headersToPropagate) ||
-          key.equalsIgnoreCase("Authorization")) {
-        headerMapToSend.put(key, headersFromRequest.getFirst(key));
+      for (String headerToPropagate : headersToPropagate) {
+        if (key.contains(headerToPropagate)
+            || key.equalsIgnoreCase("Authorization")) {
+          headerMapToSend.put(key, headersFromRequest.getFirst(key));
+        }
       }
 
     }
