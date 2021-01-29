@@ -5,7 +5,7 @@ public class FirstRowCellReferenceFactory {
   private static final int numberOfLetters = 26;
 
   /**
-   * Get excel column of first row cell reference
+   * Get excel column of first row cell reference.
    *
    * @param ordinal Number of column.
    * @return excel column.

@@ -9,10 +9,10 @@ public class FirstRowCellReferenceFactoryForOneSheet extends FirstRowCellReferen
   }
 
   /**
-   * Todo.
+   * Creates an excel cell reference.
    *
-   * @param columnOrdinal Todo.
-   * @return Todo.
+   * @param columnOrdinal Number of column.
+   * @return excel cell reference.
    */
   public CellReference createCellReference(int columnOrdinal) {
 
