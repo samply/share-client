@@ -17,7 +17,7 @@ public class Table2ExcelRowContext extends ExcelRowContextImpl<Table2ExcelRowPar
 
 
   /**
-   * Todo.
+   * Excel row context .
    *
    * @param qualityResults           Todo.
    * @param qualityResultsStatistics Todo.

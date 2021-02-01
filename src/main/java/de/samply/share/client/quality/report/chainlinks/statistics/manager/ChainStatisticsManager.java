@@ -11,9 +11,9 @@ public class ChainStatisticsManager {
   private int numberOfCallsToSignalizeChangedStatus = 0;
 
   /**
-   * Todo.
+   * Get chain statistics. This is a summary of the chain link statistics.
    *
-   * @return Todo.
+   * @return Chain statistics.
    */
   public ChainStatistics getChainStatistics() {
 
@@ -36,9 +36,9 @@ public class ChainStatisticsManager {
   }
 
   /**
-   * Todo.
+   * Set Chain statistics.
    *
-   * @param chainStatistics Todo.
+   * @param chainStatistics Chain statistics.
    */
   public void setChainStatistics(ChainStatistics chainStatistics) {
 
@@ -53,9 +53,9 @@ public class ChainStatisticsManager {
   }
 
   /**
-   * Todo.
+   * Checks if the chain statistics habe changed.
    *
-   * @return Todo.
+   * @return Check.
    */
   public boolean isStatusChanged() {
 

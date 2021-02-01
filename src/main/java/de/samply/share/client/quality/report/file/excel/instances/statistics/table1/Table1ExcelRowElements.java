@@ -25,9 +25,9 @@ public class Table1ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Add mdr data element group.
    *
-   * @param dataElementGroup Todo.
+   * @param dataElementGroup mdr data element group.
    */
   public void addDataElementGroup(String dataElementGroup) {
 
@@ -37,9 +37,9 @@ public class Table1ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Add percentage.
    *
-   * @param percentage Todo.
+   * @param percentage Percentage.
    */
   public void addPercentrage(Double percentage) {
 

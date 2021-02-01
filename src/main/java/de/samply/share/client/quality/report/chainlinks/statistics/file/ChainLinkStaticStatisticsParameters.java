@@ -11,9 +11,9 @@ public class ChainLinkStaticStatisticsParameters {
   }
 
   /**
-   * Todo.
+   * Parameters of chain link statistics.
    *
-   * @param line Todo.
+   * @param line Line with average time in nanoseconds and number of items.
    */
   public ChainLinkStaticStatisticsParameters(String line) {
 
@@ -31,9 +31,9 @@ public class ChainLinkStaticStatisticsParameters {
 
 
   /**
-   * Todo.
+   * Prints chain link statistics parameters as an string.
    *
-   * @return Todo.
+   * @return String chain link statistics parameters (average time in nanoseconds, number of items).
    */
   public String toString() {
 

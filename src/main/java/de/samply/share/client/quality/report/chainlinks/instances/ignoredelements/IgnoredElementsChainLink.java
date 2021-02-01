@@ -21,9 +21,9 @@ public class IgnoredElementsChainLink<I extends ChainLinkItem & QualityResultsCo
   private final ModelSearcher modelSearcher;
 
   /**
-   * Todo.
+   * Chain link that filters ignored mdr data elements.
    *
-   * @param ignoredElements Todo.
+   * @param ignoredElements mdr data elements to be ignored.
    * @param modelSearcher   Todo.
    */
   public IgnoredElementsChainLink(MdrIgnoredElements ignoredElements,

@@ -14,9 +14,9 @@ public class ChainLinkConnector {
 
 
   /**
-   * Todo.
+   * Add item to next chain link.
    *
-   * @param chainLinkItem Todo.
+   * @param chainLinkItem Chain link item.
    */
   public void addItemToNextChainLink(ChainLinkItem chainLinkItem) {
     if (chainLinkItem != null) {

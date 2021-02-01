@@ -17,9 +17,9 @@ public class MatchElement {
   }
 
   /**
-   * Todo.
+   * Represents if the mdr data element matches the validation.
    *
-   * @return Todo.
+   * @return String containing the matching information to be shown in the excel cell.
    */
   public String toString() {
 

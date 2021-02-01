@@ -13,11 +13,11 @@ public class Table2ExcelRowContextFactory {
 
 
   /**
-   * Todo.
+   * Excel row context.
    *
-   * @param excelRowMapperUtils Todo.
-   * @param dktkIdManager       Todo.
-   * @param centraXxMapper      Todo.
+   * @param excelRowMapperUtils Exel row mapper utils.
+   * @param dktkIdManager       Map mdr id - slot DKTK-ID.
+   * @param centraXxMapper      Map mdr data element - centraxx data element.
    */
   public Table2ExcelRowContextFactory(ExcelRowMapperUtils excelRowMapperUtils,
       DktkIdMdrIdConverter dktkIdManager, CentraxxMapper centraXxMapper) {
@@ -29,11 +29,11 @@ public class Table2ExcelRowContextFactory {
 
 
   /**
-   * Todo.
+   * Create excel row context.
    *
-   * @param qualityResults           Todo.
-   * @param qualityResultsStatistics Todo.
-   * @return Todo.
+   * @param qualityResults           Quality results.
+   * @param qualityResultsStatistics Quality result statistics.
+   * @return excel rot context.
    */
   public Table2ExcelRowContext createExcelRowContext(QualityResults qualityResults,
       QualityResultsStatistics qualityResultsStatistics) {

@@ -37,7 +37,7 @@ public class ExcelPattern001 implements ExcelPattern {
 
 
   /**
-   * Todo.
+   * Excel Pattern.
    *
    * @param model             Todo.
    * @param mdrClient         Todo.

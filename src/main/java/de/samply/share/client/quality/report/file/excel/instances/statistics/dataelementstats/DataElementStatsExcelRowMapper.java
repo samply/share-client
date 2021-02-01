@@ -17,11 +17,11 @@ public class DataElementStatsExcelRowMapper {
   private final CentraxxMapper centraXxMapper;
 
   /**
-   * ToDo.
+   * Excel row containing additional information for the quality report.
    *
-   * @param dktkIdManager       ToDo.
-   * @param excelRowMapperUtils ToDo.
-   * @param centraXxMapper      ToDo.
+   * @param dktkIdManager       Mapper mdr id - DKTK-ID.
+   * @param excelRowMapperUtils Additional information related to the mdr data element.
+   * @param centraXxMapper      Mapper mdr data element - centraxx data element.
    */
   public DataElementStatsExcelRowMapper(DktkIdMdrIdConverter dktkIdManager,
       ExcelRowMapperUtils excelRowMapperUtils, CentraxxMapper centraXxMapper) {
@@ -33,11 +33,11 @@ public class DataElementStatsExcelRowMapper {
   }
 
   /**
-   * ToDo.
+   * Convert excel row parameters in data element stats excel row.
    *
-   * @param excelRowParameters ToDo.
-   * @return ToDo.
-   * @throws ExcelRowMapperException ToDo.
+   * @param excelRowParameters Excel row parameter.
+   * @return Data element stats excel row.
+   * @throws ExcelRowMapperException Encapsulates exceptions within the class.
    */
   public DataElementStatsExcelRowElements convert(
       DataElementStatsExcelRowParameters excelRowParameters) throws ExcelRowMapperException {
