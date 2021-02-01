@@ -33,8 +33,7 @@ public class ChainLinkStaticStatisticsParameters {
   /**
    * Prints chain link statistics parameters as an string.
    *
-   * @return String containing chain link statistics parameters, like average time in nanoseconds
-   * and average number of items.
+   * @return String chain link statistics parameters (average time in nanoseconds, number of items).
    */
   public String toString() {
 

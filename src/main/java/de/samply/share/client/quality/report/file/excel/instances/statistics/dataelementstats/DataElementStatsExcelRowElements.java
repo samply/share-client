@@ -145,10 +145,12 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   /**
    * Set percentage of patients with match only for data element out of patients with data element.
    *
-   * @param percentageOfPatientsWithMatchOnlyForDataElementOutOfPatientsWithDataElement Set percentage
+   * @param percentageOfPatientsWithMatchOnlyForDataElementOutOfPatientsWithDataElement Set
+   *                                                                                    percentage
    *                                                                                    of patients
    *                                                                                    with match
-   *                                                                                    only for data
+   *                                                                                    only for
+   *                                                                                    data
    *                                                                                    element out
    *                                                                                    of patients
    *                                                                                    with data
@@ -201,13 +203,16 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
    * Set percentage of patients with any mismatch for data element out of patients with data
    * element.
    *
-   * @param percentageOfPatientsWithAnyMismatchForDataElementOutOfPatientsWithDataElement Set percentage
-   *                                                                                      of patients
+   * @param percentageOfPatientsWithAnyMismatchForDataElementOutOfPatientsWithDataElement Set
+   *                                                                                      percentage
+   *                                                                                      of
+   *                                                                                      patients
    *                                                                                      with any
    *                                                                                      mismatch
    *                                                                                      for data
    *                                                                                      element
-   *                                                                                      out of patients
+   *                                                                                      out of
+   *                                                                                      patients
    *                                                                                      with data
    *                                                                                      element.
    */
@@ -225,10 +230,12 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
   /**
    * Set percentage of patients with any mismatch for data elemento out of total patients.
    *
-   * @param percentageOfPatientsWithAnyMismatchForDataElementOutOfTotalPatients percentage of patients
+   * @param percentageOfPatientsWithAnyMismatchForDataElementOutOfTotalPatients percentage of
+   *                                                                            patients
    *                                                                            with any mismatch
    *                                                                            for data elemento
-   *                                                                            out of total patients.
+   *                                                                            out of
+   *                                                                            total patients.
    */
   public void setPercentageOfPatientsWithAnyMismatchForDataElementOutOfTotalPatients(
       Double percentageOfPatientsWithAnyMismatchForDataElementOutOfTotalPatients) {
@@ -304,7 +311,8 @@ public class DataElementStatsExcelRowElements extends ExcelRowElements {
         "% of patients with entry for this element"),
     PERCENTAGE_OF_PATIENTS_WITH_MATCH_ONLY_FOR_DATA_ELEMENT_OUT_OF_TOTAL_PATIENTS(
         "% of patients - total"),
-    NUMBER_OF_PATIENTS_WITH_ANY_MISMATCH_FOR_DATA_ELEMENT("Number of patients with any mismatch"),
+    NUMBER_OF_PATIENTS_WITH_ANY_MISMATCH_FOR_DATA_ELEMENT(
+        "Number of patients with any mismatch"),
     PercentAgeOfPatientsWithAnyMismatchForDataElementOutOfPatientsWithDataElement(
         "% of patients with entry for this element"),
     PERCENTAGE_OF_PATIENTS_WITH_ANY_MISMATCH_FOR_DATAELEMENT_OUT_OF_TOTAL_PATIENTS(
