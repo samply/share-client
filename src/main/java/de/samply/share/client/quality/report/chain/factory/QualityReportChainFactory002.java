@@ -53,9 +53,10 @@ import java.util.concurrent.ExecutionException;
 
 public class QualityReportChainFactory002 extends QualityReportChainFactory {
 
-  private ViewFromToSchedulerFactory viewFromToSchedulerFactory = new ViewFromToSchedulerFactory();
-  private CentraxxMapper centraXxMapper;
-  private IdPathManager002 idPathManager;
+  private final ViewFromToSchedulerFactory viewFromToSchedulerFactory =
+      new ViewFromToSchedulerFactory();
+  private final CentraxxMapper centraXxMapper;
+  private final IdPathManager002 idPathManager;
 
   public QualityReportChainFactory002(IdPathManager002 idPathManager,
       ChainFinalizer chainFinalizer) throws ChainFactoryException {
@@ -63,11 +64,12 @@ public class QualityReportChainFactory002 extends QualityReportChainFactory {
   }
 
   /**
-   * Todo.
-   * @param idPathManager Todo.
-   * @param chainFinalizer Todo.
-   * @param localDataManagementRequester Todo.
-   * @throws ChainFactoryException Todo.
+   * Creates a quality report chain.
+   *
+   * @param idPathManager                Definition of the quality report files.
+   * @param chainFinalizer               Finalize the chain.
+   * @param localDataManagementRequester ldm connector.
+   * @throws ChainFactoryException Encapsulates exceptions of the class.
    */
   public QualityReportChainFactory002(IdPathManager002 idPathManager,
       ChainFinalizer chainFinalizer, LocalDataManagementRequester localDataManagementRequester)

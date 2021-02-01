@@ -31,15 +31,16 @@ import javax.ws.rs.QueryParam;
 public class ExcelTest {
 
 
-  private ModelSearcher modelSearcher;
-  private QualityReportFileManager qualityFileManager;
-  private ExcelQualityReportFileManager excelQualityFileManager;
-  private MdrClient mdrClient;
-  private DktkIdMdrIdConverter dktkIdManager;
+  private final ModelSearcher modelSearcher;
+  private final QualityReportFileManager qualityFileManager;
+  private final ExcelQualityReportFileManager excelQualityFileManager;
+  private final MdrClient mdrClient;
+  private final DktkIdMdrIdConverter dktkIdManager;
 
 
   /**
    * Todo.
+   *
    * @throws CentraxxMapperException Todo.
    */
   public ExcelTest() throws CentraxxMapperException {
@@ -62,6 +63,7 @@ public class ExcelTest {
 
   /**
    * Todo.
+   *
    * @param fileId Todo.
    * @return Todo.
    * @throws QualityReportFileManagerException Todo.

@@ -4,16 +4,16 @@ import de.samply.share.client.quality.report.chainlinks.ChainLink;
 
 public interface ChainLinkFinalizer {
 
-  public void addChainLink(ChainLink chainLink);
+  void addChainLink(ChainLink chainLink);
 
-  public void setChainLinkAsFinalized(ChainLink chainLink);
+  void setChainLinkAsFinalized(ChainLink chainLink);
 
-  public void finalizeAll();
+  void finalizeAll();
 
-  public void addChainLinkFinalizerListener(ChainLinkFinalizerListener chainLinkFinalizerListener);
+  void addChainLinkFinalizerListener(ChainLinkFinalizerListener chainLinkFinalizerListener);
 
-  public boolean isTimeoutReachedInAnyChainLinkFinalizerListener();
+  boolean isTimeoutReachedInAnyChainLinkFinalizerListener();
 
-  public void setAtLeastOneTimeoutReached();
+  void setAtLeastOneTimeoutReached();
 
 }

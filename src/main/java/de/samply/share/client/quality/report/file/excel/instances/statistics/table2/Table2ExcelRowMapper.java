@@ -11,15 +11,16 @@ import de.samply.share.common.utils.MdrIdDatatype;
 public class Table2ExcelRowMapper {
 
 
-  private ExcelRowMapperUtils excelRowMapperUtils;
-  private DktkIdMdrIdConverter dktkIdManager;
-  private CentraxxMapper centraXxMapper;
+  private final ExcelRowMapperUtils excelRowMapperUtils;
+  private final DktkIdMdrIdConverter dktkIdManager;
+  private final CentraxxMapper centraXxMapper;
 
   /**
-   * Todo.
-   * @param dktkIdManager Todo.
-   * @param excelRowMapperUtils Todo.
-   * @param centraXxMapper Todo.
+   * Excel row mapper.
+   *
+   * @param dktkIdManager       Map mdr data element - mdr slot DKTK-ID.
+   * @param excelRowMapperUtils Additional mapping information.
+   * @param centraXxMapper      Map mdr data element - centraxx data element.
    */
   public Table2ExcelRowMapper(DktkIdMdrIdConverter dktkIdManager,
       ExcelRowMapperUtils excelRowMapperUtils, CentraxxMapper centraXxMapper) {
@@ -31,10 +32,11 @@ public class Table2ExcelRowMapper {
   }
 
   /**
-   * Todo.
-   * @param excelRowParameters Todo.
-   * @return Todo.
-   * @throws ExcelRowMapperException Todo.
+   * Convert excel row parameters to excel row elements.
+   *
+   * @param excelRowParameters excel row parameters.
+   * @return excel row elements.
+   * @throws ExcelRowMapperException Encapsulates exception of the class.
    */
   public Table2ExcelRowElements convert(Table2ExcelRowParameters excelRowParameters)
       throws ExcelRowMapperException {
@@ -46,7 +48,6 @@ public class Table2ExcelRowMapper {
     MdrIdDatatype mdrId = excelRowParameters.getMdrId();
 
     String dktkId = dktkIdManager.getDktkId(mdrId);
-    ;
     String mdrDataElement = excelRowMapperUtils.getMdrDatenElement(mdrId);
     String cxxDatenElement = centraXxMapper.getCentraXxAttribute(mdrId);
     String mdrLink = excelRowMapperUtils.getMdrLink(mdrId);

@@ -25,9 +25,9 @@ public class QualityResultCsvLineManagerImplTest1 implements QualityResultCsvLin
   private static final String EXCEL_HYPERLINK_PREFIX = "=HYPERLINK(\"";
   private static final String EXCEL_HYPERLINK_SUFFIX = "\")";
 
-  private ModelSearcher modelSearcher;
-  private MdrClient mdrClient;
-  private Map<MdrIdDatatype, String> mdrNames = new HashMap<>();
+  private final ModelSearcher modelSearcher;
+  private final MdrClient mdrClient;
+  private final Map<MdrIdDatatype, String> mdrNames = new HashMap<>();
 
   public QualityResultCsvLineManagerImplTest1(Model model, MdrClient mdrClient) {
     this.modelSearcher = new ModelSearcher(model);

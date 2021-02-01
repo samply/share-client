@@ -6,8 +6,8 @@ import java.util.List;
 
 public class ChainLinkFinalizerImpl implements ChainLinkFinalizer {
 
-  private List<ChainLink> chainLinks = new ArrayList<>();
-  private List<ChainLinkFinalizerListener> chainLinkFinalizerListeners = new ArrayList<>();
+  private final List<ChainLink> chainLinks = new ArrayList<>();
+  private final List<ChainLinkFinalizerListener> chainLinkFinalizerListeners = new ArrayList<>();
   private boolean isTimeoutReachedInAnyChainLinkFinalizerListener = false;
 
   @Override

@@ -1,5 +1,3 @@
-
-
 package de.samply.share.client.job;
 
 import de.samply.share.client.job.util.CqlResultFactory;

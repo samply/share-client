@@ -6,19 +6,19 @@ import de.samply.share.model.common.View;
 
 public interface LocalDataManagementRequester {
 
-  public LocalDataManagementResponse<String> postViewAndGetLocationUrlStatisticsOnly(View view)
+  LocalDataManagementResponse<String> postViewAndGetLocationUrlStatisticsOnly(View view)
       throws LocalDataManagementRequesterException;
 
-  public LocalDataManagementResponse<String> postViewAndGetLocationUrl(View view)
+  LocalDataManagementResponse<String> postViewAndGetLocationUrl(View view)
       throws LocalDataManagementRequesterException;
 
-  public LocalDataManagementResponse<QueryResultStatistic> getQueryResultStatistic(
+  LocalDataManagementResponse<QueryResultStatistic> getQueryResultStatistic(
       String locationUrl) throws LocalDataManagementRequesterException;
 
-  public LocalDataManagementResponse<QueryResult> getQueryResult(String locationUrl, int page)
+  LocalDataManagementResponse<QueryResult> getQueryResult(String locationUrl, int page)
       throws LocalDataManagementRequesterException;
 
-  public LocalDataManagementResponse<String> getSqlMappingVersion()
+  LocalDataManagementResponse<String> getSqlMappingVersion()
       throws LocalDataManagementRequesterException;
 
 

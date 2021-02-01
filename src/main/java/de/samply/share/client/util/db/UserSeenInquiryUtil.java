@@ -16,7 +16,7 @@ public class UserSeenInquiryUtil {
 
   private static final Logger logger = LogManager.getLogger(UserSeenInquiryUtil.class);
 
-  private static UserSeenInquiryDao userSeenInquiryDao;
+  private static final UserSeenInquiryDao userSeenInquiryDao;
 
   static {
     userSeenInquiryDao = new UserSeenInquiryDao(ResourceManager.getConfiguration());

@@ -1,11 +1,13 @@
 package de.samply.share.client.job;
 
 import static de.samply.share.client.model.db.enums.InquiryStatusType.IS_NEW;
+import static de.samply.share.client.util.connector.idmanagement.utils.IdManagementUtils.CENTRAL_MDS_DB_PUBKEY_FILENAME;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
 import de.samply.dktk.converter.PatientConverter;
 import de.samply.dktk.converter.PatientConverterUtil;
+import de.samply.dktk.converter.log.PercentageLogger;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.ExecuteInquiryJobParams;
@@ -28,11 +30,12 @@ import de.samply.share.client.model.db.tables.pojos.Upload;
 import de.samply.share.client.util.UploadUtils;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.CentralSearchConnector;
-import de.samply.share.client.util.connector.IdManagerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.CentralSearchConnectorException;
-import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
+import de.samply.share.client.util.connector.idmanagement.connector.IdManagementConnector;
+import de.samply.share.client.util.connector.idmanagement.connector.IdManagementConnectorException;
+import de.samply.share.client.util.connector.idmanagement.utils.IdManagementUtils;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.EventLogUtil;
 import de.samply.share.client.util.db.InquiryCriteriaUtil;
@@ -40,9 +43,7 @@ import de.samply.share.client.util.db.InquiryDetailsUtil;
 import de.samply.share.client.util.db.InquiryResultUtil;
 import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.client.util.db.UploadUtil;
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.SamplyShareUtils;
-import de.samply.share.model.ccp.Attribute;
 import de.samply.share.model.ccp.Patient;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.utils.QueryConverter;
@@ -68,30 +69,27 @@ import org.quartz.impl.matchers.KeyMatcher;
 /**
  * This Job prepares and/or performs an upload to the central mds database, depending on the status.
  * It is defined and scheduled by either quartz-jobs.xml, user-triggered by the admin or by
- * CheckInquiryStatusJob.
- * The performed action depends on the previous state of the Upload.
- * 1) If the upload is in the state 'US_NEW', create an inquiry and hand it over to an
- * ExecuteInquiryJob 2) If the state is 'US_QUERY_READY', so this is rescheduled from the
- * CheckInquiryStatusJob, perform the actual upload.
- * Moreover, there are 2 (or even 3) different Upload scenarios which are called via different
- * triggers.
- * 1) Upload those patients who have given their explicit consent to the DKTK case. They will have a
- * global DKTK ID which allows to identify them across all sites. 2) Upload those patients with
- * local consent only. They will not get a global DKTK ID and are thus not identifiable across
- * sites. Instead, their DKTK site id is used (2a) or they will get a completely randomized id (2b)
- * The latter requires a full upload of those patients each time, so this should be scheduled less
- * frequently since it may cause a lot of load on the system.
+ * CheckInquiryStatusJob. The performed action depends on the previous state of the Upload. 1) If
+ * the upload is in the state 'US_NEW', create an inquiry and hand it over to an ExecuteInquiryJob
+ * 2) If the state is 'US_QUERY_READY', so this is rescheduled from the CheckInquiryStatusJob,
+ * perform the actual upload. Moreover, there are 2 (or even 3) different Upload scenarios which are
+ * called via different triggers. 1) Upload those patients who have given their explicit consent to
+ * the DKTK case. They will have a global DKTK ID which allows to identify them across all sites. 2)
+ * Upload those patients with local consent only. They will not get a global DKTK ID and are thus
+ * not identifiable across sites. Instead, their DKTK site id is used (2a) or they will get a
+ * completely randomized id (2b) The latter requires a full upload of those patients each time, so
+ * this should be scheduled less frequently since it may cause a lot of load on the system.
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class UploadToCentralMdsDbJob implements Job {
 
-  public static final String CENTRAL_MDS_DB_PUBKEY_FILENAME = "mds-db-key-public.der";
   private static final Logger logger = LogManager.getLogger(UploadToCentralMdsDbJob.class);
   private UploadJobParams jobParams;
   private Upload upload;
 
-  private QueryResultWhiteListFilter queryResultWhiteListFilter = new QueryResultWhiteListFilter();
+  private final QueryResultWhiteListFilter queryResultWhiteListFilter =
+      new QueryResultWhiteListFilter();
   private PatientConverter patientConverter;
 
   @Override
@@ -144,8 +142,8 @@ public class UploadToCentralMdsDbJob implements Job {
   }
 
   /**
-   * Write the upload object to the database.
-   * This will only be called if the job was spawned by the scheduler.
+   * Write the upload object to the database. This will only be called if the job was spawned by the
+   * scheduler.
    *
    * @return the database id of the upload
    */
@@ -187,15 +185,14 @@ public class UploadToCentralMdsDbJob implements Job {
   }
 
   /**
-   * Perform the actual upload.
-   * Iterate through the result set (list of patients) and for each patient:
-   * 1) Get an export id and replace the id attribute with it (also use it in the path in the PUT
-   * command) a) Use the global dktk id if this is the upload for dktk flagged patients b1) Use the
-   * local dktk site id, if the this is for the NOT dktk flagged patients b2) Use a random string,
-   * with the prefix defined via 'CENTRAL_MDS_DATABASE_ANONYMIZED_PATIENTS_PREFIX' if both
+   * Perform the actual upload. Iterate through the result set (list of patients) and for each
+   * patient: 1) Get an export id and replace the id attribute with it (also use it in the path in
+   * the PUT command) a) Use the global dktk id if this is the upload for dktk flagged patients b1)
+   * Use the local dktk site id, if the this is for the NOT dktk flagged patients b2) Use a random
+   * string, with the prefix defined via 'CENTRAL_MDS_DATABASE_ANONYMIZED_PATIENTS_PREFIX' if both
    * 'CENTRAL_MDS_DATABASE_UPLOAD_RANDOMIZE_EXPORT_IDS' and
-   * 'CENTRAL_MDS_DATABASE_SHOW_UPLOAD_PATIENTS_WITH_LOCAL_CONSENT' are true.
-   * 2) Transform the patient object from the source format (coming from local
+   * 'CENTRAL_MDS_DATABASE_SHOW_UPLOAD_PATIENTS_WITH_LOCAL_CONSENT'
+   * are true. 2) Transform the patient object from the source format (coming from local
    * datamanagement) to the target format (central mds db) 3) Shift attributes between containers,
    * if they are still misplaced 4) Depending on whether the dryrun flag is set a) Upload the
    * patient to central mds db if it is not b) Write the transformed data to disk.
@@ -208,7 +205,6 @@ public class UploadToCentralMdsDbJob implements Job {
       int successCount = 0;
       int failCount = 0;
       List<String> failedLocalIds = new ArrayList<>();
-
       Inquiry inquiry = InquiryUtil.fetchLatestInquiryForUpload(upload);
       InquiryDetails inquiryDetails = InquiryDetailsUtil
           .fetchInquiryDetailsById(inquiry.getLatestDetailsId());
@@ -235,6 +231,8 @@ public class UploadToCentralMdsDbJob implements Job {
       // TODO: Check if delete command has to be sent.
       LdmConnector ldmConnector = ApplicationBean.getLdmConnector();
       int pageCount = ldmConnector.getPageCount(resultLocation);
+      PercentageLogger percentageLogger = new PercentageLogger(logger, pageCount,
+          "uploading patients...");
       for (int pageNr = 0; pageNr < pageCount; pageNr++) {
         // Load result page from local datamanagement
         // TODO: check if it is necessary to support other QueryResult implementations
@@ -243,7 +241,7 @@ public class UploadToCentralMdsDbJob implements Job {
         QueryResultWithIdMap queryResultWithIdMap = stageQueryResultPage(queryResultPage);
         QueryResult queryResultPageToUpload = queryResultWithIdMap.getQueryResult();
         queryResultPageToUpload = queryResultWhiteListFilter.filter(queryResultPageToUpload);
-        Map<String, String> idMap = queryResultWithIdMap.getIdMap();
+        Map<IdObject, IdObject> idMap = queryResultWithIdMap.getIdMap();
 
         // Upload / Dryrun
         if (upload.getIsDryrun()) {
@@ -270,7 +268,9 @@ public class UploadToCentralMdsDbJob implements Job {
                 } else {
                   upload.setFailureCount(++failCount);
                   UploadUtil.updateUpload(upload);
-                  failedLocalIds.add(idMap.get(patient.getId()));
+                  IdObject exportId = IdManagementUtils.getLocalPatientId(patient);
+                  IdObject patientId = idMap.get(exportId);
+                  failedLocalIds.add(patientId.getIdString());
                   attempt = maxAttempts;
                 }
               } catch (InterruptedException e) {
@@ -280,6 +280,7 @@ public class UploadToCentralMdsDbJob implements Job {
             } while (attempt < maxAttempts);
           }
         }
+        percentageLogger.incrementCounter();
       }
 
       if (upload.getIsDryrun()) {
@@ -309,8 +310,8 @@ public class UploadToCentralMdsDbJob implements Job {
       UploadUtil.setUploadStatusById(upload.getId(),
           (failCount > 0) ? UploadStatusType.US_COMPLETED_WITH_ERRORS
               : UploadStatusType.US_COMPLETED);
-    } catch (LdmConnectorException | IdManagerConnectorException | CentralSearchConnectorException
-        | IOException e) {
+    } catch (LdmConnectorException | CentralSearchConnectorException | IOException
+        | IdManagementConnectorException e) {
       throw new JobExecutionException(e);
     }
   }
@@ -324,19 +325,20 @@ public class UploadToCentralMdsDbJob implements Job {
    *        to local ids
    */
   private QueryResultWithIdMap stageQueryResultPage(QueryResult sourceResultPage)
-      throws IdManagerConnectorException {
+      throws IdManagementConnectorException {
     QueryResult preparedQueryResultPage = new QueryResult();
     preparedQueryResultPage.setId(sourceResultPage.getId());
     // Replace Patient IDs with Export IDs
-    Map<String, String> idMap = getExportIds(sourceResultPage);
+    Map<IdObject, IdObject> idMap = getExportIds(sourceResultPage);
     for (Patient patient : sourceResultPage.getPatient()) {
 
       // TODO: remove this workaround when it is agreed upon that it is not needed here any more.
       //  This has been discussed.
       patient = ApplicationBean.getPatientValidator().fixOrRemoveWrongAttributes(patient);
 
-      String localId = patient.getId();
-      patient.setId(idMap.get(localId));
+      IdObject localPatientId = IdManagementUtils.getLocalPatientId(patient);
+      IdObject exportId = idMap.get(localPatientId);
+      IdManagementUtils.setLocalPatientId(patient, exportId);
       patient = PatientConverterUtil.removeAttributeFromPatient(patient,
           ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_DKTK_GLOBAL_ID));
       preparedQueryResultPage.getPatient().add(patient);
@@ -348,24 +350,22 @@ public class UploadToCentralMdsDbJob implements Job {
   }
 
   /**
-   * Get export ids for each patient in the list.
-   * If they are to be randomized, just do it here (only applies to those without DKTK Flag.
-   * Otherwise get them from the id manager.
+   * Get export ids for each patient in the list. If they are to be randomized, just do it here
+   * (only applies to those without DKTK Flag. Otherwise get them from the id manager.
    *
    * @param queryResultPage a list of patients
    * @return a map, containing the local ids of the patients as keys and the export id as values
    */
-  private Map<String, String> getExportIds(QueryResult queryResultPage)
-      throws IdManagerConnectorException {
-    HashMap<String, IdObject> idsFromQueryResult = getIdsFromCcpQueryResult(queryResultPage);
-    if (!jobParams.isDktkFlaggedPatients() && ConfigurationUtil
+  private Map<IdObject, IdObject> getExportIds(QueryResult queryResultPage)
+      throws IdManagementConnectorException {
+    List<IdObject> idsFromQueryResult = getIdsFromCcpQueryResult(queryResultPage);
+    IdManagementConnector idManagementConnector = ApplicationBean.getIdManagementConnector();
+
+    return (!jobParams.isDktkFlaggedPatients() && ConfigurationUtil
         .getConfigurationElementValueAsBoolean(
-            EnumConfiguration.CENTRAL_MDS_DATABASE_UPLOAD_RANDOMIZE_EXPORT_IDS)) {
-      return getRandomExportIds(idsFromQueryResult);
-    } else {
-      IdManagerConnector idManagerConnector = new IdManagerConnector();
-      return idManagerConnector.getExportIds(idsFromQueryResult);
-    }
+            EnumConfiguration.CENTRAL_MDS_DATABASE_UPLOAD_RANDOMIZE_EXPORT_IDS))
+        ? idManagementConnector.getRandomExportIds(idsFromQueryResult) :
+        idManagementConnector.getExportIds(idsFromQueryResult);
   }
 
   /**
@@ -385,43 +385,23 @@ public class UploadToCentralMdsDbJob implements Job {
   }
 
   /**
-   * Get the ids from a list of patients.
-   * When this upload job is for dktk flagged patients, use the global dktk id - use the dktk site
-   * id otherwise.
-   * The IdObject, which is the value of the map consists of an idtype and a value, where the id
-   * type is always the instance id, but is prefixed with the network id (here: dktk) for the global
-   * dktk id.
+   * Get the ids from a list of patients. When this upload job is for dktk flagged patients, use the
+   * global dktk id - use the dktk site id otherwise. The IdObject, which is the value of the map
+   * consists of an idtype and a value, where the id type is always the instance id, but is prefixed
+   * with the network id (here: dktk) for the global dktk id.
    *
    * @param queryResult the list of patients
    * @return a map with the local patient id as key and an IdObject as value
    */
-  private HashMap<String, IdObject> getIdsFromCcpQueryResult(QueryResult queryResult) {
-    HashMap<String, IdObject> ids = new HashMap<>();
-    MdrIdDatatype mdrKeyDktkGlobal = new MdrIdDatatype(
-        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_KEY_DKTK_GLOBAL_ID));
-    String networkId = ConfigurationUtil
-        .getConfigurationElementValue(EnumConfiguration.ID_MANAGER_NETWORK_ID);
-    String instanceId = ConfigurationUtil
-        .getConfigurationElementValue(EnumConfiguration.ID_MANAGER_INSTANCE_ID);
-
+  private List<IdObject> getIdsFromCcpQueryResult(QueryResult queryResult) {
+    List<IdObject> idsFromCcpQueryResult = new ArrayList<>();
     for (Patient patient : queryResult.getPatient()) {
-      if (jobParams.isDktkFlaggedPatients()) {
-        for (Attribute attribute : patient.getAttribute()) {
-          MdrIdDatatype attributeMdrKey = new MdrIdDatatype(attribute.getMdrKey());
-          if (attributeMdrKey.equalsIgnoreVersion(mdrKeyDktkGlobal) && attribute.getValue() != null
-              && !SamplyShareUtils.isNullOrEmpty(attribute.getValue().getValue())) {
-            IdObject idObject = new IdObject(networkId + "_" + instanceId,
-                attribute.getValue().getValue());
-            ids.put(patient.getId(), idObject);
-            break;
-          }
-        }
-      } else {
-        IdObject idObject = new IdObject(instanceId, patient.getId());
-        ids.put(patient.getId(), idObject);
-      }
+      IdObject patientId =
+          (jobParams.isDktkFlaggedPatients()) ? IdManagementUtils.getGlobalPatientId(patient)
+              : IdManagementUtils.getLocalPatientId(patient);
+      idsFromCcpQueryResult.add(patientId);
     }
-    return ids;
+    return idsFromCcpQueryResult;
   }
 
   /**
@@ -444,9 +424,8 @@ public class UploadToCentralMdsDbJob implements Job {
   }
 
   /**
-   * Create a new inquiry object and store it in the database.
-   * Link it with this upload and set the broker id to null to differentiate between the two kinds
-   * of inquiries.
+   * Create a new inquiry object and store it in the database. Link it with this upload and set the
+   * broker id to null to differentiate between the two kinds of inquiries.
    *
    * @return the database id of the new inquiry object
    */

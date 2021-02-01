@@ -11,7 +11,7 @@ import de.samply.share.client.quality.report.results.QualityResults;
 public class QualityReportFileWriterChainLink<I extends ChainLinkItem & FileContext
     & ValidatorContext> extends ChainLink<I> {
 
-  private QualityReportFileManager qualityReportFileManager;
+  private final QualityReportFileManager qualityReportFileManager;
 
   public QualityReportFileWriterChainLink(QualityReportFileManager qualityReportFileManager) {
     this.qualityReportFileManager = qualityReportFileManager;

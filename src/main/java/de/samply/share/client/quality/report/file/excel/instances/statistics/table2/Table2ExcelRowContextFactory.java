@@ -9,14 +9,15 @@ import de.samply.share.client.quality.report.results.statistics.QualityResultsSt
 public class Table2ExcelRowContextFactory {
 
 
-  private Table2ExcelRowMapper excelRowMapper;
+  private final Table2ExcelRowMapper excelRowMapper;
 
 
   /**
-   * Todo.
-   * @param excelRowMapperUtils Todo.
-   * @param dktkIdManager Todo.
-   * @param centraXxMapper Todo.
+   * Excel row context.
+   *
+   * @param excelRowMapperUtils Exel row mapper utils.
+   * @param dktkIdManager       Map mdr id - slot DKTK-ID.
+   * @param centraXxMapper      Map mdr data element - centraxx data element.
    */
   public Table2ExcelRowContextFactory(ExcelRowMapperUtils excelRowMapperUtils,
       DktkIdMdrIdConverter dktkIdManager, CentraxxMapper centraXxMapper) {
@@ -28,10 +29,11 @@ public class Table2ExcelRowContextFactory {
 
 
   /**
-   * Todo.
-   * @param qualityResults Todo.
-   * @param qualityResultsStatistics Todo.
-   * @return Todo.
+   * Create excel row context.
+   *
+   * @param qualityResults           Quality results.
+   * @param qualityResultsStatistics Quality result statistics.
+   * @return excel rot context.
    */
   public Table2ExcelRowContext createExcelRowContext(QualityResults qualityResults,
       QualityResultsStatistics qualityResultsStatistics) {

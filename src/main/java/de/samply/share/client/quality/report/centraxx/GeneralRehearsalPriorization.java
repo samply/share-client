@@ -6,16 +6,17 @@ import java.util.Map;
 
 public class GeneralRehearsalPriorization {
 
-  private Map<String, String> mdrIdKeyPriorizationMap = new HashMap<>();
+  private final Map<String, String> mdrIdKeyPriorizationMap = new HashMap<>();
 
   private String getMdrIdKey(MdrIdDatatype mdrId) {
     return (mdrId != null) ? mdrId.getNamespace() + ':' + mdrId.getId() : null;
   }
 
   /**
-   * Todo.
-   * @param mdrId Todo.
-   * @return Todo.
+   * Gets the priority of an mdr id.
+   *
+   * @param mdrId mdr id in question.
+   * @return priority of the mdr id.
    */
   public String getPriorization(MdrIdDatatype mdrId) {
 

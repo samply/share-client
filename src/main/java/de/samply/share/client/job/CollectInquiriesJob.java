@@ -45,12 +45,10 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 
 /**
- * This Job collects inquiries from all connected searchbrokers.
- * It is defined and scheduled in the quartz-jobs.xml.
- * The basic steps it performs are:
- * 1) Get a list of inquiries and their revision numbers from each broker 2) Store any new inquiries
- * (or newer revisions of already known inquiries) in the database.
- * Further handling of the inquiry is done in the ExecuteInquiriesJob.
+ * This Job collects inquiries from all connected searchbrokers. It is defined and scheduled in the
+ * quartz-jobs.xml. The basic steps it performs are: 1) Get a list of inquiries and their revision
+ * numbers from each broker 2) Store any new inquiries (or newer revisions of already known
+ * inquiries) in the database. Further handling of the inquiry is done in the ExecuteInquiriesJob.
  */
 @DisallowConcurrentExecution
 public class CollectInquiriesJob implements Job {

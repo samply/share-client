@@ -14,11 +14,12 @@ public class ChainStatisticsImpl implements ChainStatistics {
   private static final double NANOSECONDS_IN_A_SECOND = 1000000000.0;
 
 
-  private List<ChainLinkStatisticsConsumer> chainLinkStatisticsConsumerList = new ArrayList<>();
-  private long startNanoTime;
-  private Date startDate;
+  private final List<ChainLinkStatisticsConsumer> chainLinkStatisticsConsumerList =
+      new ArrayList<>();
+  private final long startNanoTime;
+  private final Date startDate;
   private Double globalPercentage;
-  private Double minimumPercentageToBeConsidered;
+  private final Double minimumPercentageToBeConsidered;
 
 
   {
@@ -30,8 +31,9 @@ public class ChainStatisticsImpl implements ChainStatistics {
   }
 
   /**
-   * Todo.
-   * @param chainLinkStatisticsConsumer Todo.
+   * Adds a consumer of statistics about execution of a chain link.
+   *
+   * @param chainLinkStatisticsConsumer consumer of statistics about execution of a chain link.
    */
   public void addChainLinkStatisticsConsumer(
       ChainLinkStatisticsConsumer chainLinkStatisticsConsumer) {
@@ -80,8 +82,8 @@ public class ChainStatisticsImpl implements ChainStatistics {
       }
     }
 
-    return (numberOfConsumers > 0) ? ((double) (((double) numberOfFinalizedConsumers)
-        / ((double) numberOfConsumers))) : 0;
+    return (numberOfConsumers > 0) ? (((double) numberOfFinalizedConsumers)
+        / ((double) numberOfConsumers)) : 0;
 
 
   }

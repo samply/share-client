@@ -9,7 +9,7 @@ import java.util.Set;
 
 public abstract class QualityResultsValidValueFilter extends QualityResultsFilter {
 
-  private Map<MdrIdDatatype, ValidValueFilterQualityResults> filteredQualityResults =
+  private final Map<MdrIdDatatype, ValidValueFilterQualityResults> filteredQualityResults =
       new HashMap<>();
 
   public QualityResultsValidValueFilter(QualityResults qualityResults) {

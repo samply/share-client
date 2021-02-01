@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.security.KeyFactory;
@@ -101,7 +102,7 @@ public final class Utils {
         authSchemeName = AuthSchemes.KERBEROS;
         logger.fatal("tried to add kerberos credentials. Currently unsupported.");
         return;
-        //            apacheCredentials = new KerberosCredentials(gssCredential);
+      //            apacheCredentials = new KerberosCredentials(gssCredential);
       //            break;
       case AS_NTLM:
         authSchemeName = AuthSchemes.NTLM;
@@ -112,7 +113,7 @@ public final class Utils {
         authSchemeName = AuthSchemes.SPNEGO;
         logger.fatal("tried to add kerberos credentials. Currently unsupported.");
         return;
-        //          apacheCredentials = new KerberosCredentials(gssCredential);
+      //          apacheCredentials = new KerberosCredentials(gssCredential);
       //            break;
       case AS_BASIC:
         authSchemeName = AuthSchemes.BASIC;
@@ -248,12 +249,21 @@ public final class Utils {
    * @return the byte array
    */
   private static byte[] readFileBytes(String filename) throws IOException {
-    File file = FileFinderUtil
-        .findFile(ProjectInfo.INSTANCE.getProjectName().toLowerCase() + filename,
-            ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
-            System.getProperty("catalina.base") + File.separator + "conf",
-            getServletContext().getRealPath("/WEB-INF"));
+    String servletContextRealPath = getServletContextRealPath();
+
+    File file = FileFinderUtil.findFile(ProjectInfo.INSTANCE.getProjectName().toLowerCase()
+            + filename, ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
+        System.getProperty("catalina.base") + File.separator + "conf", servletContextRealPath);
     return Files.readAllBytes(file.toPath());
+  }
+
+  private static String getServletContextRealPath() {
+    try {
+      return getServletContext().getRealPath("/WEB-INF");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   /**
@@ -282,7 +292,7 @@ public final class Utils {
         mdsDbPubKey = Utils.readPublicKey(filename);
       }
       String randomizedId = prefix + UUID.randomUUID().toString();
-      byte[] message = randomizedId.getBytes("UTF8");
+      byte[] message = randomizedId.getBytes(StandardCharsets.UTF_8);
       byte[] secret = SamplyShareUtils.encrypt(mdsDbPubKey, message);
 
       return BaseEncoding.base64Url().encode(secret);
@@ -290,6 +300,10 @@ public final class Utils {
       logger.error("Could not encrypt random export id: " + e.getMessage());
       return null;
     }
+  }
+
+  public static String getRandomExportid(String filename) {
+    return getRandomExportid("", filename);
   }
 
   /**
@@ -306,6 +320,7 @@ public final class Utils {
 
   /**
    * Todo.
+   *
    * @param date Todo.
    * @return Todo.
    */
@@ -317,6 +332,7 @@ public final class Utils {
 
   /**
    * Todo.
+   *
    * @param date Todo.
    * @return Todo.
    * @throws ParseException Todo.
@@ -341,6 +357,7 @@ public final class Utils {
 
   /**
    * Todo.
+   *
    * @param date Todo.
    * @return Todo.
    * @throws ParseException Todo.
@@ -354,8 +371,9 @@ public final class Utils {
 
   /**
    * Todo.
+   *
    * @param first Todo.
-   * @param last Todo.
+   * @param last  Todo.
    * @return Todo.
    */
   public static int getDiffYears(Date first, Date last) {
@@ -364,7 +382,7 @@ public final class Utils {
     int diff = b.get(Calendar.YEAR) - a.get(Calendar.YEAR);
     if (a.get(Calendar.MONTH) > b.get(Calendar.MONTH)
         || (a.get(Calendar.MONTH) == b.get(Calendar.MONTH) && a.get(Calendar.DATE) > b
-            .get(Calendar.DATE))) {
+        .get(Calendar.DATE))) {
       diff--;
     }
     return diff;
@@ -372,6 +390,7 @@ public final class Utils {
 
   /**
    * Todo.
+   *
    * @param date Todo.
    * @return Todo.
    */
@@ -418,7 +437,8 @@ public final class Utils {
 
   /**
    * Todo.
-   * @param inquiryDetails Todo.
+   *
+   * @param inquiryDetails    Todo.
    * @param inquiryStatusType Todo.
    */
   public static void setStatus(InquiryDetails inquiryDetails, InquiryStatusType inquiryStatusType) {
@@ -432,6 +452,7 @@ public final class Utils {
 
   /**
    * Todo.
+   *
    * @param number Todo.
    * @return Todo.
    */
@@ -447,6 +468,7 @@ public final class Utils {
 
   /**
    * Todo.
+   *
    * @param booleanElement Todo.
    * @return Todo.
    */
@@ -461,7 +483,8 @@ public final class Utils {
 
   /**
    * Todo.
-   * @param basicUrl Todo.
+   *
+   * @param basicUrl  Todo.
    * @param extension Todo.
    * @return Todo.
    */

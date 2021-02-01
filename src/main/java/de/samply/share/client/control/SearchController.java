@@ -1,5 +1,3 @@
-
-
 package de.samply.share.client.control;
 
 import de.samply.share.common.control.uiquerybuilder.AbstractSearchController;

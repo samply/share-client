@@ -23,7 +23,7 @@ public class ChainLinkContext extends ChainLinkItem implements ResultContext, St
   private View view;
   private int maxPages;
   private QueryResult queryResult;
-  private QualityResults qualityResults = new QualityResultsImpl();
+  private final QualityResults qualityResults = new QualityResultsImpl();
   private List<View> views;
 
 

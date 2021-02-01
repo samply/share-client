@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ViewsCreator {
 
-  public List<View> createViews(Model model);
+  List<View> createViews(Model model);
 
 }

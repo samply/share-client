@@ -7,10 +7,11 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 public class ViewFromToSchedulerFactory {
 
 
-  private ViewFromToFactory viewFromToFactory = new ViewFromToFactory();
+  private final ViewFromToFactory viewFromToFactory = new ViewFromToFactory();
 
   /**
    * Todo.
+   *
    * @return Todo.
    */
   public ViewFromToScheduler createViewFromToScheduler() {
@@ -105,6 +106,7 @@ public class ViewFromToSchedulerFactory {
 
     /**
      * Todo.
+     *
      * @param format Todo.
      * @return Todo.
      */

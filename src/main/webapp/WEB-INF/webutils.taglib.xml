@@ -5,48 +5,49 @@
   version="2.0"
   xmlns="http://java.sun.com/xml/ns/javaee"
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd">
+  <namespace>http://share.samply.de/webutils</namespace>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>getDesignation</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String getDesignation(java.lang.String, java.lang.String)
     </function-signature>
   </function>
 
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>getValueDesignation</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String getValueDesignation(java.lang.String, java.lang.Object,
       java.lang.String)
     </function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>convertTime</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String convertTime(java.sql.Timestamp)</function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>getProjectName</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String getProjectName()</function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>getVersionString</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String getVersionString()</function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>getQueryLanguage</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String getQueryLanguage()</function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>getBuildDate</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String getBuildDate()</function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>getParentNodeIndex</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String getParentNodeIndex(java.lang.String)</function-signature>
   </function>
   <!--<function>-->
@@ -70,14 +71,14 @@
   <!--<function-signature>boolean isElementKnown(java.lang.String)</function-signature>-->
   <!--</function>-->
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>getGender</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String getGender(de.samply.share.model.common.Container)
     </function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>getBrokerCount</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>long getBrokerCount()</function-signature>
   </function>
   <!--<function>-->
@@ -86,44 +87,43 @@
   <!--<function-signature>String getChainLinkTask()</function-signature>-->
   <!--</function>-->
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>getInquiryCount</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>long getInquiryCount(de.samply.share.client.model.EnumInquiryStatus)
     </function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>formatInquiryLogEntry</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String
       formatInquiryLogEntry(de.samply.share.client.model.db.tables.pojos.EventLog)
     </function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>convertTimestamp</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String convertTimestamp(java.sql.Timestamp)</function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>replaceLocalhost</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String replaceLocalhostInUri(java.lang.String)
     </function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>dateToGermanFormatString</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String dateToGermanFormatString(java.util.Date)
     </function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>getUsernameById</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>java.lang.String getUsernameById(int)</function-signature>
   </function>
   <function>
-    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-name>isCentralSearchPathSet</function-name>
+    <function-class>de.samply.share.client.util.WebUtils</function-class>
     <function-signature>boolean isCentralSearchPathSet()</function-signature>
   </function>
-  <namespace>http://share.samply.de/webutils</namespace>
 </facelet-taglib>

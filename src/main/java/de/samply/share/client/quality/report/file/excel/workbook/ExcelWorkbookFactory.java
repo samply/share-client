@@ -5,7 +5,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public interface ExcelWorkbookFactory {
 
-  public XSSFWorkbook createWorkbook(QualityResults qualityResults)
+  XSSFWorkbook createWorkbook(QualityResults qualityResults)
       throws ExcelWorkbookFactoryException;
 
 }

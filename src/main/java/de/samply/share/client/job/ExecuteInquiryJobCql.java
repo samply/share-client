@@ -15,9 +15,8 @@ import org.quartz.JobExecutionException;
 
 /**
  * This Job posts an inquiry to the local datamanagement, stores the location and spawns a
- * CheckInquiryStatusJobCql.
- * It is defined and scheduled by either the CheckInquiryStatusJobCql, the CollectInquiriesJob or
- * can be spawned user-triggered from the show_inquiry.xhtml page.
+ * CheckInquiryStatusJobCql. It is defined and scheduled by either the CheckInquiryStatusJobCql, the
+ * CollectInquiriesJob or can be spawned user-triggered from the show_inquiry.xhtml page.
  */
 public class ExecuteInquiryJobCql extends AbstractExecuteInquiryJob<LdmConnectorCql> {
 

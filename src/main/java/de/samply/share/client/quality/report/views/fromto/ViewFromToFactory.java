@@ -10,8 +10,9 @@ public class ViewFromToFactory {
 
   /**
    * Todo.
+   *
    * @param from Todo.
-   * @param to Todo.
+   * @param to   Todo.
    * @return Todo.
    */
   public ViewFromTo createViewFromTo(Date from, Date to) {
@@ -25,8 +26,9 @@ public class ViewFromToFactory {
 
   /**
    * Todo.
+   *
    * @param month Todo.
-   * @param year Todo.
+   * @param year  Todo.
    * @return Todo.
    */
   public ViewFromTo createMonth(int month, int year) {
@@ -41,6 +43,7 @@ public class ViewFromToFactory {
 
   /**
    * Todo.
+   *
    * @param year Todo.
    * @return Todo.
    */

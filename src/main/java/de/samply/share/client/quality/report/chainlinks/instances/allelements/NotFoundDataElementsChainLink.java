@@ -16,7 +16,7 @@ public class NotFoundDataElementsChainLink<I extends ChainLinkItem & QualityResu
 
 
   private static final String EMPTY_VALUE = "";
-  private Model model;
+  private final Model model;
 
   public NotFoundDataElementsChainLink(Model model) {
     this.model = model;

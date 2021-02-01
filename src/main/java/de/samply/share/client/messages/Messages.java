@@ -30,8 +30,8 @@ public class Messages {
   }
 
   /**
-   * Gets the localized expression with potential parameters.
-   * E.g. when the message bundle entry is "greeting=Hello {0}, this is {1}".
+   * Gets the localized expression with potential parameters. E.g. when the message bundle entry is
+   * "greeting=Hello {0}, this is {1}".
    *
    * @param key    the expression to translate
    * @param params the parameters to insert to the message

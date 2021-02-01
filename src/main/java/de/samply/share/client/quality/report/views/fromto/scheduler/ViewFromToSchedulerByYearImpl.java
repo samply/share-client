@@ -10,7 +10,7 @@ import java.util.List;
 public class ViewFromToSchedulerByYearImpl implements ViewFromToScheduler {
 
   private int years = 20;
-  private ViewFromToFactory viewFromToFactory;
+  private final ViewFromToFactory viewFromToFactory;
 
   public ViewFromToSchedulerByYearImpl(ViewFromToFactory viewFromToFactory) {
     this.viewFromToFactory = viewFromToFactory;

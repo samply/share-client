@@ -4,8 +4,8 @@ import de.samply.share.client.model.db.enums.UploadStatusType;
 import org.quartz.JobDataMap;
 
 /**
- * The settings for an UploadJob are kept in an instance of this class.
- * Takes the JobDataMap that is associated with the instance of the job.
+ * The settings for an UploadJob are kept in an instance of this class. Takes the JobDataMap that is
+ * associated with the instance of the job.
  */
 public class UploadJobParams {
 
@@ -23,6 +23,7 @@ public class UploadJobParams {
 
   /**
    * Read the configs from the JobDataMap and set the params for the upload.
+   *
    * @param dataMap configs for the upload
    */
   public UploadJobParams(JobDataMap dataMap) {

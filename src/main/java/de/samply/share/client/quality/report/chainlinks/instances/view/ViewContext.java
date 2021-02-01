@@ -4,10 +4,10 @@ import de.samply.share.model.common.View;
 
 public interface ViewContext {
 
-  public View getView();
+  View getView();
 
-  public void setView(View view);
+  void setView(View view);
 
-  public void setLocationUrl(String locationUrl);
+  void setLocationUrl(String locationUrl);
 
 }

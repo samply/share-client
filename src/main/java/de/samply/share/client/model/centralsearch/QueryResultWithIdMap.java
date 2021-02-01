@@ -1,5 +1,6 @@
 package de.samply.share.client.model.centralsearch;
 
+import de.samply.share.client.model.IdObject;
 import de.samply.share.model.ccp.QueryResult;
 import java.util.Map;
 
@@ -9,9 +10,9 @@ import java.util.Map;
 public class QueryResultWithIdMap {
 
   private QueryResult queryResult;
-  private Map<String, String> idMap;
+  private Map<IdObject, IdObject> idMap;
 
-  public QueryResultWithIdMap(QueryResult queryResult, Map<String, String> idMap) {
+  public QueryResultWithIdMap(QueryResult queryResult, Map<IdObject, IdObject> idMap) {
     this.queryResult = queryResult;
     this.idMap = idMap;
   }
@@ -24,11 +25,11 @@ public class QueryResultWithIdMap {
     this.queryResult = queryResult;
   }
 
-  public Map<String, String> getIdMap() {
+  public Map<IdObject, IdObject> getIdMap() {
     return idMap;
   }
 
-  public void setIdMap(Map<String, String> idMap) {
+  public void setIdMap(Map<IdObject, IdObject> idMap) {
     this.idMap = idMap;
   }
 }

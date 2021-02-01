@@ -16,14 +16,17 @@ public class DataElementStatsExcelRowContext extends
 
   protected static final Logger logger = LogManager
       .getLogger(DataElementStatsExcelRowContext.class);
-  private DataElementStatsExcelRowMapper excelRowMapper;
+  private final DataElementStatsExcelRowMapper excelRowMapper;
 
 
   /**
-   * Todo.
-   * @param qualityResults Todo.
-   * @param qualityResultsStatistics Todo.
-   * @param excelRowMapper Todo.
+   * Data element statistics for an excel row.
+   *
+   * @param qualityResults           Group of patient ids and validation of pair data element -
+   *                                 attribute.
+   * @param qualityResultsStatistics Statistics of the quality results.
+   * @param excelRowMapper           Adds additional information to the quality results, like the
+   *                                 centraxx mapping.
    */
   public DataElementStatsExcelRowContext(QualityResults qualityResults,
       QualityResultsStatistics qualityResultsStatistics,

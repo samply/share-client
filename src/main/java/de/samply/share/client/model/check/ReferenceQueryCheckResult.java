@@ -15,6 +15,7 @@ public class ReferenceQueryCheckResult {
 
   /**
    * Get the count.
+   *
    * @return the count
    */
   public int getCount() {
@@ -23,6 +24,7 @@ public class ReferenceQueryCheckResult {
 
   /**
    * Set the count.
+   *
    * @param count the count to set
    */
   public void setCount(int count) {
@@ -31,6 +33,7 @@ public class ReferenceQueryCheckResult {
 
   /**
    * Get the execution time in milliseconds.
+   *
    * @return the executionTimeMilis
    */
   public long getExecutionTimeMilis() {
@@ -39,6 +42,7 @@ public class ReferenceQueryCheckResult {
 
   /**
    * Set the execution time in milliseconds.
+   *
    * @param executionTimeMilis the executionTimeMilis to set
    */
   public void setExecutionTimeMilis(long executionTimeMilis) {

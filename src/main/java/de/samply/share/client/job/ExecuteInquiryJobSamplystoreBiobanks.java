@@ -22,9 +22,9 @@ import org.quartz.JobExecutionException;
 
 /**
  * This Job posts an inquiry to the local datamanagement, stores the location and spawns a
- * CheckInquiryStatusJobSamplystoreBiobanks.
- * It is defined and scheduled by either the CheckInquiryStatusJob, the CollectInquiriesJob, the
- * UploadToCentralMdsDbJob or can be spawned user-triggered from the show_inquiry.xhtml page.
+ * CheckInquiryStatusJobSamplystoreBiobanks. It is defined and scheduled by either the
+ * CheckInquiryStatusJob, the CollectInquiriesJob, the UploadToCentralMdsDbJob or can be spawned
+ * user-triggered from the show_inquiry.xhtml page.
  */
 public class ExecuteInquiryJobSamplystoreBiobanks extends
     AbstractExecuteInquiryJob<LdmConnectorSamplystoreBiobank> {

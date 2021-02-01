@@ -36,7 +36,8 @@ import javax.xml.bind.annotation.XmlType;
     "url",
     "profile",
     "mainzellisteUrl",
-    "mainzellisteApiKey"
+    "mainzellisteApiKey",
+    "searchIdType"
 })
 @XmlRootElement(name = "cts", namespace = "http://schema.samply.de/config/CtsInfo")
 @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
@@ -67,6 +68,10 @@ public class Cts {
   @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
       comments = "JAXB RI v2.2.8-b130911.1802")
   protected String mainzellisteApiKey;
+  @XmlElement(namespace = "http://schema.samply.de/config/CtsInfo", required = true)
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
+  protected String searchIdType;
 
 
   /**
@@ -202,5 +207,26 @@ public class Cts {
     this.mainzellisteApiKey = value;
   }
 
+  /**
+   * Gets the value of the searchIdType property.
+   *
+   * @return possible object is {@link String }
+   */
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
+  public String getSearchIdType() {
+    return searchIdType;
+  }
+
+  /**
+   * Sets the value of the searchIdType property.
+   *
+   * @param value allowed object is {@link String }
+   */
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
+  public void setSearchIdType(String value) {
+    this.searchIdType = value;
+  }
 
 }

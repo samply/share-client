@@ -9,7 +9,7 @@ public abstract class ExcelRowElements {
 
   protected int maxNumberOfElements;
 
-  private Map<Integer, ExcelCellElement> elements = new FastHashMap();
+  private final Map<Integer, ExcelCellElement> elements = new FastHashMap();
 
 
   public ExcelRowElements(int maxNumberOfElements) {
@@ -31,8 +31,9 @@ public abstract class ExcelRowElements {
 
   /**
    * Todo.
+   *
    * @param excelCellStyle Todo.
-   * @param ordinal Todo.
+   * @param ordinal        Todo.
    */
   public void addExcelCellStyle(ExcelCellStyle excelCellStyle, int ordinal) {
 

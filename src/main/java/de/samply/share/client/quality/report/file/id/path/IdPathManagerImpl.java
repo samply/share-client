@@ -14,9 +14,9 @@ import java.util.List;
 public abstract class IdPathManagerImpl<I extends QualityResultCsvLineManager,
     J extends ExcelPattern, K extends MetadataTxtColumnManager> implements IdPathManager {
 
-  private QualityReportFilenameFormat csvFormat;
-  private QualityReportFilenameFormat excelFormat;
-  private QualityReportFilenameFormat metadataFormat;
+  private final QualityReportFilenameFormat csvFormat;
+  private final QualityReportFilenameFormat excelFormat;
+  private final QualityReportFilenameFormat metadataFormat;
   private String mainDirectory;
 
   {

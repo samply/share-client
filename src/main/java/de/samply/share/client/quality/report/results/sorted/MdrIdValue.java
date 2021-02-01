@@ -5,8 +5,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class MdrIdValue {
 
-  private MdrIdDatatype mdrId;
-  private String value;
+  private final MdrIdDatatype mdrId;
+  private final String value;
 
   public MdrIdValue(MdrIdDatatype mdrId, String value) {
     this.mdrId = mdrId;

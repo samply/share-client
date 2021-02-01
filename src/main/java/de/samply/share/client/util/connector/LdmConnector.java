@@ -15,31 +15,11 @@ import java.io.IOException;
  * @param <T_RESULT>       Query type
  */
 public interface LdmConnector<QueryT, PostParameterT extends AbstractLdmPostQueryParameter,
-    T_RESULT> {
+    T_RESULT> extends LdmBasicConnector<QueryT, PostParameterT, T_RESULT> {
 
   String TEMPDIR = "javax.servlet.context.tempdir";
   String XML_SUFFIX = ".xml";
 
-  /**
-   * Posts a query to local datamanagement and returns the location of the result.
-   *
-   * @param query     the query
-   * @param parameter combines parameters for posting a query
-   * @return the location of the result
-   * @throws LdmConnectorException LdmConnectorException
-   */
-  String postQuery(QueryT query, PostParameterT parameter) throws LdmConnectorException;
-
-  /**
-   * Gets the query result from a given query location.
-   *
-   * @param location the location
-   * @return the results
-   * @throws LdmConnectorException LdmConnectorException
-   */
-  T_RESULT getResults(String location) throws LdmConnectorException;
-
-  T_RESULT getResultsFromPage(String location, int page) throws LdmConnectorException;
 
   /**
    * Gets the stats for a query on the given location.

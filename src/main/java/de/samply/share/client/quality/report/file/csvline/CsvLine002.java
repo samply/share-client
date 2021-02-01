@@ -18,8 +18,9 @@ public final class CsvLine002 extends CsvLineImpl {
   }
 
   /**
-   * Todo.
-   * @return Todo.
+   * Get mdr id of csv line.
+   *
+   * @return mdr id.
    */
   public MdrIdDatatype getMdrId() {
 
@@ -37,15 +38,17 @@ public final class CsvLine002 extends CsvLineImpl {
   }
 
   /**
-   * Todo.
-   * @param attributeValue Todo.
+   * Set attribute value of an mdr data element in csv line.
+   *
+   * @param attributeValue attribute value.
    */
   public void setAttributeValue(String attributeValue) {
     addElement(ElementOrder.ATTRIBUTE_VALUE, attributeValue);
   }
 
   /**
-   * Todo.
+   * Checks if mdr id is valid according to the mdr validations.
+   *
    * @return Todo.
    */
   public Boolean isValid() {
@@ -60,8 +63,9 @@ public final class CsvLine002 extends CsvLineImpl {
   }
 
   /**
-   * Todo.
-   * @return Todo.
+   * Get number of patients with a pair data element - attribute.
+   *
+   * @return Number of patients.
    */
   public Integer getNumberOfPatients() {
 

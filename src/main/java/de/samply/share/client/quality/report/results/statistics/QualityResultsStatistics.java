@@ -6,70 +6,70 @@ public interface QualityResultsStatistics {
 
 
   //1
-  public double getPercentageOfPatientsWithValueOutOfPatientsWithMdrId(MdrIdDatatype mdrId,
+  double getPercentageOfPatientsWithValueOutOfPatientsWithMdrId(MdrIdDatatype mdrId,
       String value);
 
   //2
-  public double getPercentageOfPatientsWithValueOutOfTotalPatients(MdrIdDatatype mdrId,
+  double getPercentageOfPatientsWithValueOutOfTotalPatients(MdrIdDatatype mdrId,
       String value);
 
-  public double getPercentageOf_MismatchingPatientsWithValue_outOf_MismatchingPatientsWithMdrId(
+  double getPercentageOf_MismatchingPatientsWithValue_outOf_MismatchingPatientsWithMdrId(
       MdrIdDatatype mdrId, String value);
 
 
-  public double getPercentageOfMismatchingPatientsWithMdrIdOutOfPatientsWithMdrId(
+  double getPercentageOfMismatchingPatientsWithMdrIdOutOfPatientsWithMdrId(
       MdrIdDatatype mdrId);
 
-  public double getPercentageOfMatchingPatientsWithMdrIdOutOfPatientsWithMdrId(
+  double getPercentageOfMatchingPatientsWithMdrIdOutOfPatientsWithMdrId(
       MdrIdDatatype mdrId);
 
-  public int getNumberOf_MismatchingPatientsWithMdrId(MdrIdDatatype mdrId);
+  int getNumberOf_MismatchingPatientsWithMdrId(MdrIdDatatype mdrId);
 
-  public int getNumberOfMatchingPatientsWithMdrId(MdrIdDatatype mdrId);
+  int getNumberOfMatchingPatientsWithMdrId(MdrIdDatatype mdrId);
 
-  public int getNumberOfPatientsForValidation(MdrIdDatatype mdrId);
+  int getNumberOfPatientsForValidation(MdrIdDatatype mdrId);
 
   // 3
-  public int getNumberOfPatientsWithMdrId(MdrIdDatatype mdrId);
+  int getNumberOfPatientsWithMdrId(MdrIdDatatype mdrId);
 
   //4
-  public double getPercentageOfPatientsWithMdrIdOutOfTotalPatients(MdrIdDatatype mdrId);
+  double getPercentageOfPatientsWithMdrIdOutOfTotalPatients(MdrIdDatatype mdrId);
 
   //5
-  public int getNumberOfPatientsWithMatchOnlyWithMdrId(MdrIdDatatype mdrId);
+  int getNumberOfPatientsWithMatchOnlyWithMdrId(MdrIdDatatype mdrId);
 
   //6
-  public double getPercentageOfPatientsWithMatchOnlyWithMdrIdOutOfPatientsWithMdrId(
+  double getPercentageOfPatientsWithMatchOnlyWithMdrIdOutOfPatientsWithMdrId(
       MdrIdDatatype mdrId);
 
   //7
-  public double getPercentageOfPatientsWithMatchOnlyWithMdrIdoutOfTotalPatients(
+  double getPercentageOfPatientsWithMatchOnlyWithMdrIdoutOfTotalPatients(
       MdrIdDatatype mdrId);
 
   //8
-  public int getNumberOfPatientsWithAnyMismatchWithMdrId(MdrIdDatatype mdrId);
+  int getNumberOfPatientsWithAnyMismatchWithMdrId(MdrIdDatatype mdrId);
 
   //9
-  public double getPercentageOfPatientsWithAnyMismatchWithMdrIdoutOfPatientsWithMdrId(
+  double getPercentageOfPatientsWithAnyMismatchWithMdrIdoutOfPatientsWithMdrId(
       MdrIdDatatype mdrId);
 
   //10
-  public double getPercentageOfPatientsWithAnyMismatchWithMdrIdOutOfTotalPatients(
+  double getPercentageOfPatientsWithAnyMismatchWithMdrIdOutOfTotalPatients(
       MdrIdDatatype mdrId);
 
-  public double getPercentageOfPatientsOutOfTotalNumberOfPatientsForADataelement(
+  double getPercentageOfPatientsOutOfTotalNumberOfPatientsForADataelement(
       MdrIdDatatype mdrId);
 
 
-  public double getPercentageOf_CompletelyMatchingDataelements_outOf_AllDataelements();
+  double getPercentageOf_CompletelyMatchingDataelements_outOf_AllDataelements();
 
-  public double getPercentageOf_NotCompletelyMismatchingDataelements_outOf_AllDataelements();
+  double getPercentageOf_NotCompletelyMismatchingDataelements_outOf_AllDataelements();
 
-  public double getPercentageOf_CompletelyMismatchingDataelements_outOf_AllDataelements();
+  double getPercentageOf_CompletelyMismatchingDataelements_outOf_AllDataelements();
 
-  public double getPercentageOf_NotMappedDataelements_outOf_AllDataelements();
+  double getPercentageOf_NotMappedDataelements_outOf_AllDataelements();
 
-  public int getTotalNumberOfPatients();
+  int getTotalNumberOfPatients();
 
 
 }

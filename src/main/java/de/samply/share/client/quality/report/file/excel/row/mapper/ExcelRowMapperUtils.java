@@ -18,16 +18,17 @@ import java.util.concurrent.ExecutionException;
 
 public class ExcelRowMapperUtils {
 
-  private String languageCode;
-  private String mdrLinkPrefix; // = "https://mdr.ccp-it.dktk.dkfz.de/detail.xhtml?urn=";
-  private ModelSearcher modelSearcher;
-  private MdrClient mdrClient;
-  private Map<MdrIdDatatype, String> mdrDatenElements = new HashMap<>();
+  private final String languageCode;
+  private final String mdrLinkPrefix; // = "https://mdr.ccp-it.dktk.dkfz.de/detail.xhtml?urn=";
+  private final ModelSearcher modelSearcher;
+  private final MdrClient mdrClient;
+  private final Map<MdrIdDatatype, String> mdrDatenElements = new HashMap<>();
 
   /**
-   * Todo.
-   * @param model Todo.
-   * @param mdrClient Todo.
+   * Utils for excel rows to add additional information.
+   *
+   * @param model     mdr ids and validations.
+   * @param mdrClient client of the meta data repository.
    */
   public ExcelRowMapperUtils(Model model, MdrClient mdrClient) {
 
@@ -47,10 +48,11 @@ public class ExcelRowMapperUtils {
   }
 
   /**
-   * Todo.
-   * @param mdrId Todo.
-   * @return Todo.
-   * @throws ExcelRowMapperException Todo.
+   * Get designation of mdr data element.
+   *
+   * @param mdrId mdr id.
+   * @return designation of mrd data element.
+   * @throws ExcelRowMapperException Encapsulates exceptions of the class.
    */
   public String getMdrDatenElement(MdrIdDatatype mdrId) throws ExcelRowMapperException {
 
@@ -93,7 +95,8 @@ public class ExcelRowMapperUtils {
   }
 
   /**
-   * Todo.
+   * get data type of mdr data element.
+   *
    * @param mdrId Todo.
    * @return Todo.
    */

@@ -3,7 +3,7 @@ package de.samply.share.client.control;
 public enum ConnectorType {
   DKTK("DKTK.Teiler"), SAMPLY("Connector"), UNKNOWN("Samply.Share");
 
-  private String name;
+  private final String name;
 
   ConnectorType(String name) {
     this.name = name;
@@ -11,6 +11,7 @@ public enum ConnectorType {
 
   /**
    * Return the ConnectorType withe the connector name depends on the project name.
+   *
    * @param name the project name
    * @return ConnectorType
    */

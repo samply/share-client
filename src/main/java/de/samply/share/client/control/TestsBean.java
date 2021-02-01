@@ -1,6 +1,5 @@
 package de.samply.share.client.control;
 
-import de.samply.share.client.job.UploadToCentralMdsDbJob;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.IdObject;
 import de.samply.share.client.model.centralsearch.PatientUploadResult;
@@ -19,6 +18,7 @@ import de.samply.share.client.util.connector.LdmPostQueryParameterView;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.CentralSearchConnectorException;
 import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
+import de.samply.share.client.util.connector.idmanagement.utils.IdManagementUtils;
 import de.samply.share.client.util.db.BrokerUtil;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
@@ -286,9 +286,8 @@ public class TestsBean implements Serializable {
   }
 
   /**
-   * Check the upload to the central mds db.
-   * 1) Create a very basic dummy patient 2) Upload it with an uniquely prefixed id 3) Delete it
-   * from the central mds db
+   * Check the upload to the central mds db. 1) Create a very basic dummy patient 2) Upload it with
+   * an uniquely prefixed id 3) Delete it from the central mds db
    */
   public void performUploadAndDeleteDummyPatientCheck() {
     uploadAndDeleteDummyPatientCheckResult = new CheckResult();
@@ -305,7 +304,7 @@ public class TestsBean implements Serializable {
         .getConfigurationElementValue(EnumConfiguration.ID_MANAGER_INSTANCE_ID);
     String prefix = instanceId + "_UPLOADTEST_";
     String exportId = Utils
-        .getRandomExportid(prefix, UploadToCentralMdsDbJob.CENTRAL_MDS_DB_PUBKEY_FILENAME);
+        .getRandomExportid(prefix, IdManagementUtils.CENTRAL_MDS_DB_PUBKEY_FILENAME);
 
     if (SamplyShareUtils.isNullOrEmpty(exportId)) {
       uploadAndDeleteDummyPatientCheckResult.getMessages()
@@ -342,8 +341,7 @@ public class TestsBean implements Serializable {
   }
 
   /**
-   * Create and return a dummy patient.
-   * It has one case and one sample with one attribute each.
+   * Create and return a dummy patient. It has one case and one sample with one attribute each.
    *
    * @return the created dummy patient
    */

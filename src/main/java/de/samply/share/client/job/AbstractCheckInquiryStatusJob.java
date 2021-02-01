@@ -48,27 +48,25 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 
 /**
- * This Job checks the status of the given inquiry and spawns new jobs if necessary.
- * It is defined and scheduled by the ExecuteInquiryJob.
- * The performed action depends on the previous state of the Inquiry.
- * 1) If the stats were not available earlier, check if they are. a) If they are not, the job
- * terminates this iteration and wait to be called again at the scheduled time b) If they are, and
- * it was an error...either quit and delete the trigger if the problem can not be solved or try to
- * fix it (remove unknown keys for example), remove this trigger and spawn a new ExecuteInquiryJob
- * with a modified inquiry. c) If they are, and it were stats...either set everything to done (if
- * only stats were requested or the result is 0) or reschedule this job, setting the stats done
- * parameter to true.
- * 2) If the stats were available, more than 0 were found, not only stats were requested and the
- * first page of the result was not yet available, check if the first page is accessible a) If it is
- * not, the job terminates this iteration and wait to be called again at the scheduled time b) If
- * they are, set the corresponding parameter in the jobdatamap, quit this iteration and wait for the
- * next call.
- * 3) If the stats were available, more than 0 were found, not only stats were requested, the first
- * page of the result was already available, but the last page was not done yet...check if the last
- * page is accessible now a) If it is not, the job terminates this iteration and wait to be called
- * again at the scheduled time b) If it is, and it was an upload inquiry...spawn a
- * UploadToCentralMdsDbJob and remove this job from the scheduler c) If it is, and it was not an
- * upload inquiry...set the status to done and remove this job from the scheduler.
+ * This Job checks the status of the given inquiry and spawns new jobs if necessary. It is defined
+ * and scheduled by the ExecuteInquiryJob. The performed action depends on the previous state of the
+ * Inquiry. 1) If the stats were not available earlier, check if they are. a) If they are not, the
+ * job terminates this iteration and wait to be called again at the scheduled time b) If they are,
+ * and it was an error...either quit and delete the trigger if the problem can not be solved or try
+ * to fix it (remove unknown keys for example), remove this trigger and spawn a new
+ * ExecuteInquiryJob with a modified inquiry. c) If they are, and it were stats...either set
+ * everything to done (if only stats were requested or the result is 0) or reschedule this job,
+ * setting the stats done parameter to true. 2) If the stats were available, more than 0 were found,
+ * not only stats were requested and the first page of the result was not yet available, check if
+ * the first page is accessible a) If it is not, the job terminates this iteration and wait to be
+ * called again at the scheduled time b) If they are, set the corresponding parameter in the
+ * jobdatamap, quit this iteration and wait for the next call. 3) If the stats were available, more
+ * than 0 were found, not only stats were requested, the first page of the result was already
+ * available, but the last page was not done yet...check if the last page is accessible now a) If it
+ * is not, the job terminates this iteration and wait to be called again at the scheduled time b) If
+ * it is, and it was an upload inquiry...spawn a UploadToCentralMdsDbJob and remove this job from
+ * the scheduler c) If it is, and it was not an upload inquiry...set the status to done and remove
+ * this job from the scheduler.
  */
 abstract class AbstractCheckInquiryStatusJob<ldmConnectorT extends LdmConnector> implements Job {
 

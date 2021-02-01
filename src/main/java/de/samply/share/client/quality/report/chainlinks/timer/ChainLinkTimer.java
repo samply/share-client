@@ -2,10 +2,10 @@ package de.samply.share.client.quality.report.chainlinks.timer;
 
 public interface ChainLinkTimer {
 
-  public void mySleep(int attempt);
+  void mySleep(int attempt);
 
-  public void myWait();
+  void myWait();
 
-  public void myNotify();
+  void myNotify();
 
 }

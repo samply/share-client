@@ -3,8 +3,8 @@ package de.samply.share.client.job.params;
 import org.quartz.JobDataMap;
 
 /**
- * The settings for an GenerateInquiryResultStatsJob are kept in an instance of this class.
- * Takes the JobDataMap that is associated with the instance of the job.
+ * The settings for an GenerateInquiryResultStatsJob are kept in an instance of this class. Takes
+ * the JobDataMap that is associated with the instance of the job.
  */
 public class GenerateInquiryResultStatsJobParams {
 

@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface ViewFromToScheduler {
 
-  public List<ViewFromTo> createViewFromTos();
+  List<ViewFromTo> createViewFromTos();
 
 }

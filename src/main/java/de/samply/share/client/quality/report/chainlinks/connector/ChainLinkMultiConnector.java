@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ChainLinkMultiConnector extends ChainLinkConnector {
 
-  private List<ChainLinkConnector> chainLinkConnectors = new ArrayList<>();
+  private final List<ChainLinkConnector> chainLinkConnectors = new ArrayList<>();
 
 
   public ChainLinkMultiConnector() {
@@ -18,8 +18,9 @@ public class ChainLinkMultiConnector extends ChainLinkConnector {
   }
 
   /**
-   * Todo.
-   * @param chainLinkItem Todo.
+   * Add item to next chain link.
+   *
+   * @param chainLinkItem Chain link item to be added.
    */
   public void addItemToNextChainLink(ChainLinkItem chainLinkItem) {
     for (ChainLinkConnector chainLinkConnector : chainLinkConnectors) {
@@ -29,7 +30,7 @@ public class ChainLinkMultiConnector extends ChainLinkConnector {
   }
 
   /**
-   * Todo.
+   * Finalizes next chain link.
    */
   public void finalizeNextChainLink() {
     for (ChainLinkConnector chainLinkConnector : chainLinkConnectors) {
@@ -39,7 +40,7 @@ public class ChainLinkMultiConnector extends ChainLinkConnector {
   }
 
   /**
-   * Todo.
+   * Set previous chain link as finalized.
    */
   public void setPreviousChainLinkFinalized() {
     for (ChainLinkConnector chainLinkConnector : chainLinkConnectors) {

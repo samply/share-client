@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class QualityResultsImpl implements QualityResults {
 
-  private Map<MdrIdDatatype, ValueAndResults> results = new HashMap<>();
+  private final Map<MdrIdDatatype, ValueAndResults> results = new HashMap<>();
 
   @Override
   public QualityResult getResult(MdrIdDatatype mdrId, String value) {
@@ -115,7 +115,7 @@ public class QualityResultsImpl implements QualityResults {
 
   private class ValueAndResults {
 
-    private Map<String, QualityResult> valueAndResults = new HashMap<>();
+    private final Map<String, QualityResult> valueAndResults = new HashMap<>();
 
     public QualityResult getResult(String value) {
       return valueAndResults.get(value);

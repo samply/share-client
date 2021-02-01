@@ -1,9 +1,10 @@
 <com:cts xmlns:com="http://schema.samply.de/config/CtsInfo">
-  <com:mainzellisteApiKey></com:mainzellisteApiKey>
+  <com:mainzellisteApiKey>nngmTestKeyConnector?[8574]</com:mainzellisteApiKey>
   <com:mainzellisteUrl>https://test.verbis.dkfz.de/mpl</com:mainzellisteUrl>
-  <com:password></com:password>
   <com:profile>http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert
   </com:profile>
-  <com:url>https://cds.cds-test.staging.healex.systems/trial/nNGMv09c/import-fb</com:url>
-  <com:username>admin</com:username>
+  <com:url>https://cds.cds-test.staging.healex.systems/trial/nNGM/import-fb</com:url>
+  <com:username>api_center_1344</com:username>
+  <com:password>SBpRByQ5JDWf</com:password>
+  <com:searchIdType>nNGM_Teststandort_L-ID</com:searchIdType>
 </com:cts>

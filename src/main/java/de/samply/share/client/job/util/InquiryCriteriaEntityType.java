@@ -6,7 +6,7 @@ public enum InquiryCriteriaEntityType {
   PATIENT("Patient"), SPECIMEN("Specimen"), ALL("Donor + Sample"),
   ERROR("Error");
 
-  private String name;
+  private final String name;
 
   InquiryCriteriaEntityType(String name) {
     this.name = name;
@@ -14,6 +14,7 @@ public enum InquiryCriteriaEntityType {
 
   /**
    * Get the InquiryCriteriaEntityType for the entityType.
+   *
    * @param entityType the entityType
    * @return InquiryCriteriaEntityType
    */

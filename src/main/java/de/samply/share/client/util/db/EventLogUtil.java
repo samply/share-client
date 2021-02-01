@@ -21,7 +21,7 @@ public class EventLogUtil {
 
   private static final Logger logger = LogManager.getLogger(EventLogUtil.class);
 
-  private static EventLogDao eventLogDao;
+  private static final EventLogDao eventLogDao;
 
   static {
     eventLogDao = new EventLogDao(ResourceManager.getConfiguration());
@@ -178,8 +178,8 @@ public class EventLogUtil {
   }
 
   /**
-   * Get all event log entries that are marked as global.
-   * Those entries will be shown in the event log page.
+   * Get all event log entries that are marked as global. Those entries will be shown in the event
+   * log page.
    *
    * @return the list of global event log entries
    */

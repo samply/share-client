@@ -5,9 +5,10 @@ public class FirstRowCellReferenceFactory {
   private static final int numberOfLetters = 26;
 
   /**
-   * Todo.
-   * @param ordinal Todo.
-   * @return Todo.
+   * Get excel column of first row cell reference.
+   *
+   * @param ordinal Number of column.
+   * @return excel column.
    */
   public String getExcelColumn(int ordinal) {
     return org.apache.poi.hssf.util.CellReference.convertNumToColString(ordinal);
@@ -19,10 +20,11 @@ public class FirstRowCellReferenceFactory {
   }
 
   /**
-   * Todo.
-   * @param sheetName Todo.
-   * @param columnOrdinal Todo.
-   * @return Todo.
+   * Create cell reference.
+   *
+   * @param sheetName     Name of the Excel sheet.
+   * @param columnOrdinal Number of column.
+   * @return Excel cell reference.
    */
   public CellReference createCellReference(String sheetName, int columnOrdinal) {
 

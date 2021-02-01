@@ -7,9 +7,9 @@ public class CsvLineImpl implements CsvLine {
 
 
   private char csvFileSeparator = '\t';
-  private int maxNumberOfElements;
+  private final int maxNumberOfElements;
 
-  private Map<Integer, String> elements = new FastHashMap();
+  private final Map<Integer, String> elements = new FastHashMap();
 
 
   public CsvLineImpl(int maxNumberOfElements) {

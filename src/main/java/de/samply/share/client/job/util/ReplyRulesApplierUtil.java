@@ -10,7 +10,8 @@ public class ReplyRulesApplierUtil {
 
   /**
    * Handle BrokerConnectorException for a Inquiry.
-   * @param e the BrokerConnectorException
+   *
+   * @param e                the BrokerConnectorException
    * @param inquiryDetailsId the inquiryDetailsId of an Inquiry.
    */
   public static void handleBrokerConnectorException(BrokerConnectorException e,

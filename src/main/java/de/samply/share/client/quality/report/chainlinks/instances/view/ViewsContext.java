@@ -5,8 +5,8 @@ import java.util.List;
 
 public interface ViewsContext {
 
-  public List<View> getViews();
+  List<View> getViews();
 
-  public void setViews(List<View> views);
+  void setViews(List<View> views);
 
 }
