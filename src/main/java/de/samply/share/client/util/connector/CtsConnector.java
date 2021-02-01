@@ -103,7 +103,7 @@ public class CtsConnector {
         .replace("><", ">\r\n<");
     if (ApplicationBean.getFeatureManager().getFeatureState(ClientFeature.NNGM_ENCRYPT_ID)
         .isEnabled()) {
-       pseudonymBundleJson = searchForIds(pseudonymBundleJson, true);
+      pseudonymBundleJson = searchForIds(pseudonymBundleJson, true);
     }
 
     // Set up the API call
