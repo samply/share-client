@@ -13,8 +13,10 @@ sed -i "s/{proxy-user}/${PROXY_USER}/"                    ${CATALINA_HOME}/conf/
 sed -i "s/{proxy-pass}/${PROXY_PASS}/"                    ${CATALINA_HOME}/conf/${PROJECT}_common_config.xml
 
 sed -i "s#{store-url}#${STORE_URL}#"                      ${CATALINA_HOME}/conf/${PROJECT}_common_urls.xml
+sed -i "s#{id-manager-url}#${ID_MANAGER_URL}#"            ${CATALINA_HOME}/conf/${PROJECT}_common_urls.xml
 sed -i "s#{mdr-url}#${MDR_URL}#"                          ${CATALINA_HOME}/conf/${PROJECT}_common_urls.xml
 sed -i "s#{directory-url}#${DIRECTORY_URL}#"              ${CATALINA_HOME}/conf/${PROJECT}_common_urls.xml
+sed -i "s#{share-url}#${SHARE_URL}#"                      ${CATALINA_HOME}/conf/${PROJECT}_common_urls.xml
 
 sed -i "s/{operator-first-name}/${OPERATOR_FIRST_NAME}/"  ${CATALINA_HOME}/conf/${PROJECT}_common_operator.xml
 sed -i "s/{operator-last-name}/${OPERATOR_LAST_NAME}/"    ${CATALINA_HOME}/conf/${PROJECT}_common_operator.xml
@@ -27,7 +29,16 @@ sed -i "s%{mail-protocol}%${MAIL_PROTOCOL:-smtp}%"        ${CATALINA_HOME}/conf/
 sed -i "s%{mail-from-address}%${MAIL_FROM_ADDRESS}%"      ${CATALINA_HOME}/conf/mailSending.xml
 sed -i "s%{mail-from-name}%${MAIL_FROM_NAME}%"            ${CATALINA_HOME}/conf/mailSending.xml
 
-sed -i "s#{query-language}#${QUERY_LANGUAGE:-QUERY}#"     ${CATALINA_HOME}/conf/${PROJECT}_bridgehead_info.xml
+file=${CATALINA_HOME}/conf/${PROJECT}_bridgehead_info.xml
+sed -i "s#{site}#${SITE}#"                                "$file"
+sed -i "s#{siteid}#${SITEID}#"                            "$file"
+sed -i "s#{query-language}#${QUERY_LANGUAGE:-QUERY}#"     "$file"
+sed -i "s#{central-search}#${CENTRAL_SEARCH}#"            "$file"
+sed -i "s#{decentral-search}#${DECENTRAL_SEARCH}#"        "$file"
+sed -i "s#{query-language}#${QUERY_LANGUAGE:-QUERY}#"     "$file"
+sed -i "s#{monitor-interval}#${MONITOR_INTERVAL}#"        "$file"
+sed -i "s#{monitor-url}#${MONITOR_URL}#"                  "$file"
+sed -i "s#{update-server}#${UPDATE_SERVER}#"              "$file"
 
 sed -i "s/{level}/${LOG_LEVEL:-info}/"                    ${CATALINA_HOME}/conf/log4j2.xml
 
