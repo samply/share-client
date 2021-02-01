@@ -1,0 +1,69 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Build with maven and docker (C4)
+
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - 'release-*.*.*'
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: samplyconnector
+          POSTGRES_PASSWORD: samplyconnector
+          POSTGRES_USER: samplyconnector
+          POSTGRES_HOST: localhost
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+
+      - name: Build with Maven
+        run: mvn -B package -P c4
+
+      - name: Extract docker tag
+        id: extract_docker_tag
+        shell: bash
+        # this is needed, because tags GITHUB_REF is inconsistent for pull requests.
+        if: ${{ github.event_name != 'pull_request' }}
+        run: echo "##[set-output name=tag;]$(echo ${GITHUB_REF##*/};)"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          platforms: linux/amd64,linux/arm64,linux/386
+          context: .
+          file: ./Dockerfile
+          build-args: |
+            PROJECT=dktk
+          push: true
+          tags: ${{ github.repository }}:c4-${{ steps.extract_docker_tag.outputs.tag }}
