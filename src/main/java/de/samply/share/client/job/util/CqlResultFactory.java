@@ -23,6 +23,7 @@ public class CqlResultFactory {
 
   /**
    * Todo.
+   *
    * @return CqlResult
    */
   public CqlResult createCqlResult() {

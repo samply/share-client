@@ -21,6 +21,7 @@ public class AgeDistribution {
 
   /**
    * The result count for a given age.
+   *
    * @param age the age
    * @return the result by age
    */

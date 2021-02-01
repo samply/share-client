@@ -20,9 +20,9 @@ import org.quartz.JobExecutionContext;
 public class CheckLocalComponentsJob implements Job {
 
   private static final Logger logger = LogManager.getLogger(CheckLocalComponentsJob.class);
-  private static IdManagerConnector idManagerConnector;
-  private static LdmConnector ldmConnector;
-  private static UserAgent userAgent;
+  private static final IdManagerConnector idManagerConnector;
+  private static final LdmConnector ldmConnector;
+  private static final UserAgent userAgent;
 
   static {
     idManagerConnector = new IdManagerConnector();

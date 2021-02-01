@@ -7,7 +7,7 @@ import de.samply.share.client.quality.report.results.statistics.QualityResultsSt
 
 public class ExcelRowContextFactory002 {
 
-  private ExcelRowMapper002 excelRowMapper;
+  private final ExcelRowMapper002 excelRowMapper;
 
   public ExcelRowContextFactory002(ExcelRowMapper002 excelRowMapper) {
     this.excelRowMapper = excelRowMapper;
@@ -15,6 +15,7 @@ public class ExcelRowContextFactory002 {
 
   /**
    * Todo.
+   *
    * @param qualityResults Todo.
    * @return Todo.
    */
@@ -26,8 +27,9 @@ public class ExcelRowContextFactory002 {
 
   /**
    * Todo.
-   * @param qualityResults Todo.
-   * @param asmQualityResults Todo.
+   *
+   * @param qualityResults           Todo.
+   * @param asmQualityResults        Todo.
    * @param qualityResultsStatistics Todo.
    * @return Todo.
    */

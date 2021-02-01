@@ -4,16 +4,17 @@ import org.apache.logging.log4j.Logger;
 
 public class PercentageLogger {
 
-  private Logger logger;
-  private int numberOfElements;
+  private final Logger logger;
+  private final int numberOfElements;
   private int counter = 0;
   private int lastPercentage = 0;
 
   /**
    * Todo.
-   * @param logger Todo.
+   *
+   * @param logger           Todo.
    * @param numberOfElements Todo.
-   * @param description Todo.
+   * @param description      Todo.
    */
   public PercentageLogger(Logger logger, int numberOfElements, String description) {
 

@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 public class ChainLinkStatisticsFactoryImpl implements ChainLinkStatisticsFactory {
 
   protected static final Logger logger = LogManager.getLogger(ChainLinkStatisticsFactoryImpl.class);
-  private ChainLinkStaticStatisticsFileManager chainLinkStaticStatisticsFileManager;
+  private final ChainLinkStaticStatisticsFileManager chainLinkStaticStatisticsFileManager;
 
 
   public ChainLinkStatisticsFactoryImpl(
@@ -78,7 +78,7 @@ public class ChainLinkStatisticsFactoryImpl implements ChainLinkStatisticsFactor
   }
 
   private ChainLinkStaticStatistics
-      createNewChainLinkStaticStatisticsFile_withoutExceptionManagement() throws
+          createNewChainLinkStaticStatisticsFile_withoutExceptionManagement() throws
       ChainLinkStaticStatisticsFileManagerException {
     ChainLinkStaticStatistics chainLinkStaticStatistics = new ChainLinkStaticStatistics();
     chainLinkStaticStatisticsFileManager.write(chainLinkStaticStatistics);

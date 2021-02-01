@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface QualityReportFileInfoManager {
 
-  public List<QualityReportFileInfo> getQualityReportFiles()
+  List<QualityReportFileInfo> getQualityReportFiles()
       throws QualityReportFileInfoManagerException;
 
 }

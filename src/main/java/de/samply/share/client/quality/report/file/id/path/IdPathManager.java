@@ -4,17 +4,17 @@ import java.util.List;
 
 public interface IdPathManager {
 
-  public String getCsvFilePath(String fileId);
+  String getCsvFilePath(String fileId);
 
-  public String getExcelFilePath(String fileId);
+  String getExcelFilePath(String fileId);
 
-  public String getMetadataFilePath(String fileId);
+  String getMetadataFilePath(String fileId);
 
-  public List<String> getAllMetadataFilePaths();
+  List<String> getAllMetadataFilePaths();
 
-  public String getFileId(String filePath);
+  String getFileId(String filePath);
 
-  public String getCurrentQualityReportVersion();
+  String getCurrentQualityReportVersion();
 
 
 }

@@ -7,6 +7,7 @@ public class DktkIdType implements Comparable {
 
   /**
    * Todo.
+   *
    * @param dktkId Todo.
    */
   public DktkIdType(String dktkId) {

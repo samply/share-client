@@ -17,8 +17,8 @@ public class ExcelRowContext002 extends ExcelRowContextImpl<ExcelRowParameters00
 
   protected static final Logger logger = LogManager.getLogger(ExcelRowContext002.class);
 
-  private ExcelRowMapper002 excelRowMapper;
-  private AlphabeticallySortedMismatchedQualityResults asmQualityResults;
+  private final ExcelRowMapper002 excelRowMapper;
+  private final AlphabeticallySortedMismatchedQualityResults asmQualityResults;
 
 
   public ExcelRowContext002(ExcelRowMapper002 excelRowMapper, QualityResults qualityResults) {
@@ -27,9 +27,10 @@ public class ExcelRowContext002 extends ExcelRowContextImpl<ExcelRowParameters00
 
   /**
    * Todo.
-   * @param excelRowMapper Todo.
-   * @param qualityResults Todo.
-   * @param asmQualityResults Todo.
+   *
+   * @param excelRowMapper           Todo.
+   * @param qualityResults           Todo.
+   * @param asmQualityResults        Todo.
    * @param qualityResultsStatistics Todo.
    */
   public ExcelRowContext002(ExcelRowMapper002 excelRowMapper, QualityResults qualityResults,

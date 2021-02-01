@@ -184,9 +184,9 @@ public class SchedulerBean implements Serializable {
   }
 
   /**
-   * Check if the trigger assigned to the job is paused.
-   * Iterate through all triggers with cron expressions (should be 0 or 1) assigned to a job. If any
-   * of them is paused, return true. False otherwise.
+   * Check if the trigger assigned to the job is paused. Iterate through all triggers with cron
+   * expressions (should be 0 or 1) assigned to a job. If any of them is paused, return true. False
+   * otherwise.
    *
    * @param jobKey the job key for which the check is performed
    */

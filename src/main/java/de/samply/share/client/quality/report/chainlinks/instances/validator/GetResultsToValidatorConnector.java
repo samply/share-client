@@ -13,7 +13,7 @@ public class GetResultsToValidatorConnector<I extends ChainLinkItem & ValidatorC
 
 
   private I item;
-  private QualityResultsAnalyzer qualityResultsAnalyzer;
+  private final QualityResultsAnalyzer qualityResultsAnalyzer;
 
   public GetResultsToValidatorConnector(ChainLink nextChainLink,
       QualityResultsAnalyzer qualityResultsAnalyzer) {
@@ -33,7 +33,7 @@ public class GetResultsToValidatorConnector<I extends ChainLinkItem & ValidatorC
 
   private I analyze(I chainLinkItem) {
 
-    QualityResults qualityResults = ((ValidatorContext) chainLinkItem).getQualityResults();
+    QualityResults qualityResults = chainLinkItem.getQualityResults();
     QueryResult queryResult = ((ResultContext) chainLinkItem).getQueryResult();
 
     analyze(qualityResults, queryResult);

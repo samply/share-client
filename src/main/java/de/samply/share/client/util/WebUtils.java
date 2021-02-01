@@ -372,11 +372,8 @@ public final class WebUtils {
         .getConfigurationElementValue(EnumConfiguration.CENTRAL_MDS_DATABASE_PATH))) {
       return false;
     }
-    if (SamplyShareUtils
-        .isNullOrEmpty(CredentialsUtil.getCredentialsByTarget(TargetType.TT_CENTRALSEARCH))) {
-      return false;
-    }
-    return true;
+    return !SamplyShareUtils
+        .isNullOrEmpty(CredentialsUtil.getCredentialsByTarget(TargetType.TT_CENTRALSEARCH));
   }
 
   public static String getQueryLanguage() {

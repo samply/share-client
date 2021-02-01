@@ -4,6 +4,6 @@ import de.samply.share.client.quality.report.results.QualityResults;
 
 public interface QualityResultsContext {
 
-  public QualityResults getQualityResults();
+  QualityResults getQualityResults();
 
 }

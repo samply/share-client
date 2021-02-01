@@ -6,7 +6,7 @@ import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import javax.ws.rs.core.Response;
 import org.apache.http.HttpHeaders;
@@ -17,6 +17,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
 public class StoreConnector {
 
   private static final String SAVE_OR_UPDATE_USER = "saveOrUpdateUser";
@@ -26,10 +27,10 @@ public class StoreConnector {
   private static final String DEFAULT_USERNAME = "local_admin";
   private static final String DEFAULT_PASSWORD = "local_admin";
   private static final Logger logger = LogManager.getLogger(StoreConnector.class);
-  public static String authorizedUsername = "";
-  public static String authorizedPassword = "";
   private static final String storeUrl =
       ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL);
+  public static String authorizedUsername = "";
+  public static String authorizedPassword = "";
 
   /**
    * Gets only called after login of Connector UI was successful and handles login logic to Store.
@@ -111,13 +112,8 @@ public class StoreConnector {
    * @return Base64 credentials
    */
   public static String getBase64Credentials(String username, String password) {
-    try {
-      return Base64.getEncoder().encodeToString((username + ":" + password)
-          .getBytes("UTF-8"));
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-    }
-    return null;
+    return Base64.getEncoder().encodeToString((username + ":" + password)
+        .getBytes(StandardCharsets.UTF_8));
   }
 
   /**

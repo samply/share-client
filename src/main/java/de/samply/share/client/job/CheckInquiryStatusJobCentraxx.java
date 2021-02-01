@@ -14,7 +14,7 @@ import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.model.db.tables.pojos.Upload;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.BrokerConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
+import de.samply.share.client.util.connector.LdmConnectorCcp;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.client.util.db.InquiryCriteriaUtil;
@@ -36,8 +36,7 @@ import org.quartz.SchedulerException;
 
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class CheckInquiryStatusJobCentraxx extends
-    AbstractCheckInquiryStatusJob<LdmConnectorCentraxx> {
+public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob<LdmConnectorCcp> {
 
   private static final Logger logger = LogManager.getLogger(CheckInquiryStatusJobCentraxx.class);
 

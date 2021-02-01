@@ -48,6 +48,7 @@ public class ClientConfiguration implements TogglzConfig, FeatureManagerProvider
 
   /**
    * Create a StateRepository.
+   *
    * @return StateRepository
    */
   public StateRepository getStateRepository() {

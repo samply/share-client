@@ -18,10 +18,10 @@ public enum QualityReportFilenameFormat {
   XLSX_001("xlsx", "001", ExcelPattern001.class),
   XLSX_002("xlsx", "002", ExcelPattern002.class);
 
-  private static String META = "META";
-  private String extension;
-  private String version;
-  private Class<? extends QualityReportFilePattern> patternClass;
+  private static final String META = "META";
+  private final String extension;
+  private final String version;
+  private final Class<? extends QualityReportFilePattern> patternClass;
 
   QualityReportFilenameFormat(String extension, String version,
       Class<? extends QualityReportFilePattern> patternClass) {
@@ -34,8 +34,9 @@ public enum QualityReportFilenameFormat {
 
   /**
    * Todo.
+   *
    * @param extension Todo.
-   * @param version Todo.
+   * @param version   Todo.
    * @return Todo.
    */
   public static QualityReportFilenameFormat getQualityReportFilenameFormat(String extension,
@@ -55,6 +56,7 @@ public enum QualityReportFilenameFormat {
 
   /**
    * Todo.
+   *
    * @param filename Todo.
    * @return Todo.
    */
@@ -82,6 +84,7 @@ public enum QualityReportFilenameFormat {
 
   /**
    * Todo.
+   *
    * @param patternClass Todo.
    * @return Todo.
    */
@@ -99,6 +102,7 @@ public enum QualityReportFilenameFormat {
 
   /**
    * Todo.
+   *
    * @param filename Todo.
    * @return Todo.
    */
@@ -115,6 +119,7 @@ public enum QualityReportFilenameFormat {
 
   /**
    * Todo.
+   *
    * @param filePath Todo.
    * @return Todo.
    */
@@ -131,10 +136,9 @@ public enum QualityReportFilenameFormat {
 
   }
 
-
-
   /**
    * Todo.
+   *
    * @param fileId Todo.
    * @return Todo.
    */

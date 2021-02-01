@@ -14,13 +14,14 @@ import java.util.Set;
 
 public class QueryResultWhiteListFilter {
 
-  private Set<String> urnWhiteList = getCentralSearchWhiteList();
+  private final Set<String> urnWhiteList = getCentralSearchWhiteList();
 
 
   /**
-   * Todo.
-   * @param queryResult Todo.
-   * @return Todo.
+   * Filters attributes of a query result.
+   *
+   * @param queryResult Query Result to be filtered.
+   * @return Query Result already filtered.
    */
   public QueryResult filter(QueryResult queryResult) {
 
@@ -86,7 +87,7 @@ public class QueryResultWhiteListFilter {
   }
 
   private boolean isInCentralSearchWhiteList(Attribute attribute) {
-    return (attribute != null) ? isInCentralSearchWhiteList(attribute.getMdrKey()) : false;
+    return attribute != null && isInCentralSearchWhiteList(attribute.getMdrKey());
   }
 
   private boolean isInCentralSearchWhiteList(String urn) {

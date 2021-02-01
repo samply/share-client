@@ -43,18 +43,19 @@ public class QualityReportChain implements Chain {
 
   private int maxAttempts;
   private ChainLinkTimerFactory chainLinkTimerFactory;
-  private ChainLinkStatisticsFactory chainLinkStatisticsFactory;
+  private final ChainLinkStatisticsFactory chainLinkStatisticsFactory;
 
-  private ChainLink firstChainLink;
+  private final ChainLink firstChainLink;
   private String fileId;
-  private ChainStatistics chainStatistics = new ChainStatisticsImpl();
+  private final ChainStatistics chainStatistics = new ChainStatisticsImpl();
   private ChainLinkFinalizer chainLinkFinalizer;
 
 
   /**
-   * Todo.
-   * @param chainParameters Todo.
-   * @throws QualityReportChainException Todo.
+   * Chain of processes in order to create a quality report.
+   *
+   * @param chainParameters Encapsulates parameters of the class.
+   * @throws QualityReportChainException Encapsulates exceptions of the class.
    */
   public QualityReportChain(ChainParameters chainParameters) throws QualityReportChainException {
 
@@ -235,9 +236,9 @@ public class QualityReportChain implements Chain {
 
     String availability = ConfigurationUtil
         .getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_ONLY_STATISTICS_AVAILABLE);
-    Boolean isAvailable = (availability == null) ? true : convertToBoolean(availability);
+    Boolean isAvailable = availability == null || convertToBoolean(availability);
 
-    return (isAvailable == null) ? true : isAvailable;
+    return isAvailable == null || isAvailable;
 
   }
 

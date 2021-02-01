@@ -12,10 +12,11 @@ import java.nio.charset.StandardCharsets;
 public class FileLoader {
 
   /**
-   * Todo.
-   * @param filenameReader Todo.
-   * @param loader Todo.
-   * @throws CentraxxMapperException Todo.
+   * Loads a file for the quality report.
+   *
+   * @param filenameReader Returns filename to be loaded.
+   * @param loader         Class that indicates how to parse each line of the file to be loaded.
+   * @throws CentraxxMapperException Exception that encapsulates exceptions of the class.
    */
   public void load(FilenameReader filenameReader, LineLoader loader)
       throws CentraxxMapperException {
@@ -74,12 +75,12 @@ public class FileLoader {
 
   public interface FilenameReader {
 
-    public String getFilename();
+    String getFilename();
   }
 
   public interface LineLoader {
 
-    public void load(String line);
+    void load(String line);
   }
 
 }

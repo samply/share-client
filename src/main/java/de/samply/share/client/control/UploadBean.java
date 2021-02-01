@@ -114,7 +114,8 @@ public class UploadBean implements Serializable {
   }
 
   /**
-   * Load the selected upload (selected by view parameter) and the corresponding event log messages.
+   * Load the selected upload (selected by view parameter) and the corresponding event log
+   * messages.
    */
   public void loadSelectedUpload() {
     selectedUpload = UploadUtil.fetchUploadById(selectedUploadId);
@@ -129,10 +130,9 @@ public class UploadBean implements Serializable {
   }
 
   /**
-   * Spawn a new Upload to central search.
-   * Depending on the setting of the switches on the page, spawn either an upload or dry run - a
-   * full or an incremental upload and either upload patient datasets for patients with explicit
-   * dktk consent or those without that.
+   * Spawn a new Upload to central search. Depending on the setting of the switches on the page,
+   * spawn either an upload or dry run - a full or an incremental upload and either upload patient
+   * datasets for patients with explicit dktk consent or those without that.
    *
    * @return navigation information
    */

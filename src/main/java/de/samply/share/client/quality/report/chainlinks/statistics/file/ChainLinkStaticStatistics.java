@@ -7,14 +7,15 @@ import java.util.Map;
 public class ChainLinkStaticStatistics {
 
 
-  private Map<ChainLinkStatisticKey, ChainLinkStaticStatisticsParameters>
+  private final Map<ChainLinkStatisticKey, ChainLinkStaticStatisticsParameters>
       chainLinkStaticStatisticsParametersMap = new HashMap<>();
 
 
   /**
-   * Todo.
-   * @param chainLinkStatisticKey Todo.
-   * @param chainLinkStaticStatisticsParameters Todo.
+   * Put chain link statistic identifier.
+   *
+   * @param chainLinkStatisticKey               Chain Link identifier.
+   * @param chainLinkStaticStatisticsParameters Encapsulates paramters oc chain link statistic.
    */
   public void put(ChainLinkStatisticKey chainLinkStatisticKey,
       ChainLinkStaticStatisticsParameters chainLinkStaticStatisticsParameters) {
@@ -25,9 +26,10 @@ public class ChainLinkStaticStatistics {
   }
 
   /**
-   * Todo.
-   * @param chainLinkStatisticKey Todo.
-   * @return Todo.
+   * get chain link statistics parameters of the statistics of a  chain link.
+   *
+   * @param chainLinkStatisticKey Identifier of the chain link statistics.
+   * @return Paramters of chain link statistics.
    */
   public ChainLinkStaticStatisticsParameters get(ChainLinkStatisticKey chainLinkStatisticKey) {
 

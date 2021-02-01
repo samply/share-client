@@ -16,7 +16,7 @@ public class BrokerUtil {
 
   private static final Logger logger = LogManager.getLogger(BrokerUtil.class);
 
-  private static BrokerDao brokerDao;
+  private static final BrokerDao brokerDao;
 
   static {
     brokerDao = new BrokerDao(ResourceManager.getConfiguration());

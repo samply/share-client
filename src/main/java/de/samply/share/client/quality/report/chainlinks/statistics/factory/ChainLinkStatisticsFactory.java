@@ -5,7 +5,7 @@ import de.samply.share.client.quality.report.chainlinks.statistics.chainlink.Cha
 
 public interface ChainLinkStatisticsFactory {
 
-  public ChainLinkStatistics createChainLinkStatistics(ChainLinkStatisticKey chainLinkStatisticKey)
+  ChainLinkStatistics createChainLinkStatistics(ChainLinkStatisticKey chainLinkStatisticKey)
       throws ChainLinkStatisticsFactoryException;
 
 }

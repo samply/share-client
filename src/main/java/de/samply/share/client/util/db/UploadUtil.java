@@ -17,7 +17,7 @@ public class UploadUtil {
 
   private static final Logger logger = LogManager.getLogger(UploadUtil.class);
 
-  private static UploadDao uploadDao;
+  private static final UploadDao uploadDao;
 
   static {
     uploadDao = new UploadDao(ResourceManager.getConfiguration());

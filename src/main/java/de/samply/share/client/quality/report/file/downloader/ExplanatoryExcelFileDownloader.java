@@ -8,7 +8,7 @@ import java.io.File;
 public class ExplanatoryExcelFileDownloader extends FileDownloaderImpl {
 
   /**
-   * Todo.
+   * Downloads explanatory excel file that will be added to the quality report.
    */
   public ExplanatoryExcelFileDownloader() {
 
@@ -26,8 +26,9 @@ public class ExplanatoryExcelFileDownloader extends FileDownloaderImpl {
   }
 
   /**
-   * Todo.
-   * @return Todo.
+   * Gets file path of explanatory file.
+   *
+   * @return Path of explanatory file.
    */
   public String getFilePath() {
 
@@ -41,8 +42,9 @@ public class ExplanatoryExcelFileDownloader extends FileDownloaderImpl {
   }
 
   /**
-   * Todo.
-   * @return Todo.
+   * Get explanatory file.
+   *
+   * @return Explanatory file.
    */
   public File getFile() {
 

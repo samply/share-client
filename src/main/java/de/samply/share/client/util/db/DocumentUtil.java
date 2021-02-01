@@ -20,7 +20,7 @@ public class DocumentUtil {
 
   private static final Logger logger = LogManager.getLogger(DocumentUtil.class);
 
-  private static DocumentDao documentDao;
+  private static final DocumentDao documentDao;
 
   static {
     documentDao = new DocumentDao(ResourceManager.getConfiguration());

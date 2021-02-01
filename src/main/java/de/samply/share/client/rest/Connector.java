@@ -23,6 +23,7 @@ import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.client.util.db.UserSeenInquiryUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.GET;
@@ -67,6 +68,7 @@ public class Connector {
 
   /**
    * Get the labels for the requested entities.
+   *
    * @param requestedEntities the requested entities.
    * @return a list of labels
    */
@@ -105,7 +107,8 @@ public class Connector {
   /**
    * Check if the logged in user has permission to see the active inquiries. If yes, then load the
    * active inquiries.
-   * @param userId the user id
+   *
+   * @param userId           the user id
    * @param authStringBase64 basicAuth
    * @return UNAUTHORIZED or a list of active inquiries
    */
@@ -132,7 +135,8 @@ public class Connector {
   /**
    * Check if the logged in user has permission to see the erroneous inquiries. If yes, then load
    * the erroneous inquiries.
-   * @param userId the user id
+   *
+   * @param userId           the user id
    * @param authStringBase64 basicAuth
    * @return UNAUTHORIZED or a list of erroneous inquiries
    */
@@ -159,7 +163,8 @@ public class Connector {
   /**
    * Check if the logged in user has permission to see the archived inquiries. If yes, then load the
    * archived inquiries.
-   * @param userId the user id
+   *
+   * @param userId           the user id
    * @param authStringBase64 basicAuth
    * @return UNAUTHORIZED or a list of archived inquiries
    */
@@ -188,8 +193,9 @@ public class Connector {
   }
 
   /**
-   * Check if the logged in user has permission to see the log events. If yes, then load the
-   * log events.
+   * Check if the logged in user has permission to see the log events. If yes, then load the log
+   * events.
+   *
    * @param authStringBase64 basicAuth
    * @return UNAUTHORIZED or a list of log events.
    */
@@ -219,7 +225,7 @@ public class Connector {
     String credentials =
         new String(
             org.apache.commons.codec.binary.Base64.decodeBase64(base64Credentials),
-            Charset.forName("UTF-8"));
+            StandardCharsets.UTF_8);
     final String[] values = credentials.split(":", 2);
     if (values.length != 2) {
       //logger.debug ("auth2");
@@ -229,12 +235,9 @@ public class Connector {
       //logger.debug ("auth3");
       return false;
     }
-    if (!StringUtils.equals(StoreConnector.authorizedPassword, values[1])) {
-      //logger.debug ("auth4");
-      return false;
-    }
+    //logger.debug ("auth4");
+    return StringUtils.equals(StoreConnector.authorizedPassword, values[1]);
     //logger.debug ("auth5");
-    return true;
   }
 
   private String addDataBracket(Object object) {
@@ -324,8 +327,7 @@ public class Connector {
   private InquiryLine setSeen(Integer userId, Inquiry inquiry, InquiryLine inquiryLine) {
 
     boolean seen =
-        (userId != null) ? UserSeenInquiryUtil.hasUserSeenInquiryByIds(userId, inquiry.getId())
-            : false;
+        userId != null && UserSeenInquiryUtil.hasUserSeenInquiryByIds(userId, inquiry.getId());
     inquiryLine.setSeen(seen);
 
     return inquiryLine;

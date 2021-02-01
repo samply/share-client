@@ -174,7 +174,6 @@ public class LocalDataManagementRequesterImpl2 extends LocalDataManagementConnec
   }
 
 
-
   private <T> LocalDataManagementResponse<T> getLocalDataManagementResponse(MyUri myUri,
       LdmUnmarshaller<T> ldmUnmarshaller) throws LocalDataManagementRequesterException {
 

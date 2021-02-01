@@ -13,6 +13,7 @@ import de.samply.share.client.model.db.tables.pojos.Credentials;
 import de.samply.share.client.model.db.tables.records.CredentialsRecord;
 import de.samply.share.common.utils.SamplyShareUtils;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +27,7 @@ public class CredentialsUtil {
 
   private static final Logger logger = LogManager.getLogger(CredentialsUtil.class);
 
-  private static CredentialsDao credentialsDao;
+  private static final CredentialsDao credentialsDao;
 
   static {
     credentialsDao = new CredentialsDao(ResourceManager.getConfiguration());
@@ -228,18 +229,16 @@ public class CredentialsUtil {
 
   /**
    * Get the basic auth credentials for the local data management.
+   *
    * @return basic auth
    */
   public static String getBasicAuthStringForLdm() {
-    try {
-      for (Credentials credentials : fetchCredentials()) {
-        if (credentials.getTarget() == TargetType.TT_LDM) {
-          return "Basic " + DatatypeConverter.printBase64Binary(
-              (credentials.getUsername() + ":" + credentials.getPasscode()).getBytes("UTF-8"));
-        }
+    for (Credentials credentials : fetchCredentials()) {
+      if (credentials.getTarget() == TargetType.TT_LDM) {
+        return "Basic " + DatatypeConverter.printBase64Binary(
+            (credentials.getUsername() + ":" + credentials.getPasscode()).getBytes(
+                StandardCharsets.UTF_8));
       }
-    } catch (UnsupportedEncodingException e) {
-      return "";
     }
     return "";
   }

@@ -7,8 +7,8 @@ public enum NaturalLanguageBoolean {
   COMPUTER(new Boolean(true).toString(), new Boolean(false).toString());
 
 
-  private String yes;
-  private String no;
+  private final String yes;
+  private final String no;
 
   NaturalLanguageBoolean(String yes, String no) {
     this.yes = yes;

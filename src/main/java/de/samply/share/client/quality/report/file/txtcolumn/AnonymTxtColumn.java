@@ -7,7 +7,7 @@ import java.util.Map;
 public class AnonymTxtColumn implements TxtColumn {
 
   private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-  private Map<String, String> values = new HashMap<>();
+  private final Map<String, String> values = new HashMap<>();
 
   public void addElement(String key, String value) {
     values.put(key, value);

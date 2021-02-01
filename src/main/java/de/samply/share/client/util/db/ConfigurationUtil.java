@@ -29,8 +29,8 @@ public class ConfigurationUtil {
 
   private static final Logger logger = LogManager.getLogger(ConfigurationUtil.class);
 
-  private static ConfigurationDao configurationDao;
-  private static ConfigurationTimingsDao configurationTimingsDao;
+  private static final ConfigurationDao configurationDao;
+  private static final ConfigurationTimingsDao configurationTimingsDao;
 
   static {
     configurationDao = new ConfigurationDao(ResourceManager.getConfiguration());
@@ -154,7 +154,8 @@ public class ConfigurationUtil {
   }
 
   /**
-   * Insert a configuration timing element into the database or update it, if it is already present.
+   * Insert a configuration timing element into the database or update it, if it is already
+   * present.
    *
    * @param configurationTimings the configuration timing element to insert or update
    */
@@ -186,6 +187,7 @@ public class ConfigurationUtil {
 
   /**
    * Get the settings for a configuration element.
+   *
    * @param configurationElement configurationElement
    * @return a list of the settings
    */

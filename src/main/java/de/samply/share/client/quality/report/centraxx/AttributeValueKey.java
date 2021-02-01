@@ -6,8 +6,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class AttributeValueKey {
 
-  private String mdrId;
-  private String value;
+  private final String mdrId;
+  private final String value;
 
 
   public AttributeValueKey(String mdrId, String value) {

@@ -16,8 +16,9 @@ public class QualityResultsAnalyzer {
 
   /**
    * Todo.
+   *
    * @param qualityResults Todo.
-   * @param queryResult Todo.
+   * @param queryResult    Todo.
    * @return Todo.
    */
   public QualityResults analyze(QualityResults qualityResults, QueryResult queryResult) {

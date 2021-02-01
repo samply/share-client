@@ -7,8 +7,9 @@ public abstract class ConfigurationChainLink extends ChainLink {
   private static final String TASK = "ChainLink";
 
   /**
-   * Todo.
-   * @return Todo.
+   * Get chain link task.
+   *
+   * @return chain link task.
    */
   public static String getChainLinkTask() {
 

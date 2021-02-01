@@ -4,8 +4,8 @@ import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.util.db.ConfigurationUtil;
 
 /**
- * The settings for an ReportToMonitoringJob are kept in an instance of this class.
- * Reads the settings for checks to perform from the database.
+ * The settings for an ReportToMonitoringJob are kept in an instance of this class. Reads the
+ * settings for checks to perform from the database.
  */
 public class ReportToMonitoringJobParams {
 
@@ -57,6 +57,7 @@ public class ReportToMonitoringJobParams {
 
   /**
    * Is any of the (currently) four checks enabled?.
+   *
    * @return true if one ore more are enabled, false otherwise
    */
   public boolean anyCheckToPerform() {

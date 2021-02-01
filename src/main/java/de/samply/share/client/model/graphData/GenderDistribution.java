@@ -21,6 +21,7 @@ public class GenderDistribution {
 
   /**
    * The result count for a given gender.
+   *
    * @param gender the gender
    * @return the result by gender
    */

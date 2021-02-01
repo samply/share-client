@@ -177,6 +177,7 @@ public class UserBean implements Serializable {
 
   /**
    * Get the user notification settings for a user.
+   *
    * @param user the user
    * @return user notification settings
    */
@@ -199,7 +200,8 @@ public class UserBean implements Serializable {
 
   /**
    * Add or delete user notifications for a entityType.
-   * @param user the user
+   *
+   * @param user   the user
    * @param entity the entity
    */
   public void toggleUserNotification(User user, EntityType entity) {

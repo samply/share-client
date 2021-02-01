@@ -18,7 +18,7 @@ public class InquiryHandlingRuleUtil {
 
   private static final Logger logger = LogManager.getLogger(InquiryHandlingRuleUtil.class);
 
-  private static InquiryHandlingRuleDao inquiryHandlingRuleDao;
+  private static final InquiryHandlingRuleDao inquiryHandlingRuleDao;
 
   static {
     inquiryHandlingRuleDao = new InquiryHandlingRuleDao(ResourceManager.getConfiguration());
@@ -81,8 +81,8 @@ public class InquiryHandlingRuleUtil {
   }
 
   /**
-   * Check if results shall be requested for a given inquiry.
-   * Checks inquiry handling rules for the broker it was received from.
+   * Check if results shall be requested for a given inquiry. Checks inquiry handling rules for the
+   * broker it was received from.
    *
    * @param inquiry the inquiry for which to check
    * @return if the results shall be generated

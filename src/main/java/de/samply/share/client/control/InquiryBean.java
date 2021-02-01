@@ -23,6 +23,7 @@ import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.model.db.tables.pojos.InquiryResultStats;
 import de.samply.share.client.model.db.tables.pojos.RequestedEntity;
+import de.samply.share.client.quality.report.logger.PercentageLogger;
 import de.samply.share.client.rest.Connector;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.WebUtils;
@@ -138,8 +139,13 @@ public class InquiryBean implements Serializable {
 
     switch (ApplicationUtils.getConnectorType()) {
       case DKTK:
+
         QueryResult queryResultPageCcp = (QueryResult) queryResultPage;
+        PercentageLogger percentageLogger = new PercentageLogger(logger,
+            queryResultPageCcp.getPatient().size(), "building tree model...");
+
         for (de.samply.share.model.ccp.Patient patient : queryResultPageCcp.getPatient()) {
+
           de.samply.share.model.ccp.Container patientContainer =
               new de.samply.share.model.ccp.Container();
           patientContainer.getAttribute().addAll(patient.getAttribute());
@@ -153,6 +159,9 @@ public class InquiryBean implements Serializable {
             e.printStackTrace();
           }
           containerTree = visitContainerNode(containerTree, containerTmp);
+
+          percentageLogger.incrementCounter();
+
         }
         break;
 
@@ -182,8 +191,8 @@ public class InquiryBean implements Serializable {
   }
 
   /**
-   * Add the information from the container to the parent node in the tree.
-   * Do this recursively for the sub-containers as well.
+   * Add the information from the container to the parent node in the tree. Do this recursively for
+   * the sub-containers as well.
    *
    * @param parentNode the treenode to which the container information will be attached
    * @param node       the container entity
@@ -366,14 +375,16 @@ public class InquiryBean implements Serializable {
           .fetchInquiryResultsForInquiryDetailsById(latestInquiryDetails.getId());
       UserSeenInquiryUtil.setUserSeenInquiry(loginBean.getUser(), inquiry);
       //TODO create criteriaTree with cql query
-      if (ApplicationUtils.isLanguageQuery()) {
-        this.inquiryCriteria.add(InquiryCriteriaUtil
-            .getFirstCriteriaOriginal(latestInquiryDetails, QueryLanguageType.QL_QUERY));
-        latestOriginalCriteriaTree = populateCriteriaTree(
-            inquiryCriteria.get(0).getCriteriaOriginal());
-      } else {
-        this.inquiryCriteria = InquiryCriteriaUtil
-            .getInquiryCriteriaForInquiryDetails(latestInquiryDetails);
+      if (inquiryCriteria != null) {
+        if (ApplicationUtils.isLanguageQuery()) {
+          this.inquiryCriteria.add(InquiryCriteriaUtil
+              .getFirstCriteriaOriginal(latestInquiryDetails, QueryLanguageType.QL_QUERY));
+          latestOriginalCriteriaTree = populateCriteriaTree(
+              inquiryCriteria.get(0).getCriteriaOriginal());
+        } else {
+          this.inquiryCriteria = InquiryCriteriaUtil
+              .getInquiryCriteriaForInquiryDetails(latestInquiryDetails);
+        }
       }
 
       List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
@@ -526,6 +537,7 @@ public class InquiryBean implements Serializable {
    */
   private void populateQueryResult() throws LdmConnectorException {
     String queryResultLocation = latestInquiryResult.getLocation();
+    logger.info("getting page 0...");
     switch (ApplicationUtils.getConnectorType()) {
       case DKTK:
         latestQueryResult = (QueryResult) ldmConnector.getResultsFromPage(queryResultLocation, 0);
@@ -541,8 +553,8 @@ public class InquiryBean implements Serializable {
   }
 
   /**
-   * Load another page of the result.
-   * Page number comes from the paginator widget on the results page.
+   * Load another page of the result. Page number comes from the paginator widget on the results
+   * page.
    */
   public void changeResultPage() {
     int page = 0;
@@ -554,6 +566,7 @@ public class InquiryBean implements Serializable {
     }
 
     try {
+      logger.info("getting results... page " + page);
       switch (ApplicationUtils.getConnectorType()) {
         case DKTK:
           latestQueryResult = (QueryResult) ldmConnector
@@ -692,9 +705,8 @@ public class InquiryBean implements Serializable {
   }
 
   /**
-   * Send a reply back to the broker.
-   * Currently only supports the size.
-   * TODO: Add support for other reply types TODO: Add success/error message
+   * Send a reply back to the broker. Currently only supports the size. TODO: Add support for other
+   * reply types TODO: Add success/error message
    */
   public String reply() {
     try {
@@ -747,8 +759,7 @@ public class InquiryBean implements Serializable {
   }
 
   /**
-   * Delete a document with the given elementId.
-   * The id is transmitted via http request parameter.
+   * Delete a document with the given elementId. The id is transmitted via http request parameter.
    */
   public void deleteDocument() {
     String documentIdString = Faces.getRequestParameter("elementId");

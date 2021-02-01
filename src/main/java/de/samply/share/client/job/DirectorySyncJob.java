@@ -25,7 +25,7 @@ import org.quartz.JobExecutionException;
 public class DirectorySyncJob implements Job {
 
   private static final Logger logger = LogManager.getLogger(DirectorySyncJob.class);
-  private FhirContext ctx = FhirContext.forR4();
+  private final FhirContext ctx = FhirContext.forR4();
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {

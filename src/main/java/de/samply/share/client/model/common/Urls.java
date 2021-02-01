@@ -50,6 +50,11 @@ public class Urls {
   @XmlSchemaType(name = "anyURI")
   @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
       comments = "JAXB RI v2.2.8-b130911.1802")
+  protected String idmanagerApiKey;
+  @XmlElement(namespace = "http://schema.samply.de/common", required = true)
+  @XmlSchemaType(name = "anyURI")
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
   protected String ldmUrl;
   @XmlElement(namespace = "http://schema.samply.de/common", required = true)
   @XmlSchemaType(name = "anyURI")
@@ -105,6 +110,29 @@ public class Urls {
   public void setIdmanagerUrl(String value) {
     this.idmanagerUrl = value;
   }
+
+  /**
+   * Gets the value of the idmanagerApiKey property.
+   *
+   * @return possible object is {@link String }
+   */
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
+  public String getIdmanagerApiKey() {
+    return idmanagerApiKey;
+  }
+
+  /**
+   * Sets the value of the idmanagerApiKey property.
+   *
+   * @param value allowed object is {@link String }
+   */
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
+  public void setIdmanagerApiKey(String value) {
+    this.idmanagerApiKey = value;
+  }
+
 
   /**
    * Gets the value of the ldmUrl property.

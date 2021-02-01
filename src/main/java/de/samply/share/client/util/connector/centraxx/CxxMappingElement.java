@@ -8,10 +8,10 @@ import java.util.Set;
 
 public class CxxMappingElement {
 
+  private final Map<String, Set<String>> mdrValueCxxValueMap = new HashMap<>();
   private MdrIdDatatype mdrId;
   private String mdrName;
   private String teilerBaseViewColumn;
-  private final Map<String, Set<String>> mdrValueCxxValueMap = new HashMap<>();
 
   public MdrIdDatatype getMdrId() {
     return mdrId;

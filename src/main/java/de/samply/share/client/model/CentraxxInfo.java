@@ -11,6 +11,7 @@ public class CentraxxInfo {
 
   /**
    * Get the version of Centraxx.
+   *
    * @return the centraxxVersion
    */
   public String getCentraxxVersion() {
@@ -19,6 +20,7 @@ public class CentraxxInfo {
 
   /**
    * Set the version of Centraxx.
+   *
    * @param centraxxVersion the centraxxVersion to set
    */
   public void setCentraxxVersion(String centraxxVersion) {
@@ -27,6 +29,7 @@ public class CentraxxInfo {
 
   /**
    * Get the current session count.
+   *
    * @return the currentSessionCount
    */
   public String getCurrentSessionCount() {
@@ -35,6 +38,7 @@ public class CentraxxInfo {
 
   /**
    * Set the current session count.
+   *
    * @param currentSessionCount the currentSessionCount to set
    */
   public void setCurrentSessionCount(String currentSessionCount) {
@@ -43,6 +47,7 @@ public class CentraxxInfo {
 
   /**
    * Get the status.
+   *
    * @return the status
    */
   public String getStatus() {
@@ -51,6 +56,7 @@ public class CentraxxInfo {
 
   /**
    * Set the status.
+   *
    * @param status the status to set
    */
   public void setStatus(String status) {

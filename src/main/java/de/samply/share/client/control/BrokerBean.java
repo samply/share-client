@@ -1,5 +1,3 @@
-
-
 package de.samply.share.client.control;
 
 import static de.samply.share.client.model.db.enums.BrokerStatusType.BS_OK;
@@ -133,9 +131,8 @@ public class BrokerBean implements Serializable {
   }
 
   /**
-   * Remove a broker and the corresponding credentials.
-   * Send a command to delete this instance of the client from the broker and delete the broker
-   * information from db.
+   * Remove a broker and the corresponding credentials. Send a command to delete this instance of
+   * the client from the broker and delete the broker information from db.
    *
    * @param broker the broker to delete
    * @return navigation information
@@ -159,7 +156,7 @@ public class BrokerBean implements Serializable {
       return brokerConnector.unregister();
     } catch (BrokerConnectorException e) {
       logger.debug("Exception caught while trying to delete this client from broker "
-              + broker.getAddress(), e);
+          + broker.getAddress(), e);
       return false;
     }
   }

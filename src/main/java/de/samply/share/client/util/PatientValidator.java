@@ -30,7 +30,7 @@ public class PatientValidator {
   private static final String PREFIX_CASE_INSENSITIVE = "(?i)";
 
 
-  private MdrClient mdrClient;
+  private final MdrClient mdrClient;
 
 
   public PatientValidator(MdrClient mdrClient) {
@@ -39,6 +39,7 @@ public class PatientValidator {
 
   /**
    * Todo.
+   *
    * @param patient Todo.
    * @return Todo.
    */
@@ -141,8 +142,8 @@ public class PatientValidator {
 
   private class PatientAttributeFixer extends PatientAttributeOperator {
 
-    private StringBuilder stringBuilder = new StringBuilder();
-    private Patient patient;
+    private final StringBuilder stringBuilder = new StringBuilder();
+    private final Patient patient;
 
     public PatientAttributeFixer(Patient patient) {
       this.patient = patient;

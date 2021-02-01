@@ -15,8 +15,8 @@ public class DktkIdMdrIdConverterImpl implements DktkIdMdrIdConverter {
   private static final String DKTK_ID = "DKTK_ID";
   private static final String ADT_ID = "ADT_ID";
 
-  private MdrClient mdrClient;
-  private Map<MdrIdDatatype, String> dktkIds = new HashMap<>();
+  private final MdrClient mdrClient;
+  private final Map<MdrIdDatatype, String> dktkIds = new HashMap<>();
 
 
   public DktkIdMdrIdConverterImpl(MdrClient mdrClient) {

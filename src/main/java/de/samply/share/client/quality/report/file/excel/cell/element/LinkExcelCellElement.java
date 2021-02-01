@@ -7,7 +7,7 @@ import org.apache.poi.ss.usermodel.Hyperlink;
 
 public class LinkExcelCellElement<T> extends ExcelCellElement<T> {
 
-  private String link;
+  private final String link;
 
 
   public LinkExcelCellElement(String link, T element) {

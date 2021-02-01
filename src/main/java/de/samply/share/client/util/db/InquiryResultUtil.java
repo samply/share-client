@@ -19,7 +19,7 @@ public class InquiryResultUtil {
 
   private static final Logger logger = LogManager.getLogger(InquiryResultUtil.class);
 
-  private static InquiryResultDao inquiryResultDao;
+  private static final InquiryResultDao inquiryResultDao;
 
   static {
     inquiryResultDao = new InquiryResultDao(ResourceManager.getConfiguration());
@@ -84,6 +84,7 @@ public class InquiryResultUtil {
 
   /**
    * Get the last result for a inquiryCriteria by Id.
+   *
    * @param inquiryCriteriaId id of inquiryCriteria
    * @return InquiryResult of the InquiryCriteria
    */

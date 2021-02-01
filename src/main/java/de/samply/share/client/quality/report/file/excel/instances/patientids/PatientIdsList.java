@@ -8,16 +8,17 @@ import java.util.List;
 
 public class PatientIdsList implements Iterable<List<String>> {
 
-  private List<List<String>> lists = new ArrayList<>();
+  private final List<List<String>> lists = new ArrayList<>();
   private List<String> maxList = new ArrayList<>();
 
   /**
-   * Todo.
-   * @param myCollection Todo.
+   * add collection of patient ids.
+   *
+   * @param patientIds List of patient ids.
    */
-  public void addList(Collection<String> myCollection) {
+  public void addList(Collection<String> patientIds) {
 
-    List<String> myList = new ArrayList<>(myCollection);
+    List<String> myList = new ArrayList<>(patientIds);
     Collections.sort(myList);
 
     lists.add(myList);
@@ -40,7 +41,7 @@ public class PatientIdsList implements Iterable<List<String>> {
   private class PatientIdsIterator implements Iterator<List<String>> {
 
     int index = 0;
-    private Iterator<String> myIterator;
+    private final Iterator<String> myIterator;
 
     public PatientIdsIterator() {
       myIterator = maxList.iterator();

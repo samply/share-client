@@ -11,7 +11,7 @@ public class ViewFromToSchedulerByMonthImpl implements ViewFromToScheduler {
 
   private int numberOfYears = 20;
   private int groupsModul = 5;
-  private ViewFromToFactory viewFromToFactory;
+  private final ViewFromToFactory viewFromToFactory;
 
   public ViewFromToSchedulerByMonthImpl(ViewFromToFactory viewFromToFactory) {
     this.viewFromToFactory = viewFromToFactory;

@@ -12,15 +12,16 @@ import de.samply.share.common.utils.MdrIdDatatype;
 public class DataElementStatsExcelRowMapper {
 
 
-  private ExcelRowMapperUtils excelRowMapperUtils;
-  private DktkIdMdrIdConverter dktkIdManager;
-  private CentraxxMapper centraXxMapper;
+  private final ExcelRowMapperUtils excelRowMapperUtils;
+  private final DktkIdMdrIdConverter dktkIdManager;
+  private final CentraxxMapper centraXxMapper;
 
   /**
-   * ToDo.
-   * @param dktkIdManager ToDo.
-   * @param excelRowMapperUtils ToDo.
-   * @param centraXxMapper ToDo.
+   * Excel row containing additional information for the quality report.
+   *
+   * @param dktkIdManager       Mapper mdr id - DKTK-ID.
+   * @param excelRowMapperUtils Additional information related to the mdr data element.
+   * @param centraXxMapper      Mapper mdr data element - centraxx data element.
    */
   public DataElementStatsExcelRowMapper(DktkIdMdrIdConverter dktkIdManager,
       ExcelRowMapperUtils excelRowMapperUtils, CentraxxMapper centraXxMapper) {
@@ -32,10 +33,11 @@ public class DataElementStatsExcelRowMapper {
   }
 
   /**
-   * ToDo.
-   * @param excelRowParameters ToDo.
-   * @return ToDo.
-   * @throws ExcelRowMapperException ToDo.
+   * Convert excel row parameters in data element stats excel row.
+   *
+   * @param excelRowParameters Excel row parameter.
+   * @return Data element stats excel row.
+   * @throws ExcelRowMapperException Encapsulates exceptions within the class.
    */
   public DataElementStatsExcelRowElements convert(
       DataElementStatsExcelRowParameters excelRowParameters) throws ExcelRowMapperException {

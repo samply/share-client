@@ -11,9 +11,10 @@ public class ConnectCheckResult {
 
   /**
    * Set the values for the component which getting checked.
+   *
    * @param reachable if the component is reachable
-   * @param name name of the component
-   * @param version version of the component
+   * @param name      name of the component
+   * @param version   version of the component
    */
   public ConnectCheckResult(boolean reachable, String name, String version) {
     this.reachable = reachable;

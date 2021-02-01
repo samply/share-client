@@ -5,6 +5,6 @@ import de.samply.share.client.quality.report.file.id.filename.QualityReportFileP
 
 public interface ExcelPattern extends QualityReportFilePattern {
 
-  public ExcelWorkbookFactory createExcelWorkbookFactory();
+  ExcelWorkbookFactory createExcelWorkbookFactory();
 
 }

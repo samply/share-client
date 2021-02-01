@@ -58,8 +58,8 @@ public class ConfigurationBean implements Serializable {
     for (EnumConfigurationTimings conf : EnumConfigurationTimings.values()) {
       if (ApplicationUtils.isDktk()
           || (ApplicationUtils.isSamply() && !conf.name()
-              .equals("UPLOAD_RETRY_PATIENT_UPLOAD_ATTEMPTS") && !conf.name()
-              .equals("UPLOAD_RETRY_PATIENT_UPLOAD_INTERVAL"))) {
+          .equals("UPLOAD_RETRY_PATIENT_UPLOAD_ATTEMPTS") && !conf.name()
+          .equals("UPLOAD_RETRY_PATIENT_UPLOAD_INTERVAL"))) {
         ConfigurationTimings configurationTimingsElement = ConfigurationUtil
             .getConfigurationTimingsElement(conf);
         configurationTimingsMap.put(conf, configurationTimingsElement.getSetting());
