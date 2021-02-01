@@ -11,6 +11,7 @@ import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.crypt.Crypt;
+import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.fhir.FhirResource;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.util.db.ConfigurationUtil;
@@ -49,7 +50,6 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.Bundle;
-import org.jooq.tools.json.ParseException;
 
 public class CtsConnector {
 
@@ -100,11 +100,14 @@ public class CtsConnector {
     Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
     // Serialize into a JSON String
     String pseudonymBundleJson = fhirResource.convertBundleToXml(pseudonymBundle)
-        .replace("><",">\r\n<");
-    String encryptedIds = searchForIds(pseudonymBundleJson, true);
+        .replace("><", ">\r\n<");
+    if (ApplicationBean.getFeatureManager().getFeatureState(ClientFeature.NNGM_ENCRYPT_ID)
+        .isEnabled()) {
+       pseudonymBundleJson = searchForIds(pseudonymBundleJson, true);
+    }
 
     // Set up the API call
-    HttpEntity entity = new StringEntity(encryptedIds, Consts.UTF_8);
+    HttpEntity entity = new StringEntity(pseudonymBundleJson, Consts.UTF_8);
     HttpPost httpPost = new HttpPost(ctsBaseUrl);
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_CTS_FHIR_JSON);
     httpPost.setEntity(entity);
