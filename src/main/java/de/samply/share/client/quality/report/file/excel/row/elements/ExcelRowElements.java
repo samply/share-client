@@ -30,10 +30,10 @@ public abstract class ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Add excel cell style.
    *
-   * @param excelCellStyle Todo.
-   * @param ordinal        Todo.
+   * @param excelCellStyle excel cell style to row.
+   * @param ordinal        number of column.
    */
   public void addExcelCellStyle(ExcelCellStyle excelCellStyle, int ordinal) {
 
