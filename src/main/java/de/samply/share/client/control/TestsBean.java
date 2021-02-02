@@ -10,7 +10,7 @@ import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.AbstractLdmConnectorView;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.CentralSearchConnector;
-import de.samply.share.client.util.connector.IdManagerConnector;
+import de.samply.share.client.util.connector.IdManagerBasicInfoConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.LdmConnectorCql;
 import de.samply.share.client.util.connector.LdmPostQueryParameterCql;
@@ -143,7 +143,7 @@ public class TestsBean implements Serializable {
    * Perform an HTTP GET to the configured ID Manager URL.
    */
   public void performIdManagerCheck() {
-    IdManagerConnector idManagerConnector = new IdManagerConnector();
+    IdManagerBasicInfoConnector idManagerConnector = new IdManagerBasicInfoConnector();
     idManagerCheckResult = idManagerConnector.checkConnection();
   }
 
@@ -265,7 +265,7 @@ public class TestsBean implements Serializable {
         .add(new Message("Try to get Export ID for: " + idObject, "fa-info"));
     HashMap<String, IdObject> myMap = new HashMap<>();
     myMap.put(localIdToCheck, idObject);
-    IdManagerConnector idManagerConnector = new IdManagerConnector();
+    IdManagerBasicInfoConnector idManagerConnector = new IdManagerBasicInfoConnector();
     try {
       Map<String, String> exportIds = idManagerConnector.getExportIds(myMap);
       if (SamplyShareUtils.isNullOrEmpty(exportIds)) {

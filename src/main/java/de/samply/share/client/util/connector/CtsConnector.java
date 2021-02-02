@@ -39,6 +39,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.Bundle;
 
+/**
+ * The type Cts connector.
+ */
 public class CtsConnector {
 
   private static final Logger logger = LogManager.getLogger(CtsConnector.class);
@@ -50,7 +53,7 @@ public class CtsConnector {
   private HttpHost ctsHost;
   private String username;
   private String password;
-
+  
   /**
    * Create a CtsConnector object.
    */
@@ -68,17 +71,21 @@ public class CtsConnector {
       logger.error("URL problem while initializing CTS uploader, e: " + e);
     }
   }
-
+  
   /**
    * Takes a stringified FHIR Bundle, assumed to be containing identifying patient data (IDAT),
    * replaces the IDAT with a pseudonym, and then sends the pseudonymized bundle to the CTS data
    * upload endpoint.
    *
    * @param bundleString the patient bundle as String.
+   * @param mediaType    the media type
+   * @return the response
    * @throws IOException              IOException
    * @throws ConfigurationException   ConfigurationException
    * @throws DataFormatException      DataFormatException
    * @throws IllegalArgumentException IllegalArgumentException
+   * @throws NotFoundException        the not found exception
+   * @throws NotAuthorizedException   the not authorized exception
    */
   public Response postPseudonmToCts(String bundleString, String mediaType)
       throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException,
@@ -112,7 +119,7 @@ public class CtsConnector {
       closeResponse(response);
     }
   }
-
+  
   /**
    * Post a local CTS patient to the central CTS.
    *
@@ -120,6 +127,7 @@ public class CtsConnector {
    * @return if the post was successfull
    * @throws IOException              IOException
    * @throws IllegalArgumentException IllegalArgumentException
+   * @throws NotFoundException        the not found exception
    * @throws NotAuthorizedException   NotAuthorizedException
    */
   public Response postLocalPatientToCentralCts(String patient)
@@ -154,7 +162,6 @@ public class CtsConnector {
   /**
    * Create a BasicHttpContext for CTS upload, with the cookies needed for authorization.
    *
-   * @return
    */
   private HttpContext createCtsContext() throws IOException {
     CtsAuthorization ctsAuthorization = getCtsAuthorization();
@@ -275,7 +282,7 @@ public class CtsConnector {
     return message + "; statusCode: " + statusCode + "; reason: " + reasonPhrase + ";body: "
         + bodyResponse;
   }
-
+  
   /**
    * Close a response.
    *
@@ -291,13 +298,19 @@ public class CtsConnector {
       }
     }
   }
-
+  
   /**
    * Class for transporting CTS-authorization parameters.
    */
   public class CtsAuthorization {
-
+  
+    /**
+     * The Code cookie.
+     */
     Cookie codeCookie;
+    /**
+     * The User cookie.
+     */
     Cookie userCookie;
   }
 }

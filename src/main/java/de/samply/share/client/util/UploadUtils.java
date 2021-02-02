@@ -31,7 +31,7 @@ public class UploadUtils {
   private UploadUtils() {
 
   }
-
+  
   /**
    * Create a View without any date restrictions.
    *
@@ -39,11 +39,12 @@ public class UploadUtils {
    *                    when set to false, only patients WITHOUT explicit DKTK consent are
    *                    requested
    * @return the view
+   * @throws MdrConnectionException the mdr connection exception
    */
   public static View createFullUploadView(boolean dktkFlagged) throws MdrConnectionException {
     return createUploadView(null, dktkFlagged);
   }
-
+  
   /**
    * Create a View with the given date restrictions.
    *
@@ -52,6 +53,7 @@ public class UploadUtils {
    *                        when set to false, only patients WITHOUT explicit DKTK consent are
    *                        requested
    * @return the view
+   * @throws MdrConnectionException the mdr connection exception
    */
   public static View createUploadView(DateRestriction dateRestriction, boolean dktkFlagged)
       throws MdrConnectionException {
@@ -64,7 +66,7 @@ public class UploadUtils {
       throw new MdrConnectionException(e.getMessage());
     }
   }
-
+  
   /**
    * Create a Query without any date restrictions.
    *
@@ -76,7 +78,7 @@ public class UploadUtils {
   public static Query createFullUploadQuery(boolean dktkFlagged) {
     return createUploadQuery(null, dktkFlagged);
   }
-
+  
   /**
    * Create a Query with the given date restrictions.
    *
