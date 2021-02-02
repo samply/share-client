@@ -4,8 +4,9 @@ import com.google.common.base.Preconditions;
 import org.apache.logging.log4j.Logger;
 
 /**
- * TODO: Move class (and PercentageLogger of samply.common-ldmclient-centraxx) to samply.share.common
- *
+ * TODO: Move class (and PercentageLogger of samply.common-ldmclient-centraxx) to
+ * samply.share.common
+ * <p>
  * PercentageLogger is intended to log the progress of another process, that consists of
  * "numberOfElements" steps and that is described through "description".
  *
