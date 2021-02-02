@@ -9,7 +9,7 @@ sed -i "s/{postgres-db}/${POSTGRES_DB}/"                  "$file"
 sed -i "s/{postgres-user}/${POSTGRES_USER}/"              "$file"
 sed -i "s/{postgres-pass}/${POSTGRES_PASS}/"              "$file"
 
-file=${CATALINA_HOME}/conf/${PROJECT}_common_urls.xml
+file=${CATALINA_HOME}/conf/${PROJECT}_common_config.xml
 sed -i "s~{proxy-url}~${HTTP_PROXY}~"                     "$file"
 sed -i "s/{proxy-user}/${PROXY_USER}/"                    "$file"
 sed -i "s/{proxy-pass}/${PROXY_PASS}/"                    "$file"
