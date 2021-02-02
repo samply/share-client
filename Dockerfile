@@ -24,8 +24,8 @@ ADD src/docker/features.properties              ${CATALINA_HOME}/conf/
 
 # JMX Exporter
 ENV JMX_EXPORTER_VERSION 0.3.1
-COPY src/docker/jmx-exporter.yml                /${PROJECT}/jmx-exporter.yml
-ADD https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${JMX_EXPORTER_VERSION}/jmx_prometheus_javaagent-${JMX_EXPORTER_VERSION}.jar /samply/
+COPY src/docker/jmx-exporter.yml                /docker/jmx-exporter.yml
+ADD https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${JMX_EXPORTER_VERSION}/jmx_prometheus_javaagent-${JMX_EXPORTER_VERSION}.jar /docker/
 
 ADD src/docker/start.sh                         /docker/
 RUN chmod +x                                    /docker/start.sh

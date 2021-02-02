@@ -53,7 +53,7 @@ sed -i "s/{feature_BBMRI_DIRECTORY_SYNC}/${feature_BBMRI_DIRECTORY_SYNC:-false}/
 sed -i "s/{feature_DKTK_CENTRAL_SEARCH}/${feature_DKTK_CENTRAL_SEARCH:-false}/"   "$file"
 sed -i "s/{feature_NNGM_CTS}/${feature_NNGM_CTS:-false}/"                         "$file"
 
-export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/samply/jmx_prometheus_javaagent-0.3.1.jar=9100:/samply/jmx-exporter.yml"
+export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/docker/jmx_prometheus_javaagent-0.3.1.jar=9100:/docker/jmx-exporter.yml"
 
 # Replace start.sh with catalina.sh
 exec /usr/local/tomcat/bin/catalina.sh run
