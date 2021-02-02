@@ -58,7 +58,7 @@ public class ChainLinkItem implements Cloneable {
   }
 
   /**
-   * Todo.
+   * Reset number of attempts and elapsed time.
    */
   public void resetAttempt() {
 
@@ -68,9 +68,9 @@ public class ChainLinkItem implements Cloneable {
   }
 
   /**
-   * Todo.
+   * Adds elapsed time of the chain link.
    *
-   * @param elapsedNanoTime Todo.
+   * @param elapsedNanoTime elapsed time in nanoseconds.
    */
   public void addElapsedNanoTime(long elapsedNanoTime) {
 
@@ -79,9 +79,9 @@ public class ChainLinkItem implements Cloneable {
   }
 
   /**
-   * Todo.
+   * Gets elapased time.
    *
-   * @return Todo.
+   * @return Elapsed time in nanoseconds.
    */
   public long getElapsedNanoTime() {
     return elapsedNanoTime;
@@ -96,9 +96,9 @@ public class ChainLinkItem implements Cloneable {
   }
 
   /**
-   * Todo.
+   * Clones Chain Link and resets operational values.
    *
-   * @return Todo.
+   * @return Cloned chain link.
    */
   public ChainLinkItem clone() {
 
@@ -113,10 +113,10 @@ public class ChainLinkItem implements Cloneable {
   }
 
   /**
-   * Todo.
+   * Clones and resets operational values.
    *
-   * @return Todo.
-   * @throws CloneNotSupportedException Todo.
+   * @return Cloned chain link item.
+   * @throws CloneNotSupportedException Encapsulates exceptions of the class.
    */
   public ChainLinkItem cloneAndResetOperationalValues() throws CloneNotSupportedException {
 
@@ -130,7 +130,7 @@ public class ChainLinkItem implements Cloneable {
   }
 
   /**
-   * Todo.
+   * Resets configuration values: is to be reused, is to be repeated, is to be forwarded.
    */
   public void resetConfigurationValues() {
 

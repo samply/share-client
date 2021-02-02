@@ -16,11 +16,11 @@ public class Table2ExcelRowMapper {
   private final CentraxxMapper centraXxMapper;
 
   /**
-   * Todo.
+   * Excel row mapper.
    *
-   * @param dktkIdManager       Todo.
-   * @param excelRowMapperUtils Todo.
-   * @param centraXxMapper      Todo.
+   * @param dktkIdManager       Map mdr data element - mdr slot DKTK-ID.
+   * @param excelRowMapperUtils Additional mapping information.
+   * @param centraXxMapper      Map mdr data element - centraxx data element.
    */
   public Table2ExcelRowMapper(DktkIdMdrIdConverter dktkIdManager,
       ExcelRowMapperUtils excelRowMapperUtils, CentraxxMapper centraXxMapper) {
@@ -32,11 +32,11 @@ public class Table2ExcelRowMapper {
   }
 
   /**
-   * Todo.
+   * Convert excel row parameters to excel row elements.
    *
-   * @param excelRowParameters Todo.
-   * @return Todo.
-   * @throws ExcelRowMapperException Todo.
+   * @param excelRowParameters excel row parameters.
+   * @return excel row elements.
+   * @throws ExcelRowMapperException Encapsulates exception of the class.
    */
   public Table2ExcelRowElements convert(Table2ExcelRowParameters excelRowParameters)
       throws ExcelRowMapperException {

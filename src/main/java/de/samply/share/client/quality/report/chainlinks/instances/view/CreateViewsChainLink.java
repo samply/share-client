@@ -14,10 +14,10 @@ public class CreateViewsChainLink<I extends ChainLinkItem & ViewsContext> extend
   private final ViewsCreator viewsCreator;
 
   /**
-   * Todo.
+   * Chain Link taht creates view for query request to the ldm (local data management system).
    *
-   * @param model        Todo.
-   * @param viewsCreator Todo.
+   * @param model        model that consists of a list of mrd ids and validatios.
+   * @param viewsCreator creates a view for ldm query result.
    */
   public CreateViewsChainLink(Model model, ViewsCreator viewsCreator) {
 

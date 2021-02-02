@@ -429,6 +429,9 @@ public class ApplicationBean implements Serializable {
         insertConfigElement(EnumConfiguration.CTS_MAINZELLISTE_API_KEY.name(),
             cts.getMainzellisteApiKey());
         insertConfigElement(EnumConfiguration.CTS_SEARCH_ID_TYPE.name(), cts.getSearchIdType());
+        insertConfigElement(EnumConfiguration.CTS_PATIENT_LIST_API_KEY.name(),
+            cts.getPatientListApiKey());
+        insertConfigElement(EnumConfiguration.CTS_PATIENT_LIST_URL.name(), cts.getPatientListUrl());
       }
       if (ApplicationUtils.isSamply()) {
         de.samply.share.client.model.db.tables.pojos.Configuration directoryConfigElement =

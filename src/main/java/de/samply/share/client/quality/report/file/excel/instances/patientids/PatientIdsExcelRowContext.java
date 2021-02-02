@@ -27,9 +27,10 @@ public abstract class PatientIdsExcelRowContext implements ExcelRowContext {
   private final List<BasicExcelColumnMetaInfo> metaInfos = new ArrayList<>();
 
   /**
-   * Todo.
+   * Context with patient ids for an excel row.
    *
-   * @param qualityResults Todo.
+   * @param qualityResults Quality results with a list of patient ids and the validity of the row
+   *                       (pair data element - attribute).
    */
   public PatientIdsExcelRowContext(AlphabeticallySortedMismatchedQualityResults qualityResults) {
 

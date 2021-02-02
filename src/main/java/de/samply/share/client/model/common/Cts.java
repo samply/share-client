@@ -37,7 +37,10 @@ import javax.xml.bind.annotation.XmlType;
     "profile",
     "mainzellisteUrl",
     "mainzellisteApiKey",
-    "searchIdType"
+    "searchIdType",
+    "patientListApiKey",
+    "patientListUrl"
+
 })
 @XmlRootElement(name = "cts", namespace = "http://schema.samply.de/config/CtsInfo")
 @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
@@ -72,6 +75,14 @@ public class Cts {
   @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
       comments = "JAXB RI v2.2.8-b130911.1802")
   protected String searchIdType;
+  @XmlElement(namespace = "http://schema.samply.de/config/CtsInfo", required = true)
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
+  protected String patientListApiKey;
+  @XmlElement(namespace = "http://schema.samply.de/config/CtsInfo", required = true)
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
+  protected String patientListUrl;
 
 
   /**
@@ -227,6 +238,50 @@ public class Cts {
       comments = "JAXB RI v2.2.8-b130911.1802")
   public void setSearchIdType(String value) {
     this.searchIdType = value;
+  }
+
+  /**
+   * Gets the value of the patientListUrl property.
+   *
+   * @return possible object is {@link String }
+   */
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
+  public String getPatientListUrl() {
+    return patientListUrl;
+  }
+
+  /**
+   * Sets the value of the patientListUrl property.
+   *
+   * @param value allowed object is {@link String }
+   */
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
+  public void setPatientListUrl(String value) {
+    this.patientListUrl = value;
+  }
+
+  /**
+   * Gets the value of the patientListApiKey property.
+   *
+   * @return possible object is {@link String }
+   */
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
+  public String getPatientListApiKey() {
+    return patientListApiKey;
+  }
+
+  /**
+   * Sets the value of the patientListApiKey property.
+   *
+   * @param value allowed object is {@link String }
+   */
+  @Generated(value = "com.sun.tools.internal.xjc.Driver", date = "2017-08-11T03:07:21+02:00",
+      comments = "JAXB RI v2.2.8-b130911.1802")
+  public void setPatientListApiKey(String value) {
+    this.patientListApiKey = value;
   }
 
 }

@@ -12,9 +12,9 @@ import de.samply.share.model.ccp.QueryResult;
 public class GetResultsChainLink<I extends ChainLinkItem & ResultContext> extends LdmChainLink<I> {
 
   /**
-   * Todo.
+   * Chain link that get results of the ldm (local data management system).
    *
-   * @param localDataManagementRequester Todo.
+   * @param localDataManagementRequester ldm connector.
    */
   public GetResultsChainLink(LocalDataManagementRequester localDataManagementRequester) {
 

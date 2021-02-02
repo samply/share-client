@@ -19,10 +19,11 @@ public class ChainLinkStatistics implements ChainLinkStatisticsConsumer,
 
 
   /**
-   * Todo.
+   * Statistics about execution of a chain link.
    *
-   * @param chainLinkStatisticKey                Todo.
-   * @param chainLinkStaticStatisticsFileManager Todo.
+   * @param chainLinkStatisticKey                ID of the chain link.
+   * @param chainLinkStaticStatisticsFileManager Manages statistic file to recover execution of
+   *                                             previous statistics.
    */
   public ChainLinkStatistics(ChainLinkStatisticKey chainLinkStatisticKey,
       ChainLinkStaticStatisticsFileManager chainLinkStaticStatisticsFileManager) {
@@ -118,9 +119,9 @@ public class ChainLinkStatistics implements ChainLinkStatisticsConsumer,
   }
 
   /**
-   * Todo.
+   * Set average time of the process.
    *
-   * @param averageNanoTimeOfProcess Todo.
+   * @param averageNanoTimeOfProcess Average time of process in nanoseconds.
    */
   public void setAverageNanoTimeOfProcess(Long averageNanoTimeOfProcess) {
 

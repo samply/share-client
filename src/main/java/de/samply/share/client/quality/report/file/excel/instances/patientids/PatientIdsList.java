@@ -12,13 +12,13 @@ public class PatientIdsList implements Iterable<List<String>> {
   private List<String> maxList = new ArrayList<>();
 
   /**
-   * Todo.
+   * add collection of patient ids.
    *
-   * @param myCollection Todo.
+   * @param patientIds List of patient ids.
    */
-  public void addList(Collection<String> myCollection) {
+  public void addList(Collection<String> patientIds) {
 
-    List<String> myList = new ArrayList<>(myCollection);
+    List<String> myList = new ArrayList<>(patientIds);
     Collections.sort(myList);
 
     lists.add(myList);
