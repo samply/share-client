@@ -18,7 +18,8 @@ public class MdrConnectionFactory {
   private static List<String> namespaces;
 
   /**
-   * Todo.
+   * Constructs an mdr connection factory.
+   *
    */
   public MdrConnectionFactory() {
 
@@ -40,9 +41,9 @@ public class MdrConnectionFactory {
   }
 
   /**
-   * Todo.
+   * Get mdr connection.
    *
-   * @return Todo.
+   * @return mdr connection.
    */
   public MdrConnection getMdrConnection() {
 

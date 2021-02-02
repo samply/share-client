@@ -10,10 +10,10 @@ public class PropertyUtils {
   private static final String[] possibleSeparators = {",", ";"};
 
   /**
-   * Todo.
+   * Get list of properties for enum configuration.
    *
-   * @param enumConfiguration Todo.
-   * @return Todo.
+   * @param enumConfiguration enum configuration.
+   * @return array of strings with list of properties.
    */
   public static String[] getListOfProperties(EnumConfiguration enumConfiguration) {
 
