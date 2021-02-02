@@ -1,6 +1,8 @@
 package de.samply.share.client.util.connector;
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import com.google.crypto.tink.subtle.Hex;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -9,6 +11,9 @@ import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
+import de.samply.share.client.model.ReadPatientsToken;
+import de.samply.share.client.model.ReadPatientsToken.ID;
+import de.samply.share.client.model.ReadPatientsToken.TokenData;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.EventLogMainzellisteUtil;
@@ -21,6 +26,7 @@ import java.util.Base64;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
+import javax.ws.rs.core.MediaType;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
@@ -72,8 +78,6 @@ public class MainzellisteConnector {
   private static final String ENCRYPT_ID_JSON_URL = "/paths/getEncryptIdWithId";
   private static final String DECRYPT_ID_JSON_URL = "/paths/getEncryptIdWithId";
   private static final String HEADER_PARAM_API_KEY = "apiKey";
-  private static final String PATIENTLIST_API_KEY = "mainzellisteSecretTESTSTANDORT";
-  private static final String PATIENTLIST_URL = "http://e260-verbis-test.inet.dkfz-heidelberg.de/mainzelliste";
   private static final String STAMMDATEN_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Stammdaten-pseudonymisiert";
   private static final String ANTRAG_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Antrag-pseudonymisiert";
   private static final String TNM_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/TNM-pseudonymisiert";
@@ -489,12 +493,14 @@ public class MainzellisteConnector {
    * @param ctsIds ctsIds
    * @return the patient with the replaced id
    */
-  public String getLocalId(List<String> ctsIds)
+  public JsonArray getLocalId(List<String> ctsIds)
       throws IOException, IllegalArgumentException,
       NotFoundException, NotAuthorizedException {
     String uri = getMainzellisteSessionUri();
     String tokenId = getMainzellisteReadToken(uri, ctsIds);
-    HttpGet httpGet = new HttpGet(PATIENTLIST_URL + "/patients/tokenId/" + tokenId);
+    HttpGet httpGet = new HttpGet(
+        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_URL)
+            + "/patients/tokenId/" + tokenId);
     CloseableHttpResponse response = null;
     try {
       response = httpClient.execute(httpGet);
@@ -503,7 +509,9 @@ public class MainzellisteConnector {
       String reasonPhrase = statusLine.getReasonPhrase();
       insertEventLog(statusCode);
       checkStatusCode(response, statusCode, reasonPhrase);
-      return EntityUtils.toString(response.getEntity());
+      JsonParser jsonParser = new JsonParser();
+      String responseBody = EntityUtils.toString(response.getEntity());
+      return jsonParser.parse(responseBody).getAsJsonArray();
     } catch (IOException e) {
       logger.error("Get local id from Mainzelliste: IOException: e: " + e);
       throw new IOException(e);
@@ -513,8 +521,11 @@ public class MainzellisteConnector {
   }
 
   private String getMainzellisteSessionUri() throws IOException {
-    HttpPost httpPost = createHttpPost(PATIENTLIST_URL + "/sessions");
-    httpPost.setHeader("mainzellisteApiKey", PATIENTLIST_API_KEY);
+    HttpPost httpPost = new HttpPost(
+        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_URL)
+            + "/sessions");
+    httpPost.setHeader("mainzellisteApiKey",
+        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_API_KEY));
     CloseableHttpResponse response = null;
     try {
       response = httpClient.execute(httpPost);
@@ -530,45 +541,40 @@ public class MainzellisteConnector {
 
   private String getMainzellisteReadToken(String sessionUrl, List<String> ctsIds)
       throws IOException {
-    HttpPost httpPost = createHttpPost(sessionUrl + "/tokens");
-    httpPost.setHeader("mainzellisteApiKey", PATIENTLIST_API_KEY);
-    HttpEntity entity = new StringEntity(createJsonObjectForReadPatients(ctsIds).toString(),
-        Consts.UTF_8);
+    HttpPost httpPost = new HttpPost(sessionUrl + "tokens");
+    httpPost.setHeader("mainzellisteApiKey",
+        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_API_KEY));
+    HttpEntity entity = new StringEntity(createJsonObjectForReadPatients(ctsIds), Consts.UTF_8);
     httpPost.setEntity(entity);
+    httpPost.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+    httpPost.setHeader("mainzellisteApiVersion", "2.0");
     CloseableHttpResponse response = null;
     try {
       response = httpClient.execute(httpPost);
       JsonParser jsonParser = new JsonParser();
       JsonObject jsonObject = (JsonObject) jsonParser
           .parse(EntityUtils.toString(response.getEntity()));
-      return jsonObject.get("tokenId").getAsString();
+      return jsonObject.get("id").getAsString();
     } catch (IOException e) {
       logger.error("Get read token from Mainzelliste: IOException: e: " + e);
       throw new IOException(e);
     }
   }
 
-  private JsonObject createJsonObjectForReadPatients(List<String> ctsIds) {
-    JsonArray searchIdsArray = new JsonArray();
+  private String createJsonObjectForReadPatients(List<String> ctsIds) {
+    ReadPatientsToken readPatientsToken = new ReadPatientsToken();
+    TokenData tokenData = new TokenData();
     for (String id : ctsIds) {
-      JsonObject searchIds = new JsonObject();
-      searchIds.addProperty("idType", "ctsid");
-      searchIds.addProperty("idString", Base64.getUrlEncoder().encodeToString(id.getBytes()));
-      searchIdsArray.add(searchIds);
+      ID idReadPatient = new ID();
+      idReadPatient.setIdType("ctsid");
+      idReadPatient.setIdString(new String(Base64.getUrlEncoder().encode(Hex.decode(id))));
+      tokenData.getSearchIds().add(idReadPatient);
     }
-
-    JsonObject data = new JsonObject();
-    data.addProperty("searchIds", String.valueOf(searchIdsArray));
-    JsonArray jsonArray = new JsonArray();
-    jsonArray
+    tokenData.getResultIds()
         .add(ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_SEARCH_ID_TYPE));
-    jsonArray.add("ctsid");
-    data.addProperty("resultIds", String.valueOf(jsonArray));
-
-    JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("type", "readPatients");
-    jsonObject.addProperty("data", String.valueOf(data));
-    return jsonObject;
+    readPatientsToken.setData(tokenData);
+    readPatientsToken.setType("readPatients");
+    return new Gson().toJson(readPatientsToken);
   }
 
   private void addEncryptedIdToPatient(JsonObject patientAsJson,
