@@ -2,6 +2,7 @@ package de.samply.share.client.util.connector;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.parser.DataFormatException;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
@@ -200,8 +201,8 @@ public class CtsConnector {
       response = httpClient.execute(httpPost);
       int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode == 200 || statusCode == 201) {
-        String patients = readIds(EntityUtils.toString(response.getEntity(), Consts.UTF_8),
-            response.getFirstHeader("X-BK-pseudonym-jsonpaths").getValue(), true);
+        String patients = readIds(patient,
+            httpHeaders.getRequestHeader("X-BK-pseudonym-jsonpaths").get(0), true);
         return Response.status(statusCode).entity(patients).build();
       }
       String message =
@@ -350,8 +351,12 @@ public class CtsConnector {
             .replace(id, mainzellisteConnector.getEncryptedIdWithPatientId(id));
       }
     } else {
-      //      patientJson = patientJson
-      //          .replace(id, mainzellisteConnector.getLocalId(ids));
+      JsonArray localIds = mainzellisteConnector.getLocalId(ids);
+      for (int i = 0; i < localIds.size(); i++) {
+        patientJson = patientJson.replace(ids.get(i),
+            localIds.get(i).getAsJsonObject().get("ids").getAsJsonArray().get(0).getAsJsonObject()
+                .get("idString").getAsString());
+      }
     }
     return patientJson;
   }

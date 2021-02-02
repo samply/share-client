@@ -7,4 +7,6 @@
   <com:username></com:username>
   <com:password></com:password>
   <com:searchIdType></com:searchIdType>
+  <com:patientListApiKey></com:patientListApiKey>
+  <com:patientListUrl></com:patientListUrl>
 </com:cts>

@@ -12,6 +12,8 @@
       <xs:element minOccurs="0" name="mainzellisteUrl" type="xs:anyURI"/>
       <xs:element minOccurs="0" name="mainzellisteApiKey" type="xs:string"/>
       <xs:element minOccurs="0" name="searchIdType" type="xs:string"/>
+      <xs:element minOccurs="0" name="patientListApiKey" type="xs:string"/>
+      <xs:element minOccurs="0" name="patientListUrl" type="xs:string"/>
     </xs:all>
   </xs:complexType>
 

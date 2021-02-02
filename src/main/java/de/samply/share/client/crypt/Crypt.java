@@ -37,7 +37,7 @@ public class Crypt {
    * will be created.
    */
   public Crypt() throws GeneralSecurityException, IOException {
-    String keysetFilename = "my_keyset.json";
+    String keysetFilename = "cts_symmetric_key.json";
     KeysetHandle keysetHandle = null;
     try {
       TinkConfig.register();

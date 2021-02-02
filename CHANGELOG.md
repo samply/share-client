@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - added process 9b for CTS 
 - added JSONPath
 - encryption/decryption of FHIR references 
+- read localIds from Mainzelliste
 
 ## [7.1.0 - 2021-02-01]
 ## Added
