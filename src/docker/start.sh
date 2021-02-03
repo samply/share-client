@@ -52,6 +52,18 @@ file=${CATALINA_HOME}/conf/features.properties
 sed -i "s/{feature_BBMRI_DIRECTORY_SYNC}/${feature_BBMRI_DIRECTORY_SYNC:-false}/" "$file"
 sed -i "s/{feature_DKTK_CENTRAL_SEARCH}/${feature_DKTK_CENTRAL_SEARCH:-false}/"   "$file"
 sed -i "s/{feature_NNGM_CTS}/${feature_NNGM_CTS:-false}/"                         "$file"
+sed -i "s|{feature_NNGM_ENCRYPT_ID}|${feature_NNGM_ENCRYPT_ID:-false}|"           "$file"
+
+file=${CATALINA_HOME}/conf/${PROJECT}_cts_info.xml
+sed -i "s|{nngm-magicpl-apikey}|${NNGM-MAGICPL-APIKEY}|"                    "$file"
+sed -i "s|{nngm-magicpl-urlnngm-magicpl-url}|${NNGM-MAGICPL-URL}|"          "$file"
+sed -i "s|{nngm-profile}|${NNGM-PROFILE}|"                                  "$file"
+sed -i "s|{nngm-cts-url}|${NNGM-CTS-URL}|"                                  "$file"
+sed -i "s|{nngm-cts-user}|${NNGM-CTS-USER}|"                                "$file"
+sed -i "s|{nngm-cts-password}|${NNGM-CTS-PASSWORD}|"                        "$file"
+sed -i "s|{nngm-site-idtype}|${NNGM-SITE-IDTYPE}|"                          "$file"
+sed -i "s|{nngm-mainzelliste-apikey}|${NNGM-MAINZELLISTE-APIKEY}|"          "$file"
+sed -i "s|{nngm-mainzelliste-url}|${NNGM-MAINZELLISTE-URL}|"                "$file"
 
 export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/docker/jmx_prometheus_javaagent-0.3.1.jar=9100:/docker/jmx-exporter.yml"
 

@@ -18,6 +18,7 @@ ADD src/docker/samply_common_urls.xml           ${CATALINA_HOME}/conf/${PROJECT}
 ADD src/docker/samply_common_operator.xml       ${CATALINA_HOME}/conf/${PROJECT}_common_operator.xml
 ADD src/docker/samply_common_config.xml         ${CATALINA_HOME}/conf/${PROJECT}_common_config.xml
 ADD src/docker/samply_bridgehead_info.xml       ${CATALINA_HOME}/conf/${PROJECT}_bridgehead_info.xml
+ADD src/docker/_cts_info.xml                    ${CATALINA_HOME}/conf/${PROJECT}_cts_info.xml
 ADD src/docker/mailSending.xml                  ${CATALINA_HOME}/conf/
 ADD src/docker/log4j2.xml                       ${CATALINA_HOME}/conf/
 ADD src/docker/features.properties              ${CATALINA_HOME}/conf/
