@@ -20,6 +20,8 @@ sed -i "s#{id-manager-url}#${ID_MANAGER_URL}#"            "$file"
 sed -i "s#{mdr-url}#${MDR_URL}#"                          "$file"
 sed -i "s#{directory-url}#${DIRECTORY_URL}#"              "$file"
 sed -i "s#{share-url}#${SHARE_URL}#"                      "$file"
+sed -i "s#{patientlist-url}#${PATIENTLIST_URL}#"          "$file"
+sed -i "s#{projectpseudonymisation-url}#${PROJECTPSEUDONYMISATION_URL}#"                      "$file"
 
 file=${CATALINA_HOME}/conf/${PROJECT}_common_operator.xml
 sed -i "s/{operator-first-name}/${OPERATOR_FIRST_NAME}/"  "$file"

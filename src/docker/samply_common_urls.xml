@@ -4,4 +4,6 @@
   <com:ldmUrl>{store-url}</com:ldmUrl>
   <com:mdrUrl>{mdr-url}</com:mdrUrl>
   <com:shareUrl>{share-url}</com:shareUrl>
+  <com:patientlistUrl>{patientlist-url}</com:patientlistUrl>
+  <com:projectPseudonymisationUrl>{projectpseudonymisation-url}</com:projectPseudonymisationUrl>
 </com:urls>
