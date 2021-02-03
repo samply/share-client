@@ -13,7 +13,10 @@ public enum ClientFeature implements Feature {
   BBMRI_DIRECTORY_SYNC,
 
   @Label("NNGM CTS")
-  NNGM_CTS;
+  NNGM_CTS,
+
+  @Label("NNGM ENCRYPT_ID")
+  NNGM_ENCRYPT_ID;
 
   public boolean isActive() {
     return FeatureContext.getFeatureManager().isActive(this);
