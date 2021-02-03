@@ -15,10 +15,10 @@ public class TimeoutJob implements Runnable, ChainLinkFinalizerListener {
 
 
   /**
-   * Todo.
+   * Constructs timeout job.
    *
-   * @param chainLinkFinalizer Todo.
-   * @param timeout            Todo.
+   * @param chainLinkFinalizer chain link finalizer.
+   * @param timeout            timeout.
    */
   public TimeoutJob(ChainLinkFinalizer chainLinkFinalizer, long timeout) {
 
@@ -79,7 +79,7 @@ public class TimeoutJob implements Runnable, ChainLinkFinalizerListener {
   }
 
   /**
-   * Todo.
+   * Set if chain is already finished.
    */
   public synchronized void setChainIsAlreadyFinished() {
 

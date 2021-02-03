@@ -39,9 +39,9 @@ public class ExcelTest {
 
 
   /**
-   * Todo.
+   * Construct Excel Test. It tests different classes for file management of the quality report.
    *
-   * @throws CentraxxMapperException Todo.
+   * @throws CentraxxMapperException centraxx mapper exception.
    */
   public ExcelTest() throws CentraxxMapperException {
 
@@ -62,10 +62,10 @@ public class ExcelTest {
   }
 
   /**
-   * Todo.
+   * Test "write file" of excel quality file manager .
    *
-   * @param fileId Todo.
-   * @return Todo.
+   * @param fileId file id.
+   * @return new file id.
    * @throws QualityReportFileManagerException Todo.
    */
   @GET
