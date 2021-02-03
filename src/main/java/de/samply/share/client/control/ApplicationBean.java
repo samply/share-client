@@ -16,6 +16,7 @@ import de.samply.config.util.JaxbUtil;
 import de.samply.project.directory.client.DktkProjectDirectory;
 import de.samply.project.directory.client.DktkProjectDirectoryParameters;
 import de.samply.project.directory.client.ProjectDirectory;
+import de.samply.share.client.crypt.Crypt;
 import de.samply.share.client.feature.ClientConfiguration;
 import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
@@ -83,7 +84,9 @@ import de.samply.share.common.utils.ProjectInfo;
 import de.samply.web.mdrfaces.MdrContext;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -167,11 +170,13 @@ public class ApplicationBean implements Serializable {
   private static IdManagerBasicInfoConnector idManagerBasicInfoConnector;
   private static IdManagementConnector idManagementConnector;
   private static FeatureManager featureManager;
-  private final ConnectCheckResult ldmAvailability = new ConnectCheckResult();
-  private final ConnectCheckResult idmAvailability = new ConnectCheckResult();
+  private ConnectCheckResult ldmAvailability = new ConnectCheckResult();
+  private ConnectCheckResult idmAvailability = new ConnectCheckResult();
   private ConnectCheckResult patientListAvailability = new ConnectCheckResult();
   private ConnectCheckResult projectPseudonAvailability = new ConnectCheckResult();
-  
+  private static Crypt crypt;
+
+
   public static Locale getLocale() {
     return locale;
   }
@@ -436,6 +441,10 @@ public class ApplicationBean implements Serializable {
             cts.getMainzellisteUrl());
         insertConfigElement(EnumConfiguration.CTS_MAINZELLISTE_API_KEY.name(),
             cts.getMainzellisteApiKey());
+        insertConfigElement(EnumConfiguration.CTS_SEARCH_ID_TYPE.name(), cts.getSearchIdType());
+        insertConfigElement(EnumConfiguration.CTS_PATIENT_LIST_API_KEY.name(),
+            cts.getPatientListApiKey());
+        insertConfigElement(EnumConfiguration.CTS_PATIENT_LIST_URL.name(), cts.getPatientListUrl());
       }
       if (ApplicationUtils.isSamply()) {
         de.samply.share.client.model.db.tables.pojos.Configuration directoryConfigElement =
@@ -717,6 +726,11 @@ public class ApplicationBean implements Serializable {
     return mdrValidator;
   }
 
+  public static Crypt getCrypt() {
+    return crypt;
+  }
+
+
   private static LdmBasicConnectorSwitch createLdmBasicConnectorSwitch(
       IdManagementConnector idManagementConnector, ProjectDirectoryUtils projectDirectoryUtils,
       LdmConnectorCentraxx ldmConnectorCentraxx, MdrClient mdrClient) {
@@ -826,6 +840,10 @@ public class ApplicationBean implements Serializable {
     loadBridgeheadInfo();
     logger.info("Loading common urls...");
     updateCommonUrls();
+    logger.info("Loading project directory...");
+    loadProjectDirectoryClient();
+    logger.info("Loading id management connector");
+    loadIdManagementConnector();
 
     logger.info("Reseting MDR context");
     resetMdrContext();
@@ -855,8 +873,17 @@ public class ApplicationBean implements Serializable {
       loadCtsInfo();
       updateCtsInfo();
       initMainzelliste();
+      initCrypt();
     }
     logger.info("Application Bean initialized");
+  }
+
+  private static void initCrypt() {
+    try {
+      crypt = new Crypt();
+    } catch (GeneralSecurityException | IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private void loadProjectDirectoryClient() {
@@ -984,12 +1011,12 @@ public class ApplicationBean implements Serializable {
     setComponentInfoViewModel(new ProjectPseudonymizationBasicInfoConnector(),
         projectPseudonAvailability);
   }
-  
+
   private void setComponentInfoViewModel(IcomponentBasicInfoConnector basicInfoConnector,
                                          ConnectCheckResult connectCheckResult) {
     try {
       ComponentInfo componentInfo = basicInfoConnector.getComponentInfo();
-      
+
       if (componentInfo.getDistname() != null) {
         connectCheckResult.setName(componentInfo.getDistname());
       }
@@ -997,7 +1024,7 @@ public class ApplicationBean implements Serializable {
         connectCheckResult.setVersion(componentInfo.getVersion());
       }
       connectCheckResult.setReachable(true);
-      
+
     } catch (ComponentConnectorException e) {
       logger.error("Error loading component " + e);
       connectCheckResult.setReachable(false);
@@ -1027,11 +1054,11 @@ public class ApplicationBean implements Serializable {
   public ConnectCheckResult getPatientListAvailability() {
     return patientListAvailability;
   }
-  
+
   public ConnectCheckResult getProjectPseudonAvailability() {
     return projectPseudonAvailability;
   }
-  
+
   /**
    * Get the array of defined reply rule types. This should not be necessary, since it is possible
    * to reference the Enum Class from the xhtml page directly. However, in this case, the
