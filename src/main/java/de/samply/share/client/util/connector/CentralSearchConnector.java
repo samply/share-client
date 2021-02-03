@@ -60,8 +60,14 @@ import org.simpleframework.xml.core.Persister;
  * A connector that handles all communication with the central MDS database.
  */
 public class CentralSearchConnector {
-
+  
+  /**
+   * The constant DATE_FORMAT_HTTP_HEADER.
+   */
   public static final DateFormat DATE_FORMAT_HTTP_HEADER;
+  /**
+   * The constant DATE_FORMAT_TARGET.
+   */
   public static final DateFormat DATE_FORMAT_TARGET;
   private static final Logger logger = LogManager.getLogger(CentralSearchConnector.class);
   /**
@@ -102,7 +108,7 @@ public class CentralSearchConnector {
   private URL centralSearchUrl;
   private RequestConfig requestConfig;
   private String anonymizedPatientPrefix;
-
+  
   /**
    * Initialise a CenteralSearchConnector object.
    */
@@ -122,11 +128,21 @@ public class CentralSearchConnector {
       throw new RuntimeException(e);
     }
   }
-
+  
+  /**
+   * Gets credentials.
+   *
+   * @return the credentials
+   */
   public Credentials getCredentials() {
     return credentials;
   }
-
+  
+  /**
+   * Sets credentials.
+   *
+   * @param credentials the credentials
+   */
   public void setCredentials(Credentials credentials) {
     this.credentials = credentials;
   }
@@ -157,11 +173,12 @@ public class CentralSearchConnector {
       throw new CentralSearchConnectorException(e);
     }
   }
-
+  
   /**
    * Get the last upload timestamp as well as the current server time.
    *
    * @return last upload timestamp and current server time
+   * @throws CentralSearchConnectorException the central search connector exception
    */
   public DateRestriction getDateRestriction() throws CentralSearchConnectorException {
     String responseString;
@@ -263,12 +280,13 @@ public class CentralSearchConnector {
         ? lastUploadTimestamp : DEFAULT_LAST_UPDATE_DATE;
 
   }
-
-
+  
+  
   /**
    * Set the upload time on the central mds db.
    *
    * @param timestamp the new timestamp to set
+   * @throws CentralSearchConnectorException the central search connector exception
    */
   public void setLastUploadTimestamp(String timestamp) throws CentralSearchConnectorException {
     try {
@@ -297,12 +315,13 @@ public class CentralSearchConnector {
       throw new CentralSearchConnectorException(e);
     }
   }
-
+  
   /**
    * Delete all patients on the central mds db, that are prefixed with a given string.
    *
    * @param prefix the prefix to select the patients to delete
    * @return the http status code of the operation
+   * @throws CentralSearchConnectorException the central search connector exception
    */
   public int deletePatients(String prefix) throws CentralSearchConnectorException {
     String prefixToDelete = (prefix == null ? anonymizedPatientPrefix : prefix);
@@ -323,7 +342,7 @@ public class CentralSearchConnector {
     }
     return statusCode;
   }
-
+  
   /**
    * Upload one patient dataset to the central mds database. TODO: Maybe add preemptive
    * authentication here (manually add Authorization header - as in samply.share v1.x).
@@ -373,7 +392,7 @@ public class CentralSearchConnector {
     }
     return result;
   }
-
+  
   /**
    * Get the string representation of a patient.
    *
@@ -391,7 +410,7 @@ public class CentralSearchConnector {
       return null;
     }
   }
-
+  
   /**
    * Check the reachability of the central MDS database.
    *

@@ -3,17 +3,17 @@ package de.samply.share.client.model;
 /**
  * Represents the information, the id manager provides when the info resource is read.
  */
-public class IdManagerInfo {
+public class ComponentInfo {
 
-  private String dist;
+  private String distname;
   private String version;
 
-  public String getDist() {
-    return dist;
+  public String getDistname() {
+    return distname;
   }
 
-  public void setDist(String dist) {
-    this.dist = dist;
+  public void setDistname(String dist) {
+    this.distname = dist;
   }
 
   public String getVersion() {

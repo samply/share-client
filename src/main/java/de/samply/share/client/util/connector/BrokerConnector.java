@@ -86,7 +86,7 @@ public class BrokerConnector {
    */
   private BrokerConnector() {
   }
-
+  
   /**
    * Instantiate a broker connector for a certain broker. Credentials are read from the database.
    *
@@ -117,23 +117,39 @@ public class BrokerConnector {
       throw new RuntimeException(e);
     }
   }
-
+  
+  /**
+   * Gets broker.
+   *
+   * @return the broker
+   */
   public Broker getBroker() {
     return broker;
   }
-
+  
+  /**
+   * Gets credentials.
+   *
+   * @return the credentials
+   */
   public Credentials getCredentials() {
     return credentials;
   }
-
+  
+  /**
+   * Sets credentials.
+   *
+   * @param credentials the credentials
+   */
   public void setCredentials(Credentials credentials) {
     this.credentials = credentials;
   }
-
+  
   /**
    * Get the name, the searchbroker provides as its own.
    *
    * @return the name of the broker
+   * @throws BrokerConnectorException the broker connector exception
    */
   public String getBrokerName() throws BrokerConnectorException {
     if (!SamplyShareUtils.isNullOrEmpty(broker.getName())) {
@@ -162,12 +178,13 @@ public class BrokerConnector {
     }
     return broker.getAddress();
   }
-
+  
   /**
    * Register with this broker.
    *
    * @return a status, used for further handling. Either display a confirmation code box or show an
-   *        error
+   *      error
+   * @throws BrokerConnectorException the broker connector exception
    */
   public BrokerStatusType register() throws BrokerConnectorException {
     try {
@@ -193,12 +210,13 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-
+  
   /**
    * Send a DELETE command in order to request deletion of this instance from the connected brokers
    * database.
    *
    * @return success information
+   * @throws BrokerConnectorException the broker connector exception
    */
   public boolean unregister() throws BrokerConnectorException {
     logger.info("Request deletion from: " + broker.getAddress());
@@ -220,12 +238,13 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-
+  
   /**
    * Send an activation code to the searchbroker.
    *
    * @param activationCode the activation code to send
    * @return the http status code received from the broker
+   * @throws BrokerConnectorException the broker connector exception
    */
   public int activate(String activationCode) throws BrokerConnectorException {
     try {
@@ -254,11 +273,12 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-
+  
   /**
    * Get the list of inquiry ids and revisions from the broker.
    *
    * @return map of inquiry ids and revisions
+   * @throws BrokerConnectorException the broker connector exception
    */
   public Map<String, String> getInquiryList() throws BrokerConnectorException {
     if (credentials == null) {
@@ -313,12 +333,13 @@ public class BrokerConnector {
     }
     return new HashMap<>();
   }
-
+  
   /**
    * Retrieve a test inquiry from the broker.
    *
    * @param result the check result object to be filled
    * @return the test inquiry
+   * @throws BrokerConnectorException the broker connector exception
    */
   public Inquiry getTestInquiry(CheckResult result) throws BrokerConnectorException {
     result.setExecutionDate(new Date());
@@ -388,7 +409,7 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-
+  
   /**
    * Get the CQL reference query from the searchbroker.
    *
@@ -426,13 +447,14 @@ public class BrokerConnector {
         ApplicationBean.getBridgeheadInfos().getQueryLanguage());
     return httpClient.execute(httpHost, httpGet);
   }
-
-
+  
+  
   /**
    * Retrieve a reference query from the broker. This query is used to gather performance data to
    * report to monitoring.
    *
    * @return the reference query
+   * @throws BrokerConnectorException the broker connector exception
    */
   public Query getReferenceQuery() throws BrokerConnectorException {
     try (CloseableHttpResponse response = getResponse()) {
@@ -453,12 +475,13 @@ public class BrokerConnector {
     }
     return null;
   }
-
+  
   /**
    * Get an inquiry from the broker.
    *
    * @param inquiryId the inquiry id as known by the broker (source_id in the database)
    * @return the inquiry
+   * @throws BrokerConnectorException the broker connector exception
    */
   public Inquiry getInquiry(int inquiryId) throws BrokerConnectorException {
     if (credentials == null) {
@@ -504,12 +527,13 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-
+  
   /**
    * Get additional information about the inquiry.
    *
    * @param inquiryId the inquiry id as known by the broker (source_id in the database)
    * @return additional information about the inquriry (label, description and revision)
+   * @throws BrokerConnectorException the broker connector exception
    */
   public Info getInquiryInfo(int inquiryId) throws BrokerConnectorException {
     try {
@@ -542,12 +566,13 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-
+  
   /**
    * Get the contact that created the inquiry.
    *
    * @param inquiryId the inquiry id as known by the broker (source_id in the database)
    * @return the contact of the inquirer
+   * @throws BrokerConnectorException the broker connector exception
    */
   public Contact getInquiryContact(int inquiryId) throws BrokerConnectorException {
     try {
@@ -580,12 +605,13 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-
+  
   /**
    * Check if an expose is available for the inquiry.
    *
    * @param inquiryId the inquiry id as known by the broker (source_id in the database)
    * @return true if an expose is available
+   * @throws BrokerConnectorException the broker connector exception
    */
   public boolean inquiryHasExpose(int inquiryId) throws BrokerConnectorException {
     try {
@@ -615,13 +641,14 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-
+  
   /**
    * Send a (disguised) reply to the broker. Currently, the format of the reply is not defined. It
    * might just be an integer...or some xml representation of a result set.
    *
    * @param inquiryDetails the inquiry details object
    * @param result         the reply to submit to the broker
+   * @throws BrokerConnectorException the broker connector exception
    */
   public void reply(InquiryDetails inquiryDetails, Integer result) throws BrokerConnectorException {
     try {
@@ -632,13 +659,14 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-
+  
   /**
    * Send a (disguised) reply to the broker. Currently, the format of the reply is not defined. It
    * might just be an integer...or some xml representation of a result set.
    *
    * @param inquiryDetails the inquiry details object
    * @param result         the reply to submit to the broker
+   * @throws BrokerConnectorException the broker connector exception
    */
   public void reply(InquiryDetails inquiryDetails, ISamplyResult result)
       throws BrokerConnectorException {
@@ -705,7 +733,7 @@ public class BrokerConnector {
     broker.setStatus(BrokerStatusType.BS_OK);
     BrokerUtil.updateBroker(broker);
   }
-
+  
   /**
    * Check the reachability of the broker.
    *
@@ -738,11 +766,12 @@ public class BrokerConnector {
 
     return result;
   }
-
+  
   /**
    * Transmit a list of status report items to the broker (to relay to monitoring).
    *
    * @param statusReportItems the list of items to report
+   * @throws BrokerConnectorException the broker connector exception
    */
   public void sendStatusReportItems(List<StatusReportItem> statusReportItems)
       throws BrokerConnectorException {

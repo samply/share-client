@@ -47,7 +47,7 @@ public final class WebUtils {
    */
   private WebUtils() {
   }
-
+  
   /**
    * Gets the designation for an dataelement in the mdr.
    *
@@ -58,7 +58,7 @@ public final class WebUtils {
   public static String getDesignation(String dataElement, String languageCode) {
     return MdrUtils.getDesignation(dataElement, languageCode);
   }
-
+  
   /**
    * Gets the designation of a certain value of a dataelement.
    *
@@ -70,7 +70,7 @@ public final class WebUtils {
   public static String getValueDesignation(String dataElement, Object value, String languageCode) {
     return MdrUtils.getValueDesignation(dataElement, value, languageCode);
   }
-
+  
   /**
    * Convert a given timestamp to a String in dd.MM.yyyy HH:mm:ss format.
    *
@@ -80,7 +80,7 @@ public final class WebUtils {
   public static String convertTime(Timestamp time) {
     return SamplyShareUtils.convertSqlTimestampToString(time, "dd.MM.yyyy HH:mm:ss");
   }
-
+  
   /**
    * Gets the project name.
    *
@@ -89,7 +89,7 @@ public final class WebUtils {
   public static String getProjectName() {
     return ProjectInfo.INSTANCE.getProjectName();
   }
-
+  
   /**
    * Gets the version string of this Samply Share instance to show it on the login screen.
    *
@@ -98,11 +98,16 @@ public final class WebUtils {
   public static String getVersionString() {
     return ProjectInfo.INSTANCE.getVersionString();
   }
-
+  
+  /**
+   * Gets build date.
+   *
+   * @return the build date
+   */
   public static String getBuildDate() {
     return ProjectInfo.INSTANCE.getBuildDateString();
   }
-
+  
   /**
    * Gets the case date string.
    *
@@ -119,7 +124,7 @@ public final class WebUtils {
     }
     return Messages.getString("WebUtils_caseDateUnknown");
   }
-
+  
   /**
    * Gets the execution date.
    *
@@ -135,17 +140,17 @@ public final class WebUtils {
     }
     return "";
   }
-
+  
   /**
    * Gets the id of the server's time zone. This can be used for {@code <f:convertDateTime>} tags
    * that must display the date in the server's time zone.
    *
-   * @return
+   * @return server time zone
    */
   public static String getServerTimeZone() {
     return TimeZone.getDefault().getID();
   }
-
+  
   /**
    * Gets the parent node index.
    *
@@ -162,7 +167,7 @@ public final class WebUtils {
       return (id.substring(0, id.lastIndexOf(separator)));
     }
   }
-
+  
   /**
    * Gets the gender of a given patient (-container).
    *
@@ -190,7 +195,7 @@ public final class WebUtils {
     // Return unknown if nothing was found
     return "U";
   }
-
+  
   /**
    * Count on how many brokers this instance of samply share is registered.
    *
@@ -199,7 +204,7 @@ public final class WebUtils {
   public static long getBrokerCount() {
     return BrokerUtil.getCount();
   }
-
+  
   /**
    * Count how many inquiries of the given status are in the database.
    *
@@ -219,7 +224,7 @@ public final class WebUtils {
             InquiryStatusType.IS_READY);
     }
   }
-
+  
   /**
    * Get a formatted entry line for the log to display on show_inquiry.xhtml.
    *
@@ -282,7 +287,7 @@ public final class WebUtils {
 
     return stringBuilder.toString();
   }
-
+  
   /**
    * Convert timestamp for better readability on the web page.
    *
@@ -296,14 +301,14 @@ public final class WebUtils {
     return SamplyShareUtils.convertSqlTimestampToString(timestamp,
         "dd.MM.yyyy HH:mm");
   }
-
+  
   /**
    * Config files may contain "localhost" addresses for components. In this case, replace the links.
    * If the port is also the same, just use the path otherwise, replace the host part with the
    * requestURL host part.
    *
    * @param in Todo.
-   * @return Todo.
+   * @return Todo. string
    */
   public static String replaceLocalhostInUri(String in) {
     try {
@@ -334,7 +339,7 @@ public final class WebUtils {
     }
     return in;
   }
-
+  
   /**
    * Convert a date to German standard format.
    *
@@ -347,7 +352,7 @@ public final class WebUtils {
     }
     return new SimpleDateFormat("dd.MM.yyyy").format(date);
   }
-
+  
   /**
    * Get the user name for a user id.
    *
@@ -361,7 +366,7 @@ public final class WebUtils {
       return "-";
     }
   }
-
+  
   /**
    * Check if a site-specific path and credentials are set for central search.
    *
@@ -375,7 +380,12 @@ public final class WebUtils {
     return !SamplyShareUtils
         .isNullOrEmpty(CredentialsUtil.getCredentialsByTarget(TargetType.TT_CENTRALSEARCH));
   }
-
+  
+  /**
+   * Gets query language.
+   *
+   * @return the query language
+   */
   public static String getQueryLanguage() {
     return ApplicationBean.getBridgeheadInfos().getQueryLanguage();
   }

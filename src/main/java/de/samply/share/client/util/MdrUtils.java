@@ -50,22 +50,26 @@ public class MdrUtils {
 
     return theList;
   }
-
+  
   /**
    * Get a ViewFields object with all elements from mds-b and mds-k.
    *
    * @return a ViewFields object with all elements from mds-b and mds-k
+   * @throws MdrConnectionException the mdr connection exception
+   * @throws ExecutionException     the execution exception
    */
   public static ViewFields getViewFields() throws MdrConnectionException, ExecutionException {
     return getViewFields(true);
   }
-
+  
   /**
    * Get a ViewFields object.
    *
    * @param completeMds should all elements of the mds-b and mds-k be included?
    * @return a ViewFields object with either just one (dummy) entry or the complete set of
-   *        dataelements from mds-b/k
+   *     dataelements from mds-b/k
+   * @throws MdrConnectionException the mdr connection exception
+   * @throws ExecutionException     the execution exception
    */
   public static ViewFields getViewFields(boolean completeMds)
       throws MdrConnectionException, ExecutionException {
@@ -90,7 +94,7 @@ public class MdrUtils {
     }
     return viewFields;
   }
-
+  
   /**
    * Gets the designation for a dataelement in the mdr.
    *
@@ -111,7 +115,7 @@ public class MdrUtils {
     }
 
   }
-
+  
   /**
    * Gets the designation of a certain value of a dataelement.
    *
@@ -156,7 +160,7 @@ public class MdrUtils {
     }
     return designation;
   }
-
+  
   /**
    * Gets a Map of permitted values and their designation of a dataelement.
    *

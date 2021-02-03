@@ -20,53 +20,67 @@ public class ObjectFactory {
       new QName("http://schema.samply.de/common", "operator");
   private static final QName _Urls_QNAME =
       new QName("http://schema.samply.de/common", "urls");
-
+  
   /**
    * Create a new ObjectFactory that can be used to create new instances of schema derived classes
    * for package: de.samply.share.client.model.common.
    */
   public ObjectFactory() {
   }
-
+  
   /**
    * Create an instance of {@link Urls }.
+   *
+   * @return the urls
    */
   public Urls createUrls() {
     return new Urls();
   }
-
+  
   /**
    * Create an instance of {@link JAXBElement }{@code <}{@link Urls }{@code >}}.
+   *
+   * @param value the value
+   * @return the jaxb element
    */
   @XmlElementDecl(namespace = "http://schema.samply.de/common", name = "urls")
   public JAXBElement<Urls> createUrls(Urls value) {
     return new JAXBElement<Urls>(_Urls_QNAME, Urls.class, null, value);
   }
-
+  
   /**
    * Create an instance of {@link Operator }.
+   *
+   * @return the operator
    */
   public Operator createOperator() {
     return new Operator();
   }
-
+  
   /**
    * Create an instance of {@link JAXBElement }{@code <}{@link Operator }{@code >}}.
+   *
+   * @param value the value
+   * @return the jaxb element
    */
   @XmlElementDecl(namespace = "http://schema.samply.de/common", name = "operator")
   public JAXBElement<Operator> createOperator(Operator value) {
     return new JAXBElement<Operator>(_Operator_QNAME, Operator.class, null, value);
   }
-
+  
   /**
    * Create an instance of {@link Bridgehead }.
+   *
+   * @return the bridgehead
    */
   public Bridgehead createBridgehead() {
     return new Bridgehead();
   }
-
+  
   /**
    * Create an instance of {@link Cts }.
+   *
+   * @return the cts
    */
   public Cts createCts() {
     return new Cts();

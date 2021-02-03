@@ -4,17 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [7.2.0 - 2021-02-01]
+## [7.2.0 - 2021-02-03]
 ## Added
 - added process 9b for CTS 
 - added JSONPath
 - encryption/decryption of FHIR references 
 - read localIds from Mainzelliste
 
-## [7.1.0 - 2021-02-01]
+## [7.1.0 - 2021-02-02]
 ## Added
 - Percentage Logger
 - Java Doc
+- Integrate projectpseudonymization and patientlist
 
 ## [7.0.0 - 2020-11-27]
 - Github release
