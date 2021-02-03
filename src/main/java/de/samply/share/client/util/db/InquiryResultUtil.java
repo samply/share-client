@@ -28,7 +28,7 @@ public class InquiryResultUtil {
   // Prevent instantiation
   private InquiryResultUtil() {
   }
-
+  
   /**
    * Get the inquiry result DAO.
    *
@@ -37,7 +37,7 @@ public class InquiryResultUtil {
   public static InquiryResultDao getInquiryResultDao() {
     return inquiryResultDao;
   }
-
+  
   /**
    * Get a list of all inquiry results.
    *
@@ -46,7 +46,7 @@ public class InquiryResultUtil {
   public static List<InquiryResult> fetchInquiryResults() {
     return inquiryResultDao.findAll();
   }
-
+  
   /**
    * Get a list of all inquiry results for certain inquiry details.
    *
@@ -56,7 +56,7 @@ public class InquiryResultUtil {
   public static List<InquiryResult> fetchInquiryResultsForInquiryDetailsById(int inquiryDetailsId) {
     return inquiryResultDao.fetchByInquiryDetailsId(inquiryDetailsId);
   }
-
+  
   /**
    * Get the last two inquiry result (patient,specimen) for a cql query.
    *
@@ -71,17 +71,17 @@ public class InquiryResultUtil {
         .orderBy(Tables.INQUIRY_RESULT.EXECUTED_AT.desc()).limit(2)
         .fetchInto(InquiryResult.class);
   }
-
+  
   /**
    * Get one inquiry result.
    *
    * @param inquiryResultId id of the inquiry result
-   * @return
+   * @return inquiry result
    */
   public static InquiryResult fetchInquiryResultById(int inquiryResultId) {
     return inquiryResultDao.fetchOneById(inquiryResultId);
   }
-
+  
   /**
    * Get the last result for a inquiryCriteria by Id.
    *
@@ -102,7 +102,7 @@ public class InquiryResultUtil {
         ))
         .fetchOneInto(InquiryResult.class);
   }
-
+  
   /**
    * Get the latest inquiry result for certain inquiry details.
    *
@@ -122,7 +122,7 @@ public class InquiryResultUtil {
         ))
         .fetchOneInto(InquiryResult.class);
   }
-
+  
   /**
    * Insert a new inquiry result into the database.
    *
@@ -137,7 +137,7 @@ public class InquiryResultUtil {
     inquiryResultRecord.refresh();
     return inquiryResultRecord.getId();
   }
-
+  
   /**
    * Update an inquiry result in the database.
    *
@@ -146,7 +146,7 @@ public class InquiryResultUtil {
   public static void updateInquiryResult(InquiryResult inquiryResult) {
     inquiryResultDao.update(inquiryResult);
   }
-
+  
   /**
    * Get a list of inquiries for a certain entity type, where no notifications have been sent yet.
    *
@@ -162,8 +162,8 @@ public class InquiryResultUtil {
       return getInquiryResultsForNotification(entityType);
     }
   }
-
-
+  
+  
   /**
    * Get a list of inquiries for a certain entity type, where no notifications have been sent yet.
    * Do not include empty results.
@@ -190,8 +190,8 @@ public class InquiryResultUtil {
             .and(Tables.REQUESTED_ENTITY.NAME.equal(entityType)))
         .fetchInto(InquiryResult.class);
   }
-
-
+  
+  
   /**
    * Get a list of inquiries for a certain entity type, where no notifications have been sent yet.
    * Include empty results.
@@ -218,7 +218,7 @@ public class InquiryResultUtil {
             .and(Tables.REQUESTED_ENTITY.NAME.equal(entityType)))
         .fetchInto(InquiryResult.class);
   }
-
+  
   /**
    * Set the notification sent flag for a list of inquiryResults.
    *

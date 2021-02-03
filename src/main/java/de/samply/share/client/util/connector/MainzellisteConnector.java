@@ -40,6 +40,9 @@ import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
 
+/**
+ * The type Mainzelliste connector.
+ */
 public class MainzellisteConnector {
 
   private static final Logger logger = LogManager.getLogger(MainzellisteConnector.class);
@@ -70,8 +73,11 @@ public class MainzellisteConnector {
   private CloseableHttpClient httpClient;
   private String mainzellisteBaseUrl;
   private HttpHost mainzellisteHost;
-
-
+  
+  
+  /**
+   * Instantiates a new Mainzelliste connector.
+   */
   public MainzellisteConnector() {
     init();
   }
@@ -87,13 +93,15 @@ public class MainzellisteConnector {
       logger.error("Init Mainzelliste connection: MalformedURLException: e: " + e);
     }
   }
-
+  
   /**
    * pseudonymise a patient.
    *
    * @param bundle the patient bundle
    * @return the pseudonymized patient
    * @throws IllegalArgumentException IllegalArgumentException
+   * @throws NotFoundException        the not found exception
+   * @throws NotAuthorizedException   the not authorized exception
    * @throws IOException              IOException
    */
   public Bundle getPatientPseudonym(Bundle bundle)
@@ -102,7 +110,7 @@ public class MainzellisteConnector {
     Patient patientPseudonym = null;
     Coverage coverage = null;
     Coverage coveragePseudonym = null;
-    JsonObject encryptedID;
+    JsonObject encryptedId;
     int patientEntryIndex = 0;
     int coverageEntryIndex = 0;
     for (int i = 0; i < bundle.getEntry().size(); i++) {
@@ -118,8 +126,8 @@ public class MainzellisteConnector {
       }
       if (patient != null && coverage != null) {
         JsonObject jsonIdatObject = createJsonPatient(patient, coverage);
-        encryptedID = getPseudonymFromMainzelliste(jsonIdatObject);
-        patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedID);
+        encryptedId = getPseudonymFromMainzelliste(jsonIdatObject);
+        patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedId);
         bundle.getEntry().get(patientEntryIndex).setResource(patientPseudonym);
         bundle.getEntry().get(coverageEntryIndex).setResource(coveragePseudonym);
         return bundle;
@@ -190,12 +198,12 @@ public class MainzellisteConnector {
    * Add pseudonym to a Patient resource.
    *
    * @param patient     the patient
-   * @param encryptedID encryptedID
+   * @param encryptedId encryptedId
    * @return the pseudonymized patient
    */
-  private Patient addPseudonymToPatient(Patient patient, JsonObject encryptedID) {
+  private Patient addPseudonymToPatient(Patient patient, JsonObject encryptedId) {
     patient.getIdentifierFirstRep()
-        .setValue(encryptedID.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
+        .setValue(encryptedId.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
     return patient;
   }
 
@@ -219,7 +227,7 @@ public class MainzellisteConnector {
       checkIfAttributeExist(birthDateElement.asStringValue(), IDAT_GEBURTSDATUM);
       int birthDay = birthDateElement.getDay();
       int birthMonth = birthDateElement.getMonth();
-      birthMonth += 1;// +1 because Hapi returns the month with 0-index, e.g. 0=January
+      birthMonth += 1; // +1 because Hapi returns the month with 0-index, e.g. 0=January
       String day = String.valueOf(birthDay);
       String month = String.valueOf(birthMonth);
       if (birthDay < 10) {
@@ -302,7 +310,7 @@ public class MainzellisteConnector {
     HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
     httpPost.setEntity(entity);
     CloseableHttpResponse response = null;
-    JsonObject encryptedID;
+    JsonObject encryptedId;
     try {
       response = httpClient.execute(httpPost);
       StatusLine statusLine = response.getStatusLine();
@@ -311,22 +319,26 @@ public class MainzellisteConnector {
       insertEventLog(statusCode);
       checkStatusCode(response, statusCode, reasonPhrase);
       String encryptedIdString = EntityUtils.toString(response.getEntity());
-      encryptedID = (JsonObject) parser.parse(encryptedIdString);
+      encryptedId = (JsonObject) parser.parse(encryptedIdString);
     } catch (IOException e) {
       logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
       throw new IOException(e);
     } finally {
       closeResponse(response);
     }
-    return encryptedID;
+    return encryptedId;
   }
-
+  
   /**
    * Post the patient id to the Mainzelliste to get the encryptedId and replace it with the patient
    * id.
    *
    * @param patient the local cts patient
    * @return the patient with the replaced id
+   * @throws IOException              the io exception
+   * @throws IllegalArgumentException the illegal argument exception
+   * @throws NotFoundException        the not found exception
+   * @throws NotAuthorizedException   the not authorized exception
    */
   public JsonObject getPatientWithPseudonymId(String patient)
       throws IOException, IllegalArgumentException,
@@ -361,8 +373,8 @@ public class MainzellisteConnector {
 
   private void addEncryptedIdToPatient(JsonObject patientAsJson,
       String encryptedIdString) {
-    JsonObject encryptedID = (JsonObject) parser.parse(encryptedIdString);
-    patientAsJson.addProperty("patid", encryptedID.get("EncID").getAsString());
+    JsonObject encryptedId = (JsonObject) parser.parse(encryptedIdString);
+    patientAsJson.addProperty("patid", encryptedId.get("EncID").getAsString());
   }
 
   private HttpPost createHttpPost(String path) {
@@ -435,7 +447,7 @@ public class MainzellisteConnector {
     return message + "; statusCode: " + statusCode + "; reason: " + reasonPhrase + ";body: "
         + bodyResponse;
   }
-
+  
   /**
    * close a response.
    *

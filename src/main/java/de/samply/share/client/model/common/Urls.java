@@ -27,10 +27,10 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="directoryUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI" minOccurs="0"/&gt;
  *         &lt;element name="patientlistUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/&gt;
  *         &lt;element name="projectPseudonymisationUrl" type="{http://www.w3.org/2001/XMLSchema}anyURI"/&gt;
- *       &lt;/all>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ *       &lt;/all&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
