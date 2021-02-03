@@ -4,9 +4,14 @@ import de.samply.share.client.model.IdObject;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The interface Id management connector.
+ */
 public interface IdManagementConnector {
-
-  /** Todo David.
+  
+  /**
+   * Todo David.
+   *
    * @param searchIds     List of IDObjects with IdString and IdType
    * @param resultIdTypes List of IdTypes which should be returned in exchange of searchIds
    * @return searchIds mapped to list of result Id Objects
@@ -14,7 +19,7 @@ public interface IdManagementConnector {
    */
   Map<IdObject, List<IdObject>> getIds(List<IdObject> searchIds, List<String> resultIdTypes)
       throws IdManagementConnectorException;
-
+  
   /**
    * Find all patients which have at least one id with the given searchIdType and return there id
    * with the specified resultIdType. (DKTK000002016_Teststandort_L-ID, BK_Teststandort_L-ID)
@@ -27,16 +32,17 @@ public interface IdManagementConnector {
    */
   List<IdObject> getAllIds(String searchIdType, String resultIdType)
       throws IdManagementConnectorException;
-
+  
   /**
    * DKTK000002016_Teststandort_L-ID -- List { IDs (BK_Teststandort_L-ID) } .
    * Todo David umformulieren.
    *
    * @param searchIdType Todo David
    * @return Todo David
+   * @throws IdManagementConnectorException the id management connector exception
    */
   List<IdObject> getAllLocalIds(String searchIdType) throws IdManagementConnectorException;
-
+  
   /**
    * find all patients which have at least one id with the given searchIdType and return there
    * export ids.
@@ -47,7 +53,7 @@ public interface IdManagementConnector {
    */
   Map<IdObject, IdObject> getExportIds(List<IdObject> searchIds)
       throws IdManagementConnectorException;
-
+  
   /**
    * Generate random export ids.
    *

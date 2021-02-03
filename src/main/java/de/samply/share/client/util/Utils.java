@@ -59,7 +59,7 @@ public final class Utils {
    */
   private Utils() {
   }
-
+  
   /**
    * Prepare the credentials provider by getting all credentials from the database and adding them
    * accordingly.
@@ -227,11 +227,12 @@ public final class Utils {
       credentialsProvider.setCredentials(authScope, apacheCredentials);
     }
   }
-
+  
   /**
    * Get the composite URL (base url + path) for the central MDS database.
    *
    * @return the URL for the central MDS database
+   * @throws MalformedURLException the malformed url exception
    */
   public static URL getCentralMdsDbUrl() throws MalformedURLException {
     String baseUrlString = ConfigurationUtil
@@ -278,7 +279,7 @@ public final class Utils {
     KeyFactory keyFactory = KeyFactory.getInstance("RSA");
     return keyFactory.generatePublic(publicSpec);
   }
-
+  
   /**
    * Generates a random export id base64 encoded, url safe, encrypted with mds-pubkey.
    *
@@ -301,11 +302,17 @@ public final class Utils {
       return null;
     }
   }
-
+  
+  /**
+   * Gets random exportid.
+   *
+   * @param filename the filename
+   * @return the random exportid
+   */
   public static String getRandomExportid(String filename) {
     return getRandomExportid("", filename);
   }
-
+  
   /**
    * Convert date for communication with the central mds db.
    *
@@ -317,24 +324,24 @@ public final class Utils {
         Locale.ENGLISH);
     return simpleDateFormat.format(date);
   }
-
+  
   /**
    * Todo.
    *
    * @param date Todo.
-   * @return Todo.
+   * @return Todo. string
    */
   public static String convertDate2(Date date) {
     DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssXXX",
         Locale.ENGLISH);
     return simpleDateFormat.format(date);
   }
-
+  
   /**
    * Todo.
    *
    * @param date Todo.
-   * @return Todo.
+   * @return Todo. date
    * @throws ParseException Todo.
    */
   public static Date convertDate2(String date) throws ParseException {
@@ -342,7 +349,7 @@ public final class Utils {
         Locale.ENGLISH);
     return simpleDateFormat.parse(date);
   }
-
+  
   /**
    * Convert date for communication with the central mds db.
    *
@@ -354,12 +361,12 @@ public final class Utils {
         Locale.ENGLISH);
     return simpleDateFormat.format(date);
   }
-
+  
   /**
    * Todo.
    *
    * @param date Todo.
-   * @return Todo.
+   * @return Todo. date
    * @throws ParseException Todo.
    */
   public static Date convertDate3(String date) throws ParseException {
@@ -367,14 +374,14 @@ public final class Utils {
         Locale.ENGLISH);
     return simpleDateFormat.parse(date);
   }
-
-
+  
+  
   /**
    * Todo.
    *
    * @param first Todo.
    * @param last  Todo.
-   * @return Todo.
+   * @return Todo. diff years
    */
   public static int getDiffYears(Date first, Date last) {
     Calendar a = getCalendar(first);
@@ -387,25 +394,26 @@ public final class Utils {
     }
     return diff;
   }
-
+  
   /**
    * Todo.
    *
    * @param date Todo.
-   * @return Todo.
+   * @return Todo. calendar
    */
   public static Calendar getCalendar(Date date) {
     Calendar cal = Calendar.getInstance(Locale.GERMAN);
     cal.setTime(date);
     return cal;
   }
-
+  
   /**
    * Save a file part to a temporary file.
    *
    * @param prefix the prefix of the temp file
    * @param part   the file part to save
    * @return the resulting temp file
+   * @throws IOException the io exception
    */
   public static File savePartToTmpFile(String prefix, Part part) throws IOException {
     File file = Files.createTempFile(prefix, getFileName(part)).toFile();
@@ -414,7 +422,7 @@ public final class Utils {
     }
     return file;
   }
-
+  
   /**
    * Gets the file name of a file part.
    *
@@ -434,7 +442,7 @@ public final class Utils {
     }
     return null;
   }
-
+  
   /**
    * Todo.
    *
@@ -449,12 +457,12 @@ public final class Utils {
             .getStatus());
 
   }
-
+  
   /**
    * Todo.
    *
    * @param number Todo.
-   * @return Todo.
+   * @return Todo. as long
    */
   public static Long getAsLong(String number) {
 
@@ -465,12 +473,12 @@ public final class Utils {
     }
 
   }
-
+  
   /**
    * Todo.
    *
    * @param booleanElement Todo.
-   * @return Todo.
+   * @return Todo. as boolean
    */
   public static Boolean getAsBoolean(String booleanElement) {
 
@@ -480,13 +488,13 @@ public final class Utils {
       return null;
     }
   }
-
+  
   /**
    * Todo.
    *
    * @param basicUrl  Todo.
    * @param extension Todo.
-   * @return Todo.
+   * @return Todo. string
    */
   public static String extendUrl(String basicUrl, String extension) {
 
