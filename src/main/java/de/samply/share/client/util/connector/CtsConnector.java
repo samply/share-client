@@ -2,19 +2,32 @@ package de.samply.share.client.util.connector;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.parser.DataFormatException;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
 import com.mchange.rmi.NotAuthorizedException;
 import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.crypt.Crypt;
+import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.fhir.FhirResource;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
@@ -82,12 +95,17 @@ public class CtsConnector {
    */
   public Response postPseudonmToCts(String bundleString, String mediaType)
       throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException,
-      NotFoundException, NotAuthorizedException {
+      NotFoundException, NotAuthorizedException, GeneralSecurityException {
     // Make a call to the PL, and replace patient identifying information in the
     // bundle with a pseudonym.
     Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
     // Serialize into a JSON String
-    String pseudonymBundleJson = fhirResource.convertBundleToJson(pseudonymBundle);
+    String pseudonymBundleJson = fhirResource.convertBundleToXml(pseudonymBundle)
+        .replace("><", ">\r\n<");
+    if (ApplicationBean.getFeatureManager().getFeatureState(ClientFeature.NNGM_ENCRYPT_ID)
+        .isEnabled()) {
+      pseudonymBundleJson = searchForIds(pseudonymBundleJson, true);
+    }
 
     // Set up the API call
     HttpEntity entity = new StringEntity(pseudonymBundleJson, Consts.UTF_8);
@@ -120,6 +138,7 @@ public class CtsConnector {
    * @return if the post was successfull
    * @throws IOException              IOException
    * @throws IllegalArgumentException IllegalArgumentException
+   * @throws NotFoundException        NotFoundException
    * @throws NotAuthorizedException   NotAuthorizedException
    */
   public Response postLocalPatientToCentralCts(String patient)
@@ -137,6 +156,55 @@ public class CtsConnector {
       HttpContext ctsContext = createCtsContext();
       response = httpClient.execute(httpPost, ctsContext);
       int statusCode = response.getStatusLine().getStatusCode();
+      String message =
+          "CTS server response: statusCode:" + statusCode + "; response: " + response.toString();
+      String responseBody = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
+      if (responseBody != null && !responseBody.isEmpty()) {
+        message += ";body: " + responseBody;
+      }
+      return Response.status(statusCode).entity(message).build();
+    } catch (IOException e) {
+      throw new IOException(e);
+    } finally {
+      closeResponse(response);
+    }
+  }
+
+
+  /**
+   * Post a local CTS patient to the central CTS.
+   *
+   * @param patient         the local patient
+   * @param headerMapToSend the headers from the incoming request which should be send
+   * @return if the post was successfull
+   * @throws IOException              IOException
+   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws NotAuthorizedException   NotAuthorizedException
+   */
+  public Response postLocalPatientToCentralCts(String patient,
+      javax.ws.rs.core.HttpHeaders httpHeaders,
+      HashMap<String, Object> headerMapToSend)
+      throws IOException, IllegalArgumentException,
+      NotFoundException, NotAuthorizedException {
+    String encryptedIds = readIds(patient,
+        httpHeaders.getRequestHeader("X-BK-pseudonym-jsonpaths").get(0), false);
+    // Set up the API call
+    HttpEntity entity = new StringEntity(encryptedIds, Consts.UTF_8);
+    HttpPost httpPost = new HttpPost(httpHeaders.getRequestHeader("X-BK-target-url").get(0));
+    httpPost.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+    for (Entry<String, Object> entry : headerMapToSend.entrySet()) {
+      httpPost.setHeader(entry.getKey(), entry.getValue().toString());
+    }
+    httpPost.setEntity(entity);
+    CloseableHttpResponse response = null;
+    try {
+      response = httpClient.execute(httpPost);
+      int statusCode = response.getStatusLine().getStatusCode();
+      if (statusCode == 200 || statusCode == 201) {
+        String patients = readIds(patient,
+            httpHeaders.getRequestHeader("X-BK-pseudonym-jsonpaths").get(0), true);
+        return Response.status(statusCode).entity(patients).build();
+      }
       String message =
           "CTS server response: statusCode:" + statusCode + "; response: " + response.toString();
       String responseBody = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
@@ -260,6 +328,91 @@ public class CtsConnector {
     logger.debug("getCtsInfo: done");
     return ctsAuthorization;
   }
+
+  private String readIds(String json, String headerIdKey, boolean response)
+      throws IOException, NotAuthorizedException {
+    String headerIdKeyString = new String(Base64.getDecoder().decode(headerIdKey));
+    headerIdKeyString = headerIdKeyString.substring(headerIdKeyString.indexOf("$"),
+        headerIdKeyString.indexOf("\"]"));
+    String patientJson = json;
+    Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST);
+    List<String> ids = JsonPath.using(conf).parse(patientJson).read(headerIdKeyString);
+    patientJson = replaceIdsWithEncryptedIds(patientJson, ids, response);
+    return patientJson;
+  }
+
+  private String replaceIdsWithEncryptedIds(String patientJson, List<String> ids, boolean response)
+      throws IOException, NotAuthorizedException {
+    MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
+    if (!response) {
+      for (String id : ids) {
+
+        patientJson = patientJson
+            .replace(id, mainzellisteConnector.getEncryptedIdWithPatientId(id));
+      }
+    } else {
+      JsonArray localIds = mainzellisteConnector.getLocalId(ids);
+      for (int i = 0; i < localIds.size(); i++) {
+        patientJson = patientJson.replace(ids.get(i),
+            localIds.get(i).getAsJsonObject().get("ids").getAsJsonArray().get(0).getAsJsonObject()
+                .get("idString").getAsString());
+      }
+    }
+    return patientJson;
+  }
+
+
+  /**
+   * Search for the resource ids inside the bundle and encrypt or decrypt it.
+   *
+   * @param json    the bundle as json
+   * @param encrypt if the ids should encrypted or decrypted
+   * @return the encrypted/decrypted bundle
+   * @throws GeneralSecurityException GeneralSecurityException
+   */
+  private static String searchForIds(String json, boolean encrypt)
+      throws GeneralSecurityException {
+    Crypt crypt = ApplicationBean.getCrypt();
+    List<Pattern> patternList = new ArrayList<>();
+    Pattern pattern0 = Pattern.compile("\\b(id value=\".*)");
+    Pattern pattern1 = Pattern.compile("\\b(reference value=\".*)");
+    Pattern pattern2 = Pattern.compile("\\b(fullUrl value=\".*)");
+    Pattern pattern3 = Pattern.compile("\\b(url value=\".*)");
+    patternList.add(pattern0);
+    patternList.add(pattern1);
+    patternList.add(pattern2);
+    patternList.add(pattern3);
+    for (int i = 0; i < 4; i++) {
+      Matcher matcher = patternList.get(i).matcher(json);
+      while (matcher.find()) {
+        String match = matcher.group(1);
+        String substring = "";
+        try {
+          if (i == 0) {
+            int index1 = match.indexOf("\"");
+            int index2 = match.lastIndexOf("\"");
+            substring = match.substring(index1 + 1, index2);
+          } else {
+            int index = match.indexOf("/");
+            int index2 = match.lastIndexOf("\"");
+            substring = match.substring(index + 1, index2);
+          }
+        } catch (IndexOutOfBoundsException e) {
+          e.printStackTrace();
+        }
+        String cryptedString;
+        if (encrypt) {
+          cryptedString = crypt.encrypt(substring);
+        } else {
+          cryptedString = new String(crypt.decrypt(substring));
+        }
+        String newIdString = match.replace(substring, cryptedString);
+        json = json.replace(match, newIdString);
+      }
+    }
+    return json;
+  }
+
 
   /**
    * Print the message from the extern service.
