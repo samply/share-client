@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.2.1 - 2021-02-04]
+## Fixed
+- send pseudonymised bundle as JSON only
+- renamed some methods
+
 ## [7.2.0 - 2021-02-03]
 ## Added
 - added process 9b for CTS 
