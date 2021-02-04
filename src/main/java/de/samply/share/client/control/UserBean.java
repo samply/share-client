@@ -148,8 +148,6 @@ public class UserBean implements Serializable {
       Messages.create("ul_createNewUser")
           .detail("ul_userCreated")
           .add();
-
-      StoreConnector.storeNewUser(newUser.getUsername(), password);
       setNotificationsForNewUser();
       newUser = new User();
       refreshUserList();
