@@ -144,7 +144,7 @@ public class MainzellisteConnector {
       }
       if (patient != null && coverage != null && composition != null) {
         JsonObject jsonIdatObject = createJsonPatient(patient, coverage);
-        encryptedID = getPseudonymFromMainzelliste(jsonIdatObject);
+        encryptedID = requestPseudonymFromMainzelliste(jsonIdatObject);
         patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedID);
         compositionPseudonym = addPseudonymToComposition(compositionPseudonym, encryptedID);
         bundle.getEntry().get(compositionEntryIndex).setResource(compositionPseudonym);
@@ -388,7 +388,7 @@ public class MainzellisteConnector {
    * @return an encrypted ID
    * @throws IOException IOException
    */
-  private JsonObject getPseudonymFromMainzelliste(JsonObject patient)
+  private JsonObject requestPseudonymFromMainzelliste(JsonObject patient)
       throws IOException, IllegalArgumentException, NotFoundException, NotAuthorizedException {
     HttpPost httpPost = createHttpPost(GET_ENCRYPT_ID_URL);
     HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
@@ -420,7 +420,7 @@ public class MainzellisteConnector {
    * @param patient the local cts patient
    * @return the patient with the replaced id
    */
-  public JsonObject getPatientWithPseudonymId(String patient)
+  public JsonObject requestEncryptedIdForPatient(String patient)
       throws IOException, IllegalArgumentException,
       NotFoundException, NotAuthorizedException {
     JsonObject patientAsJson = (JsonObject) parser.parse(patient);
@@ -455,9 +455,9 @@ public class MainzellisteConnector {
    * Post the patient id to the Mainzelliste to get the encryptedId.
    *
    * @param id patientId
-   * @return the patient with the replaced id
+   * @return the requested encrypted id
    */
-  public String getEncryptedIdWithPatientId(String id)
+  public String requestEncryptedIdWithPatientId(String id)
       throws IOException, IllegalArgumentException,
       NotFoundException, NotAuthorizedException {
     JsonObject jsonEntity = new JsonObject();
