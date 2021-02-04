@@ -41,4 +41,8 @@ public class FhirResource {
     return ctx.newJsonParser().encodeResourceToString(auditEvent);
   }
 
+  public String convertXmlBundleToJsonBundle(String jsonXml) {
+    return ctx.newJsonParser().encodeResourceToString(ctx.newXmlParser().parseResource(jsonXml));
+  }
+
 }

@@ -91,24 +91,31 @@ public class CtsConnector {
    * @throws IOException              IOException
    * @throws ConfigurationException   ConfigurationException
    * @throws DataFormatException      DataFormatException
-   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws NotFoundException        NotFoundException
+   * @throws NotAuthorizedException   NotAuthorizedException
+   * @throws GeneralSecurityException GeneralSecurityException
    */
   public Response postPseudonmToCts(String bundleString, String mediaType)
-      throws IOException, ConfigurationException, DataFormatException, IllegalArgumentException,
+      throws IOException, ConfigurationException, DataFormatException,
       NotFoundException, NotAuthorizedException, GeneralSecurityException {
     // Make a call to the PL, and replace patient identifying information in the
     // bundle with a pseudonym.
     Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
     // Serialize into a JSON String
-    String pseudonymBundleJson = fhirResource.convertBundleToXml(pseudonymBundle)
-        .replace("><", ">\r\n<");
+    String pseudonymBundleAsString;
     if (ApplicationBean.getFeatureManager().getFeatureState(ClientFeature.NNGM_ENCRYPT_ID)
         .isEnabled()) {
-      pseudonymBundleJson = searchForIds(pseudonymBundleJson, true);
+      pseudonymBundleAsString = fhirResource.convertBundleToXml(pseudonymBundle)
+          .replace("><", ">\r\n<");
+      pseudonymBundleAsString = searchForIds(pseudonymBundleAsString, true);
+      pseudonymBundleAsString = fhirResource
+          .convertXmlBundleToJsonBundle(pseudonymBundleAsString);
+    } else {
+      pseudonymBundleAsString = fhirResource.convertBundleToJson(pseudonymBundle);
     }
 
     // Set up the API call
-    HttpEntity entity = new StringEntity(pseudonymBundleJson, Consts.UTF_8);
+    HttpEntity entity = new StringEntity(pseudonymBundleAsString, Consts.UTF_8);
     HttpPost httpPost = new HttpPost(ctsBaseUrl);
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_CTS_FHIR_JSON);
     httpPost.setEntity(entity);
@@ -145,7 +152,7 @@ public class CtsConnector {
       throws IOException, IllegalArgumentException,
       NotFoundException, NotAuthorizedException {
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
-    JsonObject pseudonimisedPatient = mainzellisteConnector.getPatientWithPseudonymId(patient);
+    JsonObject pseudonimisedPatient = mainzellisteConnector.requestEncryptedIdForPatient(patient);
     // Set up the API call
     HttpEntity entity = new StringEntity(pseudonimisedPatient.toString(), Consts.UTF_8);
     HttpPost httpPost = new HttpPost(ctsBaseUrl);
@@ -348,7 +355,7 @@ public class CtsConnector {
       for (String id : ids) {
 
         patientJson = patientJson
-            .replace(id, mainzellisteConnector.getEncryptedIdWithPatientId(id));
+            .replace(id, mainzellisteConnector.requestEncryptedIdWithPatientId(id));
       }
     } else {
       JsonArray localIds = mainzellisteConnector.getLocalId(ids);
@@ -387,24 +394,20 @@ public class CtsConnector {
       while (matcher.find()) {
         String match = matcher.group(1);
         String substring = "";
-        try {
-          if (i == 0) {
-            int index1 = match.indexOf("\"");
-            int index2 = match.lastIndexOf("\"");
-            substring = match.substring(index1 + 1, index2);
-          } else {
-            int index = match.indexOf("/");
-            int index2 = match.lastIndexOf("\"");
-            substring = match.substring(index + 1, index2);
-          }
-        } catch (IndexOutOfBoundsException e) {
-          e.printStackTrace();
+        if (i == 0) {
+          int index1 = match.indexOf("\"");
+          int index2 = match.lastIndexOf("\"");
+          substring = match.substring(index1 + 1, index2);
+        } else {
+          int index = match.lastIndexOf("/");
+          int index2 = match.lastIndexOf("\"");
+          substring = match.substring(index + 1, index2);
         }
         String cryptedString;
         if (encrypt) {
           cryptedString = crypt.encrypt(substring);
         } else {
-          cryptedString = new String(crypt.decrypt(substring));
+          cryptedString = crypt.decrypt(substring);
         }
         String newIdString = match.replace(substring, cryptedString);
         json = json.replace(match, newIdString);
