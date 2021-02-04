@@ -6,10 +6,13 @@
   <xs:complexType name="urls">
     <xs:all>
       <xs:element name="shareUrl" type="xs:anyURI"/>
-      <xs:element minOccurs="0" name="idmanagerUrl" type="xs:anyURI"/>
+      <xs:element name="idmanagerUrl" type="xs:anyURI" minOccurs="0"/>
+      <xs:element name="idmanagerApiKey" type="xs:anyURI"/>
       <xs:element name="ldmUrl" type="xs:anyURI"/>
       <xs:element name="mdrUrl" type="xs:anyURI"/>
-      <xs:element minOccurs="0" name="directoryUrl" type="xs:anyURI"/>
+      <xs:element name="directoryUrl" type="xs:anyURI" minOccurs="0"/>
+      <xs:element name="patientlistUrl" type="xs:anyURI" minOccurs="0" />
+      <xs:element name="projectPseudonymisationUrl" type="xs:anyURI" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
 

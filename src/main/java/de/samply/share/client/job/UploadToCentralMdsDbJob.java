@@ -30,6 +30,7 @@ import de.samply.share.client.model.db.tables.pojos.Upload;
 import de.samply.share.client.util.UploadUtils;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.CentralSearchConnector;
+import de.samply.share.client.util.connector.IdManagerBasicInfoConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.CentralSearchConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;

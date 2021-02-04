@@ -75,8 +75,6 @@ public class MainzellisteConnector {
       "http://uk-koeln.de/fhir/NamingSystem/nNGM/patient-identifier";
   private static final String GET_ENCRYPT_ID_URL = "/paths/getEncryptId";
   private static final String GET_ENCRYPT_ID_WITH_PATIENT_ID_URL = "/paths/getEncryptIdWithId";
-  private static final String ENCRYPT_ID_JSON_URL = "/paths/getEncryptIdWithId";
-  private static final String DECRYPT_ID_JSON_URL = "/paths/getEncryptIdWithId";
   private static final String HEADER_PARAM_API_KEY = "apiKey";
   private static final String STAMMDATEN_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Stammdaten-pseudonymisiert";
   private static final String ANTRAG_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Antrag-pseudonymisiert";
@@ -146,7 +144,7 @@ public class MainzellisteConnector {
       }
       if (patient != null && coverage != null && composition != null) {
         JsonObject jsonIdatObject = createJsonPatient(patient, coverage);
-        encryptedID = getPseudonymFromMainzelliste(jsonIdatObject);
+        encryptedID = requestPseudonymFromMainzelliste(jsonIdatObject);
         patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedID);
         compositionPseudonym = addPseudonymToComposition(compositionPseudonym, encryptedID);
         bundle.getEntry().get(compositionEntryIndex).setResource(compositionPseudonym);
@@ -390,7 +388,7 @@ public class MainzellisteConnector {
    * @return an encrypted ID
    * @throws IOException IOException
    */
-  private JsonObject getPseudonymFromMainzelliste(JsonObject patient)
+  private JsonObject requestPseudonymFromMainzelliste(JsonObject patient)
       throws IOException, IllegalArgumentException, NotFoundException, NotAuthorizedException {
     HttpPost httpPost = createHttpPost(GET_ENCRYPT_ID_URL);
     HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
@@ -422,7 +420,7 @@ public class MainzellisteConnector {
    * @param patient the local cts patient
    * @return the patient with the replaced id
    */
-  public JsonObject getPatientWithPseudonymId(String patient)
+  public JsonObject requestEncryptedIdForPatient(String patient)
       throws IOException, IllegalArgumentException,
       NotFoundException, NotAuthorizedException {
     JsonObject patientAsJson = (JsonObject) parser.parse(patient);
@@ -457,9 +455,9 @@ public class MainzellisteConnector {
    * Post the patient id to the Mainzelliste to get the encryptedId.
    *
    * @param id patientId
-   * @return the patient with the replaced id
+   * @return the requested encrypted id
    */
-  public String getEncryptedIdWithPatientId(String id)
+  public String requestEncryptedIdWithPatientId(String id)
       throws IOException, IllegalArgumentException,
       NotFoundException, NotAuthorizedException {
     JsonObject jsonEntity = new JsonObject();
@@ -637,40 +635,6 @@ public class MainzellisteConnector {
       throw new IllegalArgumentException(
           getMessage("Invalid patient data posted to Mainzelliste", statusCode,
               reasonPhrase, bodyResponse));
-    }
-  }
-
-  /**
-   * Encrypt or decrypt resource ids.
-   *
-   * @param string  json file
-   * @param encrypt if the ids should encrypted
-   * @return json file with encrypted/decrypted ids.
-   * @throws IOException IOException
-   */
-  public String decryptAndEncryptString(String string, boolean encrypt) throws IOException {
-    HttpPost httpPost;
-    if (encrypt) {
-      httpPost = createHttpPost(ENCRYPT_ID_JSON_URL);
-    } else {
-      httpPost = createHttpPost(DECRYPT_ID_JSON_URL);
-    }
-    HttpEntity entity = new StringEntity(string, Consts.UTF_8);
-    httpPost.setEntity(entity);
-    CloseableHttpResponse response = null;
-    try {
-      response = httpClient.execute(httpPost);
-      StatusLine statusLine = response.getStatusLine();
-      int statusCode = statusLine.getStatusCode();
-      String reasonPhrase = statusLine.getReasonPhrase();
-      insertEventLog(statusCode);
-      checkStatusCode(response, statusCode, reasonPhrase);
-      return EntityUtils.toString(response.getEntity());
-    } catch (IOException | NotAuthorizedException e) {
-      logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
-      throw new IOException(e);
-    } finally {
-      closeResponse(response);
     }
   }
 

@@ -66,8 +66,7 @@ public class Api {
       String mediaType = httpHeaders.getMediaType().getSubtype();
       CtsConnector ctsConnector = ApplicationBean.getCtsConnector();
       return ctsConnector.postPseudonmToCts(bundle, mediaType);
-    } catch (NullPointerException | ConfigurationException | DataFormatException
-        | IllegalArgumentException | GeneralSecurityException e) {
+    } catch (ConfigurationException | DataFormatException | GeneralSecurityException e) {
       return Response.status(400).entity(e.getMessage()).build();
     } catch (NotAuthorizedException e) {
       return Response.status(401).entity(e.getMessage()).build();
@@ -110,8 +109,7 @@ public class Api {
       HashMap<String, Object> headerMapToSend = filter(headers);
       CtsConnector ctsConnector = ApplicationBean.getCtsConnector();
       return ctsConnector.postLocalPatientToCentralCts(patient, httpHeaders, headerMapToSend);
-    } catch (NullPointerException | ConfigurationException | DataFormatException
-        | IllegalArgumentException e) {
+    } catch (ConfigurationException | DataFormatException e) {
       return Response.status(400).entity(e.getMessage()).build();
     } catch (NotAuthorizedException e) {
       return Response.status(401).entity(e.getMessage()).build();

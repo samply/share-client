@@ -25,7 +25,7 @@ public class InquiryResultStatsUtil {
   // Prevent instantiation
   private InquiryResultStatsUtil() {
   }
-
+  
   /**
    * Get the inquiry result stats DAO.
    *
@@ -34,7 +34,7 @@ public class InquiryResultStatsUtil {
   public static InquiryResultStatsDao getInquiryResultStatsDao() {
     return inquiryResultStatsDao;
   }
-
+  
   /**
    * Get a list of all inquiry result stats.
    *
@@ -43,7 +43,7 @@ public class InquiryResultStatsUtil {
   public static List<InquiryResultStats> fetchInquiryResultStats() {
     return inquiryResultStatsDao.findAll();
   }
-
+  
   /**
    * Get a list of all inquiry result stats for certain inquiry result.
    *
@@ -53,17 +53,17 @@ public class InquiryResultStatsUtil {
   public static InquiryResultStats getInquiryResultStatsForInquiryResultById(int inquiryResultId) {
     return inquiryResultStatsDao.fetchOneByInquiryResultId(inquiryResultId);
   }
-
+  
   /**
    * Get one inquiry result stats object.
    *
    * @param inquiryResultStatsId id of the inquiry result stats
-   * @return
+   * @return inquiry result stats
    */
   public static InquiryResultStats fetchInquiryResultStatsById(int inquiryResultStatsId) {
     return inquiryResultStatsDao.fetchOneById(inquiryResultStatsId);
   }
-
+  
   /**
    * Insert new inquiry result stats into the database.
    *
@@ -78,7 +78,7 @@ public class InquiryResultStatsUtil {
     inquiryResultStatsRecord.refresh();
     return inquiryResultStatsRecord.getId();
   }
-
+  
   /**
    * Update inquiry result stats in the database.
    *
