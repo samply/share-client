@@ -20,10 +20,12 @@ RUN ["rm", "-fr", "/usr/local/tomcat/webapps"]
 COPY --from=extract /connector/extracted/ /usr/local/tomcat/webapps/ROOT/
 
 # Adding fontconfig and libfreetype6 for rendering the BK Export, cf. https://stackoverflow.com/questions/55454036
-RUN	apt-get update && apt-get install -y fontconfig libfreetype6 && \
+# Patch is needed for reverse proxy configuration
+RUN	apt-get update && apt-get install -y fontconfig libfreetype6 patch && \
     rm -rf /var/lib/apt/lists/*
 
 ADD src/docker/context.xml                      ${CATALINA_HOME}/conf/Catalina/localhost/ROOT.xml
+ADD src/docker/server.reverseproxy.patch        ${CATALINA_HOME}/conf/server.reverseproxy.patch
 
 ADD src/docker/samply_common_urls.xml           ${CATALINA_HOME}/conf/${PROJECT}_common_urls.xml
 ADD src/docker/samply_common_operator.xml       ${CATALINA_HOME}/conf/${PROJECT}_common_operator.xml

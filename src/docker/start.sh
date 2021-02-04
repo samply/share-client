@@ -89,6 +89,36 @@ sed -i "s|{nngm-mainzelliste-apikey}|${NNGM_MAINZELLISTE_APIKEY}|"          "$fi
 sed -i "s|{nngm-mainzelliste-url}|${NNGM_MAINZELLISTE_URL}|"                "$file"
 sed -i "s|{nngm-cryptkey}|${NNGM_CRYPTKEY}|"                                "$file"
 
+if [ -n "$TOMCAT_REVERSEPROXY_FQDN" ]; then
+  echo "Info: Configuring reverse proxy for URL ${TOMCAT_REVERSEPROXY_FQDN}";
+  mv "${CATALINA_HOME}/conf/server.xml" "${CATALINA_HOME}/conf/server.xml.ori";
+  ## Apply add reverse proxy configuration to
+  echo "Info: applying ${CATALINA_HOME}/conf/server.reverseproxy.patch on ${CATALINA_HOME}/conf/server.xml"
+  patch -i "${CATALINA_HOME}/conf/server.reverseproxy.patch" -o "${CATALINA_HOME}/conf/server.xml" "${CATALINA_HOME}/conf/server.xml.ori"
+  if [ -z "$TOMCAT_REVERSEPROXY_PORT" ]; then
+	  case "$TOMCAT_REVERSEPROXY_SSL" in
+	  	true)
+	  		TOMCAT_REVERSEPROXY_PORT=443
+	  		TOMCAT_REVERSEPROXY_SCHEME=https
+	  		;;
+	  	false)
+	  		TOMCAT_REVERSEPROXY_PORT=80
+	  		TOMCAT_REVERSEPROXY_SCHEME=http
+	  		;;
+	  	*)
+	  		echo "Error: Please set TOMCAT_REVERSEPROXY_SSL to either true or false."
+	  		exit 1
+	  esac
+  fi
+  echo "Info: Applying configuration for ReverseProxy with settings: TOMCAT_REVERSEPROXY_FQDN=$TOMCAT_REVERSEPROXY_FQDN TOMCAT_REVERSEPROXY_PORT=${TOMCAT_REVERSEPROXY_PORT} TOMCAT_REVERSEPROXY_SSL=${TOMCAT_REVERSEPROXY_SSL}"
+  sed -i -e "s|{tomcat_reverseproxy_fqdn}|${TOMCAT_REVERSEPROXY_FQDN}|g ; \
+  	s|{tomcat_reverseproxy_scheme}|${TOMCAT_REVERSEPROXY_SCHEME}|g ; \
+  	s|{tomcat_reverseproxy_port}|${TOMCAT_REVERSEPROXY_PORT}|g ; \
+  	s|{tomcat_reverseproxy_ssl}|${TOMCAT_REVERSEPROXY_SSL}|g" \
+  	"${CATALINA_HOME}"/conf/server.xml;
+  echo "Info: ReverseProxy configuration is finished"
+fi
+
 export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/docker/jmx_prometheus_javaagent-0.3.1.jar=9100:/docker/jmx-exporter.yml"
 
 # SSL Certs

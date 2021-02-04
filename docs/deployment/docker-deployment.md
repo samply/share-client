@@ -79,4 +79,7 @@ If postgres connection errors occur, try your ip for POSTGRES_HOST. For all Envi
 | feature_DKTK_CENTRAL_SEARCH   |   false | Feature toggle for the DKTK central search     |
 | feature_NNGM_CTS              |   false | Feature toggle for the NNGM CTS                | 
 | CATALINA_OPTS  |         | JVM options                                                   |
+| TOMCAT_REVERSEPROXY_FQDN |          | The FQDN of share-client then run behind a reverse proxy. See [Tomcat Connector](https://tomcat.apache.org/tomcat-8.5-doc/config/http.html) "proxyName" for more information.|
+| TOMCAT_REVERSEPROXY_SSL |          | Whether the reverse proxy is running SSL or not. Set either to true or false. Automatically configures [Tomcat Connector](https://tomcat.apache.org/tomcat-8.5-doc/config/http.html) "proxyPort", "scheme" and "secure".|
+
 *necessary

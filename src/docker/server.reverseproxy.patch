@@ -1,0 +1,26 @@
+--- tomcat/config/server.xml	2020-04-24 12:45:09.996222000 +0200
++++ tomcat/config/server.docker.xml	2020-04-24 12:43:55.362172600 +0200
+@@ -68,7 +68,11 @@
+     -->
+     <Connector port="8080" protocol="HTTP/1.1"
+                connectionTimeout="20000"
+-               redirectPort="8443" />
++               redirectPort="8443"
++               proxyName="{tomcat_reverseproxy_fqdn}"
++               proxyPort="{tomcat_reverseproxy_port}"
++               scheme="{tomcat_reverseproxy_scheme}"
++               secure="{tomcat_reverseproxy_ssl}" />
+     <!-- A "Connector" using the shared thread pool-->
+     <!--
+     <Connector executor="tomcatThreadPool"
+@@ -165,6 +168,10 @@
+                prefix="localhost_access_log" suffix=".txt"
+                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
+
++        <Valve className="org.apache.catalina.valves.RemoteIpValve"
++               remoteIpHeader="x-forwarded-for"
++               proxiesHeader="x-forwarded-by"
++               protocolHeader="x-forwarded-proto" />
+       </Host>
+     </Engine>
+   </Service>
