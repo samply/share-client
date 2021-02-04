@@ -36,7 +36,7 @@ public class IdManagerBasicInfoConnector extends AbstractComponentBasicInfoConne
   private static final String EXPORT_ID_PATH = "getExportIds";
   
   /**
-   * Todo.
+   * Creates an Id Manager Basic Info Connector.
    */
   public IdManagerBasicInfoConnector() {
 

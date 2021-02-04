@@ -326,10 +326,10 @@ public final class Utils {
   }
   
   /**
-   * Todo.
+   * Convert date to string.
    *
-   * @param date Todo.
-   * @return Todo. string
+   * @param date date.
+   * @return date in string format.
    */
   public static String convertDate2(Date date) {
     DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssXXX",
@@ -338,11 +338,11 @@ public final class Utils {
   }
   
   /**
-   * Todo.
+   * Convert string to date.
    *
-   * @param date Todo.
-   * @return Todo. date
-   * @throws ParseException Todo.
+   * @param date date in string format.
+   * @return date.
+   * @throws ParseException Parse Exception.
    */
   public static Date convertDate2(String date) throws ParseException {
     DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssXXX",
@@ -363,11 +363,11 @@ public final class Utils {
   }
   
   /**
-   * Todo.
+   * Convert date in string format into date.
    *
-   * @param date Todo.
-   * @return Todo. date
-   * @throws ParseException Todo.
+   * @param date date in string format.
+   * @return date.
+   * @throws ParseException Parse exception.
    */
   public static Date convertDate3(String date) throws ParseException {
     DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX",
@@ -377,11 +377,11 @@ public final class Utils {
   
   
   /**
-   * Todo.
+   * Get difference of years between two dates.
    *
-   * @param first Todo.
-   * @param last  Todo.
-   * @return Todo. diff years
+   * @param first first date.
+   * @param last  last date.
+   * @return difference of years between two dates.
    */
   public static int getDiffYears(Date first, Date last) {
     Calendar a = getCalendar(first);
@@ -396,10 +396,10 @@ public final class Utils {
   }
   
   /**
-   * Todo.
+   * Convert date to calender.
    *
-   * @param date Todo.
-   * @return Todo. calendar
+   * @param date date.
+   * @return calender.
    */
   public static Calendar getCalendar(Date date) {
     Calendar cal = Calendar.getInstance(Locale.GERMAN);
@@ -444,10 +444,10 @@ public final class Utils {
   }
   
   /**
-   * Todo.
+   * Set status of inquiry.
    *
-   * @param inquiryDetails    Todo.
-   * @param inquiryStatusType Todo.
+   * @param inquiryDetails    inquiry details.
+   * @param inquiryStatusType inquiry status type.
    */
   public static void setStatus(InquiryDetails inquiryDetails, InquiryStatusType inquiryStatusType) {
 
@@ -459,10 +459,10 @@ public final class Utils {
   }
   
   /**
-   * Todo.
+   * Convert number as string to long.
    *
-   * @param number Todo.
-   * @return Todo. as long
+   * @param number number.
+   * @return number as long.
    */
   public static Long getAsLong(String number) {
 
@@ -475,10 +475,10 @@ public final class Utils {
   }
   
   /**
-   * Todo.
+   * Convert boolean as string in Boolean.
    *
-   * @param booleanElement Todo.
-   * @return Todo. as boolean
+   * @param booleanElement boolean as string.
+   * @return boolean.
    */
   public static Boolean getAsBoolean(String booleanElement) {
 
@@ -490,11 +490,11 @@ public final class Utils {
   }
   
   /**
-   * Todo.
+   * Extend basic url with extension, adding "/" if necessary.
    *
-   * @param basicUrl  Todo.
-   * @param extension Todo.
-   * @return Todo. string
+   * @param basicUrl  basic url to be extended.
+   * @param extension extension.
+   * @return extended url.
    */
   public static String extendUrl(String basicUrl, String extension) {
 

@@ -16,10 +16,11 @@ public class CxxMappingParser {
   private static final Logger logger = LogManager.getLogger(CxxMappingParser.class);
 
   /**
-   * Todo.
+   * Analyzes mapping between mdr data elements and centraxx data elements returned
+   * by the REST-API of CentraXX for the connector.
    *
-   * @param httpEntity Todo.
-   * @return Todo.
+   * @param httpEntity http entity with the mapping returned by Centraxx.
+   * @return List of centraxx mapping elements.
    */
   public List<CxxMappingElement> parse(String httpEntity) {
 
@@ -57,13 +58,7 @@ public class CxxMappingParser {
 
   }
 
-  /**
-   * Todo.
-   *
-   * @param httpEntity Todo.
-   * @return Todo.
-   */
-  public List<CxxMappingElement> parseWithoutExceptionManagement(String httpEntity) {
+  private List<CxxMappingElement> parseWithoutExceptionManagement(String httpEntity) {
 
     JsonParser jsonParser = new JsonParser();
     JsonArray jsonArray = jsonParser.parse(httpEntity).getAsJsonArray();
