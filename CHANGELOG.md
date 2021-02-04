@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## Fixed
 - send pseudonymised bundle as JSON only
 - renamed some methods
+- Automatic generation of java classes from xsd files
 
 ## [7.2.0 - 2021-02-03]
 ## Added
