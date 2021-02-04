@@ -1,9 +1,9 @@
 package de.samply.share.client.job;
 
 import de.samply.share.client.control.ApplicationBean;
-import de.samply.share.client.util.connector.IdManagerConnector;
+import de.samply.share.client.util.connector.IdManagerBasicInfoConnector;
 import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
+import de.samply.share.client.util.connector.exception.ComponentConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.common.model.dto.UserAgent;
 import org.apache.log4j.LogManager;
@@ -20,12 +20,12 @@ import org.quartz.JobExecutionContext;
 public class CheckLocalComponentsJob implements Job {
 
   private static final Logger logger = LogManager.getLogger(CheckLocalComponentsJob.class);
-  private static final IdManagerConnector idManagerConnector;
-  private static final LdmConnector ldmConnector;
-  private static final UserAgent userAgent;
+  private static IdManagerBasicInfoConnector idManagerConnector;
+  private static LdmConnector ldmConnector;
+  private static UserAgent userAgent;
 
   static {
-    idManagerConnector = new IdManagerConnector();
+    idManagerConnector = new IdManagerBasicInfoConnector();
     ldmConnector = ApplicationBean.getLdmConnector();
     userAgent = ApplicationBean.getUserAgent();
   }
@@ -88,8 +88,8 @@ public class CheckLocalComponentsJob implements Job {
    */
   private String getIdManagerString() {
     try {
-      return idManagerConnector.getUserAgentInfo();
-    } catch (IdManagerConnectorException e) {
+      return idManagerConnector.getComponentInfoString();
+    } catch (ComponentConnectorException e) {
       logger.warn("Could not read User Agent Info from id management.");
       return "Unknown ID Management/unknown";
     }

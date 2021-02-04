@@ -16,10 +16,12 @@ import de.samply.config.util.JaxbUtil;
 import de.samply.project.directory.client.DktkProjectDirectory;
 import de.samply.project.directory.client.DktkProjectDirectoryParameters;
 import de.samply.project.directory.client.ProjectDirectory;
+import de.samply.share.client.crypt.Crypt;
 import de.samply.share.client.feature.ClientConfiguration;
 import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.job.params.CheckInquiryStatusJobParams;
 import de.samply.share.client.job.params.QuartzJob;
+import de.samply.share.client.model.ComponentInfo;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.check.ConnectCheckResult;
 import de.samply.share.client.model.common.Bridgehead;
@@ -41,14 +43,17 @@ import de.samply.share.client.quality.report.chainlinks.statistics.manager.Chain
 import de.samply.share.client.util.PatientValidator;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.connector.CtsConnector;
-import de.samply.share.client.util.connector.IdManagerConnector;
+import de.samply.share.client.util.connector.IcomponentBasicInfoConnector;
+import de.samply.share.client.util.connector.IdManagerBasicInfoConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.LdmConnectorCentraxx;
 import de.samply.share.client.util.connector.LdmConnectorCql;
 import de.samply.share.client.util.connector.LdmConnectorSamplystoreBiobank;
 import de.samply.share.client.util.connector.MainzellisteConnector;
+import de.samply.share.client.util.connector.PatientListBasicInfoConnector;
+import de.samply.share.client.util.connector.ProjectPseudonymizationBasicInfoConnector;
 import de.samply.share.client.util.connector.StoreConnector;
-import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
+import de.samply.share.client.util.connector.exception.ComponentConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.client.util.connector.idmanagement.connector.IdManagementConnector;
 import de.samply.share.client.util.connector.idmanagement.connector.MagicPlConnector;
@@ -79,7 +84,9 @@ import de.samply.share.common.utils.ProjectInfo;
 import de.samply.web.mdrfaces.MdrContext;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -116,6 +123,8 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.togglz.core.manager.FeatureManager;
 import org.xml.sax.SAXException;
+
+
 
 /**
  * Backing Bean that is valid during the whole runtime of the application. Holds methods that are
@@ -158,10 +167,15 @@ public class ApplicationBean implements Serializable {
   private static MainzellisteConnector mainzellisteConnector;
   private static CtsConnector ctsConnector;
   private static ProjectDirectoryUtils projectDirectoryUtils;
+  private static IdManagerBasicInfoConnector idManagerBasicInfoConnector;
   private static IdManagementConnector idManagementConnector;
   private static FeatureManager featureManager;
-  private final ConnectCheckResult ldmAvailability = new ConnectCheckResult();
-  private final ConnectCheckResult idmAvailability = new ConnectCheckResult();
+  private ConnectCheckResult ldmAvailability = new ConnectCheckResult();
+  private ConnectCheckResult idmAvailability = new ConnectCheckResult();
+  private ConnectCheckResult patientListAvailability = new ConnectCheckResult();
+  private ConnectCheckResult projectPseudonAvailability = new ConnectCheckResult();
+  private static Crypt crypt;
+
 
   public static Locale getLocale() {
     return locale;
@@ -198,7 +212,7 @@ public class ApplicationBean implements Serializable {
           ApplicationBean.ldmConnector = new LdmConnectorCentraxx(false);
         }
 
-        ApplicationBean.ldmConnector = integrateSwitchInLdmConnectorCentraXX(
+        ApplicationBean.ldmConnector = integrateSwitchInLdmConnectorCentraXx(
             (LdmConnectorCentraxx) ApplicationBean.ldmConnector, mdrClient);
 
         break;
@@ -226,7 +240,7 @@ public class ApplicationBean implements Serializable {
     }
   }
 
-  private static LdmConnector integrateSwitchInLdmConnectorCentraXX(
+  private static LdmConnector integrateSwitchInLdmConnectorCentraXx(
       LdmConnectorCentraxx ldmConnectorCentraxx, MdrClient mdrClient) {
 
     LdmBasicConnectorSwitch ldmBasicConnectorSwitch = createLdmBasicConnectorSwitch(
@@ -388,7 +402,10 @@ public class ApplicationBean implements Serializable {
             urls.getIdmanagerUrl());
         insertOrUpdateConfigurationElement(EnumConfiguration.ID_MANAGER_API_KEY,
             urls.getIdmanagerApiKey());
-
+        insertOrUpdateConfigurationElement(
+            EnumConfiguration.PATIENTLIST_URL, urls.getPatientlistUrl());
+        insertOrUpdateConfigurationElement(EnumConfiguration.PROJECT_PSEUDONYMISATION_URL,
+            urls.getProjectPseudonymisationUrl());
       }
 
       insertOrUpdateConfigurationElement(EnumConfiguration.LDM_URL, urls.getLdmUrl());
@@ -425,12 +442,15 @@ public class ApplicationBean implements Serializable {
         insertConfigElement(EnumConfiguration.CTS_MAINZELLISTE_API_KEY.name(),
             cts.getMainzellisteApiKey());
         insertConfigElement(EnumConfiguration.CTS_SEARCH_ID_TYPE.name(), cts.getSearchIdType());
+        insertConfigElement(EnumConfiguration.CTS_PATIENT_LIST_API_KEY.name(),
+            cts.getPatientListApiKey());
+        insertConfigElement(EnumConfiguration.CTS_PATIENT_LIST_URL.name(), cts.getPatientListUrl());
       }
       if (ApplicationUtils.isSamply()) {
         de.samply.share.client.model.db.tables.pojos.Configuration directoryConfigElement =
             new de.samply.share.client.model.db.tables.pojos.Configuration();
         directoryConfigElement.setName(EnumConfiguration.DIRECTORY_URL.name());
-        directoryConfigElement.setSetting(urls.getDirecotryUrl());
+        directoryConfigElement.setSetting(urls.getDirectoryUrl());
         ConfigurationUtil.insertOrUpdateConfigurationElement(directoryConfigElement);
       }
     }
@@ -592,7 +612,7 @@ public class ApplicationBean implements Serializable {
    * Create an HttpConnector for a targetType and a custom timeout.
    *
    * @param targetType the tagetType like local data management or httpProxy
-   * @param timeout    timeout in seconds
+   * @param timeout timeout in seconds
    * @return HttpConnector for the targetType and a custom timeout
    */
   public static HttpConnector createHttpConnector(TargetType targetType, int timeout) {
@@ -705,6 +725,11 @@ public class ApplicationBean implements Serializable {
   static MdrValidator getMdrValidator() {
     return mdrValidator;
   }
+
+  public static Crypt getCrypt() {
+    return crypt;
+  }
+
 
   private static LdmBasicConnectorSwitch createLdmBasicConnectorSwitch(
       IdManagementConnector idManagementConnector, ProjectDirectoryUtils projectDirectoryUtils,
@@ -848,8 +873,17 @@ public class ApplicationBean implements Serializable {
       loadCtsInfo();
       updateCtsInfo();
       initMainzelliste();
+      initCrypt();
     }
     logger.info("Application Bean initialized");
+  }
+
+  private static void initCrypt() {
+    try {
+      crypt = new Crypt();
+    } catch (GeneralSecurityException | IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private void loadProjectDirectoryClient() {
@@ -971,20 +1005,29 @@ public class ApplicationBean implements Serializable {
       ldmAvailability.setReachable(false);
     }
 
+    //TODO Dependency Injection
+    setComponentInfoViewModel(new IdManagerBasicInfoConnector(), idmAvailability);
+    setComponentInfoViewModel(new PatientListBasicInfoConnector(), patientListAvailability);
+    setComponentInfoViewModel(new ProjectPseudonymizationBasicInfoConnector(),
+        projectPseudonAvailability);
+  }
+
+  private void setComponentInfoViewModel(IcomponentBasicInfoConnector basicInfoConnector,
+                                         ConnectCheckResult connectCheckResult) {
     try {
-      IdManagerConnector idManagerConnector = new IdManagerConnector();
-      String idManagerUserAgentInfo = idManagerConnector.getUserAgentInfo();
-      List<String> list = Splitter.on('/').splitToList(idManagerUserAgentInfo);
-      if (list.size() == 2) {
-        idmAvailability.setName(list.get(0));
-        idmAvailability.setVersion(list.get(1));
-      } else if (list.size() == 1) {
-        idmAvailability.setName(list.get(0));
-        idmAvailability.setVersion("");
+      ComponentInfo componentInfo = basicInfoConnector.getComponentInfo();
+
+      if (componentInfo.getDistname() != null) {
+        connectCheckResult.setName(componentInfo.getDistname());
       }
-      idmAvailability.setReachable(true);
-    } catch (IdManagerConnectorException e) {
-      idmAvailability.setReachable(false);
+      if (componentInfo.getVersion() != null) {
+        connectCheckResult.setVersion(componentInfo.getVersion());
+      }
+      connectCheckResult.setReachable(true);
+
+    } catch (ComponentConnectorException e) {
+      logger.error("Error loading component " + e);
+      connectCheckResult.setReachable(false);
     }
   }
 
@@ -1006,6 +1049,14 @@ public class ApplicationBean implements Serializable {
 
   public ConnectCheckResult getIdmAvailability() {
     return idmAvailability;
+  }
+
+  public ConnectCheckResult getPatientListAvailability() {
+    return patientListAvailability;
+  }
+
+  public ConnectCheckResult getProjectPseudonAvailability() {
+    return projectPseudonAvailability;
   }
 
   /**

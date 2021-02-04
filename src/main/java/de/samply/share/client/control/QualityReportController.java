@@ -31,6 +31,9 @@ import org.apache.logging.log4j.Logger;
 import org.omnifaces.util.Faces;
 
 
+/**
+ * The type Quality report controller.
+ */
 @ManagedBean(name = "qualityReportController")
 @SessionScoped
 public class QualityReportController implements Serializable {
@@ -45,8 +48,8 @@ public class QualityReportController implements Serializable {
       .getChainStatisticsManager();
   private final ChainFinalizer chainFinalizer = ApplicationBean.getChainFinalizer();
   private boolean isLoading = true;
-
-
+  
+  
   /**
    * Controller used in frontend in order to generate quality reports.
    */
@@ -72,9 +75,11 @@ public class QualityReportController implements Serializable {
     }
 
   }
-
+  
   /**
    * Triggers the generation of a quality report.
+   *
+   * @throws QualityReportControllerException the quality report controller exception
    */
   public void generate() throws QualityReportControllerException {
 
@@ -108,15 +113,30 @@ public class QualityReportController implements Serializable {
     return (timeoutInMinutes != null) ? timeoutInMinutes * 60L * 1000L : null;
 
   }
-
+  
+  /**
+   * Is task running boolean.
+   *
+   * @return the boolean
+   */
   public boolean isTaskRunning() {
     return !isLoading && chainStatisticsManager.getChainStatistics() != null;
   }
-
+  
+  /**
+   * Is loading boolean.
+   *
+   * @return the boolean
+   */
   public boolean isLoading() {
     return isLoading;
   }
-
+  
+  /**
+   * Is status changed boolean.
+   *
+   * @return the boolean
+   */
   public boolean isStatusChanged() {
     return chainStatisticsManager.isStatusChanged();
   }
@@ -141,10 +161,12 @@ public class QualityReportController implements Serializable {
 
     return qualityReportChainFactory;
   }
-
+  
   /**
    * Gets file info related to a quality report (filename, timestamp, version,...).
    * This information will be shown in frontend.
+   *
+   * @return the quality report file infos
    */
   public List<QualityReportFileInfo> getQualityReportFileInfos() {
 
@@ -158,9 +180,12 @@ public class QualityReportController implements Serializable {
     }
 
   }
-
+  
   /**
    * Downloads a quality report via browser.
+   *
+   * @param filePath the file path
+   * @param filename the filename
    */
   public void download(String filePath, String filename) {
 
@@ -172,20 +197,38 @@ public class QualityReportController implements Serializable {
       logger.error(e);
     }
   }
-
+  
+  /**
+   * Gets chain statistics.
+   *
+   * @return the chain statistics
+   */
   public ChainStatistics getChainStatistics() {
     return chainStatisticsManager.getChainStatistics();
   }
-
+  
+  /**
+   * Finalize chain.
+   */
   public void finalizeChain() {
     chainFinalizer.finalizeChain();
   }
-
+  
+  /**
+   * Gets language.
+   *
+   * @return the language
+   */
   public String getLanguage() {
     return ConfigurationUtil
         .getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_LANGUAGE_CODE);
   }
-
+  
+  /**
+   * Is timeout reached boolean.
+   *
+   * @return the boolean
+   */
   public boolean isTimeoutReached() {
     return chainFinalizer.isTimeoutReached();
   }
