@@ -476,7 +476,9 @@ public class MainzellisteConnector {
       String reasonPhrase = statusLine.getReasonPhrase();
       insertEventLog(statusCode);
       checkStatusCode(response, statusCode, reasonPhrase);
-      return EntityUtils.toString(response.getEntity());
+      String encryptedIdString = EntityUtils.toString(response.getEntity());
+      JsonObject encryptedId = (JsonObject) new JsonParser().parse(encryptedIdString);
+      return encryptedId.get("EncID").getAsString();
     } catch (IOException e) {
       logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
       throw new IOException(e);
@@ -518,7 +520,7 @@ public class MainzellisteConnector {
     }
   }
 
-  private String getMainzellisteSessionUri() throws IOException {
+  private String getMainzellisteSessionUri() throws IOException, NotAuthorizedException {
     HttpPost httpPost = new HttpPost(
         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_URL)
             + "/sessions");
@@ -527,6 +529,10 @@ public class MainzellisteConnector {
     CloseableHttpResponse response = null;
     try {
       response = httpClient.execute(httpPost);
+      int statusCode = response.getStatusLine().getStatusCode();
+      String reasonPhrase = response.getStatusLine().getReasonPhrase();
+      insertEventLog(statusCode);
+      checkStatusCode(response,statusCode,reasonPhrase);
       JsonParser jsonParser = new JsonParser();
       JsonObject jsonObject = (JsonObject) jsonParser
           .parse(EntityUtils.toString(response.getEntity()));
@@ -538,7 +544,8 @@ public class MainzellisteConnector {
   }
 
   private String getMainzellisteReadToken(String sessionUrl, List<String> ctsIds)
-      throws IOException {
+      throws IOException, NotAuthorizedException {
+    sessionUrl = sessionUrl.replace("http://","https://");
     HttpPost httpPost = new HttpPost(sessionUrl + "tokens");
     httpPost.setHeader("mainzellisteApiKey",
         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_API_KEY));
@@ -549,6 +556,10 @@ public class MainzellisteConnector {
     CloseableHttpResponse response = null;
     try {
       response = httpClient.execute(httpPost);
+      int statusCode = response.getStatusLine().getStatusCode();
+      String reasonPhrase = response.getStatusLine().getReasonPhrase();
+      insertEventLog(statusCode);
+      checkStatusCode(response,statusCode,reasonPhrase);
       JsonParser jsonParser = new JsonParser();
       JsonObject jsonObject = (JsonObject) jsonParser
           .parse(EntityUtils.toString(response.getEntity()));
