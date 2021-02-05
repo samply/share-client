@@ -25,11 +25,11 @@ public class QualityResultsValidator {
   }
 
   /**
-   * Todo.
+   * Validate Quality Results.
    *
-   * @param qualityResults Todo.
-   * @return Todo.
-   * @throws QualityResultsValidatorException Todo.
+   * @param qualityResults Quality results.
+   * @return Quality Results validated.
+   * @throws QualityResultsValidatorException Encapsulates exceltions in the class.
    */
   public QualityResults validate(QualityResults qualityResults)
       throws QualityResultsValidatorException {

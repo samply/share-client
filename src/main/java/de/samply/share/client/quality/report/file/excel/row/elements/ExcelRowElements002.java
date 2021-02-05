@@ -36,9 +36,9 @@ public class ExcelRowElements002 extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set mdr data element.
    *
-   * @param mdrDatenElement Todo.
+   * @param mdrDatenElement mdr data element designation.
    */
   public void setMdrDatenElement(String mdrDatenElement) {
 
@@ -48,9 +48,9 @@ public class ExcelRowElements002 extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set centraxx data element.
    *
-   * @param cxxDatenElement Todo.
+   * @param cxxDatenElement centraxx data element.
    */
   public void setCxxDatenElement(String cxxDatenElement) {
 
@@ -60,9 +60,9 @@ public class ExcelRowElements002 extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set mdr slot DKTK-ID.
    *
-   * @param dktkId Todo.
+   * @param dktkId mdr slot DKTK-ID.
    */
   public void setDktkId(String dktkId) {
 
@@ -72,10 +72,10 @@ public class ExcelRowElements002 extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set link to mdr web interface.
    *
-   * @param link  Todo.
-   * @param mdrId Todo.
+   * @param link  link to mdr web interface, with description of mdr data element.
+   * @param mdrId mdr data element id.
    */
   public void setMdrLink(String link, MdrIdDatatype mdrId) {
 
@@ -100,9 +100,9 @@ public class ExcelRowElements002 extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set value of mdr attribute.
    *
-   * @param mdrAttributeValue Todo.
+   * @param mdrAttributeValue value of mdr attribute.
    */
   public void setMdrAttributeValue(String mdrAttributeValue) {
 
@@ -112,9 +112,9 @@ public class ExcelRowElements002 extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set value of centraxx attribute.
    *
-   * @param cxxAttributeValue Todo.
+   * @param cxxAttributeValue value of centraxx attribute.
    */
   public void setCxxAttributeValue(String cxxAttributeValue) {
 
@@ -124,9 +124,9 @@ public class ExcelRowElements002 extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set type of mdr data element.
    *
-   * @param mdrType Todo.
+   * @param mdrType type of mdr dataelement.
    */
   public void setMdrType(String mdrType) {
 
@@ -136,10 +136,10 @@ public class ExcelRowElements002 extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set if mdr data element is valid.
    *
-   * @param isValid          Todo.
-   * @param numberOfPatients Todo.
+   * @param isValid          check if is valid.
+   * @param numberOfPatients number of patients that are valid/invalid.
    */
   public void setValid(boolean isValid, int numberOfPatients) {
     setValid(isValid, numberOfPatients, null);
@@ -152,11 +152,11 @@ public class ExcelRowElements002 extends ExcelRowElements {
   //    }
 
   /**
-   * Todo.
+   * Set of mdr data element is valid.
    *
-   * @param isValid          Todo.
-   * @param numberOfPatients Todo.
-   * @param cellReference    Todo.
+   * @param isValid          check if is valid.
+   * @param numberOfPatients number of patients that are valid/invalid.
+   * @param cellReference    reference (link) to another cell .
    */
   public void setValid(boolean isValid, int numberOfPatients, CellReference cellReference) {
 
@@ -169,7 +169,7 @@ public class ExcelRowElements002 extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set of the mdr element is not mapped.
    */
   public void setNotMapped() {
 
@@ -182,9 +182,9 @@ public class ExcelRowElements002 extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set number of patients.
    *
-   * @param numberOfPatients Todo.
+   * @param numberOfPatients number of patients.
    */
   public void setNumberOfPatients(int numberOfPatients) {
     IntegerExcelCellElement cellElement = new IntegerExcelCellElement(numberOfPatients);
@@ -192,9 +192,9 @@ public class ExcelRowElements002 extends ExcelRowElements {
   }
 
   /**
-   * Todo.
+   * Set percentage out of patient with data element.
    *
-   * @param percentageOfPatientsWithDataElement Todo.
+   * @param percentageOfPatientsWithDataElement percentage out of patient with data element.
    */
   public void setPercentageOutOfPatientsWithDataElement(
       Double percentageOfPatientsWithDataElement) {
@@ -214,9 +214,9 @@ public class ExcelRowElements002 extends ExcelRowElements {
   //    }
 
   /**
-   * Todo.
+   * Set percentage out of total patients.
    *
-   * @param percentageOfTotalPatients Todo.
+   * @param percentageOfTotalPatients percentage out of total patients  .
    */
   public void setPercentageOutOfTotalPatients(Double percentageOfTotalPatients) {
 

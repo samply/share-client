@@ -26,12 +26,12 @@ public class ExcelRowContext002 extends ExcelRowContextImpl<ExcelRowParameters00
   }
 
   /**
-   * Todo.
+   * Constructs Excel Row Context. It contains information of the excel row.
    *
-   * @param excelRowMapper           Todo.
-   * @param qualityResults           Todo.
-   * @param asmQualityResults        Todo.
-   * @param qualityResultsStatistics Todo.
+   * @param excelRowMapper           map mdr data element - related info.
+   * @param qualityResults           quality results for the quality report.
+   * @param asmQualityResults        alphabetically sorted quality results.
+   * @param qualityResultsStatistics quality result statistics.
    */
   public ExcelRowContext002(ExcelRowMapper002 excelRowMapper, QualityResults qualityResults,
       AlphabeticallySortedMismatchedQualityResults asmQualityResults,

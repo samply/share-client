@@ -19,10 +19,10 @@ public class ExcelQualityReportFileManager<I extends ExcelPattern> extends
   private final ExcelWorkbookFactory excelWorkbookFactory;
 
   /**
-   * Todo.
+   * Creates excel quality report file manager.
    *
-   * @param excelPattern  Todo.
-   * @param idPathManager Todo.
+   * @param excelPattern  excel pattern.
+   * @param idPathManager id path manager.
    */
   public ExcelQualityReportFileManager(I excelPattern, IdPathManagerImpl<?, I, ?> idPathManager) {
 

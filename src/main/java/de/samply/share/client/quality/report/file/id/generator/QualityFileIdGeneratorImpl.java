@@ -9,9 +9,9 @@ public class QualityFileIdGeneratorImpl implements QualityFileIdGenerator {
   private final SecureRandom random = new SecureRandom();
 
   /**
-   * Todo.
+   * Test class that generates a file id.
    *
-   * @param args Todo.
+   * @param args no arguments.
    */
   public static void main(String[] args) {
 

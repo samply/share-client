@@ -23,10 +23,10 @@ public class CsvQualityReportFileManager<I extends QualityResultCsvLineManager> 
 
 
   /**
-   * Todo.
+   * Creates csv quality report file manager.
    *
-   * @param qualityResultsCsvLineManager Todo.
-   * @param idPathManager                Todo.
+   * @param qualityResultsCsvLineManager quality results csv line manager.
+   * @param idPathManager                id path manager.
    */
   public CsvQualityReportFileManager(I qualityResultsCsvLineManager,
       IdPathManagerImpl<I, ?, ?> idPathManager) {

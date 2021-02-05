@@ -10,9 +10,9 @@ public class ViewFromToSchedulerFactory {
   private final ViewFromToFactory viewFromToFactory = new ViewFromToFactory();
 
   /**
-   * Todo.
+   * Create Scheduler for View From-To.
    *
-   * @return Todo.
+   * @return View From-To Scheduler.
    */
   public ViewFromToScheduler createViewFromToScheduler() {
 
@@ -105,10 +105,10 @@ public class ViewFromToSchedulerFactory {
     }
 
     /**
-     * Todo.
+     * Gets format of scheduler of view from-to .
      *
-     * @param format Todo.
-     * @return Todo.
+     * @param format format as String.
+     * @return format of scheduler of view from-to.
      */
     public static ViewFromToSchedulerFormat getViewFromToSchedulerFormat(String format) {
 

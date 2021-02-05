@@ -43,10 +43,10 @@ public class CxxMappingElement {
   }
 
   /**
-   * Todo.
+   * Add mapping of attribute values between mdr data element and cxx data element.
    *
-   * @param mdrValue Todo.
-   * @param cxxValue Todo.
+   * @param mdrValue mdr attribute value.
+   * @param cxxValue centraxx attribute value.
    */
   public void addValue(String mdrValue, String cxxValue) {
 
