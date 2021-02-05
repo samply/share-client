@@ -81,5 +81,6 @@ If postgres connection errors occur, try your ip for POSTGRES_HOST. For all Envi
 | CATALINA_OPTS  |         | JVM options                                                   |
 | TOMCAT_REVERSEPROXY_FQDN |          | The FQDN of share-client then run behind a reverse proxy. See [Tomcat Connector](https://tomcat.apache.org/tomcat-8.5-doc/config/http.html) "proxyName" for more information.|
 | TOMCAT_REVERSEPROXY_SSL |          | Whether the reverse proxy is running SSL or not. Set either to true or false. Automatically configures [Tomcat Connector](https://tomcat.apache.org/tomcat-8.5-doc/config/http.html) "proxyPort", "scheme" and "secure".|
+| DEPLOYMENT_CONTEXT |          | The subpath of the bridgehead installation. Normally bridgehead will be deployed to ROOT, but with this variable you can change it for example to "connector". It is not possible to pass multiple subdirectories like "connector/samply".|
 
 *necessary
