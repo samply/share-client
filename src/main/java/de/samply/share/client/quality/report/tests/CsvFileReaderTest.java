@@ -79,11 +79,11 @@ public class CsvFileReaderTest {
 
 
   /**
-   * Todo.
+   * Test of csv file reader.
    *
-   * @param fileId Todo.
-   * @return Todo.
-   * @throws QualityReportFileManagerException Todo.
+   * @param fileId file id.
+   * @return new file id.
+   * @throws QualityReportFileManagerException quality report file manager exception.
    */
   @GET
   public String myTest(@QueryParam("fileId") String fileId)

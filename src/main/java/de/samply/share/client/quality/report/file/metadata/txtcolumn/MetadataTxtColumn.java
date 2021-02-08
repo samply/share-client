@@ -33,9 +33,9 @@ public class MetadataTxtColumn extends TxtColumnImpl {
   }
 
   /**
-   * Todo.
+   * Get timestamp.
    *
-   * @return Todo.
+   * @return timestamp.
    */
   public Date getTimestamp() {
 
@@ -45,9 +45,9 @@ public class MetadataTxtColumn extends TxtColumnImpl {
   }
 
   /**
-   * Todo.
+   * Set timestamp.
    *
-   * @param date Todo.
+   * @param date timestamp.
    */
   public void setTimestamp(Date date) {
 

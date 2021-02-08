@@ -14,10 +14,10 @@ public class ExcelRowContextFactory002 {
   }
 
   /**
-   * Todo.
+   * Creates excel row context.
    *
-   * @param qualityResults Todo.
-   * @return Todo.
+   * @param qualityResults quality results for the quality report.
+   * @return excel row context with information for the excel row.
    */
   public ExcelRowContext createExcelRowContext(QualityResults qualityResults) {
 
@@ -26,12 +26,12 @@ public class ExcelRowContextFactory002 {
   }
 
   /**
-   * Todo.
+   * Creates excel row context.
    *
-   * @param qualityResults           Todo.
-   * @param asmQualityResults        Todo.
-   * @param qualityResultsStatistics Todo.
-   * @return Todo.
+   * @param qualityResults           quality results for the quality report.
+   * @param asmQualityResults        alphabetically sorted quality results.
+   * @param qualityResultsStatistics quality result statistics.
+   * @return excel row context with information for the excel row.
    */
   public ExcelRowContext createExcelRowContext(QualityResults qualityResults,
       AlphabeticallySortedMismatchedQualityResults asmQualityResults,

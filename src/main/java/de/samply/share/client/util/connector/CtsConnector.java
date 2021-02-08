@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.http.Consts;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
@@ -208,9 +209,12 @@ public class CtsConnector {
       response = httpClient.execute(httpPost);
       int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode == 200 || statusCode == 201) {
-        String patients = readIds(patient,
-            httpHeaders.getRequestHeader("X-BK-pseudonym-jsonpaths").get(0), true);
-        return Response.status(statusCode).entity(patients).build();
+        String responseAsString = EntityUtils.toString(response.getEntity());
+        Header jsonpaths = response.getFirstHeader("X-BK-pseudonym-jsonpaths");
+        if (jsonpaths != null) {
+          responseAsString = readIds(responseAsString, jsonpaths.getValue(), true);
+        }
+        return Response.status(statusCode).entity(responseAsString).build();
       }
       String message =
           "CTS server response: statusCode:" + statusCode + "; response: " + response.toString();

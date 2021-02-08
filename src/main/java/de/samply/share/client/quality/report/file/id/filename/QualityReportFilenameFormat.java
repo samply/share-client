@@ -33,11 +33,11 @@ public enum QualityReportFilenameFormat {
   }
 
   /**
-   * Todo.
+   * Gets quality report filename format.
    *
-   * @param extension Todo.
-   * @param version   Todo.
-   * @return Todo.
+   * @param extension file extension.
+   * @param version   file version.
+   * @return quality report filename format.
    */
   public static QualityReportFilenameFormat getQualityReportFilenameFormat(String extension,
       String version) {
@@ -55,10 +55,10 @@ public enum QualityReportFilenameFormat {
   }
 
   /**
-   * Todo.
+   * Get quality report filename format.
    *
-   * @param filename Todo.
-   * @return Todo.
+   * @param filename filename.
+   * @return quality report filename format.
    */
   public static QualityReportFilenameFormat getQualityReportFilenameFormat(String filename) {
 
@@ -83,10 +83,10 @@ public enum QualityReportFilenameFormat {
   }
 
   /**
-   * Todo.
+   * Get quality report filename format.
    *
-   * @param patternClass Todo.
-   * @return Todo.
+   * @param patternClass quality report file pattern class.
+   * @return quality report filename format.
    */
   public static QualityReportFilenameFormat getQualityReportFilenameFormat(
       Class<? extends QualityReportFilePattern> patternClass) {
@@ -101,10 +101,10 @@ public enum QualityReportFilenameFormat {
   }
 
   /**
-   * Todo.
+   * Get version.
    *
-   * @param filename Todo.
-   * @return Todo.
+   * @param filename filename.
+   * @return version.
    */
   public static String getVersion(String filename) {
 
@@ -118,10 +118,10 @@ public enum QualityReportFilenameFormat {
   }
 
   /**
-   * Todo.
+   * Generates file id of quality report file.
    *
-   * @param filePath Todo.
-   * @return Todo.
+   * @param filePath file path.
+   * @return file id.
    */
   public static String getFileId(String filePath) {
 
@@ -137,10 +137,10 @@ public enum QualityReportFilenameFormat {
   }
 
   /**
-   * Todo.
+   * Generates filename from file id.
    *
-   * @param fileId Todo.
-   * @return Todo.
+   * @param fileId file id.
+   * @return filename.
    */
   public String getFileName(String fileId) {
 

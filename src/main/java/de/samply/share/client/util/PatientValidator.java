@@ -38,10 +38,10 @@ public class PatientValidator {
   }
 
   /**
-   * Todo.
+   * Fix or remove wrong attributes of patient.
    *
-   * @param patient Todo.
-   * @return Todo.
+   * @param patient Patient.
+   * @return Patient updated.
    */
   public Patient fixOrRemoveWrongAttributes(Patient patient) {
 

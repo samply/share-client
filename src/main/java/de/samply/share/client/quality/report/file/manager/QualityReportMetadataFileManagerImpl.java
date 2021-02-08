@@ -22,10 +22,10 @@ public class QualityReportMetadataFileManagerImpl<I extends MetadataTxtColumnMan
   private final I metadataTxtColumnManager;
 
   /**
-   * Todo.
+   * Creates quality report metadata file manager.
    *
-   * @param metadataTxtColumnManager Todo.
-   * @param idPathManager            Todo.
+   * @param metadataTxtColumnManager metadata txt column manager.
+   * @param idPathManager            id path manager.
    */
   public QualityReportMetadataFileManagerImpl(I metadataTxtColumnManager,
       IdPathManagerImpl<?, ?, I> idPathManager) {

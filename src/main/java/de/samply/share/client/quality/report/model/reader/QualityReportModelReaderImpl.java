@@ -27,7 +27,7 @@ public class QualityReportModelReaderImpl implements ModelReader {
 
 
   /**
-   * Todo.
+   * Constructs a quality report model reader.
    */
   public QualityReportModelReaderImpl() {
 

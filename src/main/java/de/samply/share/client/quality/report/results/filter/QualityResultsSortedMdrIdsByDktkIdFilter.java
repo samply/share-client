@@ -11,7 +11,8 @@ public class QualityResultsSortedMdrIdsByDktkIdFilter extends
 
 
   /**
-   * Todo.
+   * Constructs a quality results sorted mdr ids by dktk id filter. The mdr data elements will be
+   * sorted by the mdr slot DKTK-ID.
    *
    * @param qualityResults Todo.
    * @param dktkIdManager  Todo.

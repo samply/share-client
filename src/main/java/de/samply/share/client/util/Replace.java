@@ -5,10 +5,13 @@ import java.util.ArrayList;
 public class Replace {
 
   /**
-   * Todo.
+   * Replace some mdr data element ids with the itframes mdr ids.
+   * Itframes are intended to search an mdr data element in a different entity.
+   * Nevertheless, the data element is returned in the results in the right
+   * entity.
    *
-   * @param originalString Todo.
-   * @return Todo.
+   * @param originalString regular mdr data element id.
+   * @return itframe mdr data element id.
    */
   public static String replaceMdrKey(String originalString) {
     ArrayList<String[]> mdrKeys = new ArrayList<>();

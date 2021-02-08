@@ -46,9 +46,9 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
 
 
   /**
-   * Todo.
+   * Excel workbook factory.
    *
-   * @param parameters Todo.
+   * @param parameters excel workbook parameters.
    */
   public ExcelWorkbookFactoryImpl002(ExcelWorkbookFactoryParameters002 parameters) {
 

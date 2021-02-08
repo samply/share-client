@@ -34,9 +34,9 @@ public class ValidatorTest {
 
 
   /**
-   * Todo.
+   * Constructs validator test.
    *
-   * @throws ChainFactoryException Todo.
+   * @throws ChainFactoryException Chain Factory Exception.
    */
   public ValidatorTest() throws ChainFactoryException {
 
@@ -53,12 +53,12 @@ public class ValidatorTest {
 
 
   /**
-   * Todo.
+   * Test validate of quality results validator.
    *
-   * @param fileId Todo.
-   * @return Todo.
-   * @throws QualityReportFileManagerException Todo.
-   * @throws QualityResultsValidatorException  Todo.
+   * @param fileId file id.
+   * @return file id.
+   * @throws QualityReportFileManagerException Quality Report File Manager Exception.
+   * @throws QualityResultsValidatorException  Quality Results Validator Exception.
    */
   @GET
   public String myTest(@QueryParam("fileId") String fileId)
