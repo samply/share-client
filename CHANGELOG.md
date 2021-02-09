@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Added
+- github actions for automatic docker image builds in different configuration (currently samply, c4 and dktk)
+- Environment Variables for the configuration file [_cts_info.xml](./src/docker/_cts_info.xml).
+- Environment Variables for the new patientlistUrl and projectPseudonymisationUrl. [see this file](./src/docker/samply_common_urls.xml)
+### Changed
+- Removed hard coded urls from [samply_common_urls](./src/docker/samply_common_urls.xml)
+- Moved JMX Exporter and start.sh to "/docker" in the container
+- Base image of the container from 8.5.32-jre8-alpine to 9-jdk8-openjdk-slim
 ## [7.2.0 - 2021-02-03]
 ## Added
 - added process 9b for CTS 
