@@ -389,7 +389,7 @@ public class CtsConnector {
       logger.error("jsonpath does not match the expected format ($ and [] are expected)", e);
       throw new StringIndexOutOfBoundsException("Jsonpath does not match the expected format ($ and [] are expected):  "+ e );
     } catch (PathNotFoundException e){
-      logger.error("could not find isonpath matches", e);
+      logger.error("could not found isonpath matches", e);
       throw new PathNotFoundException("could not find jsonpath matches:  "+ e );
     }
 
