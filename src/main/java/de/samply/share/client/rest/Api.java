@@ -4,6 +4,7 @@ import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.parser.DataFormatException;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.mchange.rmi.NotAuthorizedException;
 import com.sun.jersey.api.NotFoundException;
 import de.samply.share.client.control.ApplicationBean;
@@ -109,7 +110,8 @@ public class Api {
       HashMap<String, Object> headerMapToSend = filter(headers);
       CtsConnector ctsConnector = ApplicationBean.getCtsConnector();
       return ctsConnector.postLocalPatientToCentralCts(patient, httpHeaders, headerMapToSend);
-    } catch (ConfigurationException | DataFormatException e) {
+    } catch (ConfigurationException | DataFormatException | StringIndexOutOfBoundsException
+        | PathNotFoundException e) {
       return Response.status(400).entity(e.getMessage()).build();
     } catch (NotAuthorizedException e) {
       return Response.status(401).entity(e.getMessage()).build();
