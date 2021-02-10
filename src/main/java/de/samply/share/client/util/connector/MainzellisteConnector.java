@@ -496,8 +496,8 @@ public class MainzellisteConnector {
   public JsonArray getLocalId(List<String> ctsIds)
       throws IOException, IllegalArgumentException,
       NotFoundException, NotAuthorizedException {
-    String uri = getMainzellisteSessionUri();
-    String tokenId = getMainzellisteReadToken(uri, ctsIds);
+    String id = getMainzellisteSessionId();
+    String tokenId = getMainzellisteReadToken(id, ctsIds);
     HttpGet httpGet = new HttpGet(
         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_URL)
             + "/patients/tokenId/" + tokenId);
@@ -520,7 +520,7 @@ public class MainzellisteConnector {
     }
   }
 
-  private String getMainzellisteSessionUri() throws IOException, NotAuthorizedException {
+  private String getMainzellisteSessionId() throws IOException, NotAuthorizedException {
     HttpPost httpPost = new HttpPost(
         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_URL)
             + "/sessions");
@@ -536,17 +536,18 @@ public class MainzellisteConnector {
       JsonParser jsonParser = new JsonParser();
       JsonObject jsonObject = (JsonObject) jsonParser
           .parse(EntityUtils.toString(response.getEntity()));
-      return jsonObject.get("uri").getAsString();
+      return jsonObject.get("sessionId").getAsString();
     } catch (IOException e) {
       logger.error("Get session uri from Mainzelliste: IOException: e: " + e);
       throw new IOException(e);
     }
   }
 
-  private String getMainzellisteReadToken(String sessionUrl, List<String> ctsIds)
+  private String getMainzellisteReadToken(String sessionId, List<String> ctsIds)
       throws IOException, NotAuthorizedException {
-    sessionUrl = sessionUrl.replace("http://","https://");
-    HttpPost httpPost = new HttpPost(sessionUrl + "tokens");
+    HttpPost httpPost = new HttpPost(
+            ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_URL)
+                    + "/sessions/" + sessionId + "/tokens");
     httpPost.setHeader("mainzellisteApiKey",
         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_API_KEY));
     HttpEntity entity = new StringEntity(createJsonObjectForReadPatients(ctsIds), Consts.UTF_8);

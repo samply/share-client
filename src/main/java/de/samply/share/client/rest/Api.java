@@ -30,6 +30,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.mindrot.jbcrypt.BCrypt;
+import com.jayway.jsonpath.PathNotFoundException;
 
 @Path("/")
 public class Api {
@@ -109,7 +110,7 @@ public class Api {
       HashMap<String, Object> headerMapToSend = filter(headers);
       CtsConnector ctsConnector = ApplicationBean.getCtsConnector();
       return ctsConnector.postLocalPatientToCentralCts(patient, httpHeaders, headerMapToSend);
-    } catch (ConfigurationException | DataFormatException e) {
+    } catch (ConfigurationException | DataFormatException | StringIndexOutOfBoundsException | PathNotFoundException  e) {
       return Response.status(400).entity(e.getMessage()).build();
     } catch (NotAuthorizedException e) {
       return Response.status(401).entity(e.getMessage()).build();

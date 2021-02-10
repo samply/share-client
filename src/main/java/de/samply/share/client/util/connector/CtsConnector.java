@@ -20,10 +20,7 @@ import de.samply.share.common.utils.SamplyShareUtils;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,12 +49,15 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.Bundle;
+import com.jayway.jsonpath.PathNotFoundException;
 
 public class CtsConnector {
 
   private static final Logger logger = LogManager.getLogger(CtsConnector.class);
   private static final String CONTENT_TYPE_CTS_FHIR_JSON = "application/fhir+json; fhirVersion=4.0";
   private static final FhirResource fhirResource = new FhirResource();
+  private static final String X_BK_PSEUDONYM_JSONPATHS = "X-BK-pseudonym-jsonpaths";
+  private static final String X_BK_TARGET_URL = "X-BK-target-url";
   private transient HttpConnector httpConnector;
   private CloseableHttpClient httpClient;
   private String ctsBaseUrl;
@@ -157,7 +157,7 @@ public class CtsConnector {
     // Set up the API call
     HttpEntity entity = new StringEntity(pseudonimisedPatient.toString(), Consts.UTF_8);
     HttpPost httpPost = new HttpPost(ctsBaseUrl);
-    httpPost.setHeader(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_CTS_FHIR_JSON);
+    httpPost.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
     httpPost.setEntity(entity);
     CloseableHttpResponse response = null;
     try {
@@ -194,11 +194,22 @@ public class CtsConnector {
       HashMap<String, Object> headerMapToSend)
       throws IOException, IllegalArgumentException,
       NotFoundException, NotAuthorizedException {
-    String encryptedIds = readIds(patient,
-        httpHeaders.getRequestHeader("X-BK-pseudonym-jsonpaths").get(0), false);
+    List<String> urlTargetHeaders = httpHeaders.getRequestHeader(X_BK_TARGET_URL);
+    String encryptedIds=patient;//or a empty string
+    String urlTarget;
+    if(urlTargetHeaders!=null && !urlTargetHeaders.isEmpty()){
+       urlTarget = urlTargetHeaders.get(0);
+    } else{
+      logger.error("PostLocalPatientToCentralCts: X-BK-target-url is empty");
+      return Response.status(400).entity("X-BK-target-url is empty").build();
+    }
+    List<String> jsonpathsHeaders = httpHeaders.getRequestHeader(X_BK_PSEUDONYM_JSONPATHS);
+    if(jsonpathsHeaders!=null && !jsonpathsHeaders.isEmpty()){
+       encryptedIds = readIds(patient, jsonpathsHeaders.get(0), false);
+    }
     // Set up the API call
     HttpEntity entity = new StringEntity(encryptedIds, Consts.UTF_8);
-    HttpPost httpPost = new HttpPost(httpHeaders.getRequestHeader("X-BK-target-url").get(0));
+    HttpPost httpPost = new HttpPost(urlTarget);
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
     for (Entry<String, Object> entry : headerMapToSend.entrySet()) {
       httpPost.setHeader(entry.getKey(), entry.getValue().toString());
@@ -210,11 +221,11 @@ public class CtsConnector {
       int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode == 200 || statusCode == 201) {
         String responseAsString = EntityUtils.toString(response.getEntity());
-        Header jsonpaths = response.getFirstHeader("X-BK-pseudonym-jsonpaths");
-        if (jsonpaths != null) {
-          responseAsString = readIds(responseAsString, jsonpaths.getValue(), true);
+        Header responseJsonpaths = response.getFirstHeader(X_BK_PSEUDONYM_JSONPATHS);
+        if (responseJsonpaths != null) {
+          responseAsString = readIds(responseAsString, responseJsonpaths.getValue(), true);
         }
-        return Response.status(statusCode).entity(responseAsString).build();
+        return getResponse(response, statusCode, responseAsString);
       }
       String message =
           "CTS server response: statusCode:" + statusCode + "; response: " + response.toString();
@@ -222,12 +233,35 @@ public class CtsConnector {
       if (responseBody != null && !responseBody.isEmpty()) {
         message += ";body: " + responseBody;
       }
+      logger.error("PostLocalPatientToCentralCts response: "+ message);
       return Response.status(statusCode).entity(message).build();
     } catch (IOException e) {
       throw new IOException(e);
+    } catch (StringIndexOutOfBoundsException e) {
+      throw new StringIndexOutOfBoundsException(e.getMessage());
+    } catch (PathNotFoundException e) {
+      throw new PathNotFoundException(e.getMessage());
     } finally {
       closeResponse(response);
     }
+  }
+
+  /**
+   * build a response from the a original response, headers and status code
+   *
+   * @param response
+   * @param statusCode
+   * @param responseAsString
+   * @return http response
+   */
+  private Response getResponse(CloseableHttpResponse response, int statusCode, String responseAsString) {
+    Response.ResponseBuilder builder = Response.status(statusCode).entity(responseAsString);
+    //headers
+    Header[]  responseHeaders = response.getAllHeaders();
+    for (Header header : headersToFilter(responseHeaders)) {
+      builder.header(header.getName(), header.getValue());
+    }
+    return builder.build();
   }
 
   /**
@@ -242,7 +276,6 @@ public class CtsConnector {
     // Recycle the authorization cookies that we received from the CTS
     cookieStore.addCookie(ctsAuthorization.codeCookie);
     cookieStore.addCookie(ctsAuthorization.userCookie);
-
     HttpContext ctsContext = new BasicHttpContext();
     ctsContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
 
@@ -341,14 +374,25 @@ public class CtsConnector {
   }
 
   private String readIds(String json, String headerIdKey, boolean response)
-      throws IOException, NotAuthorizedException {
+      throws IOException, NotAuthorizedException, StringIndexOutOfBoundsException, PathNotFoundException {
     String headerIdKeyString = new String(Base64.getDecoder().decode(headerIdKey));
-    headerIdKeyString = headerIdKeyString.substring(headerIdKeyString.indexOf("$"),
-        headerIdKeyString.indexOf("\"]"));
-    String patientJson = json;
-    Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST);
-    List<String> ids = JsonPath.using(conf).parse(patientJson).read(headerIdKeyString);
-    patientJson = replaceIdsWithEncryptedIds(patientJson, ids, response);
+    String patientJson=null;
+    try {
+      headerIdKeyString = headerIdKeyString.substring(headerIdKeyString.indexOf("$"),
+              headerIdKeyString.indexOf("\"]"));
+      patientJson = json;
+      Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST);
+      List<String> ids = JsonPath.using(conf).parse(patientJson).read(headerIdKeyString);
+      patientJson = replaceIdsWithEncryptedIds(patientJson, ids, response);
+
+    } catch (StringIndexOutOfBoundsException e){
+      logger.error("jsonpath does not match the expected format ($ and [] are expected)", e);
+      throw new StringIndexOutOfBoundsException("Jsonpath does not match the expected format ($ and [] are expected):  "+ e );
+    } catch (PathNotFoundException e){
+      logger.error("could not find isonpath matches", e);
+      throw new PathNotFoundException("could not find jsonpath matches:  "+ e );
+    }
+
     return patientJson;
   }
 
@@ -434,6 +478,25 @@ public class CtsConnector {
       String bodyResponse) {
     return message + "; statusCode: " + statusCode + "; reason: " + reasonPhrase + ";body: "
         + bodyResponse;
+  }
+
+  /**
+   *  Filter Headers to forward to local CTS
+   *
+   * @param headers
+   * @return all headers with defined suffixes
+   */
+  private Header[] headersToFilter(Header[] headers) {
+    String[] headersToPropagate = {"x-cds-", "x-bk-"};
+    List<Header> headersToSend= new ArrayList<>();
+    for (Header header : headers) {
+      for (String headerToPropagate : headersToPropagate) {
+        if (header.getName().toLowerCase().startsWith(headerToPropagate)) {
+          headersToSend.add(header);
+        }
+      }
+    }
+    return  headersToSend.toArray(new Header[headersToSend.size()]);
   }
 
   /**
