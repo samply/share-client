@@ -532,7 +532,7 @@ public class MainzellisteConnector {
       int statusCode = response.getStatusLine().getStatusCode();
       String reasonPhrase = response.getStatusLine().getReasonPhrase();
       insertEventLog(statusCode);
-      checkStatusCode(response,statusCode,reasonPhrase);
+      checkStatusCode(response, statusCode, reasonPhrase);
       JsonParser jsonParser = new JsonParser();
       JsonObject jsonObject = (JsonObject) jsonParser
           .parse(EntityUtils.toString(response.getEntity()));
@@ -546,8 +546,8 @@ public class MainzellisteConnector {
   private String getMainzellisteReadToken(String sessionId, List<String> ctsIds)
       throws IOException, NotAuthorizedException {
     HttpPost httpPost = new HttpPost(
-            ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_URL)
-                    + "/sessions/" + sessionId + "/tokens");
+        ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_URL)
+            + "/sessions/" + sessionId + "/tokens");
     httpPost.setHeader("mainzellisteApiKey",
         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_API_KEY));
     HttpEntity entity = new StringEntity(createJsonObjectForReadPatients(ctsIds), Consts.UTF_8);
@@ -560,7 +560,7 @@ public class MainzellisteConnector {
       int statusCode = response.getStatusLine().getStatusCode();
       String reasonPhrase = response.getStatusLine().getReasonPhrase();
       insertEventLog(statusCode);
-      checkStatusCode(response,statusCode,reasonPhrase);
+      checkStatusCode(response, statusCode, reasonPhrase);
       JsonParser jsonParser = new JsonParser();
       JsonObject jsonObject = (JsonObject) jsonParser
           .parse(EntityUtils.toString(response.getEntity()));

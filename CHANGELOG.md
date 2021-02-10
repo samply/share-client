@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [7.2.2 - 2021-02-05]
+## [7.2.2 - 2021-02-10]
 ## Fixed
 - read EncId instead of returning jsonString
+- check the headers jsonpaths and target-url before using it
 
 ## [7.2.1 - 2021-02-04]
 ## Fixed

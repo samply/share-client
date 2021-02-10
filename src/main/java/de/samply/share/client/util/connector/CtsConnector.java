@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.mchange.rmi.NotAuthorizedException;
 import com.sun.jersey.api.NotFoundException;
 import de.samply.common.http.HttpConnector;
@@ -20,7 +21,10 @@ import de.samply.share.common.utils.SamplyShareUtils;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.security.GeneralSecurityException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +53,6 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.Bundle;
-import com.jayway.jsonpath.PathNotFoundException;
 
 public class CtsConnector {
 
@@ -195,17 +198,17 @@ public class CtsConnector {
       throws IOException, IllegalArgumentException,
       NotFoundException, NotAuthorizedException {
     List<String> urlTargetHeaders = httpHeaders.getRequestHeader(X_BK_TARGET_URL);
-    String encryptedIds=patient;//or a empty string
+    String encryptedIds = patient;//or a empty string
     String urlTarget;
-    if(urlTargetHeaders!=null && !urlTargetHeaders.isEmpty()){
-       urlTarget = urlTargetHeaders.get(0);
-    } else{
+    if (urlTargetHeaders != null && !urlTargetHeaders.isEmpty()) {
+      urlTarget = urlTargetHeaders.get(0);
+    } else {
       logger.error("PostLocalPatientToCentralCts: X-BK-target-url is empty");
       return Response.status(400).entity("X-BK-target-url is empty").build();
     }
     List<String> jsonpathsHeaders = httpHeaders.getRequestHeader(X_BK_PSEUDONYM_JSONPATHS);
-    if(jsonpathsHeaders!=null && !jsonpathsHeaders.isEmpty()){
-       encryptedIds = readIds(patient, jsonpathsHeaders.get(0), false);
+    if (jsonpathsHeaders != null && !jsonpathsHeaders.isEmpty()) {
+      encryptedIds = readIds(patient, jsonpathsHeaders.get(0), false);
     }
     // Set up the API call
     HttpEntity entity = new StringEntity(encryptedIds, Consts.UTF_8);
@@ -233,7 +236,7 @@ public class CtsConnector {
       if (responseBody != null && !responseBody.isEmpty()) {
         message += ";body: " + responseBody;
       }
-      logger.error("PostLocalPatientToCentralCts response: "+ message);
+      logger.error("PostLocalPatientToCentralCts response: " + message);
       return Response.status(statusCode).entity(message).build();
     } catch (IOException e) {
       throw new IOException(e);
@@ -247,17 +250,18 @@ public class CtsConnector {
   }
 
   /**
-   * build a response from the a original response, headers and status code
+   * build a response from the a original response, headers and status code.
    *
-   * @param response
-   * @param statusCode
-   * @param responseAsString
+   * @param response CloseableHttpResponse
+   * @param statusCode status code from the response
+   * @param responseAsString response body
    * @return http response
    */
-  private Response getResponse(CloseableHttpResponse response, int statusCode, String responseAsString) {
+  private Response getResponse(CloseableHttpResponse response, int statusCode,
+      String responseAsString) {
     Response.ResponseBuilder builder = Response.status(statusCode).entity(responseAsString);
     //headers
-    Header[]  responseHeaders = response.getAllHeaders();
+    Header[] responseHeaders = response.getAllHeaders();
     for (Header header : headersToFilter(responseHeaders)) {
       builder.header(header.getName(), header.getValue());
     }
@@ -374,23 +378,26 @@ public class CtsConnector {
   }
 
   private String readIds(String json, String headerIdKey, boolean response)
-      throws IOException, NotAuthorizedException, StringIndexOutOfBoundsException, PathNotFoundException {
+      throws IOException, NotAuthorizedException, StringIndexOutOfBoundsException,
+      PathNotFoundException {
     String headerIdKeyString = new String(Base64.getDecoder().decode(headerIdKey));
-    String patientJson=null;
+    String patientJson = null;
     try {
       headerIdKeyString = headerIdKeyString.substring(headerIdKeyString.indexOf("$"),
-              headerIdKeyString.indexOf("\"]"));
+          headerIdKeyString.indexOf("\"]"));
       patientJson = json;
-      Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST);
+      Configuration conf = Configuration.defaultConfiguration()
+          .addOptions(Option.ALWAYS_RETURN_LIST);
       List<String> ids = JsonPath.using(conf).parse(patientJson).read(headerIdKeyString);
       patientJson = replaceIdsWithEncryptedIds(patientJson, ids, response);
 
-    } catch (StringIndexOutOfBoundsException e){
+    } catch (StringIndexOutOfBoundsException e) {
       logger.error("jsonpath does not match the expected format ($ and [] are expected)", e);
-      throw new StringIndexOutOfBoundsException("Jsonpath does not match the expected format ($ and [] are expected):  "+ e );
-    } catch (PathNotFoundException e){
+      throw new StringIndexOutOfBoundsException(
+          "Jsonpath does not match the expected format ($ and [] are expected):  " + e);
+    } catch (PathNotFoundException e) {
       logger.error("could not found isonpath matches", e);
-      throw new PathNotFoundException("could not find jsonpath matches:  "+ e );
+      throw new PathNotFoundException("could not find jsonpath matches:  " + e);
     }
 
     return patientJson;
@@ -481,14 +488,14 @@ public class CtsConnector {
   }
 
   /**
-   *  Filter Headers to forward to local CTS
+   * Filter Headers to forward to local CTS.
    *
-   * @param headers
+   * @param headers headers from response
    * @return all headers with defined suffixes
    */
   private Header[] headersToFilter(Header[] headers) {
     String[] headersToPropagate = {"x-cds-", "x-bk-"};
-    List<Header> headersToSend= new ArrayList<>();
+    List<Header> headersToSend = new ArrayList<>();
     for (Header header : headers) {
       for (String headerToPropagate : headersToPropagate) {
         if (header.getName().toLowerCase().startsWith(headerToPropagate)) {
@@ -496,7 +503,7 @@ public class CtsConnector {
         }
       }
     }
-    return  headersToSend.toArray(new Header[headersToSend.size()]);
+    return headersToSend.toArray(new Header[headersToSend.size()]);
   }
 
   /**
