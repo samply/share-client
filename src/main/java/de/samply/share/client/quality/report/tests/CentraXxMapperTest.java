@@ -11,10 +11,10 @@ import javax.ws.rs.Path;
 public class CentraXxMapperTest {
 
   /**
-   * Todo.
+   * Test of centraxx mapper.
    *
-   * @return Todo.
-   * @throws CentraxxMapperException Todo.
+   * @return Message with the identification of the test.
+   * @throws CentraxxMapperException centraxx mapper exception.
    */
   @GET
   public String myTest() throws CentraxxMapperException {

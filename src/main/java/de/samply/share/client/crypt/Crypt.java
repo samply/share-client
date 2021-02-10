@@ -26,17 +26,22 @@ public class Crypt {
         primitive.encrypt(plainText.getBytes(StandardCharsets.UTF_8), null));
   }
 
-  public byte[] decrypt(String plainText)
+  public String decrypt(String plainText)
       throws GeneralSecurityException {
-    return primitive.decrypt(Base64.decodeBase64(plainText), null);
+    return new String(primitive.decrypt(Base64.decodeBase64(plainText), null),
+        StandardCharsets.UTF_8);
   }
-
 
   /**
    * Create a primitive for the encryption and decryption. If the keySet is not existing then it
    * will be created.
    */
   public Crypt() throws GeneralSecurityException, IOException {
+    init();
+  }
+
+
+  private void init() throws GeneralSecurityException, IOException {
     String keysetFilename = "cts_symmetric_key.json";
     KeysetHandle keysetHandle = null;
     try {

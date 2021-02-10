@@ -31,9 +31,9 @@ public class MyUri {
   }
 
   /**
-   * Todo.
+   * Print uri in quality report.
    *
-   * @return Todo.
+   * @return uri to be displayed in quality report.
    */
   public String toString() {
 

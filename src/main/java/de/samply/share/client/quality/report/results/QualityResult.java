@@ -31,9 +31,9 @@ public class QualityResult {
 
 
   /**
-   * Todo.
+   * Add patient local id.
    *
-   * @param patientLocalId Todo.
+   * @param patientLocalId patient local id.
    */
   public void addPatientLocalId(String patientLocalId) {
 
@@ -44,9 +44,9 @@ public class QualityResult {
   }
 
   /**
-   * Todo.
+   * Add set of patient local ids.
    *
-   * @param patientLocalIds Todo.
+   * @param patientLocalIds patient local ids.
    */
   public void addPatientLocalIds(Set<String> patientLocalIds) {
 
@@ -57,9 +57,9 @@ public class QualityResult {
   }
 
   /**
-   * Todo.
+   * Add patient global id.
    *
-   * @param patientDktkId Todo.
+   * @param patientDktkId patient global id.
    */
   public void addPatientDktkId(String patientDktkId) {
 
@@ -70,9 +70,9 @@ public class QualityResult {
   }
 
   /**
-   * Todo.
+   * Add set of patient global ids .
    *
-   * @param patientDktkIds Todo.
+   * @param patientDktkIds patient global ids.
    */
   public void addPatientDktkIds(Set<String> patientDktkIds) {
 

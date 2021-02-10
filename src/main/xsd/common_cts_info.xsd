@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified"
+           targetNamespace="http://schema.samply.de/config/CtsInfo"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="cts">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="username" type="xs:string"/>
+        <xs:element name="password" type="xs:string"/>
+        <xs:element name="url" type="xs:anyURI"/>
+        <xs:element name="profile" type="xs:anyURI"/>
+        <xs:element name="mainzellisteUrl" type="xs:anyURI"/>
+        <xs:element name="mainzellisteApiKey" type="xs:string"/>
+        <xs:element minOccurs="0" name="searchIdType" type="xs:string"/>
+        <xs:element minOccurs="0" name="patientListApiKey" type="xs:string"/>
+        <xs:element minOccurs="0" name="patientListUrl" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

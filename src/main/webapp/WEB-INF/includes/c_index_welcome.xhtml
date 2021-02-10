@@ -16,7 +16,7 @@
         </div>
         <div class="panel-body">
             <h:outputText rendered="#{wu:getProjectName() eq 'dktk'}" escape="false"
-                          value="#{msg.iw_dktkDetails1} &lt;i&gt;#{applicationBean.infos.name}&lt;/i&gt;. #{msg.iw_dktkDetails2}  &lt;i&gt;#{applicationBean.infos.name}&lt;/i&gt; #{msg.iw_dktkDetails3}  "/>
+                          value="#{msg.iw_dktkDetails1} &lt;i&gt;#{applicationBean.infos.name}&lt;/i&gt;. #{msg.iw_dktkDetails2}  &lt;i&gt;#{applicationBean.infos.name}&lt;/i&gt;#{msg.iw_dktkDetails3}  "/>
             <h:outputText rendered="#{wu:getProjectName() eq 'samply'}" escape="false"
                           value="#{msg.iw_samplyDetails1} &lt;i&gt;#{applicationBean.infos.name}&lt;/i&gt;. #{msg.iw_samplyDetails2}  &lt;i&gt;#{applicationBean.infos.name}&lt;/i&gt; #{msg.iw_samplyDetails3}  "/>
             <h:outputText escape="false" value="#{msg.iw_admin}"/>

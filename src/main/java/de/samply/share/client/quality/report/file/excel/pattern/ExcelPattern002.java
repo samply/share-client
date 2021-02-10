@@ -39,13 +39,13 @@ public class ExcelPattern002 implements ExcelPattern {
 
 
   /**
-   * Todo.
+   * Creates Excel Pattern. It contains relevant information for building a quality report.
    *
-   * @param model             Todo.
-   * @param mdrClient         Todo.
-   * @param centraXxMapper    Todo.
-   * @param dktkIdManager     Todo.
-   * @param mdrMappedElements Todo.
+   * @param model             mdr data element ids and validations.
+   * @param mdrClient         mdr client.
+   * @param centraXxMapper    map mdr data element - centraxx data-element.
+   * @param dktkIdManager     map mdr data element - mdr slot DKTK-ID.
+   * @param mdrMappedElements additional information about mdr data elements.
    */
   public ExcelPattern002(Model model, MdrClient mdrClient, CentraxxMapper centraXxMapper,
       DktkIdMdrIdConverter dktkIdManager, MdrMappedElements mdrMappedElements) {

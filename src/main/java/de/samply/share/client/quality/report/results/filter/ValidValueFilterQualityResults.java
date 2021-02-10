@@ -14,10 +14,10 @@ public class ValidValueFilterQualityResults {
   private final Map<String, QualityResult> invalidQualityResults = new HashMap<>();
 
   /**
-   * Todo.
+   * Add value and quality result.
    *
-   * @param value         Todo.
-   * @param qualityResult Todo.
+   * @param value         Value.
+   * @param qualityResult Quality result.
    */
   public void addValueAndQualityResult(String value, QualityResult qualityResult) {
 
@@ -52,9 +52,9 @@ public class ValidValueFilterQualityResults {
   }
 
   /**
-   * Todo.
+   * Get values.
    *
-   * @return Todo.
+   * @return Set of values.
    */
   public Set<String> getValues() {
 
