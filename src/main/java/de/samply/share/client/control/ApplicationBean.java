@@ -858,8 +858,8 @@ public class ApplicationBean implements Serializable {
       throw new RuntimeException("Could not initialize quartz scheduler.", e);
     }
 
-    logger.info("Initializing dth validator...");
-    initDthValidator();
+    logger.info("Initializing mdr validator...");
+    initMdrValidator();
 
     logger.info("Initializing ldm connector...");
     ApplicationBean.initLdmConnector();
@@ -869,13 +869,19 @@ public class ApplicationBean implements Serializable {
 
     logger.info("Checking Processing inquiries...");
     checkProcessingInquiries();
+
     if (featureManager.getFeatureState(ClientFeature.NNGM_CTS).isEnabled()) {
+      logger.info("loading cts info...");
       loadCtsInfo();
+      logger.info("updating cts info...");
       updateCtsInfo();
+      logger.info("initializing patient list for cts...");
       initMainzelliste();
+      logger.info("initializing crypt...");
       initCrypt();
     }
     logger.info("Application Bean initialized");
+
   }
 
   private static void initCrypt() {
@@ -941,7 +947,7 @@ public class ApplicationBean implements Serializable {
     scheduleJobsFromDatabase();
   }
 
-  private void initDthValidator() {
+  private void initMdrValidator() {
     try {
 
       mdrConnection = new MdrConnection(
