@@ -303,7 +303,7 @@ public class InquiryBean implements Serializable {
     return latestInquiryResult;
   }
 
-  private static InquiryResult getLatestInquiryResult(List<InquiryResult> inquiryResultsList) {
+  private static InquiryResult getLastInquiryResult(List<InquiryResult> inquiryResultsList) {
     return inquiryResultsList.stream().sorted(Comparator.comparing(InquiryResult::getExecutedAt))
         .collect(Collectors.toList()).get(inquiryResultsList.size() - 1);
   }
@@ -583,7 +583,7 @@ public class InquiryBean implements Serializable {
       inquiryEvents = EventLogUtil.fetchEventLogForInquiryById(inquiry.getId());
       loadDocuments();
       if (!SamplyShareUtils.isNullOrEmpty(inquiryResultsList)) {
-        latestInquiryResult = getLatestInquiryResult(inquiryResultsList);
+        latestInquiryResult = getLastInquiryResult(inquiryResultsList);
         try {
           resultsReady = ldmConnector.isFirstResultPageAvailable(latestInquiryResult.getLocation());
           // TODO: other types

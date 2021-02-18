@@ -961,7 +961,7 @@ public class ApplicationBean implements Serializable {
       mdrValidator = new MdrValidator(mdrConnection, true);
     } catch (MdrConnectionException | ExecutionException | MdrException
         | MdrInvalidResponseException e) {
-      logger.error("Error initializing DTH Validator", e);
+      logger.error("Error initializing MDR validator", e);
     }
   }
 
