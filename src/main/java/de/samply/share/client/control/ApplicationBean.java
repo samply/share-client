@@ -125,7 +125,6 @@ import org.togglz.core.manager.FeatureManager;
 import org.xml.sax.SAXException;
 
 
-
 /**
  * Backing Bean that is valid during the whole runtime of the application. Holds methods that are
  * needed system-wide.
@@ -612,7 +611,7 @@ public class ApplicationBean implements Serializable {
    * Create an HttpConnector for a targetType and a custom timeout.
    *
    * @param targetType the tagetType like local data management or httpProxy
-   * @param timeout timeout in seconds
+   * @param timeout    timeout in seconds
    * @return HttpConnector for the targetType and a custom timeout
    */
   public static HttpConnector createHttpConnector(TargetType targetType, int timeout) {
@@ -962,7 +961,7 @@ public class ApplicationBean implements Serializable {
       mdrValidator = new MdrValidator(mdrConnection, true);
     } catch (MdrConnectionException | ExecutionException | MdrException
         | MdrInvalidResponseException e) {
-      logger.error("Error initializing DTH Validator", e);
+      logger.error("Error initializing MDR validator", e);
     }
   }
 
@@ -1012,14 +1011,16 @@ public class ApplicationBean implements Serializable {
     }
 
     //TODO Dependency Injection
-    setComponentInfoViewModel(new IdManagerBasicInfoConnector(), idmAvailability);
-    setComponentInfoViewModel(new PatientListBasicInfoConnector(), patientListAvailability);
-    setComponentInfoViewModel(new ProjectPseudonymizationBasicInfoConnector(),
-        projectPseudonAvailability);
+    if (ApplicationUtils.isDktk()) {
+      setComponentInfoViewModel(new IdManagerBasicInfoConnector(), idmAvailability);
+      setComponentInfoViewModel(new PatientListBasicInfoConnector(), patientListAvailability);
+      setComponentInfoViewModel(new ProjectPseudonymizationBasicInfoConnector(),
+          projectPseudonAvailability);
+    }
   }
 
   private void setComponentInfoViewModel(IcomponentBasicInfoConnector basicInfoConnector,
-                                         ConnectCheckResult connectCheckResult) {
+      ConnectCheckResult connectCheckResult) {
     try {
       ComponentInfo componentInfo = basicInfoConnector.getComponentInfo();
 
