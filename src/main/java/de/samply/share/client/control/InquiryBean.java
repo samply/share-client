@@ -303,6 +303,11 @@ public class InquiryBean implements Serializable {
     return latestInquiryResult;
   }
 
+  private static InquiryResult getLatestInquiryResult(List<InquiryResult> inquiryResultsList) {
+    return inquiryResultsList.stream().sorted(Comparator.comparing(InquiryResult::getExecutedAt))
+        .collect(Collectors.toList()).get(inquiryResultsList.size() - 1);
+  }
+
   /**
    * Sets latest inquiry result.
    *
@@ -597,10 +602,7 @@ public class InquiryBean implements Serializable {
     }
   }
 
-  private static InquiryResult getLatestInquiryResult(List<InquiryResult> inquiryResultsList) {
-    return inquiryResultsList.stream().sorted(Comparator.comparing(InquiryResult::getExecutedAt)).
-        collect(Collectors.toList()).get(inquiryResultsList.size() - 1);
-  }
+
 
   /**
    * Generate the query criteria tree from the criteria string in common namespace.
