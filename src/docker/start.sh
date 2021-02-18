@@ -2,40 +2,72 @@
 
 set -e
 
-sed -i "s/{postgres-host}/${POSTGRES_HOST}/"              /usr/local/tomcat/conf/Catalina/localhost/ROOT.xml
-sed -i "s/{postgres-port}/${POSTGRES_PORT:-5432}/"        /usr/local/tomcat/conf/Catalina/localhost/ROOT.xml
-sed -i "s/{postgres-db}/${POSTGRES_DB}/"                  /usr/local/tomcat/conf/Catalina/localhost/ROOT.xml
-sed -i "s/{postgres-user}/${POSTGRES_USER}/"              /usr/local/tomcat/conf/Catalina/localhost/ROOT.xml
-sed -i "s/{postgres-pass}/${POSTGRES_PASS}/"              /usr/local/tomcat/conf/Catalina/localhost/ROOT.xml
+file=${CATALINA_HOME}/conf/Catalina/localhost/ROOT.xml
+sed -i "s/{postgres-host}/${POSTGRES_HOST}/"              "$file"
+sed -i "s/{postgres-port}/${POSTGRES_PORT:-5432}/"        "$file"
+sed -i "s/{postgres-db}/${POSTGRES_DB}/"                  "$file"
+sed -i "s/{postgres-user}/${POSTGRES_USER}/"              "$file"
+sed -i "s/{postgres-pass}/${POSTGRES_PASS}/"              "$file"
 
-sed -i "s~{proxy-url}~${HTTP_PROXY}~"                     /usr/local/tomcat/conf/samply_common_config.xml
-sed -i "s/{proxy-user}/${PROXY_USER}/"                    /usr/local/tomcat/conf/samply_common_config.xml
-sed -i "s/{proxy-pass}/${PROXY_PASS}/"                    /usr/local/tomcat/conf/samply_common_config.xml
+file=${CATALINA_HOME}/conf/${PROJECT}_common_config.xml
+sed -i "s~{proxy-url}~${HTTP_PROXY}~"                     "$file"
+sed -i "s/{proxy-user}/${PROXY_USER}/"                    "$file"
+sed -i "s/{proxy-pass}/${PROXY_PASS}/"                    "$file"
 
-sed -i "s#{store-url}#${STORE_URL}#"                      /usr/local/tomcat/conf/samply_common_urls.xml
-sed -i "s#{mdr-url}#${MDR_URL}#"                          /usr/local/tomcat/conf/samply_common_urls.xml
-sed -i "s#{directory-url}#${DIRECTORY_URL}#"              /usr/local/tomcat/conf/samply_common_urls.xml
+file=${CATALINA_HOME}/conf/${PROJECT}_common_urls.xml
+sed -i "s#{store-url}#${STORE_URL}#"                      "$file"
+sed -i "s#{id-manager-url}#${ID_MANAGER_URL}#"            "$file"
+sed -i "s#{mdr-url}#${MDR_URL}#"                          "$file"
+sed -i "s#{directory-url}#${DIRECTORY_URL}#"              "$file"
+sed -i "s#{share-url}#${SHARE_URL}#"                      "$file"
+sed -i "s#{patientlist-url}#${PATIENTLIST_URL}#"          "$file"
+sed -i "s#{projectpseudonymisation-url}#${PROJECTPSEUDONYMISATION_URL}#"                      "$file"
 
-sed -i "s/{operator-first-name}/${OPERATOR_FIRST_NAME}/"  /usr/local/tomcat/conf/samply_common_operator.xml
-sed -i "s/{operator-last-name}/${OPERATOR_LAST_NAME}/"    /usr/local/tomcat/conf/samply_common_operator.xml
-sed -i "s/{operator-email}/${OPERATOR_EMAIL}/"            /usr/local/tomcat/conf/samply_common_operator.xml
-sed -i "s#{operator-phone}#${OPERATOR_PHONE}#"            /usr/local/tomcat/conf/samply_common_operator.xml
+file=${CATALINA_HOME}/conf/${PROJECT}_common_operator.xml
+sed -i "s/{operator-first-name}/${OPERATOR_FIRST_NAME}/"  "$file"
+sed -i "s/{operator-last-name}/${OPERATOR_LAST_NAME}/"    "$file"
+sed -i "s/{operator-email}/${OPERATOR_EMAIL}/"            "$file"
+sed -i "s#{operator-phone}#${OPERATOR_PHONE}#"            "$file"
 
-sed -i "s%{mail-host}%${MAIL_HOST}%"                      /usr/local/tomcat/conf/mailSending.xml
-sed -i "s%{mail-port}%${MAIL_PORT:-25}%"                  /usr/local/tomcat/conf/mailSending.xml
-sed -i "s%{mail-protocol}%${MAIL_PROTOCOL:-smtp}%"        /usr/local/tomcat/conf/mailSending.xml
-sed -i "s%{mail-from-address}%${MAIL_FROM_ADDRESS}%"      /usr/local/tomcat/conf/mailSending.xml
-sed -i "s%{mail-from-name}%${MAIL_FROM_NAME}%"            /usr/local/tomcat/conf/mailSending.xml
+file=${CATALINA_HOME}/conf/mailSending.xml
+sed -i "s%{mail-host}%${MAIL_HOST}%"                      "$file"
+sed -i "s%{mail-port}%${MAIL_PORT:-25}%"                  "$file"
+sed -i "s%{mail-protocol}%${MAIL_PROTOCOL:-smtp}%"        "$file"
+sed -i "s%{mail-from-address}%${MAIL_FROM_ADDRESS}%"      "$file"
+sed -i "s%{mail-from-name}%${MAIL_FROM_NAME}%"            "$file"
 
-sed -i "s#{query-language}#${QUERY_LANGUAGE:-QUERY}#"     /usr/local/tomcat/conf/samply_bridgehead_info.xml
+file=${CATALINA_HOME}/conf/${PROJECT}_bridgehead_info.xml
+sed -i "s#{site}#${SITE}#"                                "$file"
+sed -i "s#{siteid}#${SITEID}#"                            "$file"
+sed -i "s#{query-language}#${QUERY_LANGUAGE:-QUERY}#"     "$file"
+sed -i "s#{central-search}#${CENTRAL_SEARCH}#"            "$file"
+sed -i "s#{decentral-search}#${DECENTRAL_SEARCH}#"        "$file"
+sed -i "s#{query-language}#${QUERY_LANGUAGE:-QUERY}#"     "$file"
+sed -i "s#{monitor-interval}#${MONITOR_INTERVAL}#"        "$file"
+sed -i "s#{monitor-url}#${MONITOR_URL}#"                  "$file"
+sed -i "s#{update-server}#${UPDATE_SERVER}#"              "$file"
 
-sed -i "s/{level}/${LOG_LEVEL:-info}/"                    /usr/local/tomcat/conf/log4j2.xml
+file=${CATALINA_HOME}/conf/log4j2.xml
+sed -i "s/{level}/${LOG_LEVEL:-info}/"                    "$file"
 
-sed -i "s/{feature_BBMRI_DIRECTORY_SYNC}/${feature_BBMRI_DIRECTORY_SYNC:-false}/" /usr/local/tomcat/conf/features.properties
-sed -i "s/{feature_DKTK_CENTRAL_SEARCH}/${feature_DKTK_CENTRAL_SEARCH:-false}/"   /usr/local/tomcat/conf/features.properties
-sed -i "s/{feature_NNGM_CTS}/${feature_NNGM_CTS:-false}/"                         /usr/local/tomcat/conf/features.properties
+file=${CATALINA_HOME}/conf/features.properties
+sed -i "s/{feature_BBMRI_DIRECTORY_SYNC}/${feature_BBMRI_DIRECTORY_SYNC:-false}/" "$file"
+sed -i "s/{feature_DKTK_CENTRAL_SEARCH}/${feature_DKTK_CENTRAL_SEARCH:-false}/"   "$file"
+sed -i "s/{feature_NNGM_CTS}/${feature_NNGM_CTS:-false}/"                         "$file"
+sed -i "s|{feature_NNGM_ENCRYPT_ID}|${feature_NNGM_ENCRYPT_ID:-false}|"           "$file"
 
-export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/samply/jmx_prometheus_javaagent-0.3.1.jar=9100:/samply/jmx-exporter.yml"
+file=${CATALINA_HOME}/conf/${PROJECT}_cts_info.xml
+sed -i "s|{nngm-magicpl-apikey}|${NNGM_MAGICPL_APIKEY}|"                    "$file"
+sed -i "s|{nngm-magicpl-url}|${NNGM_MAGICPL_URL}|"                          "$file"
+sed -i "s|{nngm-profile}|${NNGM_PROFILE}|"                                  "$file"
+sed -i "s|{nngm-cts-url}|${NNGM_CTS_URL}|"                                  "$file"
+sed -i "s|{nngm-cts-user}|${NNGM_CTS_USER}|"                                "$file"
+sed -i "s|{nngm-cts-password}|${NNGM_CTS_PASSWORD}|"                        "$file"
+sed -i "s|{nngm-site-idtype}|${NNGM_SITE_IDTYPE}|"                          "$file"
+sed -i "s|{nngm-mainzelliste-apikey}|${NNGM_MAINZELLISTE_APIKEY}|"          "$file"
+sed -i "s|{nngm-mainzelliste-url}|${NNGM_MAINZELLISTE_URL}|"                "$file"
+
+export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/docker/jmx_prometheus_javaagent-0.3.1.jar=9100:/docker/jmx-exporter.yml"
 
 # Replace start.sh with catalina.sh
 exec /usr/local/tomcat/bin/catalina.sh run
