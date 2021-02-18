@@ -7,13 +7,15 @@ import de.samply.share.client.quality.report.results.filter.comparator.MdrIdComp
 public class QualityResultsSortedMdrIdsByDktkIdFilter extends
     QualityResultsSortedMdrIdsFilter<MdrIdComparatorByDktkId> {
 
-  private MdrIdComparatorByDktkId mdrIdComparatorByDktkId;
+  private final MdrIdComparatorByDktkId mdrIdComparatorByDktkId;
 
 
   /**
-   * Todo.
+   * Constructs a quality results sorted mdr ids by dktk id filter. The mdr data elements will be
+   * sorted by the mdr slot DKTK-ID.
+   *
    * @param qualityResults Todo.
-   * @param dktkIdManager Todo.
+   * @param dktkIdManager  Todo.
    */
   public QualityResultsSortedMdrIdsByDktkIdFilter(QualityResults qualityResults,
       DktkIdMdrIdConverter dktkIdManager) {

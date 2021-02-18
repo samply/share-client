@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.2.2 - 2021-02-10]
+## Fixed
+- read EncId instead of returning jsonString
+- check the headers jsonpaths and target-url before using it
+
+## [7.2.1 - 2021-02-04]
+## Added
+- github actions for automatic docker image builds in different configuration (currently samply, c4 and dktk)
+- Environment Variables for the configuration file [_cts_info.xml](./src/docker/_cts_info.xml).
+- Environment Variables for the new patientlistUrl and projectPseudonymisationUrl. [see this file](./src/docker/samply_common_urls.xml)
+##  Changed
+- Removed hard coded urls from [samply_common_urls](./src/docker/samply_common_urls.xml)
+- Moved JMX Exporter and start.sh to "/docker" in the container
+- Base image of the container from 8.5.32-jre8-alpine to 9-jdk8-openjdk-slim
+## Fixed
+- send pseudonymised bundle as JSON only
+- renamed some methods
+- Automatic generation of java classes from xsd files
+
+## [7.2.0 - 2021-02-03]
+## Added
+- added process 9b for CTS 
+- added JSONPath
+- encryption/decryption of FHIR references 
+- read localIds from Mainzelliste
+
+## [7.1.0 - 2021-02-02]
+## Added
+- Percentage Logger
+- Java Doc
+- Integrate projectpseudonymization and patientlist
+
 ## [7.0.0 - 2020-11-27]
 - Github release
 ### Changed

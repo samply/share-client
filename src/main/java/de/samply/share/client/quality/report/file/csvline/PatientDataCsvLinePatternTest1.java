@@ -21,8 +21,9 @@ public class PatientDataCsvLinePatternTest1 extends CsvLineImpl {
   }
 
   /**
-   * Todo.
-   * @return Todo.
+   * Get mdr id.
+   *
+   * @return mdr id.
    */
   public MdrIdDatatype getMdrId() {
 
@@ -44,8 +45,9 @@ public class PatientDataCsvLinePatternTest1 extends CsvLineImpl {
   }
 
   /**
-   * Todo.
-   * @return Todo.
+   * Checks if patient data valid is according to the mdr validation.
+   *
+   * @return Check.
    */
   public Boolean isValid() {
 
@@ -67,8 +69,9 @@ public class PatientDataCsvLinePatternTest1 extends CsvLineImpl {
   }
 
   /**
-   * Todo.
-   * @return Todo.
+   * Get number of patients.
+   *
+   * @return number of patients.
    */
   public Integer getNumberOfPatients() {
 

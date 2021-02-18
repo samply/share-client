@@ -23,6 +23,7 @@ import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.model.db.tables.pojos.InquiryResultStats;
 import de.samply.share.client.model.db.tables.pojos.RequestedEntity;
+import de.samply.share.client.quality.report.logger.PercentageLogger;
 import de.samply.share.client.rest.Connector;
 import de.samply.share.client.util.Utils;
 import de.samply.share.client.util.WebUtils;
@@ -138,8 +139,13 @@ public class InquiryBean implements Serializable {
 
     switch (ApplicationUtils.getConnectorType()) {
       case DKTK:
+
         QueryResult queryResultPageCcp = (QueryResult) queryResultPage;
+        PercentageLogger percentageLogger = new PercentageLogger(logger,
+            queryResultPageCcp.getPatient().size(), "building tree model...");
+
         for (de.samply.share.model.ccp.Patient patient : queryResultPageCcp.getPatient()) {
+
           de.samply.share.model.ccp.Container patientContainer =
               new de.samply.share.model.ccp.Container();
           patientContainer.getAttribute().addAll(patient.getAttribute());
@@ -153,6 +159,9 @@ public class InquiryBean implements Serializable {
             e.printStackTrace();
           }
           containerTree = visitContainerNode(containerTree, containerTmp);
+
+          percentageLogger.incrementCounter();
+
         }
         break;
 
@@ -182,8 +191,8 @@ public class InquiryBean implements Serializable {
   }
 
   /**
-   * Add the information from the container to the parent node in the tree.
-   * Do this recursively for the sub-containers as well.
+   * Add the information from the container to the parent node in the tree. Do this recursively for
+   * the sub-containers as well.
    *
    * @param parentNode the treenode to which the container information will be attached
    * @param node       the container entity
@@ -202,156 +211,339 @@ public class InquiryBean implements Serializable {
     }
     return parentNode;
   }
-
+  
+  /**
+   * Init.
+   */
   @PostConstruct
   public void init() {
     ldmConnector = ApplicationBean.getLdmConnector();
   }
-
+  
+  /**
+   * Gets login bean.
+   *
+   * @return the login bean
+   */
   public LoginBean getLoginBean() {
     return loginBean;
   }
-
+  
+  /**
+   * Sets login bean.
+   *
+   * @param loginBean the login bean
+   */
   public void setLoginBean(LoginBean loginBean) {
     this.loginBean = loginBean;
   }
-
+  
+  /**
+   * Gets selected inquiry id.
+   *
+   * @return the selected inquiry id
+   */
   public int getSelectedInquiryId() {
     return selectedInquiryId;
   }
-
+  
+  /**
+   * Sets selected inquiry id.
+   *
+   * @param selectedInquiryId the selected inquiry id
+   */
   public void setSelectedInquiryId(int selectedInquiryId) {
     this.selectedInquiryId = selectedInquiryId;
   }
-
+  
+  /**
+   * Gets inquiry.
+   *
+   * @return the inquiry
+   */
   public Inquiry getInquiry() {
     return inquiry;
   }
-
+  
+  /**
+   * Sets inquiry.
+   *
+   * @param inquiry the inquiry
+   */
   public void setInquiry(Inquiry inquiry) {
     this.inquiry = inquiry;
   }
-
+  
+  /**
+   * Gets latest inquiry details.
+   *
+   * @return the latest inquiry details
+   */
   public InquiryDetails getLatestInquiryDetails() {
     return latestInquiryDetails;
   }
-
+  
+  /**
+   * Sets latest inquiry details.
+   *
+   * @param latestInquiryDetails the latest inquiry details
+   */
   public void setLatestInquiryDetails(InquiryDetails latestInquiryDetails) {
     this.latestInquiryDetails = latestInquiryDetails;
   }
-
+  
+  /**
+   * Gets latest inquiry result.
+   *
+   * @return the latest inquiry result
+   */
   public InquiryResult getLatestInquiryResult() {
     return latestInquiryResult;
   }
-
+  
+  /**
+   * Sets latest inquiry result.
+   *
+   * @param latestInquiryResult the latest inquiry result
+   */
   public void setLatestInquiryResult(InquiryResult latestInquiryResult) {
     this.latestInquiryResult = latestInquiryResult;
   }
-
+  
+  /**
+   * Gets inquiry results list.
+   *
+   * @return the inquiry results list
+   */
   public List<InquiryResult> getInquiryResultsList() {
     return inquiryResultsList;
   }
-
+  
+  /**
+   * Sets inquiry results list.
+   *
+   * @param inquiryResultsList the inquiry results list
+   */
   public void setInquiryResultsList(List<InquiryResult> inquiryResultsList) {
     this.inquiryResultsList = inquiryResultsList;
   }
-
+  
+  /**
+   * Gets latest inquiry answer.
+   *
+   * @return the latest inquiry answer
+   */
   public InquiryAnswer getLatestInquiryAnswer() {
     return latestInquiryAnswer;
   }
-
+  
+  /**
+   * Sets latest inquiry answer.
+   *
+   * @param latestInquiryAnswer the latest inquiry answer
+   */
   public void setLatestInquiryAnswer(InquiryAnswer latestInquiryAnswer) {
     this.latestInquiryAnswer = latestInquiryAnswer;
   }
-
+  
+  /**
+   * Gets inquiry events.
+   *
+   * @return the inquiry events
+   */
   public List<EventLog> getInquiryEvents() {
     return inquiryEvents;
   }
-
+  
+  /**
+   * Sets inquiry events.
+   *
+   * @param inquiryEvents the inquiry events
+   */
   public void setInquiryEvents(List<EventLog> inquiryEvents) {
     this.inquiryEvents = inquiryEvents;
   }
-
+  
+  /**
+   * Is results ready boolean.
+   *
+   * @return the boolean
+   */
   public boolean isResultsReady() {
     return resultsReady;
   }
-
+  
+  /**
+   * Sets results ready.
+   *
+   * @param resultsReady the results ready
+   */
   public void setResultsReady(boolean resultsReady) {
     this.resultsReady = resultsReady;
   }
-
+  
+  /**
+   * Gets latest result statistics.
+   *
+   * @return the latest result statistics
+   */
   public QueryResultStatistic getLatestResultStatistics() {
     return latestResultStatistics;
   }
-
+  
+  /**
+   * Sets latest result statistics.
+   *
+   * @param latestResultStatistics the latest result statistics
+   */
   public void setLatestResultStatistics(QueryResultStatistic latestResultStatistics) {
     this.latestResultStatistics = latestResultStatistics;
   }
-
+  
+  /**
+   * Gets patient page tree.
+   *
+   * @return the patient page tree
+   */
   public TreeModel<Container> getPatientPageTree() {
     return patientPageTree;
   }
-
+  
+  /**
+   * Sets patient page tree.
+   *
+   * @param patientPageTree the patient page tree
+   */
   public void setPatientPageTree(TreeModel<Container> patientPageTree) {
     this.patientPageTree = patientPageTree;
   }
-
+  
+  /**
+   * Gets latest original criteria tree.
+   *
+   * @return the latest original criteria tree
+   */
   public TreeModel<QueryItem> getLatestOriginalCriteriaTree() {
     return latestOriginalCriteriaTree;
   }
-
+  
+  /**
+   * Sets latest original criteria tree.
+   *
+   * @param latestOriginalCriteriaTree the latest original criteria tree
+   */
   public void setLatestOriginalCriteriaTree(TreeModel<QueryItem> latestOriginalCriteriaTree) {
     this.latestOriginalCriteriaTree = latestOriginalCriteriaTree;
   }
-
+  
+  /**
+   * Gets requested entities label string.
+   *
+   * @return the requested entities label string
+   */
   public String getRequestedEntitiesLabelString() {
     return requestedEntitiesLabelString;
   }
-
+  
+  /**
+   * Sets requested entities label string.
+   *
+   * @param requestedEntitiesLabelString the requested entities label string
+   */
   public void setRequestedEntitiesLabelString(String requestedEntitiesLabelString) {
     this.requestedEntitiesLabelString = requestedEntitiesLabelString;
   }
-
+  
+  /**
+   * Gets selected inquiry contact.
+   *
+   * @return the selected inquiry contact
+   */
   public Contact getSelectedInquiryContact() {
     return selectedInquiryContact;
   }
-
+  
+  /**
+   * Sets selected inquiry contact.
+   *
+   * @param selectedInquiryContact the selected inquiry contact
+   */
   public void setSelectedInquiryContact(Contact selectedInquiryContact) {
     this.selectedInquiryContact = selectedInquiryContact;
   }
-
+  
+  /**
+   * Gets latest inquiry result stats.
+   *
+   * @return the latest inquiry result stats
+   */
   public InquiryResultStats getLatestInquiryResultStats() {
     return latestInquiryResultStats;
   }
-
+  
+  /**
+   * Sets latest inquiry result stats.
+   *
+   * @param latestInquiryResultStats the latest inquiry result stats
+   */
   public void setLatestInquiryResultStats(InquiryResultStats latestInquiryResultStats) {
     this.latestInquiryResultStats = latestInquiryResultStats;
   }
-
+  
+  /**
+   * Gets inquiry criteria.
+   *
+   * @return the inquiry criteria
+   */
   public List<InquiryCriteria> getInquiryCriteria() {
     return inquiryCriteria;
   }
-
+  
+  /**
+   * Sets inquiry criteria.
+   *
+   * @param inquiryCriteria the inquiry criteria
+   */
   public void setInquiryCriteria(List<InquiryCriteria> inquiryCriteria) {
     this.inquiryCriteria = inquiryCriteria;
   }
-
+  
+  /**
+   * Gets documents.
+   *
+   * @return the documents
+   */
   public List<Document> getDocuments() {
     return documents;
   }
-
+  
+  /**
+   * Sets documents.
+   *
+   * @param documents the documents
+   */
   public void setDocuments(List<Document> documents) {
     this.documents = documents;
   }
-
+  
+  /**
+   * Gets new document.
+   *
+   * @return the new document
+   */
   public Part getNewDocument() {
     return newDocument;
   }
-
+  
+  /**
+   * Sets new document.
+   *
+   * @param newDocument the new document
+   */
   public void setNewDocument(Part newDocument) {
     this.newDocument = newDocument;
   }
-
+  
   /**
    * Load the selected inquiry (which is defined by the view parameter) and all related details.
    */
@@ -366,14 +558,16 @@ public class InquiryBean implements Serializable {
           .fetchInquiryResultsForInquiryDetailsById(latestInquiryDetails.getId());
       UserSeenInquiryUtil.setUserSeenInquiry(loginBean.getUser(), inquiry);
       //TODO create criteriaTree with cql query
-      if (ApplicationUtils.isLanguageQuery()) {
-        this.inquiryCriteria.add(InquiryCriteriaUtil
-            .getFirstCriteriaOriginal(latestInquiryDetails, QueryLanguageType.QL_QUERY));
-        latestOriginalCriteriaTree = populateCriteriaTree(
-            inquiryCriteria.get(0).getCriteriaOriginal());
-      } else {
-        this.inquiryCriteria = InquiryCriteriaUtil
-            .getInquiryCriteriaForInquiryDetails(latestInquiryDetails);
+      if (inquiryCriteria != null) {
+        if (ApplicationUtils.isLanguageQuery()) {
+          this.inquiryCriteria.add(InquiryCriteriaUtil
+              .getFirstCriteriaOriginal(latestInquiryDetails, QueryLanguageType.QL_QUERY));
+          latestOriginalCriteriaTree = populateCriteriaTree(
+              inquiryCriteria.get(0).getCriteriaOriginal());
+        } else {
+          this.inquiryCriteria = InquiryCriteriaUtil
+              .getInquiryCriteriaForInquiryDetails(latestInquiryDetails);
+        }
       }
 
       List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
@@ -416,7 +610,7 @@ public class InquiryBean implements Serializable {
 
     return QueryTreeUtil.queryStringToTree(queryString);
   }
-
+  
   /**
    * Move an inquiry to the archive.
    *
@@ -433,7 +627,7 @@ public class InquiryBean implements Serializable {
         .insertEventLogEntryForInquiryId(EventMessageType.E_INQUIRY_ARCHIVED, inquiry.getId());
     return "inquiries_archive?faces-redirect=true";
   }
-
+  
   /**
    * Attach a single-fire trigger to the execute inquiry job.
    *
@@ -490,7 +684,7 @@ public class InquiryBean implements Serializable {
       return "";
     }
   }
-
+  
   /**
    * Attach a single-fire trigger to the execute inquiry job, requesting only stats.
    *
@@ -499,7 +693,7 @@ public class InquiryBean implements Serializable {
   public String spawnExecuteTask() {
     return spawnExecuteTask(true);
   }
-
+  
   /**
    * Load the result of an inquiry from local datamanagement.
    */
@@ -526,6 +720,7 @@ public class InquiryBean implements Serializable {
    */
   private void populateQueryResult() throws LdmConnectorException {
     String queryResultLocation = latestInquiryResult.getLocation();
+    logger.info("getting page 0...");
     switch (ApplicationUtils.getConnectorType()) {
       case DKTK:
         latestQueryResult = (QueryResult) ldmConnector.getResultsFromPage(queryResultLocation, 0);
@@ -539,10 +734,10 @@ public class InquiryBean implements Serializable {
     }
     buildPatientPageTree(latestQueryResult);
   }
-
+  
   /**
-   * Load another page of the result.
-   * Page number comes from the paginator widget on the results page.
+   * Load another page of the result. Page number comes from the paginator widget on the results
+   * page.
    */
   public void changeResultPage() {
     int page = 0;
@@ -554,6 +749,7 @@ public class InquiryBean implements Serializable {
     }
 
     try {
+      logger.info("getting results... page " + page);
       switch (ApplicationUtils.getConnectorType()) {
         case DKTK:
           latestQueryResult = (QueryResult) ldmConnector
@@ -607,9 +803,11 @@ public class InquiryBean implements Serializable {
     }
 
   }
-
+  
   /**
    * Generate an Excel Workbook for the inquiry result and send it to the client.
+   *
+   * @param validationHandling the validation handling
    */
   public void generateExportFile(EnumValidationHandling validationHandling) {
     logger.debug("Generate Export File");
@@ -690,11 +888,12 @@ public class InquiryBean implements Serializable {
 
 
   }
-
+  
   /**
-   * Send a reply back to the broker.
-   * Currently only supports the size.
-   * TODO: Add support for other reply types TODO: Add success/error message
+   * Send a reply back to the broker. Currently only supports the size. TODO: Add support for other
+   * reply types TODO: Add success/error message
+   *
+   * @return the string
    */
   public String reply() {
     try {
@@ -729,11 +928,12 @@ public class InquiryBean implements Serializable {
       return "";
     }
   }
-
+  
   /**
    * Send the document with the given id to the user.
    *
    * @param documentId the id of the document to send
+   * @throws IOException the io exception
    */
   public void exportDocument(int documentId) throws IOException {
     logger.debug("Export Document called for document id " + documentId);
@@ -745,10 +945,9 @@ public class InquiryBean implements Serializable {
       logger.error("Document with id " + documentId + " not found");
     }
   }
-
+  
   /**
-   * Delete a document with the given elementId.
-   * The id is transmitted via http request parameter.
+   * Delete a document with the given elementId. The id is transmitted via http request parameter.
    */
   public void deleteDocument() {
     String documentIdString = Faces.getRequestParameter("elementId");
@@ -762,7 +961,7 @@ public class InquiryBean implements Serializable {
       logger.warn("Could not parse expose id: " + documentIdString);
     }
   }
-
+  
   /**
    * Handle the upload of a document from the client.
    *
@@ -811,7 +1010,7 @@ public class InquiryBean implements Serializable {
   private void loadDocuments() {
     documents = DocumentUtil.getDocumentsForInquiry(selectedInquiryId);
   }
-
+  
   /**
    * Check if result stats were written for the latest inquiry.
    *
@@ -820,15 +1019,25 @@ public class InquiryBean implements Serializable {
   public boolean latestInquiryResultHasStats() {
     return latestInquiryResultStats != null;
   }
-
+  
+  /**
+   * Gets result count by id grouped by age.
+   *
+   * @return the result count by id grouped by age
+   */
   public String getResultCountByIdGroupedByAge() {
     return latestInquiryResultStats.getStatsAge();
   }
-
+  
+  /**
+   * Gets result count by id grouped by gender.
+   *
+   * @return the result count by id grouped by gender
+   */
   public String getResultCountByIdGroupedByGender() {
     return latestInquiryResultStats.getStatsGender();
   }
-
+  
   /**
    * Reload the statistics.
    */

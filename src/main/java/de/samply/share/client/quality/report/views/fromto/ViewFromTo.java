@@ -2,8 +2,8 @@ package de.samply.share.client.quality.report.views.fromto;
 
 public class ViewFromTo {
 
-  private String from;
-  private String to;
+  private final String from;
+  private final String to;
 
   public ViewFromTo(String from, String to) {
     this.from = from;

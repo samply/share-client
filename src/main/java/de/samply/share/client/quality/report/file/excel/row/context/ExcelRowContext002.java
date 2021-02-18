@@ -17,8 +17,8 @@ public class ExcelRowContext002 extends ExcelRowContextImpl<ExcelRowParameters00
 
   protected static final Logger logger = LogManager.getLogger(ExcelRowContext002.class);
 
-  private ExcelRowMapper002 excelRowMapper;
-  private AlphabeticallySortedMismatchedQualityResults asmQualityResults;
+  private final ExcelRowMapper002 excelRowMapper;
+  private final AlphabeticallySortedMismatchedQualityResults asmQualityResults;
 
 
   public ExcelRowContext002(ExcelRowMapper002 excelRowMapper, QualityResults qualityResults) {
@@ -26,11 +26,12 @@ public class ExcelRowContext002 extends ExcelRowContextImpl<ExcelRowParameters00
   }
 
   /**
-   * Todo.
-   * @param excelRowMapper Todo.
-   * @param qualityResults Todo.
-   * @param asmQualityResults Todo.
-   * @param qualityResultsStatistics Todo.
+   * Constructs Excel Row Context. It contains information of the excel row.
+   *
+   * @param excelRowMapper           map mdr data element - related info.
+   * @param qualityResults           quality results for the quality report.
+   * @param asmQualityResults        alphabetically sorted quality results.
+   * @param qualityResultsStatistics quality result statistics.
    */
   public ExcelRowContext002(ExcelRowMapper002 excelRowMapper, QualityResults qualityResults,
       AlphabeticallySortedMismatchedQualityResults asmQualityResults,

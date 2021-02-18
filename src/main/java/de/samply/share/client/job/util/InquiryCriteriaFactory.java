@@ -8,6 +8,7 @@ public class InquiryCriteriaFactory {
 
   /**
    * Create a new InquiryCriteria for a View Query and set the inquiryDetailsId.
+   *
    * @param detailsId the InquiryDetailsId
    * @return InquiryCriteria
    */
@@ -24,7 +25,8 @@ public class InquiryCriteriaFactory {
 
   /**
    * Create a new InquiryCriteria for a CQL Query and set the inquiryDetailsId and the entityType.
-   * @param detailsId the InquiryDetailsId
+   *
+   * @param detailsId  the InquiryDetailsId
    * @param entityType the entityType
    * @return InquiryCriteria
    */

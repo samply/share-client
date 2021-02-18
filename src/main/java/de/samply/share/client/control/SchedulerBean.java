@@ -40,7 +40,12 @@ public class SchedulerBean implements Serializable {
   private Scheduler scheduler;
 
   private List<QuartzJob> jobList = new ArrayList<>();
-
+  
+  /**
+   * Instantiates a new Scheduler bean.
+   *
+   * @throws SchedulerException the scheduler exception
+   */
   public SchedulerBean() throws SchedulerException {
     init();
   }
@@ -113,24 +118,26 @@ public class SchedulerBean implements Serializable {
     }
     return true;
   }
-
+  
   /**
    * Attach a single-fire trigger to the job, that fires right away.
    *
    * @param jobName  name of the job
    * @param jobGroup name of the group
+   * @throws SchedulerException the scheduler exception
    */
   public void fireNow(String jobName, String jobGroup) throws SchedulerException {
     JobKey jobKey = new JobKey(jobName, jobGroup);
     scheduler.triggerJob(jobKey);
     readAllJobs();
   }
-
+  
   /**
    * Pause a job.
    *
    * @param jobName  name of the job
    * @param jobGroup name of the group
+   * @throws SchedulerException the scheduler exception
    */
   public void suspend(String jobName, String jobGroup) throws SchedulerException {
     JobKey jobKey = new JobKey(jobName, jobGroup);
@@ -138,12 +145,13 @@ public class SchedulerBean implements Serializable {
     JobScheduleUtil.setSuspended(jobKey, true);
     readAllJobs();
   }
-
+  
   /**
    * Resume a job.
    *
    * @param jobName  name of the job
    * @param jobGroup name of the group
+   * @throws SchedulerException the scheduler exception
    */
   public void resume(String jobName, String jobGroup) throws SchedulerException {
     JobKey jobKey = new JobKey(jobName, jobGroup);
@@ -151,12 +159,13 @@ public class SchedulerBean implements Serializable {
     JobScheduleUtil.setSuspended(jobKey, false);
     readAllJobs();
   }
-
+  
   /**
    * Cancel a job.
    *
    * @param jobName  name of the job
    * @param jobGroup name of the group
+   * @throws SchedulerException the scheduler exception
    */
   public void cancel(String jobName, String jobGroup) throws SchedulerException {
     JobKey jobKey = new JobKey(jobName, jobGroup);
@@ -167,11 +176,12 @@ public class SchedulerBean implements Serializable {
       e.printStackTrace();
     }
   }
-
+  
   /**
    * Re-schedule a job with the cron expression from the database.
    *
    * @param job the job that should be rescheduled
+   * @throws SchedulerException the scheduler exception
    */
   public void rescheduleJob(QuartzJob job) throws SchedulerException {
     JobSchedule jobSchedule = JobScheduleUtil.fetchJobScheduleByJobKey(job.getJobKey());
@@ -184,9 +194,9 @@ public class SchedulerBean implements Serializable {
   }
 
   /**
-   * Check if the trigger assigned to the job is paused.
-   * Iterate through all triggers with cron expressions (should be 0 or 1) assigned to a job. If any
-   * of them is paused, return true. False otherwise.
+   * Check if the trigger assigned to the job is paused. Iterate through all triggers with cron
+   * expressions (should be 0 or 1) assigned to a job. If any of them is paused, return true. False
+   * otherwise.
    *
    * @param jobKey the job key for which the check is performed
    */
@@ -211,7 +221,12 @@ public class SchedulerBean implements Serializable {
     }
     return false;
   }
-
+  
+  /**
+   * Gets job list.
+   *
+   * @return the job list
+   */
   public List<QuartzJob> getJobList() {
     return jobList;
   }

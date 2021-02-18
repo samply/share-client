@@ -8,9 +8,9 @@ import java.util.List;
 
 public class MappingFileReader {
 
-  private String cxxMdrCxxRepresentationsFilename = "CENTRAXX_MDRCXXREPRESENTATION.csv";
-  private String cxxMdrRepresentationsFilename = "CENTRAXX_MDRREPRESENTATION.csv";
-  private String teilerBaseViewColumnsFilename = "";
+  private final String cxxMdrCxxRepresentationsFilename = "CENTRAXX_MDRCXXREPRESENTATION.csv";
+  private final String cxxMdrRepresentationsFilename = "CENTRAXX_MDRREPRESENTATION.csv";
+  private final String teilerBaseViewColumnsFilename = "";
 
 
   public List<CxxMdrCxxRepresentation> readCxxMdrCxxRepresentations() {
@@ -67,7 +67,7 @@ public class MappingFileReader {
 
   private class CxxMdrCxxRepresentationsLineAnalyzer implements LineAnalyzer {
 
-    private List<CxxMdrCxxRepresentation> cxxMdrCxxRepresentations = new ArrayList<>();
+    private final List<CxxMdrCxxRepresentation> cxxMdrCxxRepresentations = new ArrayList<>();
     private Integer counter = 1;
 
     @Override
@@ -97,7 +97,7 @@ public class MappingFileReader {
 
   private class CxxMdrRepresentationsLineAnalyzer implements LineAnalyzer {
 
-    private List<CxxMdrRepresentation> cxxMdrRepresentations = new ArrayList<>();
+    private final List<CxxMdrRepresentation> cxxMdrRepresentations = new ArrayList<>();
 
     @Override
     public void analyzeLine(String line) {
@@ -122,7 +122,7 @@ public class MappingFileReader {
 
   private class TeilerBaseViewColumnsLineAnalyzer implements LineAnalyzer {
 
-    private List<TeilerBaseViewColumn> teilerBaseViewColumns = new ArrayList<>();
+    private final List<TeilerBaseViewColumn> teilerBaseViewColumns = new ArrayList<>();
 
     @Override
     public void analyzeLine(String line) {

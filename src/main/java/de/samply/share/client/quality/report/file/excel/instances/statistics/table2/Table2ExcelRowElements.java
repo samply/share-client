@@ -29,9 +29,10 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param link Todo.
-   * @param mdrId Todo.
+   * Set link to meta data repository for mdr data element mdr id.
+   *
+   * @param link  link to meta data repository for mdr data element mdr id.
+   * @param mdrId mdr data element id.
    */
   public void setMdrLink(String link, MdrIdDatatype mdrId) {
 
@@ -56,8 +57,9 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param dktkId Todo.
+   * Set mdr slot DKTK-ID.
+   *
+   * @param dktkId mdr slot DKTK-ID.
    */
   public void setDktkId(String dktkId) {
 
@@ -67,8 +69,9 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param mdrDatenElement Todo.
+   * Set mdr data element designation.
+   *
+   * @param mdrDatenElement mdr data element designation.
    */
   public void setMdrDatenElement(String mdrDatenElement) {
 
@@ -78,8 +81,9 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param cxxDatenElement Todo.
+   * Set centraxx data element.
+   *
+   * @param cxxDatenElement centraxx data element.
    */
   public void setCxxDatenElement(String cxxDatenElement) {
 
@@ -89,8 +93,9 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param patientsForValidation Todo.
+   * Set patient for validation.
+   *
+   * @param patientsForValidation patients for validation.
    */
   public void setPatientsForValidation(Integer patientsForValidation) {
 
@@ -100,8 +105,9 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param patientsForId Todo.
+   * Se patients for id.
+   *
+   * @param patientsForId patients for id.
    */
   public void setPatientsForId(Integer patientsForId) {
 
@@ -111,8 +117,9 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param ratio Todo.
+   * Set ratio.
+   *
+   * @param ratio ratio.
    */
   public void setRatio(Double ratio) {
 
@@ -122,8 +129,9 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param numberOfPatientsWithMismatch Todo.
+   * Set number of patients with mismatch.
+   *
+   * @param numberOfPatientsWithMismatch Number of patients with mismatch.
    */
   public void setNumberOfPatientsWithMismatch(Integer numberOfPatientsWithMismatch) {
 
@@ -134,8 +142,9 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param numberOfPatientsWithMatch Todo.
+   * Set number of patients with match.
+   *
+   * @param numberOfPatientsWithMatch Number of patients with match.
    */
   public void setNumberOfPatientsWithMatch(Integer numberOfPatientsWithMatch) {
 
@@ -146,8 +155,9 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param percentageOfPatientsWithMismatch Todo.
+   * Set percentage of patients with mismatch.
+   *
+   * @param percentageOfPatientsWithMismatch percentage of patients with mismatch.
    */
   public void setPercentageOfPatientsWithMismatch(Double percentageOfPatientsWithMismatch) {
 
@@ -158,8 +168,9 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param percentageOfPatientsWithMatch Todo.
+   * Set percentage of patients with match.
+   *
+   * @param percentageOfPatientsWithMatch percentage of patients with match.
    */
   public void setPercentageOfPatientsWithMatch(Double percentageOfPatientsWithMatch) {
 
@@ -170,8 +181,9 @@ public class Table2ExcelRowElements extends ExcelRowElements {
   }
 
   /**
-   * Todo.
-   * @param percentageOfTotalPatients Todo.
+   * Set percentage of total patients.
+   *
+   * @param percentageOfTotalPatients percentage of total patients.
    */
   public void setPercentageOfTotalPatients(Double percentageOfTotalPatients) {
 

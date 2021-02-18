@@ -23,8 +23,8 @@ public class UserUtil {
 
   private static final Logger logger = LogManager.getLogger(UserUtil.class);
 
-  private static UserDao userDao;
-  private static UserNotificationDao userNotificationDao;
+  private static final UserDao userDao;
+  private static final UserNotificationDao userNotificationDao;
 
   static {
     userDao = new UserDao(ResourceManager.getConfiguration());

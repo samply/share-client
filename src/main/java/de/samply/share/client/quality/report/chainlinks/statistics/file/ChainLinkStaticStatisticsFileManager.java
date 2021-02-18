@@ -13,10 +13,11 @@ import java.io.File;
 public class ChainLinkStaticStatisticsFileManager {
 
 
-  private AnonymTxtColumnFileManager anonymTxtColumnFileManager;
+  private final AnonymTxtColumnFileManager anonymTxtColumnFileManager;
 
   /**
-   * Todo.
+   * File manager of chain link statistics. It stores statistical informations,
+   * that are used in the next execution of the chain.
    */
   public ChainLinkStaticStatisticsFileManager() {
 
@@ -27,16 +28,17 @@ public class ChainLinkStaticStatisticsFileManager {
 
 
   /**
-   * Todo.
-   * @param chainLinkStatisticTxtColumn Todo.
-   * @throws ChainLinkStaticStatisticsFileManagerException Todo.
+   * Write Chain link statistics in file.
+   *
+   * @param chainLinkStatistic Chain link statistic to be written.
+   * @throws ChainLinkStaticStatisticsFileManagerException Encapsulates exceptions of the class.
    */
-  public synchronized void write(ChainLinkStaticStatistics chainLinkStatisticTxtColumn)
+  public synchronized void write(ChainLinkStaticStatistics chainLinkStatistic)
       throws ChainLinkStaticStatisticsFileManagerException {
 
     try {
 
-      AnonymTxtColumn anonymTxtColumn = convert(chainLinkStatisticTxtColumn);
+      AnonymTxtColumn anonymTxtColumn = convert(chainLinkStatistic);
       anonymTxtColumnFileManager.write(anonymTxtColumn);
 
     } catch (AnonymTxtColumnFileManagerException e) {
@@ -88,10 +90,11 @@ public class ChainLinkStaticStatisticsFileManager {
 
 
   /**
-   * Todo.
-   * @param chainLinkStatisticKey Todo.
-   * @param chainLinkStaticStatisticsParameters Todo.
-   * @throws ChainLinkStaticStatisticsFileManagerException Todo.
+   * Update chain link statistic paremeters of a chain link statistic.
+   *
+   * @param chainLinkStatisticKey               Chain link statistic identifier.
+   * @param chainLinkStaticStatisticsParameters Chain link statistics parameters.
+   * @throws ChainLinkStaticStatisticsFileManagerException Encapsulates exceptions of the class.
    */
   public synchronized void update(ChainLinkStatisticKey chainLinkStatisticKey,
       ChainLinkStaticStatisticsParameters chainLinkStaticStatisticsParameters)
@@ -108,9 +111,10 @@ public class ChainLinkStaticStatisticsFileManager {
   }
 
   /**
-   * Todo.
-   * @return Todo.
-   * @throws ChainLinkStaticStatisticsFileManagerException Todo.
+   * Reads chain link statistics.
+   *
+   * @return chain link statistics.
+   * @throws ChainLinkStaticStatisticsFileManagerException Encapsulates exceptions of the class.
    */
   public synchronized ChainLinkStaticStatistics read()
       throws ChainLinkStaticStatisticsFileManagerException {

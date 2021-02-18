@@ -1,9 +1,12 @@
 <com:cts xmlns:com="http://schema.samply.de/config/CtsInfo">
   <com:mainzellisteApiKey></com:mainzellisteApiKey>
-  <com:mainzellisteUrl>https://test.verbis.dkfz.de/mpl</com:mainzellisteUrl>
-  <com:password></com:password>
-  <com:profile>http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert
+  <com:mainzellisteUrl></com:mainzellisteUrl>
+  <com:profile>
   </com:profile>
-  <com:url>https://cds.cds-test.staging.healex.systems/trial/nNGMv09c/import-fb</com:url>
-  <com:username>admin</com:username>
+  <com:url></com:url>
+  <com:username></com:username>
+  <com:password></com:password>
+  <com:searchIdType></com:searchIdType>
+  <com:patientListApiKey></com:patientListApiKey>
+  <com:patientListUrl></com:patientListUrl>
 </com:cts>

@@ -22,9 +22,8 @@ import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
 
 /**
- * An implementation of a ServletContextListener.
- * On startup, sets message resolvers, checks if the database has to be upgraded. Before shutdown,
- * deregister drivers.
+ * An implementation of a ServletContextListener. On startup, sets message resolvers, checks if the
+ * database has to be upgraded. Before shutdown, deregister drivers.
  */
 @WebListener
 public class StartupListener implements ServletContextListener {

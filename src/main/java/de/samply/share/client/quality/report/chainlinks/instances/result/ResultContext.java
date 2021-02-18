@@ -5,19 +5,19 @@ import de.samply.share.model.ccp.QueryResult;
 
 public interface ResultContext {
 
-  public String getLocationUrl();
+  String getLocationUrl();
 
-  public int getMaxPages();
+  int getMaxPages();
 
-  public int getPage();
+  int getPage();
 
-  public void incrPage();
+  void incrPage();
 
-  public QueryResult getQueryResult();
+  QueryResult getQueryResult();
 
-  public void setQueryResult(QueryResult queryResult);
+  void setQueryResult(QueryResult queryResult);
 
-  public boolean areResultsCompleted();
+  boolean areResultsCompleted();
 
 
 }

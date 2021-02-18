@@ -6,11 +6,12 @@ import java.security.SecureRandom;
 public class QualityFileIdGeneratorImpl implements QualityFileIdGenerator {
 
 
-  private SecureRandom random = new SecureRandom();
+  private final SecureRandom random = new SecureRandom();
 
   /**
-   * Todo.
-   * @param args Todo.
+   * Test class that generates a file id.
+   *
+   * @param args no arguments.
    */
   public static void main(String[] args) {
 

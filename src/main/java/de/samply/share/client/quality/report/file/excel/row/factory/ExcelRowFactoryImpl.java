@@ -14,7 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelRowFactoryImpl implements ExcelRowFactory {
 
-  private StringExcelCellElement emptyElement = new StringExcelCellElement("");
+  private final StringExcelCellElement emptyElement = new StringExcelCellElement("");
 
 
   @Override

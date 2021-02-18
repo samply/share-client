@@ -12,9 +12,10 @@ public class DoubleExcelCellElement extends ExcelCellElement<Double> {
   }
 
   /**
-   * Todo.
-   * @param element Todo.
-   * @param numberOfDecimals Todo.
+   * Represents an excel cell of type double.
+   *
+   * @param element          Double element to be written in the excel cell.
+   * @param numberOfDecimals Number of decimals to be shown in excel cell.
    */
   public DoubleExcelCellElement(Double element, int numberOfDecimals) {
 

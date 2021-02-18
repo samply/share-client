@@ -64,6 +64,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Get the Id.
+   *
    * @return the id
    */
   public int getId() {
@@ -72,6 +73,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Set the Id.
+   *
    * @param id the id to set
    */
   public void setId(int id) {
@@ -80,6 +82,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Get the name.
+   *
    * @return the name
    */
   public String getName() {
@@ -88,6 +91,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Set the name.
+   *
    * @param name the name to set
    */
   public void setName(String name) {
@@ -96,6 +100,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Get the search for.
+   *
    * @return the searchFor
    */
   public String getSearchFor() {
@@ -104,6 +109,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Set the search for.
+   *
    * @param searchFor the searchFor to set
    */
   public void setSearchFor(String searchFor) {
@@ -112,6 +118,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Get the received at.
+   *
    * @return the receivedAt
    */
   public String getReceivedAt() {
@@ -120,6 +127,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Set the received at.
+   *
    * @param receivedAt the receivedAt to set
    */
   public void setReceivedAt(String receivedAt) {
@@ -136,6 +144,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Get the found.
+   *
    * @return the found
    */
   public String getFound() {
@@ -144,6 +153,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Set the found.
+   *
    * @param found the found to set
    */
   public void setFound(String found) {
@@ -152,6 +162,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Get the asOf.
+   *
    * @return the asOf
    */
   public String getAsOf() {
@@ -160,6 +171,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Set the asOf.
+   *
    * @param asOf the asOf to set
    */
   public void setAsOf(String asOf) {
@@ -168,6 +180,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Get the broker name.
+   *
    * @return the brokerName
    */
   public String getBrokerName() {
@@ -176,6 +189,7 @@ public class InquiryLine implements Serializable {
 
   /**
    * Set the broker name.
+   *
    * @param brokerName the brokerName to set
    */
   public void setBrokerName(String brokerName) {

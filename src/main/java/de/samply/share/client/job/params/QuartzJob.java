@@ -18,14 +18,15 @@ public class QuartzJob {
 
   /**
    * Create a Quartz job with the given settings.
-   * @param jobName name of the job
-   * @param jobGroup name of the group
-   * @param started the starting time
-   * @param nextFireTime next time when the job will be executing
+   *
+   * @param jobName          name of the job
+   * @param jobGroup         name of the group
+   * @param started          the starting time
+   * @param nextFireTime     next time when the job will be executing
    * @param previousFireTime last time executed
-   * @param cronExpression the cron expression
-   * @param paused if the job is paused
-   * @param description description of the job
+   * @param cronExpression   the cron expression
+   * @param paused           if the job is paused
+   * @param description      description of the job
    */
   public QuartzJob(String jobName, String jobGroup, Date started, Date nextFireTime,
       Date previousFireTime, String cronExpression, boolean paused, String description) {
@@ -41,13 +42,14 @@ public class QuartzJob {
 
   /**
    * Create a Quartz job with the given settings.
-   * @param jobKey jobKey with the name and the group of the job
-   * @param started the starting time
-   * @param nextFireTime next time when the job will be executing
+   *
+   * @param jobKey           jobKey with the name and the group of the job
+   * @param started          the starting time
+   * @param nextFireTime     next time when the job will be executing
    * @param previousFireTime last time executed
-   * @param cronExpression the cron expression
-   * @param paused if the job is paused
-   * @param description description of the job
+   * @param cronExpression   the cron expression
+   * @param paused           if the job is paused
+   * @param description      description of the job
    */
   public QuartzJob(String jobKey, Date started, Date nextFireTime, Date previousFireTime,
       String cronExpression, boolean paused, String description) {

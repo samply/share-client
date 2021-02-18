@@ -12,7 +12,7 @@ public class TokenUtil {
 
   private static final Logger logger = LogManager.getLogger(TokenUtil.class);
 
-  private static TokenDao tokenDao;
+  private static final TokenDao tokenDao;
 
   static {
     tokenDao = new TokenDao(ResourceManager.getConfiguration());

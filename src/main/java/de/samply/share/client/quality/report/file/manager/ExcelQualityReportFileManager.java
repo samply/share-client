@@ -16,12 +16,13 @@ public class ExcelQualityReportFileManager<I extends ExcelPattern> extends
     QualityReportFileManagerImpl {
 
   protected static final Logger logger = LogManager.getLogger(ExcelQualityReportFileManager.class);
-  private ExcelWorkbookFactory excelWorkbookFactory;
+  private final ExcelWorkbookFactory excelWorkbookFactory;
 
   /**
-   * Todo.
-   * @param excelPattern Todo.
-   * @param idPathManager Todo.
+   * Creates excel quality report file manager.
+   *
+   * @param excelPattern  excel pattern.
+   * @param idPathManager id path manager.
    */
   public ExcelQualityReportFileManager(I excelPattern, IdPathManagerImpl<?, I, ?> idPathManager) {
 

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.security.KeyFactory;
@@ -58,7 +59,7 @@ public final class Utils {
    */
   private Utils() {
   }
-
+  
   /**
    * Prepare the credentials provider by getting all credentials from the database and adding them
    * accordingly.
@@ -101,7 +102,7 @@ public final class Utils {
         authSchemeName = AuthSchemes.KERBEROS;
         logger.fatal("tried to add kerberos credentials. Currently unsupported.");
         return;
-        //            apacheCredentials = new KerberosCredentials(gssCredential);
+      //            apacheCredentials = new KerberosCredentials(gssCredential);
       //            break;
       case AS_NTLM:
         authSchemeName = AuthSchemes.NTLM;
@@ -112,7 +113,7 @@ public final class Utils {
         authSchemeName = AuthSchemes.SPNEGO;
         logger.fatal("tried to add kerberos credentials. Currently unsupported.");
         return;
-        //          apacheCredentials = new KerberosCredentials(gssCredential);
+      //          apacheCredentials = new KerberosCredentials(gssCredential);
       //            break;
       case AS_BASIC:
         authSchemeName = AuthSchemes.BASIC;
@@ -226,11 +227,12 @@ public final class Utils {
       credentialsProvider.setCredentials(authScope, apacheCredentials);
     }
   }
-
+  
   /**
    * Get the composite URL (base url + path) for the central MDS database.
    *
    * @return the URL for the central MDS database
+   * @throws MalformedURLException the malformed url exception
    */
   public static URL getCentralMdsDbUrl() throws MalformedURLException {
     String baseUrlString = ConfigurationUtil
@@ -248,12 +250,21 @@ public final class Utils {
    * @return the byte array
    */
   private static byte[] readFileBytes(String filename) throws IOException {
-    File file = FileFinderUtil
-        .findFile(ProjectInfo.INSTANCE.getProjectName().toLowerCase() + filename,
-            ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
-            System.getProperty("catalina.base") + File.separator + "conf",
-            getServletContext().getRealPath("/WEB-INF"));
+    String servletContextRealPath = getServletContextRealPath();
+
+    File file = FileFinderUtil.findFile(ProjectInfo.INSTANCE.getProjectName().toLowerCase()
+            + filename, ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
+        System.getProperty("catalina.base") + File.separator + "conf", servletContextRealPath);
     return Files.readAllBytes(file.toPath());
+  }
+
+  private static String getServletContextRealPath() {
+    try {
+      return getServletContext().getRealPath("/WEB-INF");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   /**
@@ -268,7 +279,7 @@ public final class Utils {
     KeyFactory keyFactory = KeyFactory.getInstance("RSA");
     return keyFactory.generatePublic(publicSpec);
   }
-
+  
   /**
    * Generates a random export id base64 encoded, url safe, encrypted with mds-pubkey.
    *
@@ -282,7 +293,7 @@ public final class Utils {
         mdsDbPubKey = Utils.readPublicKey(filename);
       }
       String randomizedId = prefix + UUID.randomUUID().toString();
-      byte[] message = randomizedId.getBytes("UTF8");
+      byte[] message = randomizedId.getBytes(StandardCharsets.UTF_8);
       byte[] secret = SamplyShareUtils.encrypt(mdsDbPubKey, message);
 
       return BaseEncoding.base64Url().encode(secret);
@@ -291,7 +302,17 @@ public final class Utils {
       return null;
     }
   }
-
+  
+  /**
+   * Gets random exportid.
+   *
+   * @param filename the filename
+   * @return the random exportid
+   */
+  public static String getRandomExportid(String filename) {
+    return getRandomExportid("", filename);
+  }
+  
   /**
    * Convert date for communication with the central mds db.
    *
@@ -303,30 +324,32 @@ public final class Utils {
         Locale.ENGLISH);
     return simpleDateFormat.format(date);
   }
-
+  
   /**
-   * Todo.
-   * @param date Todo.
-   * @return Todo.
+   * Convert date to string.
+   *
+   * @param date date.
+   * @return date in string format.
    */
   public static String convertDate2(Date date) {
     DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssXXX",
         Locale.ENGLISH);
     return simpleDateFormat.format(date);
   }
-
+  
   /**
-   * Todo.
-   * @param date Todo.
-   * @return Todo.
-   * @throws ParseException Todo.
+   * Convert string to date.
+   *
+   * @param date date in string format.
+   * @return date.
+   * @throws ParseException Parse Exception.
    */
   public static Date convertDate2(String date) throws ParseException {
     DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssXXX",
         Locale.ENGLISH);
     return simpleDateFormat.parse(date);
   }
-
+  
   /**
    * Convert date for communication with the central mds db.
    *
@@ -338,25 +361,27 @@ public final class Utils {
         Locale.ENGLISH);
     return simpleDateFormat.format(date);
   }
-
+  
   /**
-   * Todo.
-   * @param date Todo.
-   * @return Todo.
-   * @throws ParseException Todo.
+   * Convert date in string format into date.
+   *
+   * @param date date in string format.
+   * @return date.
+   * @throws ParseException Parse exception.
    */
   public static Date convertDate3(String date) throws ParseException {
     DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX",
         Locale.ENGLISH);
     return simpleDateFormat.parse(date);
   }
-
-
+  
+  
   /**
-   * Todo.
-   * @param first Todo.
-   * @param last Todo.
-   * @return Todo.
+   * Get difference of years between two dates.
+   *
+   * @param first first date.
+   * @param last  last date.
+   * @return difference of years between two dates.
    */
   public static int getDiffYears(Date first, Date last) {
     Calendar a = getCalendar(first);
@@ -364,29 +389,31 @@ public final class Utils {
     int diff = b.get(Calendar.YEAR) - a.get(Calendar.YEAR);
     if (a.get(Calendar.MONTH) > b.get(Calendar.MONTH)
         || (a.get(Calendar.MONTH) == b.get(Calendar.MONTH) && a.get(Calendar.DATE) > b
-            .get(Calendar.DATE))) {
+        .get(Calendar.DATE))) {
       diff--;
     }
     return diff;
   }
-
+  
   /**
-   * Todo.
-   * @param date Todo.
-   * @return Todo.
+   * Convert date to calender.
+   *
+   * @param date date.
+   * @return calender.
    */
   public static Calendar getCalendar(Date date) {
     Calendar cal = Calendar.getInstance(Locale.GERMAN);
     cal.setTime(date);
     return cal;
   }
-
+  
   /**
    * Save a file part to a temporary file.
    *
    * @param prefix the prefix of the temp file
    * @param part   the file part to save
    * @return the resulting temp file
+   * @throws IOException the io exception
    */
   public static File savePartToTmpFile(String prefix, Part part) throws IOException {
     File file = Files.createTempFile(prefix, getFileName(part)).toFile();
@@ -395,7 +422,7 @@ public final class Utils {
     }
     return file;
   }
-
+  
   /**
    * Gets the file name of a file part.
    *
@@ -415,11 +442,12 @@ public final class Utils {
     }
     return null;
   }
-
+  
   /**
-   * Todo.
-   * @param inquiryDetails Todo.
-   * @param inquiryStatusType Todo.
+   * Set status of inquiry.
+   *
+   * @param inquiryDetails    inquiry details.
+   * @param inquiryStatusType inquiry status type.
    */
   public static void setStatus(InquiryDetails inquiryDetails, InquiryStatusType inquiryStatusType) {
 
@@ -429,11 +457,12 @@ public final class Utils {
             .getStatus());
 
   }
-
+  
   /**
-   * Todo.
-   * @param number Todo.
-   * @return Todo.
+   * Convert number as string to long.
+   *
+   * @param number number.
+   * @return number as long.
    */
   public static Long getAsLong(String number) {
 
@@ -444,11 +473,12 @@ public final class Utils {
     }
 
   }
-
+  
   /**
-   * Todo.
-   * @param booleanElement Todo.
-   * @return Todo.
+   * Convert boolean as string in Boolean.
+   *
+   * @param booleanElement boolean as string.
+   * @return boolean.
    */
   public static Boolean getAsBoolean(String booleanElement) {
 
@@ -458,12 +488,13 @@ public final class Utils {
       return null;
     }
   }
-
+  
   /**
-   * Todo.
-   * @param basicUrl Todo.
-   * @param extension Todo.
-   * @return Todo.
+   * Extend basic url with extension, adding "/" if necessary.
+   *
+   * @param basicUrl  basic url to be extended.
+   * @param extension extension.
+   * @return extended url.
    */
   public static String extendUrl(String basicUrl, String extension) {
 

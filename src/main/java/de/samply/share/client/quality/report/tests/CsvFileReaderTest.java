@@ -31,10 +31,10 @@ public class CsvFileReaderTest {
 
   private static final String FILE_ID_SUFFIX = "_2";
 
-  private ModelSearcher modelSearcher;
+  private final ModelSearcher modelSearcher;
 
-  private QualityReportFileManager qualityFileManager1;
-  private QualityReportFileManager qualityFileManager2;
+  private final QualityReportFileManager qualityFileManager1;
+  private final QualityReportFileManager qualityFileManager2;
 
   {
     Model model = getModel();
@@ -79,10 +79,11 @@ public class CsvFileReaderTest {
 
 
   /**
-   * Todo.
-   * @param fileId Todo.
-   * @return Todo.
-   * @throws QualityReportFileManagerException Todo.
+   * Test of csv file reader.
+   *
+   * @param fileId file id.
+   * @return new file id.
+   * @throws QualityReportFileManagerException quality report file manager exception.
    */
   @GET
   public String myTest(@QueryParam("fileId") String fileId)

@@ -9,8 +9,8 @@ import de.samply.common.mailing.OutgoingEmail;
  */
 public class MailSenderThread implements Runnable {
 
-  private MailSending mailSending;
-  private OutgoingEmail email;
+  private final MailSending mailSending;
+  private final OutgoingEmail email;
 
   public MailSenderThread(MailSending mailSending, OutgoingEmail email) {
     this.mailSending = mailSending;

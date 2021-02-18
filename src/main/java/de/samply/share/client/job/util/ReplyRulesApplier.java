@@ -26,6 +26,7 @@ public class ReplyRulesApplier {
 
   /**
    * Check the replyRules for the InquiryDetails.
+   *
    * @param inquiryDetails the InquiryDetails
    */
   public void processReplyRules(InquiryDetails inquiryDetails) {

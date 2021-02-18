@@ -7,7 +7,7 @@ import de.samply.share.common.utils.MdrIdDatatype;
 
 public abstract class QualityResultsValidValueByTypeFilter extends QualityResultsValidValueFilter {
 
-  private ModelSearcher modelSearcher;
+  private final ModelSearcher modelSearcher;
 
   public QualityResultsValidValueByTypeFilter(QualityResults qualityResults,
       ModelSearcher modelSearcher) {

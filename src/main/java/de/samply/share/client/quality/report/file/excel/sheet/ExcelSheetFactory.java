@@ -5,7 +5,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public interface ExcelSheetFactory {
 
-  public XSSFWorkbook addSheet(XSSFWorkbook workbook, String sheetTitle,
+  XSSFWorkbook addSheet(XSSFWorkbook workbook, String sheetTitle,
       ExcelRowContext excelRowContext) throws ExcelSheetFactoryException;
 
 }

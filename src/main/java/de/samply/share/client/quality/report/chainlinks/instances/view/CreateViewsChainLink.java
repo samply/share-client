@@ -10,13 +10,14 @@ import java.util.List;
 
 public class CreateViewsChainLink<I extends ChainLinkItem & ViewsContext> extends ChainLink<I> {
 
-  private Model model;
-  private ViewsCreator viewsCreator;
+  private final Model model;
+  private final ViewsCreator viewsCreator;
 
   /**
-   * Todo.
-   * @param model Todo.
-   * @param viewsCreator Todo.
+   * Chain Link taht creates view for query request to the ldm (local data management system).
+   *
+   * @param model        model that consists of a list of mrd ids and validatios.
+   * @param viewsCreator creates a view for ldm query result.
    */
   public CreateViewsChainLink(Model model, ViewsCreator viewsCreator) {
 

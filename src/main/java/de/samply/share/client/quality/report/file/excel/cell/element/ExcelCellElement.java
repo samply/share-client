@@ -16,9 +16,10 @@ public abstract class ExcelCellElement<T> {
   protected abstract Cell setCellValue(Cell cell);
 
   /**
-   * Todo.
-   * @param row Todo.
-   * @return Todo.
+   * Add row of excel cell.
+   *
+   * @param row row of excel cell.
+   * @return row with this cell added.
    */
   public Row addAsCell(Row row) {
 

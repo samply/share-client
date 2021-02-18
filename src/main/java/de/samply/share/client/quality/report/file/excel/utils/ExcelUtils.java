@@ -8,9 +8,10 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 public class ExcelUtils {
 
   /**
-   * Todo.
-   * @param sheet Todo.
-   * @return Todo.
+   * Get range of "all" sheet.
+   *
+   * @param sheet excel sheet.
+   * @return Excel cell range address.
    */
   public static CellRangeAddress getAllSheetRange(XSSFSheet sheet) {
 

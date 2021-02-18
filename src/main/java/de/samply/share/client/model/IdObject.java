@@ -1,5 +1,6 @@
 package de.samply.share.client.model;
 
+import java.util.Objects;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
@@ -29,4 +30,23 @@ public class IdObject {
   public String toString() {
     return "IdObject [idType=" + idType + ", idString=" + idString + "]";
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    IdObject idObject = (IdObject) o;
+    return idType.equals(idObject.idType)
+        && idString.equals(idObject.idString);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(idType, idString);
+  }
+
 }

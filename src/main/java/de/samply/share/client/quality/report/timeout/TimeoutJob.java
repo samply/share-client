@@ -7,17 +7,18 @@ import org.apache.logging.log4j.Logger;
 
 public class TimeoutJob implements Runnable, ChainLinkFinalizerListener {
 
-  private ChainLinkFinalizer chainLinkFinalizer;
-  private long timeout;
-  private Logger logger = LogManager.getLogger(TimeoutJob.class);
+  private final ChainLinkFinalizer chainLinkFinalizer;
+  private final long timeout;
+  private final Logger logger = LogManager.getLogger(TimeoutJob.class);
   private boolean isTimeoutReached = false;
   private boolean isChainAlreadyFinished = false;
 
 
   /**
-   * Todo.
-   * @param chainLinkFinalizer Todo.
-   * @param timeout Todo.
+   * Constructs timeout job.
+   *
+   * @param chainLinkFinalizer chain link finalizer.
+   * @param timeout            timeout.
    */
   public TimeoutJob(ChainLinkFinalizer chainLinkFinalizer, long timeout) {
 
@@ -78,7 +79,7 @@ public class TimeoutJob implements Runnable, ChainLinkFinalizerListener {
   }
 
   /**
-   * Todo.
+   * Set if chain is already finished.
    */
   public synchronized void setChainIsAlreadyFinished() {
 

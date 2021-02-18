@@ -4,10 +4,10 @@ import de.samply.share.common.utils.MdrIdDatatype;
 
 public interface GeneralRehearsalStatistics {
 
-  public boolean getGeneralRehearsalAContainedInQR(MdrIdDatatype mdrId);
+  boolean getGeneralRehearsalAContainedInQR(MdrIdDatatype mdrId);
 
-  public boolean getGeneralRehearsalBLowMismatch(MdrIdDatatype mdrId);
+  boolean getGeneralRehearsalBLowMismatch(MdrIdDatatype mdrId);
 
-  public boolean getGeneralRehearsalAAndB(MdrIdDatatype mdrId);
+  boolean getGeneralRehearsalAAndB(MdrIdDatatype mdrId);
 
 }

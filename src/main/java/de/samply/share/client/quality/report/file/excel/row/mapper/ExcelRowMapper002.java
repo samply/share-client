@@ -13,19 +13,20 @@ import de.samply.share.common.utils.MdrIdDatatype;
 public class ExcelRowMapper002 {
 
 
-  private ExcelRowMapperUtils excelRowMapperUtils;
-  private CentraxxMapper centraXxMapper;
-  private DktkIdMdrIdConverter dktkIdManager;
-  private FirstRowCellReferenceFactoryForOneSheet cellReferenceFactory;
-  private MdrMappedElements mdrMappedElements;
+  private final ExcelRowMapperUtils excelRowMapperUtils;
+  private final CentraxxMapper centraXxMapper;
+  private final DktkIdMdrIdConverter dktkIdManager;
+  private final FirstRowCellReferenceFactoryForOneSheet cellReferenceFactory;
+  private final MdrMappedElements mdrMappedElements;
 
   /**
-   * Todo.
-   * @param centraXxMapper Todo.
-   * @param dktkIdManager Todo.
-   * @param cellReferenceFactory Todo.
-   * @param mdrMappedElements Todo.
-   * @param excelRowMapperUtils Todo.
+   * Constructs Excel row mapper.
+   *
+   * @param centraXxMapper       map mdr data element id - centraxx information.
+   * @param dktkIdManager        map mdr data element id - mdr slot DKTK-ID.
+   * @param cellReferenceFactory factory that creates cell references.
+   * @param mdrMappedElements    map mdr data element id - centraxx data elements.
+   * @param excelRowMapperUtils  utils for excel row mapper.
    */
   public ExcelRowMapper002(CentraxxMapper centraXxMapper, DktkIdMdrIdConverter dktkIdManager,
       FirstRowCellReferenceFactoryForOneSheet cellReferenceFactory,
@@ -40,10 +41,11 @@ public class ExcelRowMapper002 {
   }
 
   /**
-   * Todo.
-   * @param excelRowParameters Todo.
-   * @return Todo.
-   * @throws ExcelRowMapperException Todo.
+   * Constructs excel row element.
+   *
+   * @param excelRowParameters Excel row parameters.
+   * @return Excel row elements.
+   * @throws ExcelRowMapperException Encapsulates exceptions of the class.
    */
   public ExcelRowElements002 createExcelRowElements(ExcelRowParameters002 excelRowParameters)
       throws ExcelRowMapperException {

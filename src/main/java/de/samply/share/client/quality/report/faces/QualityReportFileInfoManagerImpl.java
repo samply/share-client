@@ -16,8 +16,8 @@ import org.apache.commons.io.FilenameUtils;
 
 public class QualityReportFileInfoManagerImpl implements QualityReportFileInfoManager {
 
-  private QualityReportMetadataFileManager qualityReportMetadataFileManager;
-  private IdPathManager idPathManager;
+  private final QualityReportMetadataFileManager qualityReportMetadataFileManager;
+  private final IdPathManager idPathManager;
 
   public QualityReportFileInfoManagerImpl(
       QualityReportMetadataFileManager qualityReportMetadataFileManager,

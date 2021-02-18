@@ -20,7 +20,7 @@ public class InquiryDetailsUtil {
 
   private static final Logger logger = LogManager.getLogger(InquiryDetailsUtil.class);
 
-  private static InquiryDetailsDao inquiryDetailsDao;
+  private static final InquiryDetailsDao inquiryDetailsDao;
 
   static {
     inquiryDetailsDao = new InquiryDetailsDao(ResourceManager.getConfiguration());
@@ -148,6 +148,7 @@ public class InquiryDetailsUtil {
 
   /**
    * Get the last scheduled inquiry.
+   *
    * @return the inquiryDetails of the inquiry
    */
   public static InquiryDetails getLastScheduledInquiry() {

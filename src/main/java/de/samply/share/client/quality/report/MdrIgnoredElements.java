@@ -8,8 +8,8 @@ import java.util.Set;
 public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
 
 
-  private Set<String> stringMdrIds = new HashSet<>();
-  private Set<MdrIdDatatype> mdrIds = new HashSet<>();
+  private final Set<String> stringMdrIds = new HashSet<>();
+  private final Set<MdrIdDatatype> mdrIds = new HashSet<>();
 
   @Override
   public Iterator<MdrIdDatatype> iterator() {
@@ -17,8 +17,9 @@ public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
   }
 
   /**
-   * Todo.
-   * @param mdrId Todo.
+   * Returns a list of the mdr ids to be ignored.
+   *
+   * @param mdrId List of mrd ids to be ignored.
    */
   public void add(MdrIdDatatype mdrId) {
 
@@ -27,9 +28,10 @@ public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
   }
 
   /**
-   * Todo.
-   * @param mdrId Todo.
-   * @return Todo.
+   * Checks if an mdr id should be ignored.
+   *
+   * @param mdrId Mdr Id to be checked .
+   * @return Check.
    */
   public boolean isIgnored(MdrIdDatatype mdrId) {
 
@@ -38,9 +40,10 @@ public class MdrIgnoredElements implements Iterable<MdrIdDatatype> {
   }
 
   /**
-   * Todo.
-   * @param mdrId Todo.
-   * @return Todo.
+   * Returns key for the latest centraxx version of an mdr id.
+   *
+   * @param mdrId mdr id in question.
+   * @return Key for the latest centraxx version of an mdr id.
    */
   public String getKey(MdrIdDatatype mdrId) {
 

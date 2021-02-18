@@ -16,10 +16,11 @@ import javax.ws.rs.QueryParam;
 public class MetadataTest {
 
   /**
-   * Todo.
-   * @param fileId Todo.
-   * @return Todo.
-   * @throws QualityReportFileManagerException Todo.
+   * Tests readAll of qualityReportMetadataFileManager.
+   *
+   * @param fileId file id.
+   * @return Message identifying the test.
+   * @throws QualityReportFileManagerException Quality Report File Manager Exception.
    */
   @GET
   public String myTest(@QueryParam("fileId") String fileId)

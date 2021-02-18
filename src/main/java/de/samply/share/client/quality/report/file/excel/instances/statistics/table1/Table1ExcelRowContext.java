@@ -21,8 +21,8 @@ public class Table1ExcelRowContext implements ExcelRowContext {
   private static final String
       PERCENTAGE_OF_NOT_MAPPED_DATA_ELEMENTS_OUT_OF_ALL_DATA_ELEMENTS = "Nicht vorhanden";
 
-  private Table1ExcelRowMapper excelRowMapper = new Table1ExcelRowMapper();
-  private List<ExcelRowElements> excelRowElementsList = new ArrayList<>();
+  private final Table1ExcelRowMapper excelRowMapper = new Table1ExcelRowMapper();
+  private final List<ExcelRowElements> excelRowElementsList = new ArrayList<>();
 
 
   public Table1ExcelRowContext(QualityResultsStatistics qualityResultsStatistics) {
@@ -40,14 +40,14 @@ public class Table1ExcelRowContext implements ExcelRowContext {
 
     double percentageOfNotCompletelyMismatchingDataelementsOutOfAllDataelements =
         qualityResultsStatistics
-        .getPercentageOf_NotCompletelyMismatchingDataelements_outOf_AllDataelements();
+            .getPercentageOf_NotCompletelyMismatchingDataelements_outOf_AllDataelements();
     ExcelRowElements excelRowElements2 = excelRowMapper.createExcelRowElements(
         PERCENTAGE_OF_NOT_COMPLETELY_MISMATCHING_DATA_ELEMENTS_OUT_OF_ALL_DATA_ELEMENTS,
         percentageOfNotCompletelyMismatchingDataelementsOutOfAllDataelements);
 
     double percentageOfCompletelyMismatchingDataelementsOutOfAllDataelements =
         qualityResultsStatistics
-        .getPercentageOf_CompletelyMismatchingDataelements_outOf_AllDataelements();
+            .getPercentageOf_CompletelyMismatchingDataelements_outOf_AllDataelements();
     ExcelRowElements excelRowElements3 = excelRowMapper.createExcelRowElements(
         PERCENTAGE_OF_COMPLETELY_MISMATCHING_DATA_ELEMENTS_OUT_OF_ALL_DATA_ELEMENTS,
         percentageOfCompletelyMismatchingDataelementsOutOfAllDataelements);

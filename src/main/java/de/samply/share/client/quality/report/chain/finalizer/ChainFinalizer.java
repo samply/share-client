@@ -4,12 +4,12 @@ import de.samply.share.client.quality.report.chainlinks.finalizer.ChainLinkFinal
 
 public interface ChainFinalizer {
 
-  public void finalizeChain();
+  void finalizeChain();
 
-  public ChainLinkFinalizer getChainLinkFinalizer();
+  ChainLinkFinalizer getChainLinkFinalizer();
 
-  public void addTimeout(long timeout);
+  void addTimeout(long timeout);
 
-  public boolean isTimeoutReached();
+  boolean isTimeoutReached();
 
 }

@@ -9,6 +9,7 @@ import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.model.db.tables.pojos.InquiryResultStats;
 import de.samply.share.client.model.graphdata.AgeDistribution;
 import de.samply.share.client.model.graphdata.GenderDistribution;
+import de.samply.share.client.quality.report.logger.PercentageLogger;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.client.util.db.InquiryResultStatsUtil;
@@ -30,16 +31,15 @@ import org.quartz.JobKey;
 
 /**
  * This job reads the result set of a given inquiry and extracts basic statistical information from
- * it.
- * Currently, only age and gender distribution are counted and written to the database. This enables
- * displaying the graphs on the show_inquiry page without additional delay that would be caused by
- * having to read all result files again.
+ * it. Currently, only age and gender distribution are counted and written to the database. This
+ * enables displaying the graphs on the show_inquiry page without additional delay that would be
+ * caused by having to read all result files again.
  */
 public class GenerateInquiryResultStatsJob implements Job {
 
   private static final Logger logger = LogManager.getLogger(GenerateInquiryResultStatsJob.class);
 
-  private LdmConnector ldmConnector;
+  private final LdmConnector ldmConnector;
   private InquiryResult inquiryResult;
 
   public GenerateInquiryResultStatsJob() {
@@ -86,6 +86,10 @@ public class GenerateInquiryResultStatsJob implements Job {
     switch (ApplicationUtils.getConnectorType()) {
       case DKTK:
         QueryResult ccpQueryResult = (QueryResult) queryResult;
+        PercentageLogger percentageLogger =
+            new PercentageLogger(logger, ccpQueryResult.getPatient().size(),
+                "generating statistics...");
+
         for (Patient patient : ccpQueryResult.getPatient()) {
           de.samply.share.model.common.Patient patientCommon =
               new de.samply.share.model.common.Patient();
@@ -96,9 +100,10 @@ public class GenerateInquiryResultStatsJob implements Job {
           }
           ageDistribution.incrementCountForAge(getAge(patientCommon,
               "urn:dktk:dataelement:28:"));
-          genderDistribution
-              .increaseCountForGender(getGender(patientCommon,
-                  "urn:dktk:dataelement:1:"));
+          genderDistribution.increaseCountForGender(getGender(patientCommon,
+              "urn:dktk:dataelement:1:"));
+
+          percentageLogger.incrementCounter();
         }
         break;
 

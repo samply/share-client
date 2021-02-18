@@ -20,14 +20,14 @@ public class QualityReportModelReaderImpl implements ModelReader {
 
   private static final String DATAELEMENTGROUP = "dataelementgroup";
 
-  private String[] mdrGroups;
-  private String[] additionalMdrElements;
+  private final String[] mdrGroups;
+  private final String[] additionalMdrElements;
 
-  private String languageCode;
+  private final String languageCode;
 
 
   /**
-   * Todo.
+   * Constructs a quality report model reader.
    */
   public QualityReportModelReaderImpl() {
 

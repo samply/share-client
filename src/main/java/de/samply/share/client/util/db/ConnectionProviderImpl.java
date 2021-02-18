@@ -5,16 +5,15 @@ import java.sql.SQLException;
 import org.jooq.exception.DataAccessException;
 
 /**
- * Implementation of a Jooq ConnectionProvider.
- * Uses the ResourceManager to get and release connections.
+ * Implementation of a Jooq ConnectionProvider. Uses the ResourceManager to get and release
+ * connections.
  */
 public class ConnectionProviderImpl implements org.jooq.ConnectionProvider {
 
   /**
-   * Acquire a connection from the connection lifecycle handler.
-   * This method is called by jOOQ exactly once per execution lifecycle, i.e. per {@link
-   * org.jooq.ExecuteContext}. Implementations may freely chose, whether subsequent calls to this
-   * method:
+   * Acquire a connection from the connection lifecycle handler. This method is called by jOOQ
+   * exactly once per execution lifecycle, i.e. per {@link org.jooq.ExecuteContext}. Implementations
+   * may freely chose, whether subsequent calls to this method:
    * <ul>
    * <li>return the same connection instance</li>
    * <li>return the same connection instance for the same thread</li>
@@ -38,8 +37,8 @@ public class ConnectionProviderImpl implements org.jooq.ConnectionProvider {
   }
 
   /**
-   * Release a connection to the connection lifecycle handler.
-   * jOOQ will guarantee that every acquired connection is released exactly once.
+   * Release a connection to the connection lifecycle handler. jOOQ will guarantee that every
+   * acquired connection is released exactly once.
    *
    * @param connection A connection that was previously obtained from {@link #acquire()}. This is
    *                   never <code>null</code>.

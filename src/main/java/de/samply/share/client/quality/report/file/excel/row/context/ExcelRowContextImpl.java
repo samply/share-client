@@ -26,7 +26,7 @@ public abstract class ExcelRowContextImpl<ExcelRowParametersT> implements ExcelR
 
   protected class ExcelRowContextIterator implements Iterator<ExcelRowElements> {
 
-    private Iterator<ExcelRowParametersT> excelRowParametersIterator;
+    private final Iterator<ExcelRowParametersT> excelRowParametersIterator;
 
     public ExcelRowContextIterator(Iterator<ExcelRowParametersT> excelRowParametersIterator) {
       this.excelRowParametersIterator = excelRowParametersIterator;

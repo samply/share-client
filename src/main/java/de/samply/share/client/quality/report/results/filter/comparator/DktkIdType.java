@@ -6,8 +6,9 @@ public class DktkIdType implements Comparable {
   private Integer number;
 
   /**
-   * Todo.
-   * @param dktkId Todo.
+   * Constructs class to compare mdr slot DKTK-ID.
+   *
+   * @param dktkId mdr slot DKTK-ID.
    */
   public DktkIdType(String dktkId) {
 

@@ -22,10 +22,13 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+/**
+ * DirectorySyncJob.
+ */
 public class DirectorySyncJob implements Job {
 
   private static final Logger logger = LogManager.getLogger(DirectorySyncJob.class);
-  private FhirContext ctx = FhirContext.forR4();
+  private final FhirContext ctx = FhirContext.forR4();
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -57,7 +60,7 @@ public class DirectorySyncJob implements Job {
     }
     Credentials credentials = credentialsList.get(0);
     return DirectoryApi.createWithLogin(HttpClients.createDefault(),
-        ApplicationBean.getUrlsForDirectory().getDirecotryUrl(), credentials.getUsername(),
+        ApplicationBean.getUrlsForDirectory().getDirectoryUrl(), credentials.getUsername(),
         credentials.getPasscode());
   }
 

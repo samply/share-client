@@ -7,12 +7,13 @@ import java.util.List;
 
 public class PropertyUtils {
 
-  private static String[] possibleSeparators = {",", ";"};
+  private static final String[] possibleSeparators = {",", ";"};
 
   /**
-   * Todo.
-   * @param enumConfiguration Todo.
-   * @return Todo.
+   * Get list of properties for enum configuration.
+   *
+   * @param enumConfiguration enum configuration.
+   * @return array of strings with list of properties.
    */
   public static String[] getListOfProperties(EnumConfiguration enumConfiguration) {
 

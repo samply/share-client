@@ -15,10 +15,11 @@ public class QualityResultsAnalyzer {
 
 
   /**
-   * Todo.
-   * @param qualityResults Todo.
-   * @param queryResult Todo.
-   * @return Todo.
+   * Analyzes quality result and updates quality results with the new information.
+   *
+   * @param qualityResults Quality Results.
+   * @param queryResult    Quality Result.
+   * @return Quality Results updated.
    */
   public QualityResults analyze(QualityResults qualityResults, QueryResult queryResult) {
 

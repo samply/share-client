@@ -31,16 +31,17 @@ import javax.ws.rs.QueryParam;
 public class ExcelTest {
 
 
-  private ModelSearcher modelSearcher;
-  private QualityReportFileManager qualityFileManager;
-  private ExcelQualityReportFileManager excelQualityFileManager;
-  private MdrClient mdrClient;
-  private DktkIdMdrIdConverter dktkIdManager;
+  private final ModelSearcher modelSearcher;
+  private final QualityReportFileManager qualityFileManager;
+  private final ExcelQualityReportFileManager excelQualityFileManager;
+  private final MdrClient mdrClient;
+  private final DktkIdMdrIdConverter dktkIdManager;
 
 
   /**
-   * Todo.
-   * @throws CentraxxMapperException Todo.
+   * Construct Excel Test. It tests different classes for file management of the quality report.
+   *
+   * @throws CentraxxMapperException centraxx mapper exception.
    */
   public ExcelTest() throws CentraxxMapperException {
 
@@ -61,9 +62,10 @@ public class ExcelTest {
   }
 
   /**
-   * Todo.
-   * @param fileId Todo.
-   * @return Todo.
+   * Test "write file" of excel quality file manager .
+   *
+   * @param fileId file id.
+   * @return new file id.
    * @throws QualityReportFileManagerException Todo.
    */
   @GET

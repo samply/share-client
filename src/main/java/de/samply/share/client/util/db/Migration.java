@@ -5,8 +5,7 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 
 /**
- * Take care of database migration.
- * Uses flyway to upgrade/migrate database schemas.
+ * Take care of database migration. Uses flyway to upgrade/migrate database schemas.
  */
 public class Migration {
 

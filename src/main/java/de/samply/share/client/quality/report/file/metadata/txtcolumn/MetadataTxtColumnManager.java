@@ -5,9 +5,9 @@ import de.samply.share.client.quality.report.file.metadata.QualityReportMetadata
 
 public interface MetadataTxtColumnManager extends QualityReportFilePattern {
 
-  public String createColumn(QualityReportMetadata qualityReportMetadata);
+  String createColumn(QualityReportMetadata qualityReportMetadata);
 
-  public QualityReportMetadata parseValuesOfColumn(String column);
+  QualityReportMetadata parseValuesOfColumn(String column);
 
 
 }

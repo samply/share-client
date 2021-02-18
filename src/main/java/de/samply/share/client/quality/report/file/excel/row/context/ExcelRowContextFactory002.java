@@ -7,16 +7,17 @@ import de.samply.share.client.quality.report.results.statistics.QualityResultsSt
 
 public class ExcelRowContextFactory002 {
 
-  private ExcelRowMapper002 excelRowMapper;
+  private final ExcelRowMapper002 excelRowMapper;
 
   public ExcelRowContextFactory002(ExcelRowMapper002 excelRowMapper) {
     this.excelRowMapper = excelRowMapper;
   }
 
   /**
-   * Todo.
-   * @param qualityResults Todo.
-   * @return Todo.
+   * Creates excel row context.
+   *
+   * @param qualityResults quality results for the quality report.
+   * @return excel row context with information for the excel row.
    */
   public ExcelRowContext createExcelRowContext(QualityResults qualityResults) {
 
@@ -25,11 +26,12 @@ public class ExcelRowContextFactory002 {
   }
 
   /**
-   * Todo.
-   * @param qualityResults Todo.
-   * @param asmQualityResults Todo.
-   * @param qualityResultsStatistics Todo.
-   * @return Todo.
+   * Creates excel row context.
+   *
+   * @param qualityResults           quality results for the quality report.
+   * @param asmQualityResults        alphabetically sorted quality results.
+   * @param qualityResultsStatistics quality result statistics.
+   * @return excel row context with information for the excel row.
    */
   public ExcelRowContext createExcelRowContext(QualityResults qualityResults,
       AlphabeticallySortedMismatchedQualityResults asmQualityResults,

@@ -26,15 +26,15 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 
 /**
- * This listener will be called when an instance of the CheckInquiryStatusJob is done.
- * If the job will NOT fire again, and the status is still processing...set it to abandoned. If the
- * job was connected to an upload, also set the upload to abandoned.
+ * This listener will be called when an instance of the CheckInquiryStatusJob is done. If the job
+ * will NOT fire again, and the status is still processing...set it to abandoned. If the job was
+ * connected to an upload, also set the upload to abandoned.
  */
 public class CheckInquiryStatusJobListener implements JobListener {
 
   private static final Logger logger = LogManager.getLogger(CheckInquiryStatusJobListener.class);
 
-  private String name;
+  private final String name;
 
   CheckInquiryStatusJobListener(String name) {
     this.name = name;

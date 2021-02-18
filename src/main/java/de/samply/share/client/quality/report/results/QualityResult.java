@@ -8,8 +8,8 @@ public class QualityResult {
 
   private int numberOfPatients = 0;
   private boolean isValid = false;
-  private Set<String> patientLocalIds = new HashSet<>();
-  private Set<String> patientDktkIds = new HashSet<>();
+  private final Set<String> patientLocalIds = new HashSet<>();
+  private final Set<String> patientDktkIds = new HashSet<>();
 
 
   public int getNumberOfPatients() {
@@ -31,8 +31,9 @@ public class QualityResult {
 
 
   /**
-   * Todo.
-   * @param patientLocalId Todo.
+   * Add patient local id.
+   *
+   * @param patientLocalId patient local id.
    */
   public void addPatientLocalId(String patientLocalId) {
 
@@ -43,8 +44,9 @@ public class QualityResult {
   }
 
   /**
-   * Todo.
-   * @param patientLocalIds Todo.
+   * Add set of patient local ids.
+   *
+   * @param patientLocalIds patient local ids.
    */
   public void addPatientLocalIds(Set<String> patientLocalIds) {
 
@@ -55,8 +57,9 @@ public class QualityResult {
   }
 
   /**
-   * Todo.
-   * @param patientDktkId Todo.
+   * Add patient global id.
+   *
+   * @param patientDktkId patient global id.
    */
   public void addPatientDktkId(String patientDktkId) {
 
@@ -67,8 +70,9 @@ public class QualityResult {
   }
 
   /**
-   * Todo.
-   * @param patientDktkIds Todo.
+   * Add set of patient global ids .
+   *
+   * @param patientDktkIds patient global ids.
    */
   public void addPatientDktkIds(Set<String> patientDktkIds) {
 

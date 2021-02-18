@@ -9,14 +9,15 @@ import java.util.Set;
 
 public class ValidValueFilterQualityResults {
 
-  private Set<String> validValues = new HashSet<>();
-  private QualityResult validQualityResult = new QualityResult();
-  private Map<String, QualityResult> invalidQualityResults = new HashMap<>();
+  private final Set<String> validValues = new HashSet<>();
+  private final QualityResult validQualityResult = new QualityResult();
+  private final Map<String, QualityResult> invalidQualityResults = new HashMap<>();
 
   /**
-   * Todo.
-   * @param value Todo.
-   * @param qualityResult Todo.
+   * Add value and quality result.
+   *
+   * @param value         Value.
+   * @param qualityResult Quality result.
    */
   public void addValueAndQualityResult(String value, QualityResult qualityResult) {
 
@@ -51,8 +52,9 @@ public class ValidValueFilterQualityResults {
   }
 
   /**
-   * Todo.
-   * @return Todo.
+   * Get values.
+   *
+   * @return Set of values.
    */
   public Set<String> getValues() {
 

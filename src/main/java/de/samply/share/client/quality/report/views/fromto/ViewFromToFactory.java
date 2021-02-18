@@ -9,10 +9,11 @@ public class ViewFromToFactory {
 
 
   /**
-   * Todo.
-   * @param from Todo.
-   * @param to Todo.
-   * @return Todo.
+   * Creates View between two dates.
+   *
+   * @param from lower date.
+   * @param to   upper date.
+   * @return View From - To.
    */
   public ViewFromTo createViewFromTo(Date from, Date to) {
 
@@ -24,10 +25,11 @@ public class ViewFromToFactory {
   }
 
   /**
-   * Todo.
-   * @param month Todo.
-   * @param year Todo.
-   * @return Todo.
+   * Create View between dates for first day to last day of month of a year.
+   *
+   * @param month month.
+   * @param year  year.
+   * @return View From-To.
    */
   public ViewFromTo createMonth(int month, int year) {
 
@@ -40,9 +42,10 @@ public class ViewFromToFactory {
   }
 
   /**
-   * Todo.
-   * @param year Todo.
-   * @return Todo.
+   * Create View between first day of a year and last day of the year.
+   *
+   * @param year year.
+   * @return View from-to.
    */
   public ViewFromTo createYear(int year) {
 

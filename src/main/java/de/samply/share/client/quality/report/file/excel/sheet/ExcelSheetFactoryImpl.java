@@ -14,7 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
   protected static final Logger logger = LogManager.getLogger(ExcelSheetFactoryImpl.class);
-  private ExcelRowFactory excelRowFactory;
+  private final ExcelRowFactory excelRowFactory;
 
 
   public ExcelSheetFactoryImpl(ExcelRowFactory excelRowFactory) {

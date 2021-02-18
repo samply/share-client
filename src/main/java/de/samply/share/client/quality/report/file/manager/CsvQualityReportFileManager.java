@@ -19,13 +19,14 @@ import java.nio.charset.StandardCharsets;
 public class CsvQualityReportFileManager<I extends QualityResultCsvLineManager> extends
     QualityReportFileManagerImpl {
 
-  private QualityResultCsvLineManager qualityResultsCsvLineManager;
+  private final QualityResultCsvLineManager qualityResultsCsvLineManager;
 
 
   /**
-   * Todo.
-   * @param qualityResultsCsvLineManager Todo.
-   * @param idPathManager Todo.
+   * Creates csv quality report file manager.
+   *
+   * @param qualityResultsCsvLineManager quality results csv line manager.
+   * @param idPathManager                id path manager.
    */
   public CsvQualityReportFileManager(I qualityResultsCsvLineManager,
       IdPathManagerImpl<I, ?, ?> idPathManager) {

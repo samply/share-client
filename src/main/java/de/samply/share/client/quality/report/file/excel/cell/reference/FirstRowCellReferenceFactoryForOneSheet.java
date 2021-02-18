@@ -2,16 +2,17 @@ package de.samply.share.client.quality.report.file.excel.cell.reference;
 
 public class FirstRowCellReferenceFactoryForOneSheet extends FirstRowCellReferenceFactory {
 
-  private String sheetName;
+  private final String sheetName;
 
   public FirstRowCellReferenceFactoryForOneSheet(String sheetName) {
     this.sheetName = sheetName;
   }
 
   /**
-   * Todo.
-   * @param columnOrdinal Todo.
-   * @return Todo.
+   * Creates an excel cell reference.
+   *
+   * @param columnOrdinal Number of column.
+   * @return excel cell reference.
    */
   public CellReference createCellReference(int columnOrdinal) {
 

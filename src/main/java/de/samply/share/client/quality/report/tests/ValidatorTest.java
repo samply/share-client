@@ -27,15 +27,16 @@ import javax.ws.rs.QueryParam;
 @Path("/validator-test")
 public class ValidatorTest {
 
-  private QualityReportFileManager qualityFileManager;
+  private final QualityReportFileManager qualityFileManager;
 
 
-  private QualityResultsValidator qualityResultsValidator;
+  private final QualityResultsValidator qualityResultsValidator;
 
 
   /**
-   * Todo.
-   * @throws ChainFactoryException Todo.
+   * Constructs validator test.
+   *
+   * @throws ChainFactoryException Chain Factory Exception.
    */
   public ValidatorTest() throws ChainFactoryException {
 
@@ -52,11 +53,12 @@ public class ValidatorTest {
 
 
   /**
-   * Todo.
-   * @param fileId Todo.
-   * @return Todo.
-   * @throws QualityReportFileManagerException Todo.
-   * @throws QualityResultsValidatorException Todo.
+   * Test validate of quality results validator.
+   *
+   * @param fileId file id.
+   * @return file id.
+   * @throws QualityReportFileManagerException Quality Report File Manager Exception.
+   * @throws QualityResultsValidatorException  Quality Results Validator Exception.
    */
   @GET
   public String myTest(@QueryParam("fileId") String fileId)

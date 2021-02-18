@@ -19,11 +19,10 @@ import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 
 /**
- * This Job checks the database for new jobs and gives them to an execution handler one by one.
- * It is defined and scheduled in the quartz-jobs.xml.
- * The basic steps it performs are:
- * 1) Get the list of new inquiries 2) If there is a new inquiry, and none still processing...spawn
- * an inquiry execution task for the new one.
+ * This Job checks the database for new jobs and gives them to an execution handler one by one. It
+ * is defined and scheduled in the quartz-jobs.xml. The basic steps it performs are: 1) Get the list
+ * of new inquiries 2) If there is a new inquiry, and none still processing...spawn an inquiry
+ * execution task for the new one.
  */
 @DisallowConcurrentExecution
 public class ExecuteInquiriesJob implements Job {

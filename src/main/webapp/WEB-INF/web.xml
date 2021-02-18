@@ -76,8 +76,8 @@
     <location>/WEB-INF/errorpages/bug.xhtml</location>
   </error-page>
   <filter>
-    <filter-class>org.omnifaces.filter.CacheControlFilter</filter-class>
     <filter-name>noCache</filter-name>
+    <filter-class>org.omnifaces.filter.CacheControlFilter</filter-class>
   </filter>
 
   <!--Quartz Settings-->
@@ -112,37 +112,36 @@
   </mime-mapping>
   <resource-ref>
     <description>postgreSQL Datasource</description>
-    <res-auth>Container</res-auth>
     <res-ref-name>jdbc/postgres</res-ref-name>
     <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
   </resource-ref>
 
   <!--Listeners-->
   <security-constraint>
-    <auth-constraint/>
     <display-name>Restrict direct access to the /resources folder.</display-name>
     <web-resource-collection>
-      <url-pattern>/resources/*</url-pattern>
       <web-resource-name>The /resources folder.</web-resource-name>
+      <url-pattern>/resources/*</url-pattern>
     </web-resource-collection>
   </security-constraint>
 
   <!--Datasource definition-->
   <servlet>
-    <load-on-startup>1</load-on-startup>
-    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
     <servlet-name>Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 
   <!--Define Error pages for various errors-->
   <servlet>
+    <servlet-name>jersey-servlet</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
     <init-param>
       <param-name>com.sun.jersey.config.property.packages</param-name>
       <param-value>de.samply.share.client.rest</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
-    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-    <servlet-name>jersey-servlet</servlet-name>
   </servlet>
   <servlet-mapping>
     <servlet-name>Faces Servlet</servlet-name>

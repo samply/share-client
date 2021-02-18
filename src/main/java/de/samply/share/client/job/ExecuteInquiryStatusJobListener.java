@@ -13,15 +13,14 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 
 /**
- * This listener will be called when an instance of the ExecuteInquiryStatusJob is done.
- * It checks if an Exception was thrown and sets the corresponding object state to
- * cancelled/aborted.
+ * This listener will be called when an instance of the ExecuteInquiryStatusJob is done. It checks
+ * if an Exception was thrown and sets the corresponding object state to cancelled/aborted.
  */
 public class ExecuteInquiryStatusJobListener implements JobListener {
 
   private static final Logger logger = LogManager.getLogger(ExecuteInquiryStatusJobListener.class);
 
-  private String name;
+  private final String name;
 
   public ExecuteInquiryStatusJobListener(String name) {
     this.name = name;

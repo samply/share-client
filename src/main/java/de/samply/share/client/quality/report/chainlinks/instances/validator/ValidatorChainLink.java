@@ -8,7 +8,7 @@ import de.samply.share.client.quality.report.results.operations.QualityResultsVa
 
 public class ValidatorChainLink<I extends ChainLinkItem & ValidatorContext> extends ChainLink<I> {
 
-  private QualityResultsValidator qualityResultsValidator;
+  private final QualityResultsValidator qualityResultsValidator;
 
   public ValidatorChainLink(QualityResultsValidator qualityResultsValidator) {
     this.qualityResultsValidator = qualityResultsValidator;

@@ -5,21 +5,21 @@ import java.util.List;
 
 public interface ChainStatistics {
 
-  public void addChainLinkStatisticsConsumer(
+  void addChainLinkStatisticsConsumer(
       ChainLinkStatisticsConsumer chainLinkStatisticsConsumer);
 
-  public int getPercentage();
+  int getPercentage();
 
-  public String getEstimatedTimeToBeCompleted();
+  String getEstimatedTimeToBeCompleted();
 
-  public List<String> getMessages();
+  List<String> getMessages();
 
-  public boolean isAccurate();
+  boolean isAccurate();
 
-  public String getTimeConsumed();
+  String getTimeConsumed();
 
-  public String getStartTime();
+  String getStartTime();
 
-  public boolean isFinalized();
+  boolean isFinalized();
 
 }

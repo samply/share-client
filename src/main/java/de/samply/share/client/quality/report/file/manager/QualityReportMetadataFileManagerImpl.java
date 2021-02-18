@@ -18,14 +18,14 @@ import org.apache.commons.io.IOUtils;
 public class QualityReportMetadataFileManagerImpl<I extends MetadataTxtColumnManager> implements
     QualityReportMetadataFileManager {
 
-  private IdPathManager idPathManager;
-  private I metadataTxtColumnManager;
+  private final IdPathManager idPathManager;
+  private final I metadataTxtColumnManager;
 
   /**
-   * Todo.
+   * Creates quality report metadata file manager.
    *
-   * @param metadataTxtColumnManager Todo.
-   * @param idPathManager            Todo.
+   * @param metadataTxtColumnManager metadata txt column manager.
+   * @param idPathManager            id path manager.
    */
   public QualityReportMetadataFileManagerImpl(I metadataTxtColumnManager,
       IdPathManagerImpl<?, ?, I> idPathManager) {

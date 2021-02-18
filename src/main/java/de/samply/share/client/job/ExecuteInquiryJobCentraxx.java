@@ -8,7 +8,7 @@ import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.QueryLanguageType;
 import de.samply.share.client.model.db.tables.pojos.InquiryCriteria;
 import de.samply.share.client.util.Replace;
-import de.samply.share.client.util.connector.LdmConnectorCentraxx;
+import de.samply.share.client.util.connector.LdmConnectorCcp;
 import de.samply.share.client.util.connector.LdmPostQueryParameterView;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.client.util.db.InquiryCriteriaUtil;
@@ -23,11 +23,11 @@ import org.quartz.JobExecutionException;
 
 /**
  * This Job posts an inquiry to the local datamanagement, stores the location and spawns a
- * CheckInquiryStatusJobCentraxx.
- * It is defined and scheduled by either the CheckInquiryStatusJob, the CollectInquiriesJob, the
- * UploadToCentralMdsDbJob or can be spawned user-triggered from the show_inquiry.xhtml page.
+ * CheckInquiryStatusJobCentraxx. It is defined and scheduled by either the CheckInquiryStatusJob,
+ * the CollectInquiriesJob, the UploadToCentralMdsDbJob or can be spawned user-triggered from the
+ * show_inquiry.xhtml page.
  */
-public class ExecuteInquiryJobCentraxx extends AbstractExecuteInquiryJob<LdmConnectorCentraxx> {
+public class ExecuteInquiryJobCentraxx extends AbstractExecuteInquiryJob<LdmConnectorCcp> {
 
   void execute() throws JobExecutionException {
     InquiryCriteria inquiryCriteria = InquiryCriteriaUtil

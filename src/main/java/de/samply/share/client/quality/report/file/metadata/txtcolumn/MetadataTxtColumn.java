@@ -33,8 +33,9 @@ public class MetadataTxtColumn extends TxtColumnImpl {
   }
 
   /**
-   * Todo.
-   * @return Todo.
+   * Get timestamp.
+   *
+   * @return timestamp.
    */
   public Date getTimestamp() {
 
@@ -44,8 +45,9 @@ public class MetadataTxtColumn extends TxtColumnImpl {
   }
 
   /**
-   * Todo.
-   * @param date Todo.
+   * Set timestamp.
+   *
+   * @param date timestamp.
    */
   public void setTimestamp(Date date) {
 
@@ -94,7 +96,7 @@ public class MetadataTxtColumn extends TxtColumnImpl {
     QUALITY_REPORT_VERSION("quality-report-version");
 
     private static Map<String, Integer> titleAndOrdinals;
-    private String title;
+    private final String title;
 
     ElementOrder(String title) {
       this.title = title;
