@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>share-client</artifactId>
-  <version>7.2.2-SNAPSHOT</version>
+  <version>7.2.3-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Connector</name>
@@ -711,7 +711,7 @@
         <!-- general properties -->
         <database.username>samplyconnector</database.username>
         <database.password>samplyconnector</database.password>
-        <database.url>jdbc:postgresql://connector_db:5432/samplyconnector</database.url>
+        <database.url>jdbc:postgresql://localhost:5432/samplyconnector</database.url>
         <database.schema>samply</database.schema>
       </properties>
     </profile>
