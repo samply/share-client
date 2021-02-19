@@ -67,7 +67,7 @@ public class Api {
       String mediaType = httpHeaders.getMediaType().getSubtype();
       CtsConnector ctsConnector = ApplicationBean.getCtsConnector();
       return ctsConnector.postPseudonmToCts(bundle, mediaType);
-    } catch (ConfigurationException | DataFormatException | GeneralSecurityException e) {
+    } catch (ConfigurationException | DataFormatException | GeneralSecurityException | NullPointerException e) {
       return Response.status(400).entity(e.getMessage()).build();
     } catch (NotAuthorizedException e) {
       return Response.status(401).entity(e.getMessage()).build();
