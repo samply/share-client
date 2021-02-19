@@ -63,8 +63,10 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -211,7 +213,7 @@ public class InquiryBean implements Serializable {
     }
     return parentNode;
   }
-  
+
   /**
    * Init.
    */
@@ -219,7 +221,7 @@ public class InquiryBean implements Serializable {
   public void init() {
     ldmConnector = ApplicationBean.getLdmConnector();
   }
-  
+
   /**
    * Gets login bean.
    *
@@ -228,7 +230,7 @@ public class InquiryBean implements Serializable {
   public LoginBean getLoginBean() {
     return loginBean;
   }
-  
+
   /**
    * Sets login bean.
    *
@@ -237,7 +239,7 @@ public class InquiryBean implements Serializable {
   public void setLoginBean(LoginBean loginBean) {
     this.loginBean = loginBean;
   }
-  
+
   /**
    * Gets selected inquiry id.
    *
@@ -246,7 +248,7 @@ public class InquiryBean implements Serializable {
   public int getSelectedInquiryId() {
     return selectedInquiryId;
   }
-  
+
   /**
    * Sets selected inquiry id.
    *
@@ -255,7 +257,7 @@ public class InquiryBean implements Serializable {
   public void setSelectedInquiryId(int selectedInquiryId) {
     this.selectedInquiryId = selectedInquiryId;
   }
-  
+
   /**
    * Gets inquiry.
    *
@@ -264,7 +266,7 @@ public class InquiryBean implements Serializable {
   public Inquiry getInquiry() {
     return inquiry;
   }
-  
+
   /**
    * Sets inquiry.
    *
@@ -273,7 +275,7 @@ public class InquiryBean implements Serializable {
   public void setInquiry(Inquiry inquiry) {
     this.inquiry = inquiry;
   }
-  
+
   /**
    * Gets latest inquiry details.
    *
@@ -282,7 +284,7 @@ public class InquiryBean implements Serializable {
   public InquiryDetails getLatestInquiryDetails() {
     return latestInquiryDetails;
   }
-  
+
   /**
    * Sets latest inquiry details.
    *
@@ -291,7 +293,7 @@ public class InquiryBean implements Serializable {
   public void setLatestInquiryDetails(InquiryDetails latestInquiryDetails) {
     this.latestInquiryDetails = latestInquiryDetails;
   }
-  
+
   /**
    * Gets latest inquiry result.
    *
@@ -300,7 +302,12 @@ public class InquiryBean implements Serializable {
   public InquiryResult getLatestInquiryResult() {
     return latestInquiryResult;
   }
-  
+
+  private static InquiryResult getLastInquiryResult(List<InquiryResult> inquiryResultsList) {
+    return inquiryResultsList.stream().sorted(Comparator.comparing(InquiryResult::getExecutedAt))
+        .collect(Collectors.toList()).get(inquiryResultsList.size() - 1);
+  }
+
   /**
    * Sets latest inquiry result.
    *
@@ -309,7 +316,7 @@ public class InquiryBean implements Serializable {
   public void setLatestInquiryResult(InquiryResult latestInquiryResult) {
     this.latestInquiryResult = latestInquiryResult;
   }
-  
+
   /**
    * Gets inquiry results list.
    *
@@ -318,7 +325,7 @@ public class InquiryBean implements Serializable {
   public List<InquiryResult> getInquiryResultsList() {
     return inquiryResultsList;
   }
-  
+
   /**
    * Sets inquiry results list.
    *
@@ -327,7 +334,7 @@ public class InquiryBean implements Serializable {
   public void setInquiryResultsList(List<InquiryResult> inquiryResultsList) {
     this.inquiryResultsList = inquiryResultsList;
   }
-  
+
   /**
    * Gets latest inquiry answer.
    *
@@ -336,7 +343,7 @@ public class InquiryBean implements Serializable {
   public InquiryAnswer getLatestInquiryAnswer() {
     return latestInquiryAnswer;
   }
-  
+
   /**
    * Sets latest inquiry answer.
    *
@@ -345,7 +352,7 @@ public class InquiryBean implements Serializable {
   public void setLatestInquiryAnswer(InquiryAnswer latestInquiryAnswer) {
     this.latestInquiryAnswer = latestInquiryAnswer;
   }
-  
+
   /**
    * Gets inquiry events.
    *
@@ -354,7 +361,7 @@ public class InquiryBean implements Serializable {
   public List<EventLog> getInquiryEvents() {
     return inquiryEvents;
   }
-  
+
   /**
    * Sets inquiry events.
    *
@@ -363,7 +370,7 @@ public class InquiryBean implements Serializable {
   public void setInquiryEvents(List<EventLog> inquiryEvents) {
     this.inquiryEvents = inquiryEvents;
   }
-  
+
   /**
    * Is results ready boolean.
    *
@@ -372,7 +379,7 @@ public class InquiryBean implements Serializable {
   public boolean isResultsReady() {
     return resultsReady;
   }
-  
+
   /**
    * Sets results ready.
    *
@@ -381,7 +388,7 @@ public class InquiryBean implements Serializable {
   public void setResultsReady(boolean resultsReady) {
     this.resultsReady = resultsReady;
   }
-  
+
   /**
    * Gets latest result statistics.
    *
@@ -390,7 +397,7 @@ public class InquiryBean implements Serializable {
   public QueryResultStatistic getLatestResultStatistics() {
     return latestResultStatistics;
   }
-  
+
   /**
    * Sets latest result statistics.
    *
@@ -399,7 +406,7 @@ public class InquiryBean implements Serializable {
   public void setLatestResultStatistics(QueryResultStatistic latestResultStatistics) {
     this.latestResultStatistics = latestResultStatistics;
   }
-  
+
   /**
    * Gets patient page tree.
    *
@@ -408,7 +415,7 @@ public class InquiryBean implements Serializable {
   public TreeModel<Container> getPatientPageTree() {
     return patientPageTree;
   }
-  
+
   /**
    * Sets patient page tree.
    *
@@ -417,7 +424,7 @@ public class InquiryBean implements Serializable {
   public void setPatientPageTree(TreeModel<Container> patientPageTree) {
     this.patientPageTree = patientPageTree;
   }
-  
+
   /**
    * Gets latest original criteria tree.
    *
@@ -426,7 +433,7 @@ public class InquiryBean implements Serializable {
   public TreeModel<QueryItem> getLatestOriginalCriteriaTree() {
     return latestOriginalCriteriaTree;
   }
-  
+
   /**
    * Sets latest original criteria tree.
    *
@@ -435,7 +442,7 @@ public class InquiryBean implements Serializable {
   public void setLatestOriginalCriteriaTree(TreeModel<QueryItem> latestOriginalCriteriaTree) {
     this.latestOriginalCriteriaTree = latestOriginalCriteriaTree;
   }
-  
+
   /**
    * Gets requested entities label string.
    *
@@ -444,7 +451,7 @@ public class InquiryBean implements Serializable {
   public String getRequestedEntitiesLabelString() {
     return requestedEntitiesLabelString;
   }
-  
+
   /**
    * Sets requested entities label string.
    *
@@ -453,7 +460,7 @@ public class InquiryBean implements Serializable {
   public void setRequestedEntitiesLabelString(String requestedEntitiesLabelString) {
     this.requestedEntitiesLabelString = requestedEntitiesLabelString;
   }
-  
+
   /**
    * Gets selected inquiry contact.
    *
@@ -462,7 +469,7 @@ public class InquiryBean implements Serializable {
   public Contact getSelectedInquiryContact() {
     return selectedInquiryContact;
   }
-  
+
   /**
    * Sets selected inquiry contact.
    *
@@ -471,7 +478,7 @@ public class InquiryBean implements Serializable {
   public void setSelectedInquiryContact(Contact selectedInquiryContact) {
     this.selectedInquiryContact = selectedInquiryContact;
   }
-  
+
   /**
    * Gets latest inquiry result stats.
    *
@@ -480,7 +487,7 @@ public class InquiryBean implements Serializable {
   public InquiryResultStats getLatestInquiryResultStats() {
     return latestInquiryResultStats;
   }
-  
+
   /**
    * Sets latest inquiry result stats.
    *
@@ -489,7 +496,7 @@ public class InquiryBean implements Serializable {
   public void setLatestInquiryResultStats(InquiryResultStats latestInquiryResultStats) {
     this.latestInquiryResultStats = latestInquiryResultStats;
   }
-  
+
   /**
    * Gets inquiry criteria.
    *
@@ -498,7 +505,7 @@ public class InquiryBean implements Serializable {
   public List<InquiryCriteria> getInquiryCriteria() {
     return inquiryCriteria;
   }
-  
+
   /**
    * Sets inquiry criteria.
    *
@@ -507,7 +514,7 @@ public class InquiryBean implements Serializable {
   public void setInquiryCriteria(List<InquiryCriteria> inquiryCriteria) {
     this.inquiryCriteria = inquiryCriteria;
   }
-  
+
   /**
    * Gets documents.
    *
@@ -516,7 +523,7 @@ public class InquiryBean implements Serializable {
   public List<Document> getDocuments() {
     return documents;
   }
-  
+
   /**
    * Sets documents.
    *
@@ -525,7 +532,7 @@ public class InquiryBean implements Serializable {
   public void setDocuments(List<Document> documents) {
     this.documents = documents;
   }
-  
+
   /**
    * Gets new document.
    *
@@ -534,7 +541,7 @@ public class InquiryBean implements Serializable {
   public Part getNewDocument() {
     return newDocument;
   }
-  
+
   /**
    * Sets new document.
    *
@@ -543,7 +550,7 @@ public class InquiryBean implements Serializable {
   public void setNewDocument(Part newDocument) {
     this.newDocument = newDocument;
   }
-  
+
   /**
    * Load the selected inquiry (which is defined by the view parameter) and all related details.
    */
@@ -576,7 +583,7 @@ public class InquiryBean implements Serializable {
       inquiryEvents = EventLogUtil.fetchEventLogForInquiryById(inquiry.getId());
       loadDocuments();
       if (!SamplyShareUtils.isNullOrEmpty(inquiryResultsList)) {
-        latestInquiryResult = inquiryResultsList.get(inquiryResultsList.size() - 1);
+        latestInquiryResult = getLastInquiryResult(inquiryResultsList);
         try {
           resultsReady = ldmConnector.isFirstResultPageAvailable(latestInquiryResult.getLocation());
           // TODO: other types
@@ -595,6 +602,8 @@ public class InquiryBean implements Serializable {
     }
   }
 
+
+
   /**
    * Generate the query criteria tree from the criteria string in common namespace.
    *
@@ -610,7 +619,7 @@ public class InquiryBean implements Serializable {
 
     return QueryTreeUtil.queryStringToTree(queryString);
   }
-  
+
   /**
    * Move an inquiry to the archive.
    *
@@ -627,7 +636,7 @@ public class InquiryBean implements Serializable {
         .insertEventLogEntryForInquiryId(EventMessageType.E_INQUIRY_ARCHIVED, inquiry.getId());
     return "inquiries_archive?faces-redirect=true";
   }
-  
+
   /**
    * Attach a single-fire trigger to the execute inquiry job.
    *
@@ -684,7 +693,7 @@ public class InquiryBean implements Serializable {
       return "";
     }
   }
-  
+
   /**
    * Attach a single-fire trigger to the execute inquiry job, requesting only stats.
    *
@@ -693,7 +702,7 @@ public class InquiryBean implements Serializable {
   public String spawnExecuteTask() {
     return spawnExecuteTask(true);
   }
-  
+
   /**
    * Load the result of an inquiry from local datamanagement.
    */
@@ -734,7 +743,7 @@ public class InquiryBean implements Serializable {
     }
     buildPatientPageTree(latestQueryResult);
   }
-  
+
   /**
    * Load another page of the result. Page number comes from the paginator widget on the results
    * page.
@@ -803,7 +812,7 @@ public class InquiryBean implements Serializable {
     }
 
   }
-  
+
   /**
    * Generate an Excel Workbook for the inquiry result and send it to the client.
    *
@@ -888,7 +897,7 @@ public class InquiryBean implements Serializable {
 
 
   }
-  
+
   /**
    * Send a reply back to the broker. Currently only supports the size. TODO: Add support for other
    * reply types TODO: Add success/error message
@@ -928,7 +937,7 @@ public class InquiryBean implements Serializable {
       return "";
     }
   }
-  
+
   /**
    * Send the document with the given id to the user.
    *
@@ -945,7 +954,7 @@ public class InquiryBean implements Serializable {
       logger.error("Document with id " + documentId + " not found");
     }
   }
-  
+
   /**
    * Delete a document with the given elementId. The id is transmitted via http request parameter.
    */
@@ -961,7 +970,7 @@ public class InquiryBean implements Serializable {
       logger.warn("Could not parse expose id: " + documentIdString);
     }
   }
-  
+
   /**
    * Handle the upload of a document from the client.
    *
@@ -1010,7 +1019,7 @@ public class InquiryBean implements Serializable {
   private void loadDocuments() {
     documents = DocumentUtil.getDocumentsForInquiry(selectedInquiryId);
   }
-  
+
   /**
    * Check if result stats were written for the latest inquiry.
    *
@@ -1019,7 +1028,7 @@ public class InquiryBean implements Serializable {
   public boolean latestInquiryResultHasStats() {
     return latestInquiryResultStats != null;
   }
-  
+
   /**
    * Gets result count by id grouped by age.
    *
@@ -1028,7 +1037,7 @@ public class InquiryBean implements Serializable {
   public String getResultCountByIdGroupedByAge() {
     return latestInquiryResultStats.getStatsAge();
   }
-  
+
   /**
    * Gets result count by id grouped by gender.
    *
@@ -1037,7 +1046,7 @@ public class InquiryBean implements Serializable {
   public String getResultCountByIdGroupedByGender() {
     return latestInquiryResultStats.getStatsGender();
   }
-  
+
   /**
    * Reload the statistics.
    */
