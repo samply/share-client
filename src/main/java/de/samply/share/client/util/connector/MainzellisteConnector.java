@@ -346,8 +346,8 @@ public class MainzellisteConnector {
                 IDAT_VERSICHERUNGSNUMMER));
       }
     } catch (NullPointerException e) {
-      logger.error("Error at identifying patient data" + e.getMessage());
-      throw new NullPointerException("Error at identifying patient data" + e.getMessage());
+      logger.error("Error at identifying patient data: " + e.getMessage());
+      throw new NullPointerException("Error at identifying patient data: " + e.getMessage());
     }
     logger.debug("jsonIdatObject for Mainzelliste: " + jsonIdatObject.toString());
     return jsonIdatObject;
