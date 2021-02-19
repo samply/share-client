@@ -1,11 +1,12 @@
 <com:cts xmlns:com="http://schema.samply.de/config/CtsInfo">
-  <com:mainzellisteApiKey>{nngm-magicpl-apikey}</com:mainzellisteApiKey>
-  <com:mainzellisteUrl>{nngm-magicpl-url}</com:mainzellisteUrl>
-  <com:profile>{nngm-profile}</com:profile>
-  <com:url>{nngm-cts-url}</com:url>
   <com:username>{nngm-cts-user}</com:username>
   <com:password>{nngm-cts-password}</com:password>
+  <com:url>{nngm-cts-url}</com:url>
+  <com:profile>{nngm-profile}</com:profile>
+  <com:mainzellisteUrl>{nngm-magicpl-url}</com:mainzellisteUrl>
+  <com:mainzellisteApiKey>{nngm-magicpl-apikey}</com:mainzellisteApiKey>
   <com:searchIdType>{nngm-site-idtype}</com:searchIdType>
   <com:patientListApiKey>{nngm-mainzelliste-apikey}</com:patientListApiKey>
   <com:patientListUrl>{nngm-mainzelliste-url}</com:patientListUrl>
+  <com:cryptKey>{nngm-cryptkey}</com:cryptKey>
 </com:cts>

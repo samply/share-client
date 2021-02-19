@@ -1,7 +1,9 @@
 package de.samply.share.client.util.connector;
 
 import ca.uhn.fhir.context.ConfigurationException;
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
+import ca.uhn.fhir.util.ResourceReferenceInfo;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jayway.jsonpath.Configuration;
@@ -10,12 +12,15 @@ import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.mchange.rmi.NotAuthorizedException;
 import com.sun.jersey.api.NotFoundException;
-import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.crypt.Crypt;
 import de.samply.share.client.feature.ClientFeature;
-import de.samply.share.client.fhir.FhirResource;
+import de.samply.share.client.fhir.FhirParseException;
+import de.samply.share.client.fhir.FhirUtil;
 import de.samply.share.client.model.EnumConfiguration;
+import de.samply.share.client.util.connector.exception.ConflictException;
+import de.samply.share.client.util.connector.exception.CtsConnectorException;
+import de.samply.share.client.util.connector.exception.MainzellisteConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import java.io.IOException;
@@ -26,8 +31,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.http.Consts;
@@ -52,38 +55,47 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.UriType;
 
+/**
+ * A connector that handles all communication with the EDC system.
+ */
 public class CtsConnector {
 
   private static final Logger logger = LogManager.getLogger(CtsConnector.class);
   private static final String CONTENT_TYPE_CTS_FHIR_JSON = "application/fhir+json; fhirVersion=4.0";
-  private static final FhirResource fhirResource = new FhirResource();
   private static final String X_BK_PSEUDONYM_JSONPATHS = "X-BK-pseudonym-jsonpaths";
   private static final String X_BK_TARGET_URL = "X-BK-target-url";
-  private transient HttpConnector httpConnector;
-  private CloseableHttpClient httpClient;
-  private String ctsBaseUrl;
-  private HttpHost ctsHost;
-  private String username;
-  private String password;
+
+  private final FhirUtil fhirUtil;
+  private final CloseableHttpClient httpClient;
+  private final String ctsBaseUrl;
+  private final HttpHost ctsHost;
+  private final String username;
+  private final String password;
+  private final FhirContext fhirContext;
 
   /**
    * Create a CtsConnector object.
    */
-  public CtsConnector() {
+  public CtsConnector() throws MalformedURLException {
     try {
       // Pull various pieces of information from the database and store them
       // in memory.
       ctsBaseUrl = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL);
-      httpConnector = ApplicationBean.createHttpConnector();
       ctsHost = SamplyShareUtils.getAsHttpHost(ctsBaseUrl);
-      httpClient = httpConnector.getHttpClient(ctsHost);
+      httpClient = ApplicationBean.createHttpConnector().getHttpClient(ctsHost);
       username = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_USERNAME);
       password = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PASSWORD);
     } catch (MalformedURLException e) {
       logger.error("URL problem while initializing CTS uploader, e: " + e);
+      throw e;
     }
+    fhirContext = FhirContext.forR4();
+    fhirUtil = new FhirUtil(fhirContext);
   }
 
   /**
@@ -93,15 +105,15 @@ public class CtsConnector {
    *
    * @param bundleString the patient bundle as String.
    * @throws IOException              IOException
-   * @throws ConfigurationException   ConfigurationException
-   * @throws DataFormatException      DataFormatException
    * @throws NotFoundException        NotFoundException
    * @throws NotAuthorizedException   NotAuthorizedException
-   * @throws GeneralSecurityException GeneralSecurityException
+   * @throws MainzellisteConnectorException MainzellisteConnectorException
+   * @throws CtsConnectorException CtsConnectorException
    */
-  public Response postPseudonmToCts(String bundleString, String mediaType)
-      throws IOException, ConfigurationException, DataFormatException,
-      NotFoundException, NotAuthorizedException, GeneralSecurityException {
+  public Response postPseudonmToCts(String bundleString, MediaType mediaType)
+      throws IOException,
+      NotFoundException, NotAuthorizedException, FhirParseException,
+      MainzellisteConnectorException, CtsConnectorException {
     // Make a call to the PL, and replace patient identifying information in the
     // bundle with a pseudonym.
     Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
@@ -109,13 +121,9 @@ public class CtsConnector {
     String pseudonymBundleAsString;
     if (ApplicationBean.getFeatureManager().getFeatureState(ClientFeature.NNGM_ENCRYPT_ID)
         .isEnabled()) {
-      pseudonymBundleAsString = fhirResource.convertBundleToXml(pseudonymBundle)
-          .replace("><", ">\r\n<");
-      pseudonymBundleAsString = searchForIds(pseudonymBundleAsString, true);
-      pseudonymBundleAsString = fhirResource
-          .convertXmlBundleToJsonBundle(pseudonymBundleAsString);
+      pseudonymBundleAsString = cryptIds(pseudonymBundle, true);
     } else {
-      pseudonymBundleAsString = fhirResource.convertBundleToJson(pseudonymBundle);
+      pseudonymBundleAsString = fhirUtil.encodeResourceToJson(pseudonymBundle);
     }
 
     // Set up the API call
@@ -148,13 +156,13 @@ public class CtsConnector {
    * @param patient the local patient
    * @return if the post was successfull
    * @throws IOException              IOException
-   * @throws IllegalArgumentException IllegalArgumentException
    * @throws NotFoundException        NotFoundException
    * @throws NotAuthorizedException   NotAuthorizedException
+   * @throws MainzellisteConnectorException   MainzellisteConnectorException
    */
   public Response postLocalPatientToCentralCts(String patient)
-      throws IOException, IllegalArgumentException,
-      NotFoundException, NotAuthorizedException {
+          throws IOException, NotFoundException, NotAuthorizedException,
+          MainzellisteConnectorException, CtsConnectorException {
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
     JsonObject pseudonimisedPatient = mainzellisteConnector.requestEncryptedIdForPatient(patient);
     // Set up the API call
@@ -189,16 +197,16 @@ public class CtsConnector {
    * @param headerMapToSend the headers from the incoming request which should be send
    * @return if the post was successfull
    * @throws IOException              IOException
-   * @throws IllegalArgumentException IllegalArgumentException
+   * @throws CtsConnectorException CtsConnectorException
    * @throws NotAuthorizedException   NotAuthorizedException
    */
   public Response postLocalPatientToCentralCts(String patient,
       javax.ws.rs.core.HttpHeaders httpHeaders,
       HashMap<String, Object> headerMapToSend)
-      throws IOException, IllegalArgumentException,
-      NotFoundException, NotAuthorizedException {
+      throws IOException,
+      NotFoundException, NotAuthorizedException, CtsConnectorException {
     List<String> urlTargetHeaders = httpHeaders.getRequestHeader(X_BK_TARGET_URL);
-    String encryptedIds = patient;//or a empty string
+    String encryptedIds = patient; //or a empty string
     String urlTarget;
     if (urlTargetHeaders != null && !urlTargetHeaders.isEmpty()) {
       urlTarget = urlTargetHeaders.get(0);
@@ -240,10 +248,8 @@ public class CtsConnector {
       return Response.status(statusCode).entity(message).build();
     } catch (IOException e) {
       throw new IOException(e);
-    } catch (StringIndexOutOfBoundsException e) {
-      throw new StringIndexOutOfBoundsException(e.getMessage());
-    } catch (PathNotFoundException e) {
-      throw new PathNotFoundException(e.getMessage());
+    } catch (StringIndexOutOfBoundsException | PathNotFoundException e) {
+      throw new CtsConnectorException(e.getMessage());
     } finally {
       closeResponse(response);
     }
@@ -258,7 +264,7 @@ public class CtsConnector {
    * @return http response
    */
   private Response getResponse(CloseableHttpResponse response, int statusCode,
-      String responseAsString) {
+                               String responseAsString) {
     Response.ResponseBuilder builder = Response.status(statusCode).entity(responseAsString);
     //headers
     Header[] responseHeaders = response.getAllHeaders();
@@ -271,9 +277,11 @@ public class CtsConnector {
   /**
    * Create a BasicHttpContext for CTS upload, with the cookies needed for authorization.
    *
-   * @return
+   * @return HttpContext.
+   * @throws IOException IOException
    */
-  private HttpContext createCtsContext() throws IOException {
+  private HttpContext createCtsContext() throws IOException, CtsConnectorException,
+          NotAuthorizedException {
     CtsAuthorization ctsAuthorization = getCtsAuthorization();
 
     BasicCookieStore cookieStore = new BasicCookieStore();
@@ -296,10 +304,10 @@ public class CtsConnector {
    * @throws ConfigurationException ConfigurationException
    * @throws DataFormatException    DataFormatException
    */
-  private Bundle pseudonymiseBundle(String bundleString, String mediaType)
-      throws IOException, ConfigurationException, DataFormatException, NotFoundException,
-      NotAuthorizedException {
-    Bundle bundle = fhirResource.convertToBundleResource(bundleString, mediaType);
+  private Bundle pseudonymiseBundle(String bundleString, MediaType mediaType)
+      throws IOException, NotFoundException,
+      NotAuthorizedException, FhirParseException, MainzellisteConnectorException {
+    Bundle bundle = fhirUtil.parseBundleResource(bundleString, mediaType);
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
     Bundle pseudonymizedBundle = null;
     pseudonymizedBundle = mainzellisteConnector.getPatientPseudonym(bundle);
@@ -312,7 +320,8 @@ public class CtsConnector {
    *
    * @return CtsAuthorization
    */
-  private CtsAuthorization getCtsAuthorization() throws IOException, IllegalArgumentException {
+  private CtsAuthorization getCtsAuthorization() throws IOException, CtsConnectorException,
+          NotAuthorizedException {
     logger.debug("getCtsInfo: entered");
 
     // Build a form-based entity to realize the login
@@ -343,6 +352,14 @@ public class CtsConnector {
         throw new IOException(
             getMessage("Authorization: CTS server error", statusCode, reasonPhrase, bodyResponse));
       }
+      if (statusCode == 401) {
+        String bodyResponse = EntityUtils.toString(response.getEntity());
+        logger.error(getMessage("Authorization: CTS permission problem", statusCode, reasonPhrase,
+                bodyResponse));
+        throw new NotAuthorizedException(
+                getMessage("Authorization: CTS permission problem", statusCode, reasonPhrase,
+                        bodyResponse));
+      }
       if (statusCode >= 400 && statusCode < 500) {
         String bodyResponse = EntityUtils.toString(response.getEntity());
         logger.error(getMessage("Authorization: CTS permission problem", statusCode, reasonPhrase,
@@ -369,6 +386,8 @@ public class CtsConnector {
     } catch (IOException e) {
       logger.error("Authorization: IOException, URI: " + httpPost.getURI() + ", e: " + e);
       throw new IOException("Authorization: IOException, URI: " + httpPost.getURI() + ", e: " + e);
+    } catch (IllegalArgumentException e) {
+      throw new CtsConnectorException(e.getMessage());
     } finally {
       closeResponse(response);
     }
@@ -379,7 +398,7 @@ public class CtsConnector {
 
   private String readIds(String json, String headerIdKey, boolean response)
       throws IOException, NotAuthorizedException, StringIndexOutOfBoundsException,
-      PathNotFoundException {
+      PathNotFoundException, CtsConnectorException {
     String headerIdKeyString = new String(Base64.getDecoder().decode(headerIdKey));
     String patientJson = null;
     try {
@@ -398,13 +417,15 @@ public class CtsConnector {
     } catch (PathNotFoundException e) {
       logger.error("could not found isonpath matches", e);
       throw new PathNotFoundException("could not find jsonpath matches:  " + e);
+    } catch (IllegalArgumentException | ConflictException e) {
+      throw new CtsConnectorException(e);
     }
 
     return patientJson;
   }
 
   private String replaceIdsWithEncryptedIds(String patientJson, List<String> ids, boolean response)
-      throws IOException, NotAuthorizedException {
+          throws IOException, NotAuthorizedException, ConflictException {
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
     if (!response) {
       for (String id : ids) {
@@ -423,54 +444,82 @@ public class CtsConnector {
     return patientJson;
   }
 
-
   /**
    * Search for the resource ids inside the bundle and encrypt or decrypt it.
    *
-   * @param json    the bundle as json
+   * @param bundle  the patient bundle
    * @param encrypt if the ids should encrypted or decrypted
    * @return the encrypted/decrypted bundle
    * @throws GeneralSecurityException GeneralSecurityException
    */
-  private static String searchForIds(String json, boolean encrypt)
-      throws GeneralSecurityException {
+  private String cryptIds(Bundle bundle, boolean encrypt) throws CtsConnectorException {
     Crypt crypt = ApplicationBean.getCrypt();
-    List<Pattern> patternList = new ArrayList<>();
-    Pattern pattern0 = Pattern.compile("\\b(id value=\".*)");
-    Pattern pattern1 = Pattern.compile("\\b(reference value=\".*)");
-    Pattern pattern2 = Pattern.compile("\\b(fullUrl value=\".*)");
-    Pattern pattern3 = Pattern.compile("\\b(url value=\".*)");
-    patternList.add(pattern0);
-    patternList.add(pattern1);
-    patternList.add(pattern2);
-    patternList.add(pattern3);
-    for (int i = 0; i < 4; i++) {
-      Matcher matcher = patternList.get(i).matcher(json);
-      while (matcher.find()) {
-        String match = matcher.group(1);
-        String substring = "";
-        if (i == 0) {
-          int index1 = match.indexOf("\"");
-          int index2 = match.lastIndexOf("\"");
-          substring = match.substring(index1 + 1, index2);
-        } else {
-          int index = match.lastIndexOf("/");
-          int index2 = match.lastIndexOf("\"");
-          substring = match.substring(index + 1, index2);
+    List<Bundle.BundleEntryComponent> bundleEntryComponentList = bundle.getEntry();
+    try {
+      for (int i = 0; i < bundleEntryComponentList.size(); i++) {
+        Bundle.BundleEntryComponent bundleEntryComponent = bundleEntryComponentList.get(i);
+        if (!bundleEntryComponent.hasResource() || !bundleEntryComponent.getResource().hasId()) {
+          logger.error("bundle entry without an id: entry-index " + i + 1);
         }
-        String cryptedString;
-        if (encrypt) {
-          cryptedString = crypt.encrypt(substring);
-        } else {
-          cryptedString = crypt.decrypt(substring);
+        IIdType bundleIdType = bundleEntryComponent.getResource().getIdElement();
+        bundleIdType = getEncryptedId(bundleIdType, encrypt, crypt);
+        bundleEntryComponent.getResource().setId(bundleIdType.getValue());
+        if (bundleEntryComponent.hasFullUrl()) {
+          UriType fullUrl = bundleEntryComponent.getFullUrlElement();
+          IdType fullUrlType = new IdType(fullUrl);
+          IIdType fullUrlIidType = getEncryptedId(fullUrlType, encrypt, crypt);
+          bundleEntryComponent.setFullUrl(fullUrlIidType.getValue());
         }
-        String newIdString = match.replace(substring, cryptedString);
-        json = json.replace(match, newIdString);
+        if (bundleEntryComponent.hasRequest() && bundleEntryComponent.getRequest().hasUrl()) {
+          UriType urlUriType = bundleEntryComponent.getRequest().getUrlElement();
+          IdType urlIdType = new IdType(urlUriType);
+          IIdType urlIidType = getEncryptedId(urlIdType, encrypt, crypt);
+          bundleEntryComponent.getRequest().setUrl(urlIidType.getValue());
+        }
+        List<ResourceReferenceInfo> resourceReferenceInfoList = fhirContext.newTerser()
+            .getAllResourceReferences(bundleEntryComponent.getResource());
+        for (ResourceReferenceInfo resourceReferenceInfo : resourceReferenceInfoList) {
+          IIdType idType = resourceReferenceInfo.getResourceReference().getReferenceElement();
+          idType = getEncryptedId(idType, encrypt, crypt);
+          // TODO: Validate FHIR URL?
+          resourceReferenceInfo.getResourceReference().setReference(idType.getValue());
+        }
+        bundleEntryComponentList.set(i, bundleEntryComponent);
       }
+      bundle.setEntry(bundleEntryComponentList);
+    } catch (GeneralSecurityException e) {
+      throw new CtsConnectorException(e);
     }
-    return json;
+    return fhirUtil.encodeResourceToJson(bundle);
   }
 
+  /**
+   * decrypt and encrypt Ids, fullUrls, URLs and URNs.
+   *
+   * @param idType  idType to encrypt or decrypt
+   * @param encrypt encrypt or decrypt
+   * @param crypt   Crypt
+   * @return encrypted or decrypted id
+   * @throws GeneralSecurityException GeneralSecurityException
+   */
+  public static IIdType getEncryptedId(IIdType idType, boolean encrypt, Crypt crypt)
+          throws GeneralSecurityException {
+    String id = idType.getIdPart();
+    if (id == null || "".equals(id)) {
+      logger.error("Reference or URL does not contain an ID of a resource " + idType.getValue());
+    } else {
+      if (encrypt) {
+        id = crypt.encrypt(id);
+      } else {
+        id = crypt.decrypt(id);
+      }
+      String baseUrl = idType.getBaseUrl();
+      String resourceTyp = idType.getResourceType();
+      String versionIdPart = idType.getVersionIdPart();
+      idType.setParts(baseUrl, resourceTyp, id, versionIdPart);
+    }
+    return idType;
+  }
 
   /**
    * Print the message from the extern service.
@@ -526,7 +575,6 @@ public class CtsConnector {
    * Class for transporting CTS-authorization parameters.
    */
   public class CtsAuthorization {
-
     Cookie codeCookie;
     Cookie userCookie;
   }

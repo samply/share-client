@@ -1,12 +1,12 @@
 <com:cts xmlns:com="http://schema.samply.de/config/CtsInfo">
-  <com:mainzellisteApiKey></com:mainzellisteApiKey>
-  <com:mainzellisteUrl></com:mainzellisteUrl>
-  <com:profile>
-  </com:profile>
-  <com:url></com:url>
   <com:username></com:username>
   <com:password></com:password>
+  <com:url></com:url>
+  <com:profile></com:profile>
+  <com:mainzellisteUrl></com:mainzellisteUrl>
+  <com:mainzellisteApiKey></com:mainzellisteApiKey>
   <com:searchIdType></com:searchIdType>
   <com:patientListApiKey></com:patientListApiKey>
   <com:patientListUrl></com:patientListUrl>
+  <com:cryptKey></com:cryptKey>
 </com:cts>

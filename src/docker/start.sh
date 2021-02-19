@@ -72,6 +72,7 @@ sed -i "s|{nngm-cts-password}|${NNGM_CTS_PASSWORD}|"                        "$fi
 sed -i "s|{nngm-site-idtype}|${NNGM_SITE_IDTYPE}|"                          "$file"
 sed -i "s|{nngm-mainzelliste-apikey}|${NNGM_MAINZELLISTE_APIKEY}|"          "$file"
 sed -i "s|{nngm-mainzelliste-url}|${NNGM_MAINZELLISTE_URL}|"                "$file"
+sed -i "s|{nngm-cryptkey}|${NNGM_CRYPTKEY}|"                                "$file"
 
 export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/docker/jmx_prometheus_javaagent-0.3.1.jar=9100:/docker/jmx-exporter.yml"
 
