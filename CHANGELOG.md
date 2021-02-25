@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.2.4 - 2021-02-25]
+## Fixed
+- share-common 4.0.1 fix for icinga
+
 ## [7.2.3 - 2021-02-12]
 ## Fixed
 - load last inquiry result

@@ -2,7 +2,9 @@ package de.samply.share.client.util.connector;
 
 import static de.samply.share.common.utils.Constants.AUTH_HEADER_VALUE_SAMPLY;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.check.CheckResult;
@@ -776,7 +778,8 @@ public class BrokerConnector {
   public void sendStatusReportItems(List<StatusReportItem> statusReportItems)
       throws BrokerConnectorException {
     try {
-      Gson gson = new Gson();
+      Gson gson = new GsonBuilder()
+          .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
       String reportString = gson.toJson(statusReportItems);
       URI uri = new URI(
           SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.MONITORING_PATH);
