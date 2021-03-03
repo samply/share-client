@@ -51,10 +51,10 @@ file=${CATALINA_HOME}/conf/log4j2.xml
 sed -i "s/{level}/${LOG_LEVEL:-info}/"                    "$file"
 
 file=${CATALINA_HOME}/conf/features.properties
-sed -i "s/{feature_BBMRI_DIRECTORY_SYNC}/${feature_BBMRI_DIRECTORY_SYNC:-false}/" "$file"
-sed -i "s/{feature_DKTK_CENTRAL_SEARCH}/${feature_DKTK_CENTRAL_SEARCH:-false}/"   "$file"
-sed -i "s/{feature_NNGM_CTS}/${feature_NNGM_CTS:-false}/"                         "$file"
-sed -i "s|{feature_NNGM_ENCRYPT_ID}|${feature_NNGM_ENCRYPT_ID:-false}|"           "$file"
+sed -i "s/{feature_BBMRI_DIRECTORY_SYNC}/${FEATURE_BBMRI_DIRECTORY_SYNC:-false}/" "$file"
+sed -i "s/{feature_DKTK_CENTRAL_SEARCH}/${FEATURE_DKTK_CENTRAL_SEARCH:-false}/"   "$file"
+sed -i "s/{feature_NNGM_CTS}/${FEATURE_NNGM_CTS:-false}/"                         "$file"
+sed -i "s|{feature_NNGM_ENCRYPT_ID}|${FEATURE_NNGM_ENCRYPT_ID:-false}|"           "$file"
 
 file=${CATALINA_HOME}/conf/${PROJECT}_cts_info.xml
 sed -i "s|{nngm-magicpl-apikey}|${NNGM_MAGICPL_APIKEY}|"                    "$file"
