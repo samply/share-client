@@ -5,6 +5,9 @@ import static de.samply.share.common.utils.Constants.AUTH_HEADER_VALUE_SAMPLY;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.check.CheckResult;
@@ -40,6 +43,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +72,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.jooq.tools.json.ParseException;
 
 /**
  * A connector that handles all communication with a searchbroker.
@@ -88,7 +93,7 @@ public class BrokerConnector {
    */
   private BrokerConnector() {
   }
-  
+
   /**
    * Instantiate a broker connector for a certain broker. Credentials are read from the database.
    *
@@ -119,7 +124,7 @@ public class BrokerConnector {
       throw new RuntimeException(e);
     }
   }
-  
+
   /**
    * Gets broker.
    *
@@ -128,7 +133,7 @@ public class BrokerConnector {
   public Broker getBroker() {
     return broker;
   }
-  
+
   /**
    * Gets credentials.
    *
@@ -137,7 +142,7 @@ public class BrokerConnector {
   public Credentials getCredentials() {
     return credentials;
   }
-  
+
   /**
    * Sets credentials.
    *
@@ -146,7 +151,7 @@ public class BrokerConnector {
   public void setCredentials(Credentials credentials) {
     this.credentials = credentials;
   }
-  
+
   /**
    * Get the name, the searchbroker provides as its own.
    *
@@ -180,12 +185,12 @@ public class BrokerConnector {
     }
     return broker.getAddress();
   }
-  
+
   /**
    * Register with this broker.
    *
    * @return a status, used for further handling. Either display a confirmation code box or show an
-   *      error
+   *        error
    * @throws BrokerConnectorException the broker connector exception
    */
   public BrokerStatusType register() throws BrokerConnectorException {
@@ -212,7 +217,7 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-  
+
   /**
    * Send a DELETE command in order to request deletion of this instance from the connected brokers
    * database.
@@ -240,7 +245,7 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-  
+
   /**
    * Send an activation code to the searchbroker.
    *
@@ -275,7 +280,7 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-  
+
   /**
    * Get the list of inquiry ids and revisions from the broker.
    *
@@ -335,7 +340,7 @@ public class BrokerConnector {
     }
     return new HashMap<>();
   }
-  
+
   /**
    * Retrieve a test inquiry from the broker.
    *
@@ -411,7 +416,7 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-  
+
   /**
    * Get the CQL reference query from the searchbroker.
    *
@@ -449,8 +454,8 @@ public class BrokerConnector {
         ApplicationBean.getBridgeheadInfos().getQueryLanguage());
     return httpClient.execute(httpHost, httpGet);
   }
-  
-  
+
+
   /**
    * Retrieve a reference query from the broker. This query is used to gather performance data to
    * report to monitoring.
@@ -477,7 +482,7 @@ public class BrokerConnector {
     }
     return null;
   }
-  
+
   /**
    * Get an inquiry from the broker.
    *
@@ -529,7 +534,7 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-  
+
   /**
    * Get additional information about the inquiry.
    *
@@ -568,7 +573,7 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-  
+
   /**
    * Get the contact that created the inquiry.
    *
@@ -607,7 +612,7 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-  
+
   /**
    * Check if an expose is available for the inquiry.
    *
@@ -643,7 +648,7 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-  
+
   /**
    * Send a (disguised) reply to the broker. Currently, the format of the reply is not defined. It
    * might just be an integer...or some xml representation of a result set.
@@ -661,7 +666,7 @@ public class BrokerConnector {
       throw new BrokerConnectorException(e);
     }
   }
-  
+
   /**
    * Send a (disguised) reply to the broker. Currently, the format of the reply is not defined. It
    * might just be an integer...or some xml representation of a result set.
@@ -735,7 +740,7 @@ public class BrokerConnector {
     broker.setStatus(BrokerStatusType.BS_OK);
     BrokerUtil.updateBroker(broker);
   }
-  
+
   /**
    * Check the reachability of the broker.
    *
@@ -768,7 +773,7 @@ public class BrokerConnector {
 
     return result;
   }
-  
+
   /**
    * Transmit a list of status report items to the broker (to relay to monitoring).
    *
@@ -803,5 +808,67 @@ public class BrokerConnector {
     } catch (IOException | URISyntaxException e) {
       throw new BrokerConnectorException(e);
     }
+  }
+
+  /**
+   * Send the site name of the bridgehead to the searchbroker.
+   * @param siteName the site name of the bridgehead
+   * @return http response code
+   * @throws BrokerConnectorException BrokerConnectorException
+   */
+  public int sendSiteName(String siteName) throws BrokerConnectorException {
+    try {
+      URI uri = new URI(
+          SamplyShareUtils.addTrailingSlash(broker.getAddress()) + Constants.BANKS_PATH
+              + credentials.getUsername() + "/site/" + siteName);
+      HttpPut httpPut = new HttpPut(uri.normalize().toString());
+      httpPut.setHeader(HttpHeaders.AUTHORIZATION,
+          AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+      CloseableHttpResponse response = httpClient.execute(httpHost, httpPut);
+      int retCode = response.getStatusLine().getStatusCode();
+      response.close();
+      return retCode;
+    } catch (IOException | URISyntaxException e) {
+      throw new BrokerConnectorException(e);
+    }
+  }
+
+  /**
+   * Get all site names which are stored in the searchbroker.
+   * @return site names as list
+   * @throws URISyntaxException URISyntaxException
+   * @throws BrokerConnectorException BrokerConnectorException
+   */
+  public List<String> getSiteNames() throws URISyntaxException, BrokerConnectorException {
+    URI uri = new URI(
+        SamplyShareUtils.addTrailingSlash(brokerUrl.getPath()) + Constants.SITES_NAME_PATH);
+    HttpGet httpGet = new HttpGet(uri.normalize().toString());
+    httpGet.setHeader(HttpHeaders.AUTHORIZATION,
+        AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
+    int statusCode;
+    String responseString;
+    try (CloseableHttpResponse response = httpClient.execute(httpHost, httpGet)) {
+      statusCode = response.getStatusLine().getStatusCode();
+      if (statusCode == HttpStatus.SC_OK) {
+        HttpEntity entity = response.getEntity();
+        responseString = EntityUtils.toString(entity, Consts.UTF_8);
+        EntityUtils.consume(entity);
+        return convertSiteNameResponseToList(responseString);
+      }
+      return new ArrayList<>();
+    } catch (IOException e) {
+      throw new BrokerConnectorException(e);
+    }
+  }
+
+  private List<String> convertSiteNameResponseToList(String response) {
+    JsonParser parser = new JsonParser();
+    JsonArray sitesJsonArray = (JsonArray) parser.parse(response);
+    List<String> siteNames = new ArrayList<>();
+    for (int i = 0; i < sitesJsonArray.size(); i++) {
+      JsonObject site = sitesJsonArray.get(i).getAsJsonObject();
+      siteNames.add(site.get("name").getAsString());
+    }
+    return siteNames;
   }
 }

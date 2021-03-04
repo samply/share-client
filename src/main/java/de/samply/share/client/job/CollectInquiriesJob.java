@@ -9,6 +9,7 @@ import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.util.InquiryCriteriaEntityType;
 import de.samply.share.client.job.util.InquiryCriteriaFactory;
 import de.samply.share.client.model.EnumInquiryPresent;
+import de.samply.share.client.model.db.enums.BrokerStatusType;
 import de.samply.share.client.model.db.enums.EntityType;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.InquiryCriteriaStatusType;
@@ -67,6 +68,9 @@ public class CollectInquiriesJob implements Job {
       if (credentials == null || SamplyShareUtils.isNullOrEmpty(credentials.getPasscode())) {
         logger.warn("Credentials missing for broker id " + broker.getId());
         continue;
+      } else if (broker.getStatus().equals(BrokerStatusType.BS_ACTIVATION_OK)) {
+        logger.warn("Site name missing for broker " + broker.getId());
+        break;
       }
       try {
         Map<String, String> inquiries = brokerConnector.getInquiryList();
