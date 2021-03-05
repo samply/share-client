@@ -7,11 +7,20 @@ ENV PROJECT=$PROJECT
 
 RUN ["rm", "-fr", "/usr/local/tomcat/webapps"]
 
-COPY target/connector/ /usr/local/tomcat/webapps/ROOT/
+# Problem: Manifest ist currently created only in the war file. Manifest is needed to find the database.
+# TODO: Create manifest automatically in target through pom.xml
+#COPY target/connector/ /usr/local/tomcat/webapps/ROOT/
+ADD target/connector.war                        /usr/local/tomcat/webapps/ROOT.war
 
 # Adding fontconfig and libfreetype6 for rendering the BK Export, cf. https://stackoverflow.com/questions/55454036
-RUN	apt-get update && apt-get install -y fontconfig libfreetype6 && \
-    rm -rf /var/lib/apt/lists/*
+RUN	apt-get update && apt-get install -y fontconfig libfreetype6 unzip && \
+    rm -rf /var/lib/apt/lists/* &&\
+    unzip /usr/local/tomcat/webapps/ROOT.war &&\
+    rm /usr/local/tomcat/webapps/ROOT.war &&\
+    mv /usr/local/tomcat/webapps/* /usr/local/tomcat/webapps/ROOT/ &&\
+    apt-get uninstall unzip
+
+
 
 ADD src/docker/context.xml                      ${CATALINA_HOME}/conf/Catalina/localhost/ROOT.xml
 
