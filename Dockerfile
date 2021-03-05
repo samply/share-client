@@ -10,14 +10,13 @@ RUN ["rm", "-fr", "/usr/local/tomcat/webapps"]
 # Problem: Manifest ist currently created only in the war file. Manifest is needed to find the database.
 # TODO: Create manifest automatically in target through pom.xml
 #COPY target/connector/ /usr/local/tomcat/webapps/ROOT/
-ADD target/connector.war                        /usr/local/tomcat/webapps/ROOT.war
+ADD target/connector.war                        /usr/local/tomcat/webapps/ROOT/ROOT.war
 
 # Adding fontconfig and libfreetype6 for rendering the BK Export, cf. https://stackoverflow.com/questions/55454036
 RUN	apt-get update && apt-get install -y fontconfig libfreetype6 unzip && \
     rm -rf /var/lib/apt/lists/* &&\
-    unzip /usr/local/tomcat/webapps/ROOT.war &&\
-    rm /usr/local/tomcat/webapps/ROOT.war &&\
-    mv /usr/local/tomcat/webapps/* /usr/local/tomcat/webapps/ROOT/ &&\
+    unzip /usr/local/tomcat/webapps/ROOT/ROOT.war &&\
+    rm /usr/local/tomcat/webapps/ROOT/ROOT.war &&\
     apt-get uninstall unzip
 
 
