@@ -16,8 +16,7 @@ ADD target/connector.war                        /usr/local/tomcat/webapps/ROOT/R
 RUN	apt-get update && apt-get install -y fontconfig libfreetype6 unzip && \
     rm -rf /var/lib/apt/lists/* &&\
     unzip /usr/local/tomcat/webapps/ROOT/ROOT.war &&\
-    rm /usr/local/tomcat/webapps/ROOT/ROOT.war &&\
-    apt-get uninstall unzip
+    rm /usr/local/tomcat/webapps/ROOT/ROOT.war
 
 
 
