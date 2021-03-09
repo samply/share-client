@@ -16,7 +16,10 @@ public enum ClientFeature implements Feature {
   NNGM_CTS,
 
   @Label("NNGM ENCRYPT_ID")
-  NNGM_ENCRYPT_ID;
+  NNGM_ENCRYPT_ID,
+
+  @Label("Set Site Name")
+  SET_SITE_NAME;
 
   public boolean isActive() {
     return FeatureContext.getFeatureManager().isActive(this);
