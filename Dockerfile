@@ -1,4 +1,14 @@
 ARG TOMCAT_IMAGE_VERSION=9-jdk8-openjdk-slim
+
+FROM alpine:latest as extract
+
+RUN apk add --no-cache unzip
+
+ADD target/connector.war /connector/connector.war
+
+RUN mkdir -p /connector/extracted && \
+       unzip /connector/connector.war -d /connector/extracted/
+
 FROM tomcat:$TOMCAT_IMAGE_VERSION
 
 ## Define for which project this image is build
@@ -7,18 +17,11 @@ ENV PROJECT=$PROJECT
 
 RUN ["rm", "-fr", "/usr/local/tomcat/webapps"]
 
-# Problem: Manifest ist currently created only in the war file. Manifest is needed to find the database.
-# TODO: Create manifest automatically in target through pom.xml
-#COPY target/connector/ /usr/local/tomcat/webapps/ROOT/
-ADD target/connector.war                        /usr/local/tomcat/webapps/ROOT/ROOT.war
+COPY --from=extract /connector/extracted/ /usr/local/tomcat/webapps/ROOT/
 
 # Adding fontconfig and libfreetype6 for rendering the BK Export, cf. https://stackoverflow.com/questions/55454036
-RUN	apt-get update && apt-get install -y fontconfig libfreetype6 unzip && \
-    rm -rf /var/lib/apt/lists/* &&\
-    unzip /usr/local/tomcat/webapps/ROOT/ROOT.war &&\
-    rm /usr/local/tomcat/webapps/ROOT/ROOT.war
-
-
+RUN	apt-get update && apt-get install -y fontconfig libfreetype6 && \
+    rm -rf /var/lib/apt/lists/*
 
 ADD src/docker/context.xml                      ${CATALINA_HOME}/conf/Catalina/localhost/ROOT.xml
 
