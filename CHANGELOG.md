@@ -4,38 +4,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.3.0 - 2021-03-04]
+### Added
+- set site name when registering at the searchbroker
+- delete searchbroker registration in the searchbroker database
+- feature property to activate or deactivate "set site name" feature
+### Changed
+- share-common version 4.1.0
+
+## [7.2.4 - 2021-02-25]
+### Fixed
+- share-common 4.0.1 fix for icinga
+
 ## [7.2.3 - 2021-02-12]
-## Fixed
+### Fixed
 - load last inquiry result
 
 ## [7.2.2 - 2021-02-10]
-## Fixed
+### Fixed
 - read EncId instead of returning jsonString
 - check the headers jsonpaths and target-url before using it
 
 ## [7.2.1 - 2021-02-04]
-## Added
+### Added
 - github actions for automatic docker image builds in different configuration (currently samply, c4 and dktk)
 - Environment Variables for the configuration file [_cts_info.xml](./src/docker/_cts_info.xml).
 - Environment Variables for the new patientlistUrl and projectPseudonymisationUrl. [see this file](./src/docker/samply_common_urls.xml)
-##  Changed
+###  Changed
 - Removed hard coded urls from [samply_common_urls](./src/docker/samply_common_urls.xml)
 - Moved JMX Exporter and start.sh to "/docker" in the container
 - Base image of the container from 8.5.32-jre8-alpine to 9-jdk8-openjdk-slim
-## Fixed
+### Fixed
 - send pseudonymised bundle as JSON only
 - renamed some methods
 - Automatic generation of java classes from xsd files
 
 ## [7.2.0 - 2021-02-03]
-## Added
+### Added
 - added process 9b for CTS 
 - added JSONPath
 - encryption/decryption of FHIR references 
 - read localIds from Mainzelliste
 
 ## [7.1.0 - 2021-02-02]
-## Added
+### Added
 - Percentage Logger
 - Java Doc
 - Integrate projectpseudonymization and patientlist
@@ -44,7 +56,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Github release
 ### Changed
 - Samply parent 11.1.0
-## Added
+### Added
 - Github Actions
 - Google Code Style
 ### Bugfix
