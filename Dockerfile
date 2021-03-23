@@ -1,4 +1,14 @@
 ARG TOMCAT_IMAGE_VERSION=9-jdk8-openjdk-slim
+
+FROM alpine:latest as extract
+
+RUN apk add --no-cache unzip
+
+ADD target/connector.war /connector/connector.war
+
+RUN mkdir -p /connector/extracted && \
+       unzip /connector/connector.war -d /connector/extracted/
+
 FROM tomcat:$TOMCAT_IMAGE_VERSION
 
 ## Define for which project this image is build
@@ -7,7 +17,7 @@ ENV PROJECT=$PROJECT
 
 RUN ["rm", "-fr", "/usr/local/tomcat/webapps"]
 
-COPY target/connector/ /usr/local/tomcat/webapps/ROOT/
+COPY --from=extract /connector/extracted/ /usr/local/tomcat/webapps/ROOT/
 
 # Adding fontconfig and libfreetype6 for rendering the BK Export, cf. https://stackoverflow.com/questions/55454036
 RUN	apt-get update && apt-get install -y fontconfig libfreetype6 && \
