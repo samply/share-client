@@ -70,5 +70,15 @@ sed -i "s|{nngm-mainzelliste-url}|${NNGM_MAINZELLISTE_URL}|"                "$fi
 
 export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/docker/jmx_prometheus_javaagent-0.3.1.jar=9100:/docker/jmx-exporter.yml"
 
+# SSL Certs
+if [ -d "/custom-certs" ]; then
+	echo "Found custom-certs. Starting import of certs:"
+	for file in /custom-certs/*; do
+		cp -v $file /usr/local/share/ca-certificates/$(basename $file).crt
+	done
+	update-ca-certificates || (echo -e "\nThe system has REJECTED one of the certificates:"; ls -l /custom-certs/*; echo "Make sure that ALL of the certificates are valid."; exit 1)
+	echo "Successfully imported custom-certs."
+fi
+
 # Replace start.sh with catalina.sh
 exec /usr/local/tomcat/bin/catalina.sh run
