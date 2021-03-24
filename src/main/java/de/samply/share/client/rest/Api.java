@@ -11,6 +11,8 @@ import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.model.db.tables.pojos.User;
 import de.samply.share.client.util.connector.CtsConnector;
+import de.samply.share.client.util.connector.exception.ConflictException;
+import de.samply.share.client.util.connector.exception.MandatoryAttributeException;
 import de.samply.share.client.util.db.UserUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -71,7 +73,7 @@ public class Api {
       CtsConnector ctsConnector = ApplicationBean.getCtsConnector();
       return ctsConnector.postPseudonmToCts(bundle, mediaType);
     } catch (ConfigurationException | DataFormatException | GeneralSecurityException
-            | NullPointerException e) {
+            | MandatoryAttributeException | ConflictException e) {
       return Response.status(400).entity(e.getMessage()).build();
     } catch (NotAuthorizedException e) {
       return Response.status(401).entity(e.getMessage()).build();
@@ -115,7 +117,7 @@ public class Api {
       CtsConnector ctsConnector = ApplicationBean.getCtsConnector();
       return ctsConnector.postLocalPatientToCentralCts(patient, httpHeaders, headerMapToSend);
     } catch (ConfigurationException | DataFormatException | StringIndexOutOfBoundsException
-        | PathNotFoundException e) {
+        | PathNotFoundException | ConflictException e) {
       return Response.status(400).entity(e.getMessage()).build();
     } catch (NotAuthorizedException e) {
       return Response.status(401).entity(e.getMessage()).build();
@@ -157,7 +159,7 @@ public class Api {
       CtsConnector ctsConnector = ApplicationBean.getCtsConnector();
       return ctsConnector.postLocalPatientToCentralCts(patient);
     } catch (NullPointerException | ConfigurationException | DataFormatException
-        | IllegalArgumentException e) {
+        | IllegalArgumentException | ConflictException e) {
       return Response.status(400).entity(e.getMessage()).build();
     } catch (NotAuthorizedException e) {
       return Response.status(401).entity(e.getMessage()).build();
@@ -192,7 +194,6 @@ public class Api {
           headerMapToSend.put(key, headersFromRequest.getFirst(key));
         }
       }
-
     }
     return headerMapToSend;
   }

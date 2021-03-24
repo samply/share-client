@@ -16,6 +16,8 @@ import de.samply.share.client.crypt.Crypt;
 import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.fhir.FhirResource;
 import de.samply.share.client.model.EnumConfiguration;
+import de.samply.share.client.util.connector.exception.ConflictException;
+import de.samply.share.client.util.connector.exception.MandatoryAttributeException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import java.io.IOException;
@@ -100,8 +102,8 @@ public class CtsConnector {
    * @throws GeneralSecurityException GeneralSecurityException
    */
   public Response postPseudonmToCts(String bundleString, String mediaType)
-      throws IOException, ConfigurationException, DataFormatException,
-      NotFoundException, NotAuthorizedException, GeneralSecurityException {
+          throws IOException, ConfigurationException, DataFormatException,
+          NotFoundException, NotAuthorizedException, GeneralSecurityException, MandatoryAttributeException, ConflictException {
     // Make a call to the PL, and replace patient identifying information in the
     // bundle with a pseudonym.
     Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
@@ -153,8 +155,8 @@ public class CtsConnector {
    * @throws NotAuthorizedException   NotAuthorizedException
    */
   public Response postLocalPatientToCentralCts(String patient)
-      throws IOException, IllegalArgumentException,
-      NotFoundException, NotAuthorizedException {
+          throws IOException, IllegalArgumentException,
+          NotFoundException, NotAuthorizedException, ConflictException {
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
     JsonObject pseudonimisedPatient = mainzellisteConnector.requestEncryptedIdForPatient(patient);
     // Set up the API call
@@ -195,8 +197,8 @@ public class CtsConnector {
   public Response postLocalPatientToCentralCts(String patient,
       javax.ws.rs.core.HttpHeaders httpHeaders,
       HashMap<String, Object> headerMapToSend)
-      throws IOException, IllegalArgumentException,
-      NotFoundException, NotAuthorizedException {
+          throws IOException, IllegalArgumentException,
+          NotFoundException, NotAuthorizedException, ConflictException {
     List<String> urlTargetHeaders = httpHeaders.getRequestHeader(X_BK_TARGET_URL);
     String encryptedIds = patient;//or a empty string
     String urlTarget;
@@ -297,8 +299,8 @@ public class CtsConnector {
    * @throws DataFormatException    DataFormatException
    */
   private Bundle pseudonymiseBundle(String bundleString, String mediaType)
-      throws IOException, ConfigurationException, DataFormatException, NotFoundException,
-      NotAuthorizedException {
+          throws IOException, ConfigurationException, DataFormatException, NotFoundException,
+          NotAuthorizedException, MandatoryAttributeException, ConflictException {
     Bundle bundle = fhirResource.convertToBundleResource(bundleString, mediaType);
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
     Bundle pseudonymizedBundle = null;
@@ -378,8 +380,8 @@ public class CtsConnector {
   }
 
   private String readIds(String json, String headerIdKey, boolean response)
-      throws IOException, NotAuthorizedException, StringIndexOutOfBoundsException,
-      PathNotFoundException {
+          throws IOException, NotAuthorizedException, StringIndexOutOfBoundsException,
+          PathNotFoundException, ConflictException {
     String headerIdKeyString = new String(Base64.getDecoder().decode(headerIdKey));
     String patientJson = null;
     try {
@@ -404,7 +406,7 @@ public class CtsConnector {
   }
 
   private String replaceIdsWithEncryptedIds(String patientJson, List<String> ids, boolean response)
-      throws IOException, NotAuthorizedException {
+          throws IOException, NotAuthorizedException, ConflictException {
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
     if (!response) {
       for (String id : ids) {
