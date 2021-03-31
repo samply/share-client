@@ -1,4 +1,4 @@
 *
 !src/docker
-!target/connector/
+!target/connector.war
 !Dockerfile
