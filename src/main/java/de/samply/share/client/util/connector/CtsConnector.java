@@ -56,6 +56,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.Bundle;
 
+/**
+ * A connector that handles all communication with the EDC system.
+ */
 public class CtsConnector {
 
   private static final Logger logger = LogManager.getLogger(CtsConnector.class);
@@ -99,11 +102,13 @@ public class CtsConnector {
    * @throws DataFormatException      DataFormatException
    * @throws NotFoundException        NotFoundException
    * @throws NotAuthorizedException   NotAuthorizedException
-   * @throws GeneralSecurityException GeneralSecurityException
+   * @throws GeneralSecurityException
+   * GeneralSecurityException
    */
   public Response postPseudonmToCts(String bundleString, String mediaType)
           throws IOException, ConfigurationException, DataFormatException,
-          NotFoundException, NotAuthorizedException, GeneralSecurityException, MandatoryAttributeException, ConflictException {
+          NotFoundException, NotAuthorizedException, GeneralSecurityException,
+          MandatoryAttributeException, ConflictException {
     // Make a call to the PL, and replace patient identifying information in the
     // bundle with a pseudonym.
     Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
@@ -260,7 +265,7 @@ public class CtsConnector {
    * @return http response
    */
   private Response getResponse(CloseableHttpResponse response, int statusCode,
-      String responseAsString) {
+                               String responseAsString) {
     Response.ResponseBuilder builder = Response.status(statusCode).entity(responseAsString);
     //headers
     Header[] responseHeaders = response.getAllHeaders();

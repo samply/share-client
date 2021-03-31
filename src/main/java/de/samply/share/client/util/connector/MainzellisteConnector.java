@@ -132,7 +132,7 @@ public class MainzellisteConnector {
     Coverage coveragePseudonym = null;
     Composition composition = null;
     Composition compositionPseudonym = null;
-    JsonObject encryptedID;
+    JsonObject encryptedId;
     int patientEntryIndex = 0;
     int coverageEntryIndex = 0;
     int compositionEntryIndex = 0;
@@ -154,9 +154,9 @@ public class MainzellisteConnector {
       }
       if (patient != null && coverage != null && composition != null) {
         JsonObject jsonIdatObject = createJsonPatient(patient, coverage);
-        encryptedID = requestPseudonymFromMainzelliste(jsonIdatObject);
-        patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedID);
-        compositionPseudonym = addPseudonymToComposition(compositionPseudonym, encryptedID);
+        encryptedId = requestPseudonymFromMainzelliste(jsonIdatObject);
+        patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedId);
+        compositionPseudonym = addPseudonymToComposition(compositionPseudonym, encryptedId);
         bundle.getEntry().get(compositionEntryIndex).setResource(compositionPseudonym);
         bundle.getEntry().get(patientEntryIndex).setResource(patientPseudonym);
         bundle.getEntry().get(coverageEntryIndex).setResource(coveragePseudonym);
@@ -277,12 +277,12 @@ public class MainzellisteConnector {
    * Add pseudonym to a Patient resource.
    *
    * @param patient     the patient
-   * @param encryptedID encryptedID
+   * @param encryptedId encryptedID
    * @return the pseudonymized patient
    */
-  private Patient addPseudonymToPatient(Patient patient, JsonObject encryptedID) {
+  private Patient addPseudonymToPatient(Patient patient, JsonObject encryptedId) {
     patient.getIdentifierFirstRep()
-        .setValue(encryptedID.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
+        .setValue(encryptedId.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
     return patient;
   }
 
@@ -290,15 +290,15 @@ public class MainzellisteConnector {
    * Add the identifier to the composition.
    *
    * @param composition the composition
-   * @param encryptedID encryptedID
+   * @param encryptedId encryptedID
    * @return composition with subject identifier
    */
-  private Composition addPseudonymToComposition(Composition composition, JsonObject encryptedID) {
+  private Composition addPseudonymToComposition(Composition composition, JsonObject encryptedId) {
     Identifier identifier = new Identifier();
     identifier.setSystem("http://uk-koeln.de/fhir/NamingSystem/nNGM/patient-identifier");
     composition.getSubject().setIdentifier(identifier);
     composition.getSubject().getIdentifier()
-        .setValue(encryptedID.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
+        .setValue(encryptedId.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
     return composition;
   }
 
@@ -415,7 +415,7 @@ public class MainzellisteConnector {
     HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
     httpPost.setEntity(entity);
     CloseableHttpResponse response = null;
-    JsonObject encryptedID;
+    JsonObject encryptedId;
     try {
       response = httpClient.execute(httpPost);
       StatusLine statusLine = response.getStatusLine();
@@ -424,14 +424,14 @@ public class MainzellisteConnector {
       insertEventLog(statusCode);
       checkStatusCode(response, statusCode, reasonPhrase);
       String encryptedIdString = EntityUtils.toString(response.getEntity());
-      encryptedID = (JsonObject) parser.parse(encryptedIdString);
+      encryptedId = (JsonObject) parser.parse(encryptedIdString);
     } catch (IOException e) {
       logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
       throw new IOException(e);
     } finally {
       closeResponse(response);
     }
-    return encryptedID;
+    return encryptedId;
   }
 
   /**
@@ -611,8 +611,8 @@ public class MainzellisteConnector {
 
   private void addEncryptedIdToPatient(JsonObject patientAsJson,
       String encryptedIdString) {
-    JsonObject encryptedID = (JsonObject) parser.parse(encryptedIdString);
-    patientAsJson.addProperty("patid", encryptedID.get("EncID").getAsString());
+    JsonObject encryptedId = (JsonObject) parser.parse(encryptedIdString);
+    patientAsJson.addProperty("patid", encryptedId.get("EncID").getAsString());
   }
 
   private HttpPost createHttpPost(String path) {
