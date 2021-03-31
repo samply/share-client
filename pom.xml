@@ -72,7 +72,7 @@
     <version.jooq>3.11.11</version.jooq>
     <jta.version>1.1</jta.version>
     <quartz.version>2.3.0</quartz.version>
-    <log4j-api.version>2.8</log4j-api.version>
+    <log4j-api.version>2.14.1</log4j-api.version>
     <omnifaces.version>1.14.1</omnifaces.version>
     <simple-xml.version>2.7.1</simple-xml.version>
 
@@ -458,9 +458,7 @@
               </goals>
               <configuration>
                 <target>
-                  <copy file="docs/faces-config-${project.context}.xml"
-                    toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml"
-                    overwrite="true"/>
+                  <copy file="docs/faces-config-${project.context}.xml" toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml" overwrite="true"/>
                 </target>
               </configuration>
             </execution>
