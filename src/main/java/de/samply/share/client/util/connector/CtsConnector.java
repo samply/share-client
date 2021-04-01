@@ -205,7 +205,7 @@ public class CtsConnector {
           throws IOException, IllegalArgumentException,
           NotFoundException, NotAuthorizedException, ConflictException {
     List<String> urlTargetHeaders = httpHeaders.getRequestHeader(X_BK_TARGET_URL);
-    String encryptedIds = patient;//or a empty string
+    String encryptedIds = patient; //or a empty string
     String urlTarget;
     if (urlTargetHeaders != null && !urlTargetHeaders.isEmpty()) {
       urlTarget = urlTargetHeaders.get(0);
@@ -440,7 +440,7 @@ public class CtsConnector {
    * @throws GeneralSecurityException GeneralSecurityException
    */
   private static String searchForIds(String json, boolean encrypt)
-      throws GeneralSecurityException {
+          throws GeneralSecurityException {
     Crypt crypt = ApplicationBean.getCrypt();
     List<Pattern> patternList = new ArrayList<>();
     Pattern pattern0 = Pattern.compile("\\b(id value=\".*)");
@@ -455,24 +455,38 @@ public class CtsConnector {
       Matcher matcher = patternList.get(i).matcher(json);
       while (matcher.find()) {
         String match = matcher.group(1);
-        String substring = "";
+        String substring;
+        boolean isUrnOrUrl = true;
         if (i == 0) {
           int index1 = match.indexOf("\"");
           int index2 = match.lastIndexOf("\"");
           substring = match.substring(index1 + 1, index2);
         } else {
-          int index = match.lastIndexOf("/");
-          int index2 = match.lastIndexOf("\"");
-          substring = match.substring(index + 1, index2);
+          if (isUrn(match)) {
+            int index = match.lastIndexOf(":");
+            int index2 = match.lastIndexOf("\"");
+            substring = match.substring(index + 1, index2);
+          } else if (isUrl(match)) {
+            int index = match.lastIndexOf("/");
+            int index2 = match.lastIndexOf("\"");
+            substring = match.substring(index + 1, index2);
+          } else {
+            substring = match;
+            isUrnOrUrl = false;
+          }
         }
-        String cryptedString;
-        if (encrypt) {
-          cryptedString = crypt.encrypt(substring);
+        if (!substring.isEmpty() && isUrnOrUrl) {
+          String cryptedString;
+          if (encrypt) {
+            cryptedString = crypt.encrypt(substring);
+          } else {
+            cryptedString = crypt.decrypt(substring);
+          }
+          String newIdString = match.replace(substring, cryptedString);
+          json = json.replace(match, newIdString);
         } else {
-          cryptedString = crypt.decrypt(substring);
+          logger.warn("The ID does not match the URL or URN Format " + match);
         }
-        String newIdString = match.replace(substring, cryptedString);
-        json = json.replace(match, newIdString);
       }
     }
     return json;
@@ -492,6 +506,26 @@ public class CtsConnector {
       String bodyResponse) {
     return message + "; statusCode: " + statusCode + "; reason: " + reasonPhrase + ";body: "
         + bodyResponse;
+  }
+
+  /**
+   * Check if a Id is a URN.
+   *
+   * @param urlUrnfiedId ID to check.
+   * @return either the id is urn or not.
+   */
+  private static boolean isUrn(String urlUrnfiedId) {
+    return urlUrnfiedId.contains("urn:uuid:");
+  }
+
+  /**
+   * Check if a Id is a URL.
+   *
+   * @param urlUrnfiedId  ID to check.
+   * @return either the id is urn or not.
+   */
+  private static boolean isUrl(String urlUrnfiedId) {
+    return urlUrnfiedId.contains("/");
   }
 
   /**
