@@ -7,5 +7,7 @@
   <p:host>{mail-host}</p:host>
   <p:port>{mail-port}</p:port>
   <p:protocol>{mail-protocol}</p:protocol>
+  <p:user>{mail-user}</p:user>
+  <p:password>{mail-password}</p:password>
   <p:templateFolder>/WEB-INF/classes/mailTemplates/</p:templateFolder>
 </p:mailSending>

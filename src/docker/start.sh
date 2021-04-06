@@ -35,6 +35,8 @@ sed -i "s%{mail-port}%${MAIL_PORT:-25}%"                  "$file"
 sed -i "s%{mail-protocol}%${MAIL_PROTOCOL:-smtp}%"        "$file"
 sed -i "s%{mail-from-address}%${MAIL_FROM_ADDRESS}%"      "$file"
 sed -i "s%{mail-from-name}%${MAIL_FROM_NAME}%"            "$file"
+sed -i "s%{mail-user}%${MAIL_USER}%"                      "$file"
+sed -i "s%{mail-password}%${MAIL_PASSWORD}%"              "$file"
 
 file=${CATALINA_HOME}/conf/${PROJECT}_bridgehead_info.xml
 sed -i "s#{site}#${SITE}#"                                "$file"
