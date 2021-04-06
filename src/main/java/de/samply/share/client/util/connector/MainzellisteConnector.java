@@ -15,6 +15,8 @@ import de.samply.share.client.model.ReadPatientsToken;
 import de.samply.share.client.model.ReadPatientsToken.ID;
 import de.samply.share.client.model.ReadPatientsToken.TokenData;
 import de.samply.share.client.model.db.enums.EventMessageType;
+import de.samply.share.client.util.connector.exception.ConflictException;
+import de.samply.share.client.util.connector.exception.MandatoryAttributeException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.EventLogMainzellisteUtil;
 import de.samply.share.client.util.db.EventLogUtil;
@@ -50,6 +52,9 @@ import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
 
+/**
+ * Mainzelliste Connector.
+ */
 public class MainzellisteConnector {
 
   private static final Logger logger = LogManager.getLogger(MainzellisteConnector.class);
@@ -111,18 +116,23 @@ public class MainzellisteConnector {
    *
    * @param bundle the patient bundle
    * @return the pseudonymized patient
-   * @throws IllegalArgumentException IllegalArgumentException
-   * @throws IOException              IOException
+   * @throws IllegalArgumentException     IllegalArgumentException
+   * @throws IOException                  IOException
+   * @throws NotFoundException            NotFoundException
+   * @throws NotAuthorizedException       NotFoundException
+   * @throws MandatoryAttributeException  MandatoryAttributeException
    */
+
   public Bundle getPatientPseudonym(Bundle bundle)
-      throws IllegalArgumentException, NotFoundException, NotAuthorizedException, IOException {
+          throws IllegalArgumentException, NotFoundException, NotAuthorizedException, IOException,
+          MandatoryAttributeException, ConflictException {
     Patient patient = null;
     Patient patientPseudonym = null;
     Coverage coverage = null;
     Coverage coveragePseudonym = null;
     Composition composition = null;
     Composition compositionPseudonym = null;
-    JsonObject encryptedID;
+    JsonObject encryptedId;
     int patientEntryIndex = 0;
     int coverageEntryIndex = 0;
     int compositionEntryIndex = 0;
@@ -144,9 +154,9 @@ public class MainzellisteConnector {
       }
       if (patient != null && coverage != null && composition != null) {
         JsonObject jsonIdatObject = createJsonPatient(patient, coverage);
-        encryptedID = requestPseudonymFromMainzelliste(jsonIdatObject);
-        patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedID);
-        compositionPseudonym = addPseudonymToComposition(compositionPseudonym, encryptedID);
+        encryptedId = requestPseudonymFromMainzelliste(jsonIdatObject);
+        patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedId);
+        compositionPseudonym = addPseudonymToComposition(compositionPseudonym, encryptedId);
         bundle.getEntry().get(compositionEntryIndex).setResource(compositionPseudonym);
         bundle.getEntry().get(patientEntryIndex).setResource(patientPseudonym);
         bundle.getEntry().get(coverageEntryIndex).setResource(coveragePseudonym);
@@ -267,12 +277,12 @@ public class MainzellisteConnector {
    * Add pseudonym to a Patient resource.
    *
    * @param patient     the patient
-   * @param encryptedID encryptedID
+   * @param encryptedId encryptedID
    * @return the pseudonymized patient
    */
-  private Patient addPseudonymToPatient(Patient patient, JsonObject encryptedID) {
+  private Patient addPseudonymToPatient(Patient patient, JsonObject encryptedId) {
     patient.getIdentifierFirstRep()
-        .setValue(encryptedID.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
+        .setValue(encryptedId.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
     return patient;
   }
 
@@ -280,27 +290,29 @@ public class MainzellisteConnector {
    * Add the identifier to the composition.
    *
    * @param composition the composition
-   * @param encryptedID encryptedID
+   * @param encryptedId encryptedID
    * @return composition with subject identifier
    */
-  private Composition addPseudonymToComposition(Composition composition, JsonObject encryptedID) {
+  private Composition addPseudonymToComposition(Composition composition, JsonObject encryptedId) {
     Identifier identifier = new Identifier();
     identifier.setSystem("http://uk-koeln.de/fhir/NamingSystem/nNGM/patient-identifier");
     composition.getSubject().setIdentifier(identifier);
     composition.getSubject().getIdentifier()
-        .setValue(encryptedID.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
+        .setValue(encryptedId.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
     return composition;
   }
 
   /**
    * Extract from the patient only the necessary attributes for the Mainzelliste.
    *
-   * @param patient the patient
+   * @param patient the patient FHIR-resource
+   * @param coverage the coverage FHIR-resource
    * @return A patient with the attributes from the original patient
    * @throws NullPointerException NullPointerException
+   * @throws MandatoryAttributeException MandatoryAttributeException
    */
   private JsonObject createJsonPatient(Patient patient, Coverage coverage)
-      throws NullPointerException {
+          throws NullPointerException, MandatoryAttributeException {
     JsonObject jsonIdatObject = new JsonObject();
     try {
       jsonIdatObject.addProperty(IDAT_VORNAME,
@@ -311,7 +323,7 @@ public class MainzellisteConnector {
       checkIfAttributeExist(birthDateElement.asStringValue(), IDAT_GEBURTSDATUM);
       int birthDay = birthDateElement.getDay();
       int birthMonth = birthDateElement.getMonth();
-      birthMonth += 1;// +1 because Hapi returns the month with 0-index, e.g. 0=January
+      birthMonth += 1; // +1 because Hapi returns the month with 0-index, e.g. 0=January
       String day = String.valueOf(birthDay);
       String month = String.valueOf(birthMonth);
       if (birthDay < 10) {
@@ -345,9 +357,12 @@ public class MainzellisteConnector {
             checkIfAttributeExist(coverage.getIdentifierFirstRep().getValue(),
                 IDAT_VERSICHERUNGSNUMMER));
       }
+    } catch (MandatoryAttributeException e) {
+      logger.error("Error at identifying patient data: " + e.getMessage());
+      throw new MandatoryAttributeException(e.getMessage());
     } catch (NullPointerException e) {
-      logger.error("Error at identifying patient data" + e.getMessage());
-      throw new NullPointerException("Error at identifying patient data" + e.getMessage());
+      logger.error("Error at identifying patient data: " + e.getMessage());
+      throw new NullPointerException("Error at identifying patient data: " + e.getMessage());
     }
     logger.debug("jsonIdatObject for Mainzelliste: " + jsonIdatObject.toString());
     return jsonIdatObject;
@@ -360,12 +375,13 @@ public class MainzellisteConnector {
    * @param attributeName attributeName
    * @return the attribute if its not empty
    * @throws NullPointerException NullPointerException
+   * @throws MandatoryAttributeException MandatoryAttributeException
    */
   private String checkIfAttributeExist(String attribute, String attributeName)
-      throws NullPointerException {
+      throws MandatoryAttributeException {
     if (attribute == null || attribute.isEmpty()) {
-      logger.error("The mandatory attribute " + attributeName + " was empty");
-      throw new NullPointerException("The mandatory attribute " + attributeName + " was empty");
+      logger.error(getMissigErrorMessage(attributeName));
+      throw new MandatoryAttributeException(getMissigErrorMessage(attributeName));
     } else {
       return attribute;
     }
@@ -377,8 +393,12 @@ public class MainzellisteConnector {
    * @param object  object
    * @param message message
    */
-  private void checkNonNull(Object object, String message) {
-    Objects.requireNonNull(object, message);
+  private void checkNonNull(Object object, String message) throws MandatoryAttributeException {
+    try {
+      Objects.requireNonNull(object, message);
+    } catch (Exception e) {
+      throw new MandatoryAttributeException(e.getMessage());
+    }
   }
 
   /**
@@ -389,12 +409,13 @@ public class MainzellisteConnector {
    * @throws IOException IOException
    */
   private JsonObject requestPseudonymFromMainzelliste(JsonObject patient)
-      throws IOException, IllegalArgumentException, NotFoundException, NotAuthorizedException {
+          throws IOException, IllegalArgumentException, NotFoundException,
+          NotAuthorizedException, ConflictException {
     HttpPost httpPost = createHttpPost(GET_ENCRYPT_ID_URL);
     HttpEntity entity = new StringEntity(patient.toString(), Consts.UTF_8);
     httpPost.setEntity(entity);
     CloseableHttpResponse response = null;
-    JsonObject encryptedID;
+    JsonObject encryptedId;
     try {
       response = httpClient.execute(httpPost);
       StatusLine statusLine = response.getStatusLine();
@@ -403,14 +424,14 @@ public class MainzellisteConnector {
       insertEventLog(statusCode);
       checkStatusCode(response, statusCode, reasonPhrase);
       String encryptedIdString = EntityUtils.toString(response.getEntity());
-      encryptedID = (JsonObject) parser.parse(encryptedIdString);
+      encryptedId = (JsonObject) parser.parse(encryptedIdString);
     } catch (IOException e) {
       logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
       throw new IOException(e);
     } finally {
       closeResponse(response);
     }
-    return encryptedID;
+    return encryptedId;
   }
 
   /**
@@ -421,8 +442,8 @@ public class MainzellisteConnector {
    * @return the patient with the replaced id
    */
   public JsonObject requestEncryptedIdForPatient(String patient)
-      throws IOException, IllegalArgumentException,
-      NotFoundException, NotAuthorizedException {
+          throws IOException, IllegalArgumentException,
+          NotFoundException, NotAuthorizedException, ConflictException {
     JsonObject patientAsJson = (JsonObject) parser.parse(patient);
     JsonObject jsonEntity = new JsonObject();
     jsonEntity.addProperty("searchIdType",
@@ -458,8 +479,8 @@ public class MainzellisteConnector {
    * @return the requested encrypted id
    */
   public String requestEncryptedIdWithPatientId(String id)
-      throws IOException, IllegalArgumentException,
-      NotFoundException, NotAuthorizedException {
+          throws IOException, IllegalArgumentException,
+          NotFoundException, NotAuthorizedException, ConflictException {
     JsonObject jsonEntity = new JsonObject();
     jsonEntity.addProperty("searchIdType",
         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_SEARCH_ID_TYPE));
@@ -494,8 +515,8 @@ public class MainzellisteConnector {
    * @return the patient with the replaced id
    */
   public JsonArray getLocalId(List<String> ctsIds)
-      throws IOException, IllegalArgumentException,
-      NotFoundException, NotAuthorizedException {
+          throws IOException, IllegalArgumentException,
+          NotFoundException, NotAuthorizedException, ConflictException {
     String id = getMainzellisteSessionId();
     String tokenId = getMainzellisteReadToken(id, ctsIds);
     HttpGet httpGet = new HttpGet(
@@ -520,7 +541,8 @@ public class MainzellisteConnector {
     }
   }
 
-  private String getMainzellisteSessionId() throws IOException, NotAuthorizedException {
+  private String getMainzellisteSessionId() throws IOException, NotAuthorizedException,
+          ConflictException {
     HttpPost httpPost = new HttpPost(
         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_URL)
             + "/sessions");
@@ -544,7 +566,7 @@ public class MainzellisteConnector {
   }
 
   private String getMainzellisteReadToken(String sessionId, List<String> ctsIds)
-      throws IOException, NotAuthorizedException {
+          throws IOException, NotAuthorizedException, ConflictException {
     HttpPost httpPost = new HttpPost(
         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PATIENT_LIST_URL)
             + "/sessions/" + sessionId + "/tokens");
@@ -589,8 +611,8 @@ public class MainzellisteConnector {
 
   private void addEncryptedIdToPatient(JsonObject patientAsJson,
       String encryptedIdString) {
-    JsonObject encryptedID = (JsonObject) parser.parse(encryptedIdString);
-    patientAsJson.addProperty("patid", encryptedID.get("EncID").getAsString());
+    JsonObject encryptedId = (JsonObject) parser.parse(encryptedIdString);
+    patientAsJson.addProperty("patid", encryptedId.get("EncID").getAsString());
   }
 
   private HttpPost createHttpPost(String path) {
@@ -614,7 +636,7 @@ public class MainzellisteConnector {
   }
 
   private void checkStatusCode(CloseableHttpResponse response, int statusCode, String reasonPhrase)
-      throws IOException, NotAuthorizedException {
+      throws IOException, NotAuthorizedException, ConflictException {
     if (statusCode >= 500 && statusCode < 600) {
       String bodyResponse = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
       String message = getMessage("Mainzelliste server not responding", statusCode,
@@ -644,7 +666,7 @@ public class MainzellisteConnector {
       logger.error(
           getMessage("Invalid patient data posted to Mainzelliste", statusCode,
               reasonPhrase, bodyResponse));
-      throw new IllegalArgumentException(
+      throw new ConflictException(
           getMessage("Invalid patient data posted to Mainzelliste", statusCode,
               reasonPhrase, bodyResponse));
     }
@@ -653,11 +675,11 @@ public class MainzellisteConnector {
   /**
    * print the message from the extern service.
    *
-   * @param message      Todo.
-   * @param statusCode   Todo.
-   * @param reasonPhrase Todo.
-   * @param bodyResponse Todo.
-   * @return Todo.
+   * @param message      message.
+   * @param statusCode   statusCode.
+   * @param reasonPhrase reasonPhrase.
+   * @param bodyResponse bodyResponse.
+   * @return message from the extern service.
    */
   private String getMessage(String message, int statusCode, String reasonPhrase,
       String bodyResponse) {
@@ -681,4 +703,13 @@ public class MainzellisteConnector {
     }
   }
 
+  /**
+   * return a standard error message.
+   *
+   * @param attributeName attributeName
+   * @return error message
+   */
+  String getMissigErrorMessage(String attributeName) {
+    return "Mandatory attribute is missing: " + attributeName;
+  }
 }

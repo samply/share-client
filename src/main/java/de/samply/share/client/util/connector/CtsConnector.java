@@ -16,6 +16,8 @@ import de.samply.share.client.crypt.Crypt;
 import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.fhir.FhirResource;
 import de.samply.share.client.model.EnumConfiguration;
+import de.samply.share.client.util.connector.exception.ConflictException;
+import de.samply.share.client.util.connector.exception.MandatoryAttributeException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import java.io.IOException;
@@ -54,6 +56,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.Bundle;
 
+/**
+ * A connector that handles all communication with the EDC system.
+ */
 public class CtsConnector {
 
   private static final Logger logger = LogManager.getLogger(CtsConnector.class);
@@ -97,11 +102,13 @@ public class CtsConnector {
    * @throws DataFormatException      DataFormatException
    * @throws NotFoundException        NotFoundException
    * @throws NotAuthorizedException   NotAuthorizedException
-   * @throws GeneralSecurityException GeneralSecurityException
+   * @throws GeneralSecurityException
+   * GeneralSecurityException
    */
   public Response postPseudonmToCts(String bundleString, String mediaType)
-      throws IOException, ConfigurationException, DataFormatException,
-      NotFoundException, NotAuthorizedException, GeneralSecurityException {
+          throws IOException, ConfigurationException, DataFormatException,
+          NotFoundException, NotAuthorizedException, GeneralSecurityException,
+          MandatoryAttributeException, ConflictException {
     // Make a call to the PL, and replace patient identifying information in the
     // bundle with a pseudonym.
     Bundle pseudonymBundle = pseudonymiseBundle(bundleString, mediaType);
@@ -153,8 +160,8 @@ public class CtsConnector {
    * @throws NotAuthorizedException   NotAuthorizedException
    */
   public Response postLocalPatientToCentralCts(String patient)
-      throws IOException, IllegalArgumentException,
-      NotFoundException, NotAuthorizedException {
+          throws IOException, IllegalArgumentException,
+          NotFoundException, NotAuthorizedException, ConflictException {
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
     JsonObject pseudonimisedPatient = mainzellisteConnector.requestEncryptedIdForPatient(patient);
     // Set up the API call
@@ -195,10 +202,10 @@ public class CtsConnector {
   public Response postLocalPatientToCentralCts(String patient,
       javax.ws.rs.core.HttpHeaders httpHeaders,
       HashMap<String, Object> headerMapToSend)
-      throws IOException, IllegalArgumentException,
-      NotFoundException, NotAuthorizedException {
+          throws IOException, IllegalArgumentException,
+          NotFoundException, NotAuthorizedException, ConflictException {
     List<String> urlTargetHeaders = httpHeaders.getRequestHeader(X_BK_TARGET_URL);
-    String encryptedIds = patient;//or a empty string
+    String encryptedIds = patient; //or a empty string
     String urlTarget;
     if (urlTargetHeaders != null && !urlTargetHeaders.isEmpty()) {
       urlTarget = urlTargetHeaders.get(0);
@@ -258,7 +265,7 @@ public class CtsConnector {
    * @return http response
    */
   private Response getResponse(CloseableHttpResponse response, int statusCode,
-      String responseAsString) {
+                               String responseAsString) {
     Response.ResponseBuilder builder = Response.status(statusCode).entity(responseAsString);
     //headers
     Header[] responseHeaders = response.getAllHeaders();
@@ -297,8 +304,8 @@ public class CtsConnector {
    * @throws DataFormatException    DataFormatException
    */
   private Bundle pseudonymiseBundle(String bundleString, String mediaType)
-      throws IOException, ConfigurationException, DataFormatException, NotFoundException,
-      NotAuthorizedException {
+          throws IOException, ConfigurationException, DataFormatException, NotFoundException,
+          NotAuthorizedException, MandatoryAttributeException, ConflictException {
     Bundle bundle = fhirResource.convertToBundleResource(bundleString, mediaType);
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
     Bundle pseudonymizedBundle = null;
@@ -378,8 +385,8 @@ public class CtsConnector {
   }
 
   private String readIds(String json, String headerIdKey, boolean response)
-      throws IOException, NotAuthorizedException, StringIndexOutOfBoundsException,
-      PathNotFoundException {
+          throws IOException, NotAuthorizedException, StringIndexOutOfBoundsException,
+          PathNotFoundException, ConflictException {
     String headerIdKeyString = new String(Base64.getDecoder().decode(headerIdKey));
     String patientJson = null;
     try {
@@ -404,7 +411,7 @@ public class CtsConnector {
   }
 
   private String replaceIdsWithEncryptedIds(String patientJson, List<String> ids, boolean response)
-      throws IOException, NotAuthorizedException {
+          throws IOException, NotAuthorizedException, ConflictException {
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
     if (!response) {
       for (String id : ids) {
@@ -433,7 +440,7 @@ public class CtsConnector {
    * @throws GeneralSecurityException GeneralSecurityException
    */
   private static String searchForIds(String json, boolean encrypt)
-      throws GeneralSecurityException {
+          throws GeneralSecurityException {
     Crypt crypt = ApplicationBean.getCrypt();
     List<Pattern> patternList = new ArrayList<>();
     Pattern pattern0 = Pattern.compile("\\b(id value=\".*)");
@@ -448,24 +455,38 @@ public class CtsConnector {
       Matcher matcher = patternList.get(i).matcher(json);
       while (matcher.find()) {
         String match = matcher.group(1);
-        String substring = "";
+        String substring;
+        boolean isUrnOrUrl = true;
         if (i == 0) {
           int index1 = match.indexOf("\"");
           int index2 = match.lastIndexOf("\"");
           substring = match.substring(index1 + 1, index2);
         } else {
-          int index = match.lastIndexOf("/");
-          int index2 = match.lastIndexOf("\"");
-          substring = match.substring(index + 1, index2);
+          if (isUrn(match)) {
+            int index = match.lastIndexOf(":");
+            int index2 = match.lastIndexOf("\"");
+            substring = match.substring(index + 1, index2);
+          } else if (isUrl(match)) {
+            int index = match.lastIndexOf("/");
+            int index2 = match.lastIndexOf("\"");
+            substring = match.substring(index + 1, index2);
+          } else {
+            substring = match;
+            isUrnOrUrl = false;
+          }
         }
-        String cryptedString;
-        if (encrypt) {
-          cryptedString = crypt.encrypt(substring);
+        if (!substring.isEmpty() && isUrnOrUrl) {
+          String cryptedString;
+          if (encrypt) {
+            cryptedString = crypt.encrypt(substring);
+          } else {
+            cryptedString = crypt.decrypt(substring);
+          }
+          String newIdString = match.replace(substring, cryptedString);
+          json = json.replace(match, newIdString);
         } else {
-          cryptedString = crypt.decrypt(substring);
+          logger.warn("The ID does not match the URL or URN Format " + match);
         }
-        String newIdString = match.replace(substring, cryptedString);
-        json = json.replace(match, newIdString);
       }
     }
     return json;
@@ -485,6 +506,26 @@ public class CtsConnector {
       String bodyResponse) {
     return message + "; statusCode: " + statusCode + "; reason: " + reasonPhrase + ";body: "
         + bodyResponse;
+  }
+
+  /**
+   * Check if a Id is a URN.
+   *
+   * @param urlUrnfiedId ID to check.
+   * @return either the id is urn or not.
+   */
+  private static boolean isUrn(String urlUrnfiedId) {
+    return urlUrnfiedId.contains("urn:uuid:");
+  }
+
+  /**
+   * Check if a Id is a URL.
+   *
+   * @param urlUrnfiedId  ID to check.
+   * @return either the id is urn or not.
+   */
+  private static boolean isUrl(String urlUrnfiedId) {
+    return urlUrnfiedId.contains("/");
   }
 
   /**
