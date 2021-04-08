@@ -62,57 +62,9 @@ public class MagicPlConnector implements IdManagementConnector {
     }
   }
 
-  // To be replaced by myGetIds
   @Override
   public Map<IdObject, List<IdObject>> getIds(List<IdObject> searchIds, List<String> resultIdTypes)
       throws IdManagementConnectorException {
-
-    Map<IdObject, List<IdObject>> results = new HashMap<>();
-
-    for (IdObject searchId : searchIds) {
-      for (String resultIdType : resultIdTypes) {
-
-        Map<IdObject, List<IdObject>> tempResults = myGetIds(searchId, resultIdType);
-
-        for (Map.Entry<IdObject, List<IdObject>> mapEntry : tempResults.entrySet()) {
-
-          List<IdObject> resultsValue = results.get(mapEntry.getKey());
-          if (resultsValue != null) {
-            resultsValue.addAll(mapEntry.getValue());
-          } else {
-            results.put(mapEntry.getKey(), mapEntry.getValue());
-          }
-
-        }
-
-      }
-    }
-
-    return results;
-
-  }
-
-  private Map<IdObject, List<IdObject>> myGetIds(IdObject searchId, String resultIdType)
-      throws IdManagementConnectorException {
-
-    try {
-      return myGetIds_WithoutManagementException(searchId, resultIdType);
-    } catch (NullPointerException e) {
-      return new HashMap<>();
-    }
-  }
-
-  /**
-   * Todo David.
-   * @param searchIds Todo David.
-   * @param resultIdTypes Todo David.
-   * @return Todo David.
-   * @throws IdManagementConnectorException IdManagementConnectorException
-   */
-  public Map<IdObject, List<IdObject>> myGetIds(List<IdObject> searchIds,
-      List<String> resultIdTypes)
-      throws IdManagementConnectorException {
-
     //read patients from local IDM
     List<Patient> patients = readPatients(searchIds, resultIdTypes,
         IdManagementUtils.isLocalIdType(searchIds.get(0).getIdType()));
@@ -139,20 +91,6 @@ public class MagicPlConnector implements IdManagementConnector {
       }
     }
     return result;
-  }
-
-
-  private Map<IdObject, List<IdObject>> myGetIds_WithoutManagementException(IdObject searchId,
-      String resultIdType) throws IdManagementConnectorException {
-
-    List<IdObject> searchIds = new ArrayList<>();
-    List<String> resultIdTypes = new ArrayList<>();
-
-    searchIds.add(searchId);
-    resultIdTypes.add(resultIdType);
-
-    return myGetIds(searchIds, resultIdTypes);
-
   }
 
   @Override
@@ -192,11 +130,9 @@ public class MagicPlConnector implements IdManagementConnector {
 
     //check output
     if (patients.size() != searchIds.size()) {
-      throw new IdManagementConnectorException(
-          "can't get export ids from local IDM: different size of the given"
-              + " search id list '" + searchIds.size() + "' and returned patient list '" + patients
-              .size()
-              + "' ");
+      throw new IdManagementConnectorException("can't get export ids from local IDM: "
+          + "different size of the given search id list '" + searchIds.size() + "' and "
+          + "returned patient list '" + patients.size() + "' ");
     }
 
     //prepare result
@@ -236,38 +172,13 @@ public class MagicPlConnector implements IdManagementConnector {
 
   }
 
-  // TODO: TO DELETE: use only myReadPatients when magic pl can accept search ids with not defined
-  //  resultIdTypes
   private List<Patient> readPatients(List<IdObject> searchIds, List<String> resultIdTypes,
-      boolean isLocalIdType) throws IdManagementConnectorException {
-
-    List<Patient> patients = new ArrayList<>();
-
-    for (IdObject searchId : searchIds) {
-
-      List<IdObject> tempSearchIds = new ArrayList<>();
-      tempSearchIds.add(searchId);
-      List<Patient> tempPatients = myReadPatients(tempSearchIds, resultIdTypes, isLocalIdType);
-      if (tempPatients.isEmpty()) {
-        patients.add(null);
-      } else {
-        patients.addAll(tempPatients);
-      }
-
-    }
-
-    return patients;
-
-  }
-
-  private List<Patient> myReadPatients(List<IdObject> searchIds, List<String> resultIdTypes,
       boolean isLocalIdType)
       throws IdManagementConnectorException {
     // validate input
     if (searchIds.isEmpty() || resultIdTypes.isEmpty()) {
-      logger.warn(
-          "can't get export ids from local IDM: the provided search id or result id list is "
-              + "empty");
+      logger.warn("can't get export ids from local IDM: the provided search id or result "
+          + "id list is empty");
       return new ArrayList<>();
     }
     /*
@@ -283,8 +194,8 @@ public class MagicPlConnector implements IdManagementConnector {
     */
     // prepare request
     HttpPost httpPost = createHttpPost();
-    httpPost.setEntity(
-        new StringEntity(buildRequestBody(searchIds, resultIdTypes), ContentType.APPLICATION_JSON));
+    httpPost.setEntity(new StringEntity(buildRequestBody(searchIds, resultIdTypes),
+        ContentType.APPLICATION_JSON));
 
     try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
       StatusLine statusLine = response.getStatusLine();
@@ -317,10 +228,8 @@ public class MagicPlConnector implements IdManagementConnector {
 
   private String buildRequestBody(List<IdObject> searchIds, List<String> resultIds) {
     JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("searchIds", gson.toJson(searchIds).replaceAll("\"",
-        "\\\""));
-    jsonObject.addProperty("resultIds", gson.toJson(resultIds).replaceAll("\"",
-        "\\\""));
+    jsonObject.addProperty("searchIds", gson.toJson(searchIds).replaceAll("\"", "\\\""));
+    jsonObject.addProperty("resultIds", gson.toJson(resultIds).replaceAll("\"", "\\\""));
     return gson.toJson(jsonObject);
   }
 
