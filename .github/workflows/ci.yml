@@ -64,4 +64,4 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ github.repository }}:samply-${{ steps.extract_docker_tag.outputs.tag }}
+          tags: ${{ github.repository }}:gbn-${{ steps.extract_docker_tag.outputs.tag }}
