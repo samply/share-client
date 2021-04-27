@@ -746,7 +746,7 @@ public class BrokerConnector {
     result.setExecutionDate(new Date());
 
     try {
-      HttpGet httpGet = new HttpGet(httpHost.toURI());
+      HttpGet httpGet = new HttpGet(brokerUrl.toString());
       result.getMessages()
           .add(new Message(httpGet.getRequestLine().toString(), "fa-long-arrow-right"));
       CloseableHttpResponse response = httpClient.execute(httpHost, httpGet);

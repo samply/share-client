@@ -220,8 +220,8 @@ public class TestsBean implements Serializable {
     String location = "";
     try {
       if (ApplicationUtils.isLanguageQuery()) {
-        AbstractLdmConnectorView<?, ?, ?, ?, ?> ldmConnector =
-            (AbstractLdmConnectorView<?, ?, ?, ?, ?>) ApplicationBean.getLdmConnector();
+        LdmConnector ldmConnector =
+            ApplicationBean.getLdmConnector();
         LdmPostQueryParameterView parameter = new LdmPostQueryParameterView(true,
             null, true, true);
         location = ldmConnector.postQuery(testInquiry.getQuery(), parameter);
