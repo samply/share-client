@@ -55,6 +55,7 @@ sed -i "s/{feature_BBMRI_DIRECTORY_SYNC}/${feature_BBMRI_DIRECTORY_SYNC:-false}/
 sed -i "s/{feature_DKTK_CENTRAL_SEARCH}/${feature_DKTK_CENTRAL_SEARCH:-false}/"   "$file"
 sed -i "s/{feature_NNGM_CTS}/${feature_NNGM_CTS:-false}/"                         "$file"
 sed -i "s|{feature_NNGM_ENCRYPT_ID}|${feature_NNGM_ENCRYPT_ID:-false}|"           "$file"
+sed -i "s|{feature_SET_SITE_NAME}|${feature_SET_SITE_NAME:-false}|"           "$file"
 
 file=${CATALINA_HOME}/conf/${PROJECT}_cts_info.xml
 sed -i "s|{nngm-magicpl-apikey}|${NNGM_MAGICPL_APIKEY}|"                    "$file"
@@ -68,6 +69,16 @@ sed -i "s|{nngm-mainzelliste-apikey}|${NNGM_MAINZELLISTE_APIKEY}|"          "$fi
 sed -i "s|{nngm-mainzelliste-url}|${NNGM_MAINZELLISTE_URL}|"                "$file"
 
 export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/docker/jmx_prometheus_javaagent-0.3.1.jar=9100:/docker/jmx-exporter.yml"
+
+# SSL Certs
+if [ -d "/custom-certs" ]; then
+	echo "Found custom-certs. Starting import of certs:"
+	for file in /custom-certs/*; do
+		cp -v $file /usr/local/share/ca-certificates/$(basename $file).crt
+	done
+	update-ca-certificates || (echo -e "\nThe system has REJECTED one of the certificates:"; ls -l /custom-certs/*; echo "Make sure that ALL of the certificates are valid."; exit 1)
+	echo "Successfully imported custom-certs."
+fi
 
 # Replace start.sh with catalina.sh
 exec /usr/local/tomcat/bin/catalina.sh run

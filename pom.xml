@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>share-client</artifactId>
-  <version>7.2.4</version>
+  <version>7.3.1-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Connector</name>
@@ -55,7 +55,7 @@
   <properties>
     <!-- Samply dependencies -->
     <version.samply.common.config>5.1.0</version.samply.common.config>
-    <share-common.version>4.0.1</share-common.version>
+    <share-common.version>4.1.0</share-common.version>
     <share-dto.version>5.0.0</share-dto.version>
     <jsf-renderer.version>2.0.0</jsf-renderer.version>
     <common-mailing.version>3.0.0</common-mailing.version>
@@ -107,13 +107,15 @@
     <togglz-jsf.version>2.6.1.Final</togglz-jsf.version>
     <swagger-ui.version>3.25.0</swagger-ui.version>
     <microprofile-openapi-api.version>2.0-MR1</microprofile-openapi-api.version>
-    <postgresql.version>42.2.0</postgresql.version>
+    <postgresql.version>42.2.19</postgresql.version>
     <commons-validator.version>1.6</commons-validator.version>
     <junit.version>4.12</junit.version>
     <jsf-api.version>2.2.15</jsf-api.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <tink.version>1.4.0</tink.version>
     <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
+    <json-path.version>2.5.0</json-path.version>
+    <primefaces.version>8.0</primefaces.version>
   </properties>
 
   <dependencies>
@@ -420,7 +422,12 @@
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
-      <version>2.5.0</version>
+      <version>${json-path.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.primefaces</groupId>
+      <artifactId>primefaces</artifactId>
+      <version>${primefaces.version}</version>
     </dependency>
   </dependencies>
 
