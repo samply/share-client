@@ -722,6 +722,15 @@
         <database.schema>samply</database.schema>
       </properties>
     </profile>
+    <profile>
+      <id>ci-override</id>
+      <properties>
+        <database.username>share-client-build</database.username>
+        <database.password>share-client-build</database.password>
+        <database.url>jdbc:postgresql://localhost:5432/share-client-build</database.url>
+        <database.schema>samply</database.schema>
+      </properties>
+    </profile>
   </profiles>
 
 </project>
