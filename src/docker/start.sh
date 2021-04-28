@@ -35,6 +35,8 @@ sed -i "s%{mail-port}%${MAIL_PORT:-25}%"                  "$file"
 sed -i "s%{mail-protocol}%${MAIL_PROTOCOL:-smtp}%"        "$file"
 sed -i "s%{mail-from-address}%${MAIL_FROM_ADDRESS}%"      "$file"
 sed -i "s%{mail-from-name}%${MAIL_FROM_NAME}%"            "$file"
+sed -i "s%{mail-user}%${MAIL_USER}%"                      "$file"
+sed -i "s%{mail-password}%${MAIL_PASSWORD}%"              "$file"
 
 file=${CATALINA_HOME}/conf/${PROJECT}_bridgehead_info.xml
 sed -i "s#{site}#${SITE}#"                                "$file"
@@ -51,11 +53,11 @@ file=${CATALINA_HOME}/conf/log4j2.xml
 sed -i "s/{level}/${LOG_LEVEL:-info}/"                    "$file"
 
 file=${CATALINA_HOME}/conf/features.properties
-sed -i "s/{feature_BBMRI_DIRECTORY_SYNC}/${feature_BBMRI_DIRECTORY_SYNC:-false}/" "$file"
-sed -i "s/{feature_DKTK_CENTRAL_SEARCH}/${feature_DKTK_CENTRAL_SEARCH:-false}/"   "$file"
-sed -i "s/{feature_NNGM_CTS}/${feature_NNGM_CTS:-false}/"                         "$file"
-sed -i "s|{feature_NNGM_ENCRYPT_ID}|${feature_NNGM_ENCRYPT_ID:-false}|"           "$file"
-sed -i "s|{feature_SET_SITE_NAME}|${feature_SET_SITE_NAME:-false}|"           "$file"
+sed -i "s/{feature_bbmri_directory_sync}/${FEATURE_BBMRI_DIRECTORY_SYNC:-false}/" "$file"
+sed -i "s/{feature_dktk_central_search}/${FEATURE_DKTK_CENTRAL_SEARCH:-false}/"   "$file"
+sed -i "s/{feature_nngm_cts}/${FEATURE_NNGM_CTS:-false}/"                         "$file"
+sed -i "s|{feature_nngm_encrypt_id}|${FEATURE_NNGM_ENCRYPT_ID:-false}|"           "$file"
+sed -i "s|{feature_set_site_name}|${FEATURE_SET_SITE_NAME:-false}|"           "$file"
 
 file=${CATALINA_HOME}/conf/${PROJECT}_cts_info.xml
 sed -i "s|{nngm-magicpl-apikey}|${NNGM_MAGICPL_APIKEY}|"                    "$file"

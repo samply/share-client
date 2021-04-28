@@ -1,0 +1,1 @@
+UPDATE samply.configuration SET setting='/var/lib/samply/reports' WHERE name='QUALITY_REPORT_DIRECTORY';
