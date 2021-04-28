@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - feature property to activate or deactivate "set site name" feature
 ### Changed
 - share-common version 4.1.0
+- parent pom 11.1.1
 
 ## [7.2.4 - 2021-02-25]
 ### Fixed
