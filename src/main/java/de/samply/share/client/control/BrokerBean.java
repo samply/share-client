@@ -16,6 +16,7 @@ import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
 import de.samply.share.client.util.db.CredentialsUtil;
 import de.samply.share.client.util.db.InquiryHandlingRuleUtil;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -23,10 +24,14 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import org.apache.http.Consts;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.omnifaces.util.Messages;
+import org.primefaces.PrimeFaces;
 
 /**
  * A ViewScoped backing bean that is used on pages dealing with interaction with searchbrokers.
@@ -50,6 +55,8 @@ public class BrokerBean implements Serializable {
   private String newBrokerSite;
 
   private List<String> availableBrokerSites;
+
+  private String responseMessage;
 
   public List<Broker> getBrokerList() {
     return brokerList;
@@ -105,6 +112,14 @@ public class BrokerBean implements Serializable {
 
   public void setAvailableBrokerSites(List<String> availableBrokerSites) {
     this.availableBrokerSites = availableBrokerSites;
+  }
+
+  public String getResponseMessage() {
+    return responseMessage;
+  }
+
+  public void setResponseMessage(String responseMessage) {
+    this.responseMessage = responseMessage;
   }
 
   /**
@@ -163,10 +178,10 @@ public class BrokerBean implements Serializable {
   public String sendActivationCode(Broker broker, String activationCode) {
     try {
       BrokerConnector brokerConnector = new BrokerConnector(broker);
-      int retCode = brokerConnector.activate(activationCode);
-      if (retCode != HttpStatus.SC_CREATED) {
+      int responseCode = brokerConnector.activate(activationCode);
+      if (responseCode != HttpStatus.SC_CREATED) {
         Messages.create("bl.activationError")
-            .detail(Integer.toString(retCode))
+            .detail(Integer.toString(responseCode))
             .error().add();
         return "";
       } else {
@@ -263,18 +278,22 @@ public class BrokerBean implements Serializable {
   public String sendSiteName(Broker broker, String siteName) {
     try {
       BrokerConnector brokerConnector = new BrokerConnector(broker);
-      int retCode = brokerConnector.sendSiteName(siteName);
-      if (retCode != HttpStatus.SC_OK) {
+      CloseableHttpResponse response = brokerConnector.sendSiteName(siteName);
+      int responseCode = response.getStatusLine().getStatusCode();
+      responseMessage = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
+      response.close();
+      if (responseCode != HttpStatus.SC_OK) {
         Messages.create("bl.sendSiteNameError")
-            .detail(Integer.toString(retCode))
+            .detail(Integer.toString(responseCode))
             .error().add();
-        return "";
+        PrimeFaces.current().executeScript("PF('errorBoxVar').show();");
+        return "broker_list?faces-redirect=true";
       } else {
         broker.setStatus(BS_OK);
         BrokerUtil.updateBroker(broker);
         return "broker_list?faces-redirect=true";
       }
-    } catch (BrokerConnectorException e) {
+    } catch (BrokerConnectorException | IOException e) {
       logger.error("Caught BrokerConnectorException when trying to send site name to broker", e);
       return "";
     }

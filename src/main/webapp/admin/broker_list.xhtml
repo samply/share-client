@@ -105,6 +105,9 @@
                                     </span>
                                 </div>
                             </td>
+                            <p:dialog header="Error" id="errorBox" widgetVar="errorBoxVar" minHeight="40" width="350">
+                                <p:staticMessage severity="Error" summary="ERROR" detail="#{brokerBean.responseMessage}" />
+                            </p:dialog>
                         </ui:fragment>
                         <td>
                             <h:outputText value="#{broker.lastChecked}"
