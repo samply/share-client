@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - set site name when registering at the searchbroker
 - delete searchbroker registration in the searchbroker database
 - feature property to activate or deactivate "set site name" feature
+- CentraXX Job logs
 ### Changed
 - share-common version 4.1.0
 - parent pom 11.1.1
