@@ -92,7 +92,7 @@ public class IdManagementUtils {
   public static String getDefaultLocalExportIdType() {
 
     if (defaultLocalExportIdType == null) {
-      defaultLocalExportIdType = getIdType(MDS, true);
+      defaultLocalExportIdType = getIdManagementInstanceId();
     }
 
     return defaultLocalExportIdType;
