@@ -181,17 +181,6 @@ public class MagicPlConnector implements IdManagementConnector {
           + "id list is empty");
       return new ArrayList<>();
     }
-    /*
-    if (!searchIds.stream().allMatch(id -> isLocalIdType ==
-    IdManagementUtils.isLocalIdType(id.getIdType()))) {
-    throw new IdManagementConnectorException("can't get export ids from local IDM: the type of the
-    provided " + "search ids should either be local or global");}
-    if (!resultIdTypes.stream().allMatch(idType -> isLocalIdType ==
-    IdManagementUtils.isLocalIdType(idType))) {
-    throw new IdManagementConnectorException("can't get export ids from local IDM: the type of the
-     provided "+ "result ids should either be local or global");
-    }
-    */
     // prepare request
     HttpPost httpPost = createHttpPost();
     httpPost.setEntity(new StringEntity(buildRequestBody(searchIds, resultIdTypes),
@@ -201,6 +190,9 @@ public class MagicPlConnector implements IdManagementConnector {
       StatusLine statusLine = response.getStatusLine();
       int statusCode = statusLine.getStatusCode();
       if (statusCode == 400 || statusCode == 404) {
+        logger.error("Read patients from ID-Management fail, an empty patient list returned. "
+                + "Cause: [{}] {}", statusLine.getStatusCode(),
+            EntityUtils.toString(response.getEntity()));
         return new ArrayList<>();
       } else if (statusCode > 400) {
         throw new IdManagementConnectorException(
