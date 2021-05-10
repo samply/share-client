@@ -72,7 +72,6 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.jooq.tools.json.ParseException;
 
 /**
  * A connector that handles all communication with a searchbroker.
@@ -816,7 +815,7 @@ public class BrokerConnector {
    * @return http response code
    * @throws BrokerConnectorException BrokerConnectorException
    */
-  public int sendSiteName(String siteName) throws BrokerConnectorException {
+  public CloseableHttpResponse sendSiteName(String siteName) throws BrokerConnectorException {
     try {
       URI uri = new URI(
           SamplyShareUtils.addTrailingSlash(broker.getAddress()) + Constants.BANKS_PATH
@@ -824,10 +823,7 @@ public class BrokerConnector {
       HttpPut httpPut = new HttpPut(uri.normalize().toString());
       httpPut.setHeader(HttpHeaders.AUTHORIZATION,
           AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
-      CloseableHttpResponse response = httpClient.execute(httpHost, httpPut);
-      int retCode = response.getStatusLine().getStatusCode();
-      response.close();
-      return retCode;
+      return httpClient.execute(httpHost, httpPut);
     } catch (IOException | URISyntaxException e) {
       throw new BrokerConnectorException(e);
     }

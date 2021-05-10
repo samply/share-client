@@ -61,13 +61,16 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
   }
 
   InquiryCriteria getInquiryCriteria() {
+    logger.debug("get first criteria original...");
     return InquiryCriteriaUtil.getFirstCriteriaOriginal(inquiryDetails, QueryLanguageType.QL_QUERY);
   }
 
   private void checkForFirstResultPage(JobExecutionContext jobExecutionContext)
       throws JobExecutionException {
     try {
+      logger.debug("is first reusult page available?...");
       if (ldmConnector.isFirstResultPageAvailable(inquiryResult.getLocation())) {
+        logger.debug("stats done and result started...");
         jobExecutionContext.getJobDetail().getJobDataMap()
             .put(CheckInquiryStatusJobParams.STATS_DONE, true);
         jobExecutionContext.getJobDetail().getJobDataMap()
@@ -82,10 +85,13 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
       throws JobExecutionException {
     try {
 
+      logger.debug("get location and query result statistic...");
       String location = getLocation(inquiryResult);
       QueryResultStatistic queryResultStatistic = getQueryResultStatistic(location);
 
+      logger.debug("is result done?...");
       if (ldmConnector.isResultDone(location, queryResultStatistic)) {
+        logger.debug("result done...");
         jobExecutionContext.getJobDetail().getJobDataMap()
             .put(CheckInquiryStatusJobParams.RESULT_DONE, true);
         if (!jobParams.isUpload()) {
@@ -93,15 +99,18 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
           spawnGenerateStatsJob();
         }
 
+        logger.debug("update inquiry...");
         Utils.setStatus(inquiryDetails, InquiryStatusType.IS_READY);
         inquiryCriteria.setStatus(InquiryCriteriaStatusType.ICS_READY);
         updateInquiry(queryResultStatistic);
 
         // If the inquiry belongs to an upload, also update the upload status
         try {
+          logger.debug("fetch inquiry by id...");
           Integer uploadId = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId())
               .getUploadId();
           if (jobParams.isUpload() && uploadId != null) {
+            logger.debug("set upload status and spawn upload to central mds db job...");
             UploadUtil.setUploadStatusById(uploadId, UploadStatusType.US_QUERY_READY);
             spawnUploadToCentralMdsDbJob(uploadId);
           }
@@ -112,6 +121,7 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
         unscheduleThisJob(jobExecutionContext);
         logger.info("CheckInquiryStatusJob completed for inquiry " + inquiryDetails.getInquiryId());
         // TODO: Check if the handling for uploads would be better in the following method
+        logger.debug("process reply rules...");
         processReplyRules();
       }
     } catch (LdmConnectorException | SchedulerException e) {
