@@ -13,15 +13,26 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - project: gbn
+            project_context: samply
+            maven_profile: samply
+          - project: dktk
+            project_context: dktk
+            maven_profile: dktk
+          - project: c4
+            project_context: dktk
+            maven_profile: dktk
     services:
       postgres:
         image: postgres
         env:
-          POSTGRES_DB: samply.connector
-          POSTGRES_PASSWORD: samply
-          POSTGRES_USER: samply
+          POSTGRES_DB: share-client-build
+          POSTGRES_USER: share-client-build
+          POSTGRES_PASSWORD: share-client-build
           POSTGRES_HOST: localhost
         ports:
           - 5432:5432
@@ -35,7 +46,7 @@ jobs:
           java-version: 8
 
       - name: Build with Maven
-        run: mvn -B package -P samply
+        run: mvn -B package -P ${{matrix.maven_profile}},ci-override
 
       - name: Extract docker tag
         id: extract_docker_tag
@@ -63,5 +74,7 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
+          build-args: |
+            PROJECT=${{matrix.project_context}}
           push: true
-          tags: ${{ github.repository }}:samply-${{ steps.extract_docker_tag.outputs.tag }}
+          tags: ${{ github.repository }}:${{matrix.project}}-${{ steps.extract_docker_tag.outputs.tag }}
