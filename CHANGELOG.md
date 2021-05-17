@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## [7.3.1 - 2021-05-17]
+### Fixed
+- Bug #1: Verbindung zu dem/den Suchbroker(n) prüfen: Testanfrage herunterladen und ausführen
+- Bug #2: Verbindung zu dem/den Suchbroker(n) prüfen: Erreichbarkeit prüfen
+- Bug #3: Verbindung zum ID-Manager prüfen: Export ID anfordern
+- Code Style Fix
+
 ## [7.3.0 - 2021-03-04]
 ### Added
 - set site name when registering at the searchbroker
