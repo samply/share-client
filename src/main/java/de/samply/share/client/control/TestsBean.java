@@ -264,9 +264,8 @@ public class TestsBean implements Serializable {
   public void performRetrieveExportIdCheck() {
     retrieveExportIdsCheckResult = new CheckResult();
     retrieveExportIdsCheckResult.setExecutionDate(new Date());
-    String instanceId = ConfigurationUtil
-            .getConfigurationElementValue(EnumConfiguration.ID_MANAGER_INSTANCE_ID);
-    IdObject idObject = new IdObject(instanceId, localIdToCheck);
+    String idType = IdManagementUtils.getDefaultPatientLocalIdType();
+    IdObject idObject = new IdObject(idType, localIdToCheck);
     List<IdObject> idObjectList = new ArrayList<IdObject>();
     idObjectList.add(idObject);
     retrieveExportIdsCheckResult.getMessages()
