@@ -40,6 +40,7 @@ ENV JMX_EXPORTER_VERSION 0.3.1
 COPY src/docker/jmx-exporter.yml                /docker/jmx-exporter.yml
 ADD https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${JMX_EXPORTER_VERSION}/jmx_prometheus_javaagent-${JMX_EXPORTER_VERSION}.jar /docker/
 
+ENV JAVA_OPTS "-Dlog4j.configurationFile=${CATALINA_HOME}/conf/log4j2.xml"
 ADD src/docker/start.sh                         /docker/
 RUN chmod +x                                    /docker/start.sh
 CMD ["sh", "-c", "/docker/start.sh"]
