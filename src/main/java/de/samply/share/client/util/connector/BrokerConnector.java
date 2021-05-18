@@ -750,7 +750,8 @@ public class BrokerConnector {
     result.setExecutionDate(new Date());
 
     try {
-      HttpGet httpGet = new HttpGet(brokerUrl.toString());
+      URI uri = new URI(brokerUrl.getPath());
+      HttpGet httpGet = new HttpGet(uri.normalize().toString());
       result.getMessages()
           .add(new Message(httpGet.getRequestLine().toString(), "fa-long-arrow-right"));
       CloseableHttpResponse response = httpClient.execute(httpHost, httpGet);
@@ -765,7 +766,7 @@ public class BrokerConnector {
         result.setSuccess(false);
         result.getMessages().add(new Message(EntityUtils.toString(entity), "fa-bolt"));
       }
-    } catch (IOException e) {
+    } catch (IOException | URISyntaxException e) {
       result.setSuccess(false);
       result.getMessages().add(new Message(e.getMessage(), "fa-bolt"));
     }
