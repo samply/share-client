@@ -285,7 +285,7 @@ public class TestsBean implements Serializable {
       } else {
         retrieveExportIdsCheckResult.setSuccess(true);
         retrieveExportIdsCheckResult.getMessages().add(
-                new Message("Got export id => " + exportIds.get(localIdToCheck),
+                new Message("Got export id => " + exportIds.get(idObject).getIdString(),
                         "fa-long-arrow-left"));
       }
     } catch (IdManagementConnectorException e) {
