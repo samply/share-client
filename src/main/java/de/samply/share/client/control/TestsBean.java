@@ -18,6 +18,9 @@ import de.samply.share.client.util.connector.LdmPostQueryParameterView;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.CentralSearchConnectorException;
 import de.samply.share.client.util.connector.exception.IdManagerConnectorException;
+import de.samply.share.client.util.connector.idmanagement.connector.IdManagementConnector;
+import de.samply.share.client.util.connector.idmanagement.connector.IdManagementConnectorException;
+import de.samply.share.client.util.connector.idmanagement.connector.MagicPlConnector;
 import de.samply.share.client.util.connector.idmanagement.utils.IdManagementUtils;
 import de.samply.share.client.util.db.BrokerUtil;
 import de.samply.share.client.util.db.ConfigurationUtil;
@@ -29,10 +32,14 @@ import de.samply.share.model.ccp.Patient;
 import de.samply.share.model.ccp.Sample;
 import de.samply.share.model.common.Inquiry;
 import de.samply.share.model.cql.CqlQuery;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
@@ -101,7 +108,7 @@ public class TestsBean implements Serializable {
   }
 
   public void setRetrieveTestInquiryCheckResults(
-      Map<Integer, CheckResult> retrieveTestInquiryCheckResults) {
+          Map<Integer, CheckResult> retrieveTestInquiryCheckResults) {
     this.retrieveTestInquiryCheckResults = retrieveTestInquiryCheckResults;
   }
 
@@ -110,7 +117,7 @@ public class TestsBean implements Serializable {
   }
 
   public void setRetrieveAndExecuteTestInquiryCheckResults(
-      Map<Integer, CheckResult> retrieveAndExecuteTestInquiryCheckResults) {
+          Map<Integer, CheckResult> retrieveAndExecuteTestInquiryCheckResults) {
     this.retrieveAndExecuteTestInquiryCheckResults = retrieveAndExecuteTestInquiryCheckResults;
   }
 
@@ -127,7 +134,7 @@ public class TestsBean implements Serializable {
   }
 
   public void setUploadAndDeleteDummyPatientCheckResult(
-      CheckResult uploadAndDeleteDummyPatientCheckResult) {
+          CheckResult uploadAndDeleteDummyPatientCheckResult) {
     this.uploadAndDeleteDummyPatientCheckResult = uploadAndDeleteDummyPatientCheckResult;
   }
 
@@ -189,8 +196,8 @@ public class TestsBean implements Serializable {
     } catch (BrokerConnectorException e) {
       checkResult.setSuccess(false);
       checkResult.getMessages()
-          .add(new Message("BrokerConnectorException caught. Cause: "
-              + e.getMessage(), "fa-bolt"));
+              .add(new Message("BrokerConnectorException caught. Cause: "
+                      + e.getMessage(), "fa-bolt"));
     }
     retrieveTestInquiryCheckResults.put(brokerId, checkResult);
   }
@@ -211,8 +218,8 @@ public class TestsBean implements Serializable {
     } catch (BrokerConnectorException e) {
       checkResult.setSuccess(false);
       checkResult.getMessages()
-          .add(new Message("BrokerConnectorException caught. Cause: "
-              + e.getMessage(), "fa-bolt"));
+              .add(new Message("BrokerConnectorException caught. Cause: "
+                      + e.getMessage(), "fa-bolt"));
       retrieveAndExecuteTestInquiryCheckResults.put(brokerId, checkResult);
       return;
     }
@@ -220,35 +227,34 @@ public class TestsBean implements Serializable {
     String location = "";
     try {
       if (ApplicationUtils.isLanguageQuery()) {
-        AbstractLdmConnectorView<?, ?, ?, ?, ?> ldmConnector =
-            (AbstractLdmConnectorView<?, ?, ?, ?, ?>) ApplicationBean.getLdmConnector();
+        LdmConnector ldmConnector =
+                ApplicationBean.getLdmConnector();
         LdmPostQueryParameterView parameter = new LdmPostQueryParameterView(true,
-            null, true, true);
+                null, true, true);
         location = ldmConnector.postQuery(testInquiry.getQuery(), parameter);
       } else if (ApplicationUtils.isLanguageCql()) {
         LdmConnectorCql ldmConnector = (LdmConnectorCql) ApplicationBean.getLdmConnector();
         CqlQuery cqlQuery = testInquiry.getCqlQueryList().getQueries().get(0);
         LdmPostQueryParameterCql ldmPostQueryParameterCql = new LdmPostQueryParameterCql(
-            true, cqlQuery.getEntityType());
+                true, cqlQuery.getEntityType());
         location = ldmConnector.postQuery(cqlQuery.getCql(), ldmPostQueryParameterCql);
       }
     } catch (Exception e) {
       checkResult.setSuccess(false);
       checkResult.getMessages().add(new Message(
-          "Exception caught while trying to post to local datamanagement: " + e.getMessage(),
-          "fa-bolt"));
+              "Exception caught while trying to post to local datamanagement: " + e.getMessage(),
+              "fa-bolt"));
       retrieveAndExecuteTestInquiryCheckResults.put(brokerId, checkResult);
       return;
     }
     if (!SamplyShareUtils.isNullOrEmpty(location)) {
       checkResult.setSuccess(true);
       checkResult.getMessages().add(new Message("Inquiry accepted at: "
-          + location, "fa-check"));
+              + location, "fa-check"));
     } else {
       checkResult.setSuccess(false);
       checkResult.getMessages().add(new Message("Got no result", "fa-bolt"));
     }
-
     retrieveAndExecuteTestInquiryCheckResults.put(brokerId, checkResult);
   }
 
@@ -258,30 +264,34 @@ public class TestsBean implements Serializable {
   public void performRetrieveExportIdCheck() {
     retrieveExportIdsCheckResult = new CheckResult();
     retrieveExportIdsCheckResult.setExecutionDate(new Date());
-    String instanceId = ConfigurationUtil
-        .getConfigurationElementValue(EnumConfiguration.ID_MANAGER_INSTANCE_ID);
-    IdObject idObject = new IdObject(instanceId, localIdToCheck);
+    String idType = IdManagementUtils.getDefaultPatientLocalIdType();
+    IdObject idObject = new IdObject(idType, localIdToCheck);
+    List<IdObject> idObjectList = new ArrayList<IdObject>();
+    idObjectList.add(idObject);
     retrieveExportIdsCheckResult.getMessages()
-        .add(new Message("Try to get Export ID for: " + idObject, "fa-info"));
+            .add(new Message("Try to get Export ID for: " + idObject, "fa-info"));
     HashMap<String, IdObject> myMap = new HashMap<>();
     myMap.put(localIdToCheck, idObject);
-    IdManagerBasicInfoConnector idManagerConnector = new IdManagerBasicInfoConnector();
+    //IdManagerBasicInfoConnector idManagerConnector = new IdManagerBasicInfoConnector();
+
+    IdManagementConnector idManagerConnector = ApplicationBean.getIdManagementConnector();
+    //MagicPlConnector idManagerConnector = new MagicPlConnector();
     try {
-      Map<String, String> exportIds = idManagerConnector.getExportIds(myMap);
+      Map<IdObject, IdObject> exportIds = idManagerConnector.getExportIds(idObjectList);
       if (SamplyShareUtils.isNullOrEmpty(exportIds)) {
         retrieveExportIdsCheckResult.setSuccess(false);
         retrieveExportIdsCheckResult.getMessages()
-            .add(new Message("Retrieved Map is empty or null", "fa-bolt"));
+                .add(new Message("Retrieved Map is empty or null", "fa-bolt"));
       } else {
         retrieveExportIdsCheckResult.setSuccess(true);
         retrieveExportIdsCheckResult.getMessages().add(
-            new Message("Got export id => " + exportIds.get(localIdToCheck),
-                "fa-long-arrow-left"));
+                new Message("Got export id => " + exportIds.get(idObject).getIdString(),
+                        "fa-long-arrow-left"));
       }
-    } catch (IdManagerConnectorException e) {
+    } catch (IdManagementConnectorException e) {
       retrieveExportIdsCheckResult.setSuccess(false);
       retrieveExportIdsCheckResult.getMessages()
-          .add(new Message("Exception caught: " + e.getMessage(), "fa-bolt"));
+              .add(new Message("Exception caught: " + e.getMessage(), "fa-bolt"));
     }
   }
 
@@ -297,22 +307,22 @@ public class TestsBean implements Serializable {
     CentralSearchConnector centralSearchConnector = new CentralSearchConnector();
     Patient patient = createDummyPatient();
     uploadAndDeleteDummyPatientCheckResult.getMessages().add(
-        new Message("Created Dummy Patient: " + centralSearchConnector.marshalPatient(patient),
-            "fa-code"));
+            new Message("Created Dummy Patient: " + centralSearchConnector.marshalPatient(patient),
+                    "fa-code"));
 
     String instanceId = ConfigurationUtil
-        .getConfigurationElementValue(EnumConfiguration.ID_MANAGER_INSTANCE_ID);
+            .getConfigurationElementValue(EnumConfiguration.ID_MANAGER_INSTANCE_ID);
     String prefix = instanceId + "_UPLOADTEST_";
     String exportId = Utils
-        .getRandomExportid(prefix, IdManagementUtils.CENTRAL_MDS_DB_PUBKEY_FILENAME);
+            .getRandomExportid(prefix, IdManagementUtils.CENTRAL_MDS_DB_PUBKEY_FILENAME);
 
     if (SamplyShareUtils.isNullOrEmpty(exportId)) {
       uploadAndDeleteDummyPatientCheckResult.getMessages()
-          .add(new Message("Could not generate export id", "fa-bolt"));
+              .add(new Message("Could not generate export id", "fa-bolt"));
       return;
     } else {
       uploadAndDeleteDummyPatientCheckResult.getMessages()
-          .add(new Message("Generated export id: " + exportId, "fa-check"));
+              .add(new Message("Generated export id: " + exportId, "fa-check"));
     }
 
     try {
@@ -320,22 +330,22 @@ public class TestsBean implements Serializable {
       PatientUploadResult patientUploadResult = centralSearchConnector.uploadPatient(patient);
       if (!patientUploadResult.isSuccess()) {
         uploadAndDeleteDummyPatientCheckResult.getMessages()
-            .add(new Message("Upload failed: " + patientUploadResult, "fa-bolt"));
+                .add(new Message("Upload failed: " + patientUploadResult, "fa-bolt"));
       } else {
         uploadAndDeleteDummyPatientCheckResult.setSuccess(true);
         uploadAndDeleteDummyPatientCheckResult.getMessages().add(
-            new Message("Upload ok, got status code " + patientUploadResult.getStatus(),
-                "fa-check"));
+                new Message("Upload ok, got status code " + patientUploadResult.getStatus(),
+                        "fa-check"));
       }
     } finally {
       try {
         int statusCode = centralSearchConnector.deletePatients(prefix);
         uploadAndDeleteDummyPatientCheckResult.getMessages().add(new Message(
-            "Delete Patients with prefix \"" + prefix + "\" returned status code "
-                + statusCode, "fa-exchange"));
+                "Delete Patients with prefix \"" + prefix + "\" returned status code "
+                        + statusCode, "fa-exchange"));
       } catch (CentralSearchConnectorException e) {
         uploadAndDeleteDummyPatientCheckResult.getMessages()
-            .add(new Message("Caught exception: " + e.getMessage(), "fa-bolt"));
+                .add(new Message("Caught exception: " + e.getMessage(), "fa-bolt"));
       }
     }
   }
