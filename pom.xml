@@ -107,7 +107,7 @@
     <togglz-jsf.version>2.6.1.Final</togglz-jsf.version>
     <swagger-ui.version>3.25.0</swagger-ui.version>
     <microprofile-openapi-api.version>2.0-MR1</microprofile-openapi-api.version>
-    <postgresql.version>42.2.19</postgresql.version>
+    <postgresql.version>42.2.20</postgresql.version>
     <commons-validator.version>1.6</commons-validator.version>
     <junit.version>4.12</junit.version>
     <jsf-api.version>2.2.15</jsf-api.version>
