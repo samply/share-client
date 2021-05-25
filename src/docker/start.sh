@@ -82,5 +82,14 @@ if [ -d "/custom-certs" ]; then
 	echo "Successfully imported custom-certs."
 fi
 
-# Replace start.sh with catalina.sh
-exec /usr/local/tomcat/bin/catalina.sh run
+if [ "$DEBUG" = 'true' ]; then
+  ## Starting tomcat in remote debug mode
+	export JPDA_ADDRESS=1099;
+	export JPDA_TRANSPORT=dt_socket;
+	echo "Starting share-client tomcat with debug mode. Debug port is set to $JPDA_ADDRESS and JPDA_TRANSPORT is set to $JPDA_TRANSPORT";
+	exec catalina.sh jpda run;
+else
+  ## Starting tomcat in productive mode
+  echo "Starting share-client tomcat ...";
+	exec catalina.sh run;
+fi
