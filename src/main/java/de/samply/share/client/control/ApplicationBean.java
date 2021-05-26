@@ -144,7 +144,7 @@ public class ApplicationBean implements Serializable {
   private static final List<String> NAMESPACES = new ArrayList<>(
       Arrays.asList("dktk", "adt", "marker"));
 
-  private static final int TIMEOUT_IN_SECONDS = 60;
+  private static final int TIMEOUT_IN_SECONDS = 3 * 60;
   private static final ConnectCheckResult shareAvailability = new ConnectCheckResult(true,
       "Samply.Share.Client", ProjectInfo.INSTANCE.getVersionString());
   private static final ChainStatisticsManager chainStatisticsManager = new ChainStatisticsManager();
