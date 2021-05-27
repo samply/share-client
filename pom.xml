@@ -64,7 +64,7 @@
     <common-ldmclient.samplystore.biobank.version>3.0.0
     </common-ldmclient.samplystore.biobank.version>
     <common-ldmclient.cql.version>2.0.0</common-ldmclient.cql.version>
-    <converter.dktk.patient.version>2.0.0</converter.dktk.patient.version>
+    <converter.dktk.patient.version>2.1.0</converter.dktk.patient.version>
     <project-directory-client.version>1.2.0</project-directory-client.version>
 
     <!-- general dependencies -->
