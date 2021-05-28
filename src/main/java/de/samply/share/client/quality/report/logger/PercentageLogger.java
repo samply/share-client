@@ -1,6 +1,7 @@
 package de.samply.share.client.quality.report.logger;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -19,7 +20,6 @@ import org.apache.logging.log4j.Logger;
  * <p>90%</p>
  * <p>100%</p>
  */
-
 public class PercentageLogger {
 
   private final Logger logger;
@@ -39,13 +39,11 @@ public class PercentageLogger {
    * @param description      description of the operation
    */
   public PercentageLogger(Logger logger, int numberOfElements, String description) {
-
-    Preconditions.checkArgument(numberOfElements > 0, "numberOfElements is negative");
+    checkArgument(numberOfElements >= 0, "numberOfElements is negative");
 
     this.logger = logger;
     this.numberOfElements = numberOfElements;
     this.description = description;
-
   }
 
   /**
@@ -60,7 +58,6 @@ public class PercentageLogger {
    * Increments one step.
    */
   public void incrementCounter() {
-
     if (!isStarted) {
       start();
     }
@@ -68,15 +65,10 @@ public class PercentageLogger {
     int percentage = 100 * ++counter / numberOfElements;
 
     if (lastPercentage != percentage) {
-
       lastPercentage = percentage;
       if (percentage % 10 == 0) {
         logger.debug(percentage + " %");
       }
-
     }
-
   }
-
-
 }
