@@ -3,9 +3,9 @@ package de.samply.share.client.quality.report.file.excel.sheet.wrapper;
 import de.samply.share.client.quality.report.file.excel.cell.element.MatchElement;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements002;
 import de.samply.share.client.quality.report.file.excel.sheet.ExcelSheetFactory;
-import org.apache.poi.hssf.util.CellReference;
+import org.apache.poi.ss.usermodel.FontFormatting;
 import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.xssf.usermodel.XSSFFontFormatting;
+import org.apache.poi.ss.util.CellReference;
 
 public class HighlightNotFoundInBlueExcelSheetFactory002 extends ExcelSheetWithHighLightFactory {
 
@@ -42,7 +42,7 @@ public class HighlightNotFoundInBlueExcelSheetFactory002 extends ExcelSheetWithH
   }
 
   @Override
-  protected XSSFFontFormatting setHighlightFontFormatting(XSSFFontFormatting fontFormatting) {
+  protected FontFormatting setHighlightFontFormatting(FontFormatting fontFormatting) {
 
     fontFormatting.setFontColorIndex(IndexedColors.ROYAL_BLUE.getIndex());
     return fontFormatting;

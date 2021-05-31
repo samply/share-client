@@ -5,12 +5,13 @@ import de.samply.share.client.quality.report.file.excel.cell.element.StringExcel
 import de.samply.share.client.quality.report.file.excel.row.context.ExcelRowContext;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
 import org.apache.poi.ss.SpreadsheetVersion;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+
 
 public class ExcelRowFactoryImpl implements ExcelRowFactory {
 
@@ -18,14 +19,14 @@ public class ExcelRowFactoryImpl implements ExcelRowFactory {
 
 
   @Override
-  public XSSFSheet addRowTitles(XSSFSheet sheet, ExcelRowContext excelRowContext)
+  public SXSSFSheet addRowTitles(SXSSFSheet sheet, ExcelRowContext excelRowContext)
       throws ExcelRowFactoryException {
 
     ExcelRowElements emptyExcelRowElements = excelRowContext.createEmptyExcelRowElements();
 
     int rowNum = 0;
 
-    XSSFRow row = sheet.createRow(rowNum);
+    SXSSFRow row = sheet.createRow(rowNum);
 
     for (int i = 0;
         i < emptyExcelRowElements.getMaxNumberOfElements() && i < SpreadsheetVersion.EXCEL2007
@@ -42,16 +43,16 @@ public class ExcelRowFactoryImpl implements ExcelRowFactory {
 
   }
 
-  protected XSSFRow setTitleRowStyle(XSSFRow titleRow) {
+  protected SXSSFRow setTitleRowStyle(SXSSFRow titleRow) {
 
-    XSSFCellStyle cellStyle = getWorkbook(titleRow).createCellStyle();
-    XSSFFont font = getWorkbook(titleRow).createFont();
+    CellStyle cellStyle = getWorkbook(titleRow).createCellStyle();
+    Font font = getWorkbook(titleRow).createFont();
     font.setBold(true);
 
     cellStyle.setFont(font);
 
     for (int i = 0; i < titleRow.getLastCellNum(); i++) {
-      XSSFCell cell = titleRow.getCell(i);
+      SXSSFCell cell = titleRow.getCell(i);
       cell.setCellStyle(cellStyle);
     }
 
@@ -59,24 +60,24 @@ public class ExcelRowFactoryImpl implements ExcelRowFactory {
 
   }
 
-  private XSSFWorkbook getWorkbook(XSSFRow row) {
+  private SXSSFWorkbook getWorkbook(SXSSFRow row) {
     return row.getSheet().getWorkbook();
   }
 
   @Override
-  public XSSFSheet addRow(XSSFSheet sheet, ExcelRowElements excelRowElements)
+  public SXSSFSheet addRow(SXSSFSheet sheet, ExcelRowElements excelRowElements)
       throws ExcelRowFactoryException {
 
     int rowNum = sheet.getLastRowNum() + 1;
 
-    XSSFRow row = sheet.createRow(rowNum);
+    SXSSFRow row = sheet.createRow(rowNum);
 
     addElementsToRow(row, excelRowElements);
 
     return sheet;
   }
 
-  private XSSFRow addElementsToRow(XSSFRow row, ExcelRowElements elements) {
+  private SXSSFRow addElementsToRow(SXSSFRow row, ExcelRowElements elements) {
 
     for (int i = 0;
         i < elements.getMaxNumberOfElements() && i < SpreadsheetVersion.EXCEL2007.getMaxColumns();

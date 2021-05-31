@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 
@@ -19,7 +20,7 @@ public class ExcelSheetWithAutoSizeColumnFactory extends ExcelSheetFactoryWrappe
   }
 
   @Override
-  protected XSSFSheet addFunctionalityToSheet(XSSFSheet sheet) {
+  protected SXSSFSheet addFunctionalityToSheet(SXSSFSheet sheet) {
 
     for (int i = 0; i < sheet.getRow(0).getPhysicalNumberOfCells(); i++) {
 
@@ -34,7 +35,7 @@ public class ExcelSheetWithAutoSizeColumnFactory extends ExcelSheetFactoryWrappe
   }
 
 
-  private void autoSizeColumn(XSSFSheet sheet, int column) {
+  private void autoSizeColumn(SXSSFSheet sheet, int column) {
     try {
       sheet.autoSizeColumn(column);
     } catch (Exception e) {
