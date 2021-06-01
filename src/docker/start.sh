@@ -23,6 +23,9 @@ sed -i "s#{share-url}#${SHARE_URL}#"                      "$file"
 sed -i "s#{patientlist-url}#${PATIENTLIST_URL}#"          "$file"
 sed -i "s#{projectpseudonymisation-url}#${PROJECTPSEUDONYMISATION_URL}#"                      "$file"
 
+file=${CATALINA_HOME}/conf/secrets.properties
+sed -i "s|{id-manager-apikey}|${ID_MANAGER_APIKEY}|"      "$file"
+
 file=${CATALINA_HOME}/conf/${PROJECT}_common_operator.xml
 sed -i "s/{operator-first-name}/${OPERATOR_FIRST_NAME}/"  "$file"
 sed -i "s/{operator-last-name}/${OPERATOR_LAST_NAME}/"    "$file"
