@@ -566,7 +566,7 @@ public class InquiryBean implements Serializable {
       UserSeenInquiryUtil.setUserSeenInquiry(loginBean.getUser(), inquiry);
       //TODO create criteriaTree with cql
 
-      if (inquiryCriteria == null){
+      if (inquiryCriteria == null) {
         inquiryCriteria = new ArrayList<>();
       }
       if (ApplicationUtils.isLanguageQuery()) {
