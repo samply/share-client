@@ -12,6 +12,7 @@ import de.samply.common.http.HttpConnector;
 import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.common.mdrclient.MdrInvalidResponseException;
+import de.samply.config.util.FileFinderUtil;
 import de.samply.config.util.JaxbUtil;
 import de.samply.project.directory.client.DktkProjectDirectory;
 import de.samply.project.directory.client.DktkProjectDirectoryParameters;
@@ -83,6 +84,7 @@ import de.samply.share.common.utils.Constants;
 import de.samply.share.common.utils.ProjectInfo;
 import de.samply.web.mdrfaces.MdrContext;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
@@ -91,6 +93,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -399,8 +402,6 @@ public class ApplicationBean implements Serializable {
 
         insertOrUpdateConfigurationElement(EnumConfiguration.ID_MANAGER_URL,
             urls.getIdmanagerUrl());
-        insertOrUpdateConfigurationElement(EnumConfiguration.ID_MANAGER_API_KEY,
-            urls.getIdmanagerApiKey());
         insertOrUpdateConfigurationElement(
             EnumConfiguration.PATIENTLIST_URL, urls.getPatientlistUrl());
         insertOrUpdateConfigurationElement(EnumConfiguration.PROJECT_PSEUDONYMISATION_URL,
@@ -411,6 +412,39 @@ public class ApplicationBean implements Serializable {
       insertOrUpdateConfigurationElement(EnumConfiguration.SHARE_URL, urls.getShareUrl());
       insertOrUpdateConfigurationElement(EnumConfiguration.MDR_URL, urls.getMdrUrl());
 
+    }
+  }
+
+  private static void updateSecrets() {
+    if (ApplicationUtils.isDktk()) {
+      File file = tryFindSecretsPropertiesFile();
+      if (file != null) {
+        Properties properties = readProperties(file);
+        insertOrUpdateConfigurationElement(EnumConfiguration.ID_MANAGER_API_KEY,
+            properties.getProperty(EnumConfiguration.ID_MANAGER_API_KEY.name()));
+      }
+    }
+  }
+
+  private static Properties readProperties(File file) {
+    Properties properties = new Properties();
+    try {
+      properties.load(new FileInputStream(file));
+    } catch (IOException e) {
+      logger.error("Error file reading {}: {}", file.getAbsolutePath(), e.getMessage());
+    }
+    return properties;
+  }
+
+  private static File tryFindSecretsPropertiesFile() {
+    try {
+      return FileFinderUtil
+          .findFile("secrets.properties", ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
+              System.getProperty("catalina.base") + File.separator + "conf",
+              getServletContext().getRealPath("/WEB-INF"));
+    } catch (FileNotFoundException e) {
+      logger.warn("Feature configuration not found.");
+      return null;
     }
   }
 
@@ -839,6 +873,8 @@ public class ApplicationBean implements Serializable {
     loadBridgeheadInfo();
     logger.info("Loading common urls...");
     updateCommonUrls();
+    logger.info("Loading secrets...");
+    updateSecrets();
     logger.info("Loading project directory...");
     loadProjectDirectoryClient();
     logger.info("Loading id management connector");
