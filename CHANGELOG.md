@@ -5,14 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [7.3.1 - 2021-05-17]
-### Fixed
-- Bug #1: Verbindung zu dem/den Suchbroker(n) prüfen: Testanfrage herunterladen und ausführen
-- Bug #2: Verbindung zu dem/den Suchbroker(n) prüfen: Erreichbarkeit prüfen
-- Bug #3: Verbindung zum ID-Manager prüfen: Export ID anfordern
-- Code Style Fix
 
-## [7.3.0 - 2021-03-04]
+## [7.3.0 - 2021-06-02]
 ### Added
 - set site name when registering at the searchbroker
 - delete searchbroker registration in the searchbroker database
@@ -21,6 +15,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - share-common version 4.1.0
 - parent pom 11.1.1
+### Fixed
+- Bug 1: Check connection to the broker(s): Retrieve and execute test inquiry
+- Bug 2: Check connection to the broker(s): Check reachability
+- Bug 3: Check connection to the ID-Manager: Retrieve export ID
+- Bug 4: InquiryBean.loadSelectedInquiry() handle if inquiryCriteria is null
+- Code Style Fix
+
+
 
 ## [7.2.4 - 2021-02-25]
 ### Fixed

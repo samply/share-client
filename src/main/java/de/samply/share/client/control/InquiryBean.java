@@ -564,17 +564,19 @@ public class InquiryBean implements Serializable {
       inquiryResultsList = InquiryResultUtil
           .fetchInquiryResultsForInquiryDetailsById(latestInquiryDetails.getId());
       UserSeenInquiryUtil.setUserSeenInquiry(loginBean.getUser(), inquiry);
-      //TODO create criteriaTree with cql query
-      if (inquiryCriteria != null) {
-        if (ApplicationUtils.isLanguageQuery()) {
-          this.inquiryCriteria.add(InquiryCriteriaUtil
-              .getFirstCriteriaOriginal(latestInquiryDetails, QueryLanguageType.QL_QUERY));
-          latestOriginalCriteriaTree = populateCriteriaTree(
-              inquiryCriteria.get(0).getCriteriaOriginal());
-        } else {
-          this.inquiryCriteria = InquiryCriteriaUtil
-              .getInquiryCriteriaForInquiryDetails(latestInquiryDetails);
-        }
+      //TODO create criteriaTree with cql
+
+      if (inquiryCriteria == null){
+        inquiryCriteria = new ArrayList<>();
+      }
+      if (ApplicationUtils.isLanguageQuery()) {
+        this.inquiryCriteria.add(InquiryCriteriaUtil
+            .getFirstCriteriaOriginal(latestInquiryDetails, QueryLanguageType.QL_QUERY));
+        latestOriginalCriteriaTree = populateCriteriaTree(
+            inquiryCriteria.get(0).getCriteriaOriginal());
+      } else {
+        this.inquiryCriteria = InquiryCriteriaUtil
+            .getInquiryCriteriaForInquiryDetails(latestInquiryDetails);
       }
 
       List<RequestedEntity> requestedEntities = InquiryUtil.getRequestedEntitiesForInquiry(inquiry);
