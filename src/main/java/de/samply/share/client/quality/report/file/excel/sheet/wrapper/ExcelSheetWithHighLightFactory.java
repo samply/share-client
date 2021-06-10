@@ -7,10 +7,6 @@ import org.apache.poi.ss.usermodel.FontFormatting;
 import org.apache.poi.ss.usermodel.SheetConditionalFormatting;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFConditionalFormattingRule;
-import org.apache.poi.xssf.usermodel.XSSFFontFormatting;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFSheetConditionalFormatting;
 
 public abstract class ExcelSheetWithHighLightFactory extends ExcelSheetFactoryWrapper {
 
