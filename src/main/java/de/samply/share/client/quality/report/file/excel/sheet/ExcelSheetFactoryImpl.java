@@ -28,6 +28,7 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
     SXSSFSheet sheet = workbook.createSheet(sheetTitle);
     sheet = addRowTitles(sheet, excelRowContext);
+    sheet.trackAllColumnsForAutoSizing();
 
     int maxNumberOfRows = SpreadsheetVersion.EXCEL2007.getMaxRows();
 

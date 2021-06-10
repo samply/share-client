@@ -22,7 +22,8 @@ public class ExcelSheetWithAutoSizeColumnFactory extends ExcelSheetFactoryWrappe
   @Override
   protected SXSSFSheet addFunctionalityToSheet(SXSSFSheet sheet) {
 
-    for (int i = 0; i < sheet.getRow(0).getPhysicalNumberOfCells(); i++) {
+    int lastRowNum = sheet.getLastRowNum();
+    for (int i = 0; i < sheet.getRow(lastRowNum).getPhysicalNumberOfCells(); i++) {
 
       if (!excludedColumnsForAutoSize.contains(i)) {
         //sheet.autoSizeColumn(i);
@@ -32,6 +33,7 @@ public class ExcelSheetWithAutoSizeColumnFactory extends ExcelSheetFactoryWrappe
     }
 
     return sheet;
+
   }
 
 

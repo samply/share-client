@@ -33,6 +33,9 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
   public static final String PATIENT_LOCAL_IDS_SHEET_TITLE = "patient local ids";
   public static final String PATIENT_DKTK_IDS_SHEET_TITLE = "patient dktk ids";
   public static final String DATA_ELEMENT_STATISTICS = "data element stats";
+
+  public static final int WORKBOOK_WINDOW = 300;
+
   protected static final Logger logger = LogManager.getLogger(ExcelWorkbookFactoryImpl002.class);
   private final ExcelRowContextFactory002 excelRowContextFactory;
   private final DataElementStatsExcelRowContextFactory dataElementStatsExcelRowContextFactory;
@@ -74,7 +77,7 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
   public SXSSFWorkbook createWorkbook(QualityResults qualityResults)
       throws ExcelWorkbookFactoryException {
 
-    SXSSFWorkbook workbook = new SXSSFWorkbook();
+    SXSSFWorkbook workbook = new SXSSFWorkbook(WORKBOOK_WINDOW);
 
     QualityResults filteredQualityResults = applyFiltersToQualityResults(qualityResults);
     QualityResults sortedQualityResults = sortQualityResults(qualityResults);
