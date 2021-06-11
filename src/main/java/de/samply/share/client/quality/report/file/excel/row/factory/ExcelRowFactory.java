@@ -2,14 +2,14 @@ package de.samply.share.client.quality.report.file.excel.row.factory;
 
 import de.samply.share.client.quality.report.file.excel.row.context.ExcelRowContext;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 
 public interface ExcelRowFactory {
 
-  XSSFSheet addRowTitles(XSSFSheet sheet, ExcelRowContext excelRowContext)
+  SXSSFSheet addRowTitles(SXSSFSheet sheet, ExcelRowContext excelRowContext)
       throws ExcelRowFactoryException;
 
-  XSSFSheet addRow(XSSFSheet sheet, ExcelRowElements excelRowElements)
+  SXSSFSheet addRow(SXSSFSheet sheet, ExcelRowElements excelRowElements)
       throws ExcelRowFactoryException;
 
 }

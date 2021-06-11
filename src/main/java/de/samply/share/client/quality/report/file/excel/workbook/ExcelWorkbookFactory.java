@@ -1,11 +1,11 @@
 package de.samply.share.client.quality.report.file.excel.workbook;
 
 import de.samply.share.client.quality.report.results.QualityResults;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 public interface ExcelWorkbookFactory {
 
-  XSSFWorkbook createWorkbook(QualityResults qualityResults)
+  SXSSFWorkbook createWorkbook(QualityResults qualityResults)
       throws ExcelWorkbookFactoryException;
 
 }

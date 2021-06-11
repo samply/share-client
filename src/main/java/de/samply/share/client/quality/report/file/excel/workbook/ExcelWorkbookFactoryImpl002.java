@@ -23,7 +23,7 @@ import de.samply.share.client.quality.report.results.statistics.QualityResultsSt
 import de.samply.share.client.util.db.ConfigurationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
 
@@ -33,6 +33,9 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
   public static final String PATIENT_LOCAL_IDS_SHEET_TITLE = "patient local ids";
   public static final String PATIENT_DKTK_IDS_SHEET_TITLE = "patient dktk ids";
   public static final String DATA_ELEMENT_STATISTICS = "data element stats";
+
+  public static final int WORKBOOK_WINDOW = 300;
+
   protected static final Logger logger = LogManager.getLogger(ExcelWorkbookFactoryImpl002.class);
   private final ExcelRowContextFactory002 excelRowContextFactory;
   private final DataElementStatsExcelRowContextFactory dataElementStatsExcelRowContextFactory;
@@ -71,10 +74,10 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
   }
 
   @Override
-  public XSSFWorkbook createWorkbook(QualityResults qualityResults)
+  public SXSSFWorkbook createWorkbook(QualityResults qualityResults)
       throws ExcelWorkbookFactoryException {
 
-    XSSFWorkbook workbook = new XSSFWorkbook();
+    SXSSFWorkbook workbook = new SXSSFWorkbook(WORKBOOK_WINDOW);
 
     QualityResults filteredQualityResults = applyFiltersToQualityResults(qualityResults);
     QualityResults sortedQualityResults = sortQualityResults(qualityResults);
@@ -84,7 +87,7 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
     if (isSheetSelectedToBeWritten(EnumConfiguration.QUALITY_REPORT_SHOW_INFO_SHEET)) {
       logger.info("Adding explanatory sheet to Excel quality report file");
       if (explanatoryExcelSheetFactory != null) {
-        XSSFWorkbook workbook2 = addExplanatorySheet(workbook);
+        SXSSFWorkbook workbook2 = addExplanatorySheet(workbook);
         if (workbook2 != null) {
           workbook = workbook2;
         }
@@ -140,7 +143,7 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
     return new QualityResultsStatisticsImpl(qualityResults, mdrMappedElements);
   }
 
-  private XSSFWorkbook addSheet(XSSFWorkbook workbook, String sheetTitle,
+  private SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
       QualityResults qualityResults) throws ExcelWorkbookFactoryException {
 
     ExcelRowContext excelRowContext = createExcelRowContext(qualityResults);
@@ -148,7 +151,7 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
 
   }
 
-  private XSSFWorkbook addSheet(XSSFWorkbook workbook, String sheetTitle,
+  private SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
       QualityResults qualityResults, AlphabeticallySortedMismatchedQualityResults asmQualityResults,
       QualityResultsStatistics qualityResultsStatistics) throws ExcelWorkbookFactoryException {
 
@@ -158,7 +161,7 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
 
   }
 
-  private XSSFWorkbook addSheet(XSSFWorkbook workbook, String sheetTitle,
+  private SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
       ExcelRowContext excelRowContext) throws ExcelWorkbookFactoryException {
     try {
       return excelSheetFactory.addSheet(workbook, sheetTitle, excelRowContext);
@@ -167,7 +170,7 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
     }
   }
 
-  private XSSFWorkbook addPatientLocalIdsSheet(XSSFWorkbook workbook,
+  private SXSSFWorkbook addPatientLocalIdsSheet(SXSSFWorkbook workbook,
       AlphabeticallySortedMismatchedQualityResults qualityResults)
       throws ExcelWorkbookFactoryException {
 
@@ -177,7 +180,7 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
 
   }
 
-  private XSSFWorkbook addPatientDktkIdsSheet(XSSFWorkbook workbook,
+  private SXSSFWorkbook addPatientDktkIdsSheet(SXSSFWorkbook workbook,
       AlphabeticallySortedMismatchedQualityResults qualityResults)
       throws ExcelWorkbookFactoryException {
 
@@ -187,7 +190,7 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
 
   }
 
-  private XSSFWorkbook addDataElementStatistics(XSSFWorkbook workbook, String sheetTitle,
+  private SXSSFWorkbook addDataElementStatistics(SXSSFWorkbook workbook, String sheetTitle,
       QualityResults qualityResults, QualityResultsStatistics qualityResultsStatistics)
       throws ExcelWorkbookFactoryException {
 
@@ -208,7 +211,7 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
         .createExcelRowContext(qualityResults, asmQualityResults, qualityResultsStatistics);
   }
 
-  private XSSFWorkbook addExplanatorySheet(XSSFWorkbook workbook)
+  private SXSSFWorkbook addExplanatorySheet(SXSSFWorkbook workbook)
       throws ExcelWorkbookFactoryException {
 
     try {

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - delete searchbroker registration in the searchbroker database
 - feature property to activate or deactivate "set site name" feature
 - CentraXX Job logs
+- Apache POI 5.0.0
 ### Changed
 - share-common version 4.1.0
 - parent pom 11.1.1

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
@@ -21,12 +22,12 @@ public class ExplanatoryExcelSheetFactory implements ExcelSheetFactory {
 
 
   @Override
-  public XSSFWorkbook addSheet(XSSFWorkbook workbook, String sheetTitle,
+  public SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
       ExcelRowContext excelRowContext) throws ExcelSheetFactoryException {
     return addSheet();
   }
 
-  private XSSFWorkbook addSheet() throws ExcelSheetFactoryException {
+  private SXSSFWorkbook addSheet() throws ExcelSheetFactoryException {
 
     //downloadExcelInfoFile();
     //File explanatoryExcelFile = new File (explanatoryExcelFileDownloader.getFilePath());
@@ -67,12 +68,13 @@ public class ExplanatoryExcelSheetFactory implements ExcelSheetFactory {
   //    }
 
 
-  private XSSFWorkbook readWorkbook(File explanatoryExcelFile) throws ExcelSheetFactoryException {
+  private SXSSFWorkbook readWorkbook(File explanatoryExcelFile) throws ExcelSheetFactoryException {
 
     try (FileInputStream fileInputStream = new FileInputStream(explanatoryExcelFile)) {
 
       logger.info("reading explanatory excel file");
-      return new XSSFWorkbook(fileInputStream);
+      XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+      return new SXSSFWorkbook(workbook);
 
     } catch (IOException e) {
       throw new ExcelSheetFactoryException(e);
