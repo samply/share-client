@@ -27,16 +27,15 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
 
+  private static final Logger logger = LogManager.getLogger(ExcelWorkbookFactoryImpl002.class);
 
-  public static final String ALL_ELEMENTS_SHEET_TITLE = "all elements";
-  public static final String FILTERED_ELEMENTS_SHEET_TITLE = "filtered elements";
+  private static final String ALL_ELEMENTS_SHEET_TITLE = "all elements";
+  private static final String FILTERED_ELEMENTS_SHEET_TITLE = "filtered elements";
   public static final String PATIENT_LOCAL_IDS_SHEET_TITLE = "patient local ids";
-  public static final String PATIENT_DKTK_IDS_SHEET_TITLE = "patient dktk ids";
-  public static final String DATA_ELEMENT_STATISTICS = "data element stats";
+  private static final String PATIENT_DKTK_IDS_SHEET_TITLE = "patient dktk ids";
+  private static final String DATA_ELEMENT_STATISTICS = "data element stats";
+  private static final int WORKBOOK_WINDOW = 300;
 
-  public static final int WORKBOOK_WINDOW = 300;
-
-  protected static final Logger logger = LogManager.getLogger(ExcelWorkbookFactoryImpl002.class);
   private final ExcelRowContextFactory002 excelRowContextFactory;
   private final DataElementStatsExcelRowContextFactory dataElementStatsExcelRowContextFactory;
   private final PatientLocalIdsExcelRowContextFactory patientLocalIdsExcelRowContextFactory;
@@ -46,7 +45,6 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
   private final ModelSearcher modelSearcher;
   private final DktkIdMdrIdConverter dktkIdManager;
   private final MdrMappedElements mdrMappedElements;
-
 
   /**
    * Excel workbook factory.
