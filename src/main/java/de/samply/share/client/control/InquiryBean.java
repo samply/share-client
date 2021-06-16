@@ -62,9 +62,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -874,7 +878,8 @@ public class InquiryBean implements Serializable {
       String filename =
           !(inquiry.getLabel().equals("")) ? inquiry.getLabel() + ".xlsx" : "Export.xlsx";
 
-      createTemporaryFile(bos, "lastExport.xlsx");
+      String lastExportFilename = generateLastExportFilename();
+      createTemporaryFile(bos, lastExportFilename);
       Faces.sendFile(bos.toByteArray(), filename, true);
 
 
@@ -882,6 +887,20 @@ public class InquiryBean implements Serializable {
       logger.error("Exception caught while trying to export data", e);
     }
   }
+
+  private String generateLastExportFilename() {
+    String timestampForFilename = getTimestampForFilename(new Date());
+
+    return "export-" + timestampForFilename + ".xlsx";
+  }
+
+  private String getTimestampForFilename(Date timestamp) {
+
+    DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd-HHmm", Locale.ENGLISH);
+    return simpleDateFormat.format(timestamp);
+
+  }
+
 
   private void createTemporaryFile(ByteArrayOutputStream byteArrayOutputStream, String filename) {
 
