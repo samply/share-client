@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - CentraXX Job logs
 - Apache POI 5.0.0
 - Migrate Percentage Logger to share-common
+- Add timestamp to last export filename
 
 ### Changed
 - share-common version 4.1.0
