@@ -2,19 +2,18 @@ package de.samply.share.client.rest;
 
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
-import ca.uhn.fhir.context.ConfigurationException;
-import ca.uhn.fhir.parser.DataFormatException;
-import com.jayway.jsonpath.PathNotFoundException;
 import com.mchange.rmi.NotAuthorizedException;
 import com.sun.jersey.api.NotFoundException;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.feature.ClientFeature;
+import de.samply.share.client.fhir.FhirParseException;
 import de.samply.share.client.model.db.tables.pojos.User;
 import de.samply.share.client.util.connector.CtsConnector;
+import de.samply.share.client.util.connector.exception.CtsConnectorException;
+import de.samply.share.client.util.connector.exception.MainzellisteConnectorException;
 import de.samply.share.client.util.db.UserUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.util.Base64;
 import java.util.HashMap;
 import javax.ws.rs.Consumes;
@@ -32,6 +31,9 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.mindrot.jbcrypt.BCrypt;
 
+/**
+ * Rest API endpoints.
+ */
 @Path("/")
 public class Api {
 
@@ -64,10 +66,10 @@ public class Api {
       if (!checkUser(httpHeaders.getRequestHeader(AUTHORIZATION).get(0))) {
         return Response.status(401).entity("Basic Auth credentials not correct").build();
       }
-      String mediaType = httpHeaders.getMediaType().getSubtype();
+      MediaType mediaType = httpHeaders.getMediaType();
       CtsConnector ctsConnector = ApplicationBean.getCtsConnector();
       return ctsConnector.postPseudonmToCts(bundle, mediaType);
-    } catch (ConfigurationException | DataFormatException | GeneralSecurityException e) {
+    } catch (FhirParseException | CtsConnectorException | MainzellisteConnectorException e) {
       return Response.status(400).entity(e.getMessage()).build();
     } catch (NotAuthorizedException e) {
       return Response.status(401).entity(e.getMessage()).build();
@@ -110,8 +112,7 @@ public class Api {
       HashMap<String, Object> headerMapToSend = filter(headers);
       CtsConnector ctsConnector = ApplicationBean.getCtsConnector();
       return ctsConnector.postLocalPatientToCentralCts(patient, httpHeaders, headerMapToSend);
-    } catch (ConfigurationException | DataFormatException | StringIndexOutOfBoundsException
-        | PathNotFoundException e) {
+    } catch (CtsConnectorException e) {
       return Response.status(400).entity(e.getMessage()).build();
     } catch (NotAuthorizedException e) {
       return Response.status(401).entity(e.getMessage()).build();
@@ -152,8 +153,7 @@ public class Api {
       }
       CtsConnector ctsConnector = ApplicationBean.getCtsConnector();
       return ctsConnector.postLocalPatientToCentralCts(patient);
-    } catch (NullPointerException | ConfigurationException | DataFormatException
-        | IllegalArgumentException e) {
+    } catch (MainzellisteConnectorException | CtsConnectorException e) {
       return Response.status(400).entity(e.getMessage()).build();
     } catch (NotAuthorizedException e) {
       return Response.status(401).entity(e.getMessage()).build();
@@ -188,7 +188,6 @@ public class Api {
           headerMapToSend.put(key, headersFromRequest.getFirst(key));
         }
       }
-
     }
     return headerMapToSend;
   }

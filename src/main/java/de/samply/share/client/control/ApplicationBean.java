@@ -88,6 +88,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,6 +108,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.logging.log4j.LogManager;
@@ -187,12 +189,16 @@ public class ApplicationBean implements Serializable {
     return featureManager;
   }
 
-  private static void initMainzelliste() {
+  private static void initMainzelliste() throws MalformedURLException {
     mainzellisteConnector = new MainzellisteConnector();
   }
 
-  private static void initCts() {
+  private static void initCts() throws MalformedURLException {
     ctsConnector = new CtsConnector();
+  }
+
+  public static Cts getCts() {
+    return cts;
   }
 
   /**
@@ -478,6 +484,7 @@ public class ApplicationBean implements Serializable {
         insertConfigElement(EnumConfiguration.CTS_PATIENT_LIST_API_KEY.name(),
             cts.getPatientListApiKey());
         insertConfigElement(EnumConfiguration.CTS_PATIENT_LIST_URL.name(), cts.getPatientListUrl());
+        insertConfigElement(EnumConfiguration.CTS_CRYPT_KEY.name(), cts.getCryptKey());
       }
       if (ApplicationUtils.isSamply()) {
         de.samply.share.client.model.db.tables.pojos.Configuration directoryConfigElement =
@@ -713,7 +720,7 @@ public class ApplicationBean implements Serializable {
    * @return LdmConnector
    */
   public static LdmConnector getLdmConnector() {
-    if (ApplicationBean.ldmConnector == null) {
+    if (ldmConnector == null) {
       ApplicationBean.initLdmConnector();
     }
     return ApplicationBean.ldmConnector;
@@ -724,8 +731,8 @@ public class ApplicationBean implements Serializable {
    *
    * @return CtsConnector
    */
-  public static CtsConnector getCtsConnector() {
-    if (ApplicationBean.ctsConnector == null) {
+  public static CtsConnector getCtsConnector() throws MalformedURLException {
+    if (ctsConnector == null) {
       ApplicationBean.initCts();
     }
     return ctsConnector;
@@ -737,8 +744,8 @@ public class ApplicationBean implements Serializable {
    * @return MainzellisteConnector
    */
   public static MainzellisteConnector getMainzellisteConnector() {
-    if (ApplicationBean.mainzellisteConnector == null) {
-      ApplicationBean.initMainzelliste();
+    if (mainzellisteConnector == null) {
+      throw new IllegalStateException("Feature nNGM not enabled");
     }
     return mainzellisteConnector;
   }
@@ -911,7 +918,11 @@ public class ApplicationBean implements Serializable {
       logger.info("updating cts info...");
       updateCtsInfo();
       logger.info("initializing patient list for cts...");
-      initMainzelliste();
+      try {
+        initMainzelliste();
+      } catch (MalformedURLException e) {
+        throw new RuntimeException(e);
+      }
       logger.info("initializing crypt...");
       initCrypt();
     }
@@ -921,9 +932,10 @@ public class ApplicationBean implements Serializable {
 
   private static void initCrypt() {
     try {
-      crypt = new Crypt();
-    } catch (GeneralSecurityException | IOException e) {
-      e.printStackTrace();
+      String key = getCts().getCryptKey();
+      crypt = new Crypt(key);
+    } catch (GeneralSecurityException | ConfigurationException | IOException e) {
+      logger.error("Error while initializing nNGM encryption: " + e.getMessage(), e);
     }
   }
 
