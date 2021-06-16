@@ -4,7 +4,7 @@ import de.samply.share.client.quality.report.file.excel.row.context.ExcelRowCont
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactory;
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactoryException;
-import de.samply.share.client.quality.report.logger.PercentageLogger;
+import de.samply.share.common.utils.PercentageLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.SpreadsheetVersion;

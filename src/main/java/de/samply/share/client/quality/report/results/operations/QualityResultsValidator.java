@@ -2,9 +2,9 @@ package de.samply.share.client.quality.report.results.operations;
 
 import de.dth.mdr.validator.MdrValidator;
 import de.dth.mdr.validator.exception.ValidatorException;
-import de.samply.share.client.quality.report.logger.PercentageLogger;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.common.utils.MdrIdDatatype;
+import de.samply.share.common.utils.PercentageLogger;
 import de.samply.share.common.utils.QueryValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
