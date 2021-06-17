@@ -2,6 +2,17 @@
 
 set -e
 
+### Backward compatibility
+if [ -n "$HTTP_PROXY" ]; then
+	echo "Warning: Detected proxy configuration in the old style. Please switch to passing the configuration the new way. For more information visit: https://github.com/samply/share-client/blob/master/docs/deployment/docker-deployment.md#environment-variables"
+	HTTP_PROXY_URL="$HTTP_PROXY"
+	HTTP_PROXY_USERNAME=$PROXY_USER;
+	HTTP_PROXY_PASSWORD=$PROXY_PASS;
+	HTTPS_PROXY_URL="$HTTP_PROXY"
+	HTTPS_PROXY_USERNAME=$PROXY_USER;
+	HTTPS_PROXY_PASSWORD=$PROXY_PASS;
+fi
+
 file=${CATALINA_HOME}/conf/Catalina/localhost/ROOT.xml
 sed -i "s/{postgres-host}/${POSTGRES_HOST}/"              "$file"
 sed -i "s/{postgres-port}/${POSTGRES_PORT:-5432}/"        "$file"
@@ -10,9 +21,13 @@ sed -i "s/{postgres-user}/${POSTGRES_USER}/"              "$file"
 sed -i "s/{postgres-pass}/${POSTGRES_PASS}/"              "$file"
 
 file=${CATALINA_HOME}/conf/${PROJECT}_common_config.xml
-sed -i "s~{proxy-url}~${HTTP_PROXY}~"                     "$file"
-sed -i "s/{proxy-user}/${PROXY_USER}/"                    "$file"
-sed -i "s/{proxy-pass}/${PROXY_PASS}/"                    "$file"
+sed -i "s|{http-proxy-url}|${HTTP_PROXY_URL:-}|"              "$file"
+sed -i "s|{http-proxy-username}|${HTTP_PROXY_USERNAME:-}|"    "$file"
+sed -i "s|{http-proxy-password}|${HTTP_PROXY_PASSWORD:-}|"    "$file"
+sed -i "s|{https-proxy-url}|${HTTPS_PROXY_URL:-}|"            "$file"
+sed -i "s|{https-proxy-username}|${HTTPS_PROXY_USERNAME:-}|"  "$file"
+sed -i "s|{https-proxy-password}|${HTTPS_PROXY_PASSWORD:-}|"  "$file"
+sed -i "s|{no-proxy-hosts}|${NO_PROXY_HOSTS:-}|"              "$file"
 
 file=${CATALINA_HOME}/conf/${PROJECT}_common_urls.xml
 sed -i "s#{store-url}#${STORE_URL}#"                      "$file"

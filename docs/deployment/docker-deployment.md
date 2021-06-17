@@ -52,7 +52,13 @@ If postgres connection errors occur, try your ip for POSTGRES_HOST. For all Envi
 | POSTGRES_DB*   |         | Database name in Postgres                                     |
 | POSTGRES_USER* |         | Authorized username for database                              |
 | POSTGRES_PASS* |         | Password of authorized user                                   |
-| HTTP_PROXY     |         | Proxy server and port for outbound HTTP requests, e.g. "proxy.example.de:8080" |
+| HTTP_PROXY_URL |         | Proxy server and port for outbound HTTP requests, e.g. "proxy.example.de:8080" |
+| HTTP_PROXY_USERNAME |         | Username for authentication with proxy server on outbound HTTP requests, if authentication is required |
+| HTTP_PROXY_PASSWORD |         | Password for authentication with proxy server on outbound HTTP requests, if authentication is required |
+| HTTPS_PROXY_URL |         | Proxy server and port for outbound HTTPS requests, e.g. "proxy.example.de:8080" |
+| HTTPS_PROXY_USERNAME |         | Username for authentication with proxy server on outbound HTTPS requests, if authentication is required |
+| HTTPS_PROXY_PASSWORD |         | Password for authentication with proxy server on outbound HTTPS requests, if authentication is required |
+| NO_PROXY_HOSTS |         | List of hosts, for that the proxy should be bypassed |
 | PROXY_USER     |         | Proxy server user, if authentication is needed.               |
 | PROXY_PASS     |         | Proxy server password, if authentication is needed.           |
 | STORE_URL*     |         | The URL under which the Store is accessible by Connector      |
