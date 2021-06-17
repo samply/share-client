@@ -105,7 +105,7 @@
     <directory-sync.version>0.1.0</directory-sync.version>
     <togglz-core.version>2.6.1.Final</togglz-core.version>
     <togglz-jsf.version>2.6.1.Final</togglz-jsf.version>
-    <swagger-ui.version>3.25.0</swagger-ui.version>
+    <swagger-ui.version>3.42.0</swagger-ui.version>
     <microprofile-openapi-api.version>2.0-MR1</microprofile-openapi-api.version>
     <postgresql.version>42.2.20</postgresql.version>
     <commons-validator.version>1.6</commons-validator.version>
@@ -476,7 +476,9 @@
               </goals>
               <configuration>
                 <target>
-                  <copy file="docs/faces-config-${project.context}.xml" toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml" overwrite="true"/>
+                  <copy file="docs/faces-config-${project.context}.xml"
+                    toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml"
+                    overwrite="true"/>
                 </target>
               </configuration>
             </execution>
