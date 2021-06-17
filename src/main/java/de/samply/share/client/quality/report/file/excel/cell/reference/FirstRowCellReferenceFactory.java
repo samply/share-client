@@ -11,7 +11,7 @@ public class FirstRowCellReferenceFactory {
    * @return excel column.
    */
   public String getExcelColumn(int ordinal) {
-    return org.apache.poi.hssf.util.CellReference.convertNumToColString(ordinal);
+    return org.apache.poi.ss.util.CellReference.convertNumToColString(ordinal);
     //        ordinal--;
     //        return (ordinal >= 0 && ordinal < numberOfLetters) ? "" + ((char) ('A' + ordinal)) :
     //        getExcelColumn(ordinal / numberOfLetters) +

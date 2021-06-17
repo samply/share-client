@@ -3,4 +3,6 @@
   <com:ldmUrl>http://172.22.53.221:8080/centraxx</com:ldmUrl>
   <com:mdrUrl>https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr</com:mdrUrl>
   <com:shareUrl>http://www.company.org/cum/sonoras</com:shareUrl>
+  <com:patientlistUrl>http://localhost:8090</com:patientlistUrl>
+  <com:projectPseudonymisationUrl>http://localhost:8089</com:projectPseudonymisationUrl>
 </com:urls>

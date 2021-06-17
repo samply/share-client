@@ -1,7 +1,9 @@
 package de.samply.share.client.control;
 
+import static de.samply.share.client.model.db.enums.BrokerStatusType.BS_ACTIVATION_OK;
 import static de.samply.share.client.model.db.enums.BrokerStatusType.BS_OK;
 
+import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.model.db.enums.AuthSchemeType;
 import de.samply.share.client.model.db.enums.BrokerStatusType;
 import de.samply.share.client.model.db.enums.ReplyRuleType;
@@ -14,15 +16,22 @@ import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
 import de.samply.share.client.util.db.CredentialsUtil;
 import de.samply.share.client.util.db.InquiryHandlingRuleUtil;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import org.apache.http.Consts;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.omnifaces.util.Messages;
+import org.primefaces.PrimeFaces;
 
 /**
  * A ViewScoped backing bean that is used on pages dealing with interaction with searchbrokers.
@@ -42,6 +51,12 @@ public class BrokerBean implements Serializable {
   private boolean newBrokerFullResult;
 
   private ReplyRuleType newBrokerReplyRule;
+
+  private String newBrokerSite;
+
+  private List<String> availableBrokerSites;
+
+  private String responseMessage;
 
   public List<Broker> getBrokerList() {
     return brokerList;
@@ -83,6 +98,30 @@ public class BrokerBean implements Serializable {
     this.newBrokerReplyRule = newBrokerReplyRule;
   }
 
+  public String getNewBrokerSite() {
+    return newBrokerSite;
+  }
+
+  public void setNewBrokerSite(String newBrokerSite) {
+    this.newBrokerSite = newBrokerSite;
+  }
+
+  public List<String> getAvailableBrokerSites() {
+    return availableBrokerSites;
+  }
+
+  public void setAvailableBrokerSites(List<String> availableBrokerSites) {
+    this.availableBrokerSites = availableBrokerSites;
+  }
+
+  public String getResponseMessage() {
+    return responseMessage;
+  }
+
+  public void setResponseMessage(String responseMessage) {
+    this.responseMessage = responseMessage;
+  }
+
   /**
    * Initialize the broker list.
    */
@@ -93,10 +132,36 @@ public class BrokerBean implements Serializable {
     newBrokerEmail = "";
     newBrokerFullResult = false;
     newBrokerReplyRule = ReplyRuleType.RR_NO_AUTOMATIC_ACTION;
+    newBrokerSite = "";
   }
 
   public Credentials getCredentials(Broker broker) {
     return CredentialsUtil.getCredentialsForBroker(broker);
+  }
+
+  /**
+   * Get the site names from the searchbroker.
+   *
+   * @param broker the searchbroker
+   */
+  public void getSiteNames(Broker broker) {
+    try {
+      BrokerConnector brokerConnector = new BrokerConnector(broker);
+      availableBrokerSites = brokerConnector.getSiteNames();
+      checkDefaultSite();
+    } catch (URISyntaxException | BrokerConnectorException e) {
+      logger.error("Caught BrokerConnectorException when trying to register to broker", e);
+    }
+  }
+
+  private void checkDefaultSite() {
+    String site = ApplicationBean.getBridgeheadInfos().getName();
+    if (site != null) {
+      List<String> match = checkSiteName(site);
+      if (match.size() > 0) {
+        newBrokerSite = match.get(0);
+      }
+    }
   }
 
   private void refreshBrokerList() {
@@ -113,14 +178,18 @@ public class BrokerBean implements Serializable {
   public String sendActivationCode(Broker broker, String activationCode) {
     try {
       BrokerConnector brokerConnector = new BrokerConnector(broker);
-      int retCode = brokerConnector.activate(activationCode);
-      if (retCode != HttpStatus.SC_CREATED) {
+      int responseCode = brokerConnector.activate(activationCode);
+      if (responseCode != HttpStatus.SC_CREATED) {
         Messages.create("bl.activationError")
-            .detail(Integer.toString(retCode))
+            .detail(Integer.toString(responseCode))
             .error().add();
         return "";
       } else {
-        broker.setStatus(BS_OK);
+        if (ClientFeature.SET_SITE_NAME.isActive()) {
+          broker.setStatus(BS_ACTIVATION_OK);
+        } else {
+          broker.setStatus(BS_OK);
+        }
         BrokerUtil.updateBroker(broker);
         return "broker_list?faces-redirect=true";
       }
@@ -184,7 +253,6 @@ public class BrokerBean implements Serializable {
       BrokerStatusType brokerStatus = brokerConnector.register();
       newBroker.setStatus(brokerStatus);
       BrokerUtil.updateBroker(newBroker);
-
       // Insert a new default handling rule for this broker
       InquiryHandlingRule inquiryHandlingRule = new InquiryHandlingRule();
       inquiryHandlingRule.setBrokerId(brokerId);
@@ -199,4 +267,52 @@ public class BrokerBean implements Serializable {
     // TODO faces message on error and success?
     return "broker_list?faces-redirect=true";
   }
+
+  /**
+   * Send an activation code to the broker in order to complete registration.
+   *
+   * @param broker   the broker to send the code to
+   * @param siteName the code to send to the broker
+   * @return navigation outcome
+   */
+  public String sendSiteName(Broker broker, String siteName) {
+    try {
+      BrokerConnector brokerConnector = new BrokerConnector(broker);
+      CloseableHttpResponse response = brokerConnector.sendSiteName(siteName);
+      int responseCode = response.getStatusLine().getStatusCode();
+      responseMessage = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
+      response.close();
+      if (responseCode != HttpStatus.SC_OK) {
+        Messages.create("bl.sendSiteNameError")
+            .detail(Integer.toString(responseCode))
+            .error().add();
+        PrimeFaces.current().executeScript("PF('errorBoxVar').show();");
+        return "broker_list?faces-redirect=true";
+      } else {
+        broker.setStatus(BS_OK);
+        BrokerUtil.updateBroker(broker);
+        return "broker_list?faces-redirect=true";
+      }
+    } catch (BrokerConnectorException | IOException e) {
+      logger.error("Caught BrokerConnectorException when trying to send site name to broker", e);
+      return "";
+    }
+  }
+
+  /**
+   * Check if the entered value is inside the available site name list.
+   *
+   * @param enteredValue value which the user is searching
+   * @return the site names which matches with the entered value from the user
+   */
+  public List<String> checkSiteName(String enteredValue) {
+    List<String> matches = new ArrayList<>();
+    for (String s : availableBrokerSites) {
+      if (s.toLowerCase().startsWith(enteredValue.toLowerCase())) {
+        matches.add(s);
+      }
+    }
+    return matches;
+  }
+
 }

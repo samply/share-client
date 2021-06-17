@@ -2,11 +2,11 @@ package de.samply.share.client.quality.report.file.excel.sheet.wrapper;
 
 import de.samply.share.client.quality.report.file.excel.sheet.ExcelSheetFactory;
 import de.samply.share.client.quality.report.file.excel.utils.ExcelUtils;
+import org.apache.poi.ss.usermodel.ConditionalFormattingRule;
+import org.apache.poi.ss.usermodel.FontFormatting;
+import org.apache.poi.ss.usermodel.SheetConditionalFormatting;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFConditionalFormattingRule;
-import org.apache.poi.xssf.usermodel.XSSFFontFormatting;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFSheetConditionalFormatting;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 
 public abstract class ExcelSheetWithHighLightFactory extends ExcelSheetFactoryWrapper {
 
@@ -17,15 +17,15 @@ public abstract class ExcelSheetWithHighLightFactory extends ExcelSheetFactoryWr
 
   protected abstract String getRule();
 
-  protected abstract XSSFFontFormatting setHighlightFontFormatting(
-      XSSFFontFormatting fontFormatting);
+  protected abstract FontFormatting setHighlightFontFormatting(
+      FontFormatting fontFormatting);
 
   @Override
-  protected XSSFSheet addFunctionalityToSheet(XSSFSheet sheet) {
+  protected SXSSFSheet addFunctionalityToSheet(SXSSFSheet sheet) {
 
-    XSSFSheetConditionalFormatting sheetConditionalFormatting = sheet
+    SheetConditionalFormatting sheetConditionalFormatting = sheet
         .getSheetConditionalFormatting();
-    XSSFConditionalFormattingRule rule = sheetConditionalFormatting
+    ConditionalFormattingRule rule = sheetConditionalFormatting
         .createConditionalFormattingRule(getRule());
     rule = addHighlightFontFormatting(rule);
     CellRangeAddress[] ranges = {ExcelUtils.getAllSheetRange(sheet)};
@@ -35,10 +35,10 @@ public abstract class ExcelSheetWithHighLightFactory extends ExcelSheetFactoryWr
     return sheet;
   }
 
-  private XSSFConditionalFormattingRule addHighlightFontFormatting(
-      XSSFConditionalFormattingRule rule) {
+  private ConditionalFormattingRule addHighlightFontFormatting(
+      ConditionalFormattingRule rule) {
 
-    XSSFFontFormatting fontFormatting = rule.createFontFormatting();
+    FontFormatting fontFormatting = rule.createFontFormatting();
     setHighlightFontFormatting(fontFormatting);
 
     return rule;

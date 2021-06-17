@@ -12,6 +12,7 @@ import de.samply.common.http.HttpConnector;
 import de.samply.common.mdrclient.MdrClient;
 import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.common.mdrclient.MdrInvalidResponseException;
+import de.samply.config.util.FileFinderUtil;
 import de.samply.config.util.JaxbUtil;
 import de.samply.project.directory.client.DktkProjectDirectory;
 import de.samply.project.directory.client.DktkProjectDirectoryParameters;
@@ -83,14 +84,17 @@ import de.samply.share.common.utils.Constants;
 import de.samply.share.common.utils.ProjectInfo;
 import de.samply.web.mdrfaces.MdrContext;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -104,6 +108,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.logging.log4j.LogManager;
@@ -144,7 +149,7 @@ public class ApplicationBean implements Serializable {
   private static final List<String> NAMESPACES = new ArrayList<>(
       Arrays.asList("dktk", "adt", "marker"));
 
-  private static final int TIMEOUT_IN_SECONDS = 60;
+  private static final int TIMEOUT_IN_SECONDS = 3 * 60;
   private static final ConnectCheckResult shareAvailability = new ConnectCheckResult(true,
       "Samply.Share.Client", ProjectInfo.INSTANCE.getVersionString());
   private static final ChainStatisticsManager chainStatisticsManager = new ChainStatisticsManager();
@@ -184,12 +189,16 @@ public class ApplicationBean implements Serializable {
     return featureManager;
   }
 
-  private static void initMainzelliste() {
+  private static void initMainzelliste() throws MalformedURLException {
     mainzellisteConnector = new MainzellisteConnector();
   }
 
-  private static void initCts() {
+  private static void initCts() throws MalformedURLException {
     ctsConnector = new CtsConnector();
+  }
+
+  public static Cts getCts() {
+    return cts;
   }
 
   /**
@@ -399,8 +408,6 @@ public class ApplicationBean implements Serializable {
 
         insertOrUpdateConfigurationElement(EnumConfiguration.ID_MANAGER_URL,
             urls.getIdmanagerUrl());
-        insertOrUpdateConfigurationElement(EnumConfiguration.ID_MANAGER_API_KEY,
-            urls.getIdmanagerApiKey());
         insertOrUpdateConfigurationElement(
             EnumConfiguration.PATIENTLIST_URL, urls.getPatientlistUrl());
         insertOrUpdateConfigurationElement(EnumConfiguration.PROJECT_PSEUDONYMISATION_URL,
@@ -411,6 +418,39 @@ public class ApplicationBean implements Serializable {
       insertOrUpdateConfigurationElement(EnumConfiguration.SHARE_URL, urls.getShareUrl());
       insertOrUpdateConfigurationElement(EnumConfiguration.MDR_URL, urls.getMdrUrl());
 
+    }
+  }
+
+  private static void updateSecrets() {
+    if (ApplicationUtils.isDktk()) {
+      File file = tryFindSecretsPropertiesFile();
+      if (file != null) {
+        Properties properties = readProperties(file);
+        insertOrUpdateConfigurationElement(EnumConfiguration.ID_MANAGER_API_KEY,
+            properties.getProperty(EnumConfiguration.ID_MANAGER_API_KEY.name()));
+      }
+    }
+  }
+
+  private static Properties readProperties(File file) {
+    Properties properties = new Properties();
+    try {
+      properties.load(new FileInputStream(file));
+    } catch (IOException e) {
+      logger.error("Error file reading {}: {}", file.getAbsolutePath(), e.getMessage());
+    }
+    return properties;
+  }
+
+  private static File tryFindSecretsPropertiesFile() {
+    try {
+      return FileFinderUtil
+          .findFile("secrets.properties", ProjectInfo.INSTANCE.getProjectName().toLowerCase(),
+              System.getProperty("catalina.base") + File.separator + "conf",
+              getServletContext().getRealPath("/WEB-INF"));
+    } catch (FileNotFoundException e) {
+      logger.warn("Feature configuration not found.");
+      return null;
     }
   }
 
@@ -444,6 +484,7 @@ public class ApplicationBean implements Serializable {
         insertConfigElement(EnumConfiguration.CTS_PATIENT_LIST_API_KEY.name(),
             cts.getPatientListApiKey());
         insertConfigElement(EnumConfiguration.CTS_PATIENT_LIST_URL.name(), cts.getPatientListUrl());
+        insertConfigElement(EnumConfiguration.CTS_CRYPT_KEY.name(), cts.getCryptKey());
       }
       if (ApplicationUtils.isSamply()) {
         de.samply.share.client.model.db.tables.pojos.Configuration directoryConfigElement =
@@ -679,7 +720,7 @@ public class ApplicationBean implements Serializable {
    * @return LdmConnector
    */
   public static LdmConnector getLdmConnector() {
-    if (ApplicationBean.ldmConnector == null) {
+    if (ldmConnector == null) {
       ApplicationBean.initLdmConnector();
     }
     return ApplicationBean.ldmConnector;
@@ -690,8 +731,8 @@ public class ApplicationBean implements Serializable {
    *
    * @return CtsConnector
    */
-  public static CtsConnector getCtsConnector() {
-    if (ApplicationBean.ctsConnector == null) {
+  public static CtsConnector getCtsConnector() throws MalformedURLException {
+    if (ctsConnector == null) {
       ApplicationBean.initCts();
     }
     return ctsConnector;
@@ -703,8 +744,8 @@ public class ApplicationBean implements Serializable {
    * @return MainzellisteConnector
    */
   public static MainzellisteConnector getMainzellisteConnector() {
-    if (ApplicationBean.mainzellisteConnector == null) {
-      ApplicationBean.initMainzelliste();
+    if (mainzellisteConnector == null) {
+      throw new IllegalStateException("Feature nNGM not enabled");
     }
     return mainzellisteConnector;
   }
@@ -839,6 +880,8 @@ public class ApplicationBean implements Serializable {
     loadBridgeheadInfo();
     logger.info("Loading common urls...");
     updateCommonUrls();
+    logger.info("Loading secrets...");
+    updateSecrets();
     logger.info("Loading project directory...");
     loadProjectDirectoryClient();
     logger.info("Loading id management connector");
@@ -875,7 +918,11 @@ public class ApplicationBean implements Serializable {
       logger.info("updating cts info...");
       updateCtsInfo();
       logger.info("initializing patient list for cts...");
-      initMainzelliste();
+      try {
+        initMainzelliste();
+      } catch (MalformedURLException e) {
+        throw new RuntimeException(e);
+      }
       logger.info("initializing crypt...");
       initCrypt();
     }
@@ -885,9 +932,10 @@ public class ApplicationBean implements Serializable {
 
   private static void initCrypt() {
     try {
-      crypt = new Crypt();
-    } catch (GeneralSecurityException | IOException e) {
-      e.printStackTrace();
+      String key = getCts().getCryptKey();
+      crypt = new Crypt(key);
+    } catch (GeneralSecurityException | ConfigurationException | IOException e) {
+      logger.error("Error while initializing nNGM encryption: " + e.getMessage(), e);
     }
   }
 

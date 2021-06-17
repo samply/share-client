@@ -2,8 +2,9 @@ package de.samply.share.client.quality.report.file.excel.utils;
 
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+
 
 public class ExcelUtils {
 
@@ -13,13 +14,13 @@ public class ExcelUtils {
    * @param sheet excel sheet.
    * @return Excel cell range address.
    */
-  public static CellRangeAddress getAllSheetRange(XSSFSheet sheet) {
+  public static CellRangeAddress getAllSheetRange(SXSSFSheet sheet) {
 
     int firstRow = 0;
     int firstCol = 0;
 
     int lastRow = sheet.getLastRowNum();
-    XSSFRow row = sheet.getRow(lastRow);
+    SXSSFRow row = sheet.getRow(lastRow);
     int lastCol = row.getLastCellNum();
 
     if (lastRow <= firstRow) {

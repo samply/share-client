@@ -5,12 +5,12 @@ import de.samply.share.client.quality.report.file.excel.instances.basic.BasicExc
 import de.samply.share.client.quality.report.file.excel.instances.basic.BasicExcelRowElements;
 import de.samply.share.client.quality.report.file.excel.row.context.ExcelRowContext;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
-import de.samply.share.client.quality.report.logger.PercentageLogger;
 import de.samply.share.client.quality.report.results.QualityResult;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.client.quality.report.results.sorted.AlphabeticallySortedMismatchedQualityResults;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.MdrIdDatatype;
+import de.samply.share.common.utils.PercentageLogger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;

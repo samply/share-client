@@ -14,7 +14,7 @@ import de.samply.share.model.common.QueryResultStatistic;
 import java.io.IOException;
 import java.util.List;
 
-public class LdmConnectorSwitch implements LdmConnectorCcp {
+public class LdmConnectorSwitch  implements LdmConnectorCcp {
 
   private final LdmConnectorCentraxx ldmConnectorCentraxx;
   private final LdmBasicConnectorSwitch ldmBasicConnectorSwitch;

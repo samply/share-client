@@ -1,7 +1,6 @@
 package de.samply.share.client.util.db;
 
 import de.samply.share.client.control.ApplicationBean;
-import de.samply.share.client.fhir.FhirResource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +26,7 @@ public class EventLogMainzellisteUtil {
    * @param statusCode statusCode of the http response
    * @return FHIR-AuditEvent in JSON
    */
-  public static String getFhirAuditEvent(String userId, int statusCode) {
+  public static AuditEvent createAuditEvent(String userId, int statusCode) {
     AuditEvent auditEvent = new AuditEvent();
     auditEvent.setId(UUID.randomUUID().toString());
     Coding typeCoding = new Coding();
@@ -55,8 +54,7 @@ public class EventLogMainzellisteUtil {
       observer.setDisplay(OBSERVER_DISPLAY);
     }
     auditEvent.setSource(new AuditEvent.AuditEventSourceComponent(observer));
-    FhirResource fhirResource = new FhirResource();
-    return fhirResource.convertAuditEventToJson(auditEvent);
+    return auditEvent;
   }
 
   /**

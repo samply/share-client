@@ -76,7 +76,7 @@ public class LdmConnectorCentraxx extends
 
   @Override
   boolean useAuthorizationForLdm() {
-    return false;
+    return true;
   }
 
   @Override
