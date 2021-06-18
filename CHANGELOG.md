@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## [7.2.5 - 2021-05-14]
+## Changed
+- Updated swagger-ui plugin
 
 ## [7.3.1 - 2021-06-18]
 ### Fixed
