@@ -3,11 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
-## [7.2.5 - 2021-05-14]
-## Changed
-- Updated swagger-ui plugin
 
-
+## [7.3.1 - 2021-06-18]
+### Fixed
+- Add timestamp to last export filename (correct table)
 
 ## [7.3.0 - 2021-06-02]
 ### Added
@@ -31,6 +30,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Bug 3: Check connection to the ID-Manager: Retrieve export ID
 - Bug 4: InquiryBean.loadSelectedInquiry() handle if inquiryCriteria is null
 - Code Style Fix
+
+## [7.2.5 - 2021-05-14]
+## Changed
+- Updated swagger-ui plugin
+
 
 ## [7.2.4 - 2021-02-25]
 ### Fixed
