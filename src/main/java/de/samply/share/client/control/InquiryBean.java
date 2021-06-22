@@ -2,8 +2,6 @@ package de.samply.share.client.control;
 
 import com.google.common.net.HttpHeaders;
 import de.samply.dktk.converter.EnumValidationHandling;
-import de.samply.dktk.converter.PatientConverter;
-import de.samply.dktk.converter.PatientConverterUtil;
 import de.samply.share.client.job.ExecuteInquiryJobCentraxx;
 import de.samply.share.client.job.ExecuteInquiryJobCql;
 import de.samply.share.client.job.ExecuteInquiryJobSamplystoreBiobanks;
@@ -25,7 +23,6 @@ import de.samply.share.client.model.db.tables.pojos.InquiryResultStats;
 import de.samply.share.client.model.db.tables.pojos.RequestedEntity;
 import de.samply.share.client.rest.Connector;
 import de.samply.share.client.util.Utils;
-import de.samply.share.client.util.WebUtils;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
@@ -43,7 +40,6 @@ import de.samply.share.client.util.db.InquiryResultUtil;
 import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.client.util.db.UserSeenInquiryUtil;
 import de.samply.share.common.model.uiquerybuilder.QueryItem;
-import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.PercentageLogger;
 import de.samply.share.common.utils.QueryTreeUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
@@ -54,21 +50,15 @@ import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.model.common.Result;
 import de.samply.share.model.cql.CqlResult;
 import de.samply.share.utils.Converter;
-import de.samply.web.mdrfaces.MdrContext;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -83,7 +73,6 @@ import javax.servlet.http.Part;
 import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.omnifaces.model.tree.ListTreeModel;
 import org.omnifaces.model.tree.TreeModel;
 import org.omnifaces.util.Ajax;
@@ -796,129 +785,6 @@ public class InquiryBean implements Serializable {
     patientPageTree = resultPageToTree(queryResultPage);
   }
 
-  private List<MdrIdDatatype> getExportMdrBlackList() {
-
-    try {
-      List<MdrIdDatatype> mdrIdDatatypeList = new ArrayList<>();
-
-      List<String> configurationElementValueList = ConfigurationUtil
-          .getConfigurationElementValueList(EnumConfiguration.EXPORT_MDR_BLACKLIST);
-
-      for (String mdrIds : configurationElementValueList) {
-        if (mdrIds.length() > 0) {
-          mdrIdDatatypeList.add(new MdrIdDatatype(mdrIds));
-        }
-      }
-
-      return mdrIdDatatypeList;
-
-    } catch (Exception e) {
-      logger.error(e);
-      return new ArrayList<>();
-    }
-
-  }
-
-  /**
-   * Generate an Excel Workbook for the inquiry result and send it to the client.
-   *
-   * @param validationHandling the validation handling
-   */
-  public void generateExportFile(EnumValidationHandling validationHandling) {
-    logger.debug("Generate Export File");
-
-    // Add a list of mdr items that will not be included in the export.
-    List<MdrIdDatatype> blacklist = getExportMdrBlackList();
-
-    try {
-      String queryResultLocation = latestInquiryResult.getLocation();
-      PatientConverter patientConverter = new PatientConverter(
-          MdrContext.getMdrContext().getMdrClient(),
-          ApplicationBean.getMdrValidator(),
-          validationHandling,
-          blacklist);
-      // TODO Use switch statement on ApplicationUtils.getConnectorType()
-      Workbook workbook = null;
-      if (ApplicationUtils.isDktk()) {
-        QueryResult queryResult = (QueryResult) ldmConnector.getResults(queryResultLocation);
-        logger.debug("Result completely loaded...write excel file");
-        String executionDateString = WebUtils.getExecutionDate(latestInquiryResult);
-        workbook = patientConverter.centraxxQueryResultToExcel(queryResult,
-            PatientConverterUtil
-                .createInquiryObjectForInfoSheet(inquiry.getLabel(), inquiry.getDescription()),
-            PatientConverterUtil.createContactObjectForInfoSheet(selectedInquiryContact.getTitle(),
-                selectedInquiryContact.getFirstName(), selectedInquiryContact.getLastName()),
-            ConfigurationUtil
-                .getConfigurationElementValue(EnumConfiguration.ID_MANAGER_INSTANCE_ID),
-            executionDateString
-        );
-      } else if (ApplicationUtils.isSamply()) {
-        BbmriResult queryResult = (BbmriResult) ldmConnector.getResults(queryResultLocation);
-        logger.debug("Result completely loaded...write excel file");
-        String executionDateString = WebUtils.getExecutionDate(latestInquiryResult);
-        workbook = patientConverter.biobanksQueryResultToExcel(queryResult,
-            PatientConverterUtil
-                .createInquiryObjectForInfoSheet(inquiry.getLabel(), inquiry.getDescription()),
-            PatientConverterUtil.createContactObjectForInfoSheet(selectedInquiryContact.getTitle(),
-                selectedInquiryContact.getFirstName(), selectedInquiryContact.getLastName()),
-            ConfigurationUtil
-                .getConfigurationElementValue(EnumConfiguration.ID_MANAGER_INSTANCE_ID),
-            executionDateString
-        );
-      }
-
-      logger.debug("Workbook complete");
-
-      ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      try {
-        workbook.write(bos);
-      } finally {
-        bos.close();
-      }
-      String filename =
-          !(inquiry.getLabel().equals("")) ? inquiry.getLabel() + ".xlsx" : "Export.xlsx";
-
-      String lastExportFilename = generateLastExportFilename();
-      createTemporaryFile(bos, lastExportFilename);
-      Faces.sendFile(bos.toByteArray(), filename, true);
-
-
-    } catch (Exception e) {
-      logger.error("Exception caught while trying to export data", e);
-    }
-  }
-
-  private String generateLastExportFilename() {
-    String timestampForFilename = getTimestampForFilename(new Date());
-
-    return "export-" + timestampForFilename + ".xlsx";
-  }
-
-  private String getTimestampForFilename(Date timestamp) {
-
-    DateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd-HHmm", Locale.ENGLISH);
-    return simpleDateFormat.format(timestamp);
-
-  }
-
-
-  private void createTemporaryFile(ByteArrayOutputStream byteArrayOutputStream, String filename) {
-
-    try {
-
-      String path = ConfigurationUtil
-          .getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_DIRECTORY);
-      filename = path + File.separator + filename;
-      FileOutputStream fileOutputStream = new FileOutputStream(filename);
-      byteArrayOutputStream.writeTo(fileOutputStream);
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-
-  }
-
   /**
    * Send a reply back to the broker. Currently only supports the size. TODO: Add support for other
    * reply types TODO: Add success/error message
@@ -1116,5 +982,41 @@ public class InquiryBean implements Serializable {
 
   }
 
+  /**
+   * Generates an export file.
+   *
+   * @param validationHandling validating handling
+   */
+  public void generateExportFile(EnumValidationHandling validationHandling) {
+
+    try {
+      generateExportFileWithoutManagementException(validationHandling);
+    } catch (ExportFileGeneratorException | IOException e) {
+      logger.error("Exception caught while trying to export data", e);
+    }
+
+  }
+
+  private void generateExportFileWithoutManagementException(
+      EnumValidationHandling validationHandling) throws ExportFileGeneratorException, IOException {
+
+    Integer timeout = ConfigurationUtil
+        .getConfigurationElementValueAsInteger(EnumConfiguration.EXPORT_TIMEOUT_IN_MINUTES);
+    ExportFileGenerator exportFileGenerator =
+        new ExportFileGenerator(latestInquiryResult, ldmConnector, inquiry,selectedInquiryContact,
+            validationHandling, timeout);
+
+    ByteArrayOutputStream bos = exportFileGenerator.generateExport();
+
+    if (bos != null) {
+
+      String filename =
+          !(inquiry.getLabel().equals("")) ? inquiry.getLabel() + ".xlsx" : "Export.xlsx";
+
+      Faces.sendFile(bos.toByteArray(), filename, true);
+
+    }
+
+  }
 
 }

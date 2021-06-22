@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.3.2 - 2021-06-24]
+### Added
+- Workbook Window configurable in config database
+- Export in Thread
+- converter.dktk.patient 2.2.2
+
+
 ## [7.3.1 - 2021-06-18]
 ### Fixed
 - Add timestamp to last export filename (correct table)

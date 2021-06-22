@@ -75,7 +75,8 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
   public SXSSFWorkbook createWorkbook(QualityResults qualityResults)
       throws ExcelWorkbookFactoryException {
 
-    SXSSFWorkbook workbook = new SXSSFWorkbook(WORKBOOK_WINDOW);
+    int workbookWindow = getWorkbookWindow();
+    SXSSFWorkbook workbook = new SXSSFWorkbook(workbookWindow);
 
     QualityResults filteredQualityResults = applyFiltersToQualityResults(qualityResults);
     QualityResults sortedQualityResults = sortQualityResults(qualityResults);
@@ -132,6 +133,16 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
     return workbook;
 
   }
+
+
+  private int getWorkbookWindow() {
+
+    Integer workbookWindow = ConfigurationUtil
+        .getConfigurationElementValueAsInteger(EnumConfiguration.QUALITY_REPORT_WORKBOOK_WINDOW);
+    return (workbookWindow != null) ? workbookWindow : WORKBOOK_WINDOW;
+
+  }
+
 
   private boolean isSheetSelectedToBeWritten(EnumConfiguration enumConfiguration) {
     return ConfigurationUtil.getConfigurationElementValueAsBoolean(enumConfiguration);
