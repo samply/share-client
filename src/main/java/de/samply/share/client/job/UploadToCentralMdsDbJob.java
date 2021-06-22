@@ -126,7 +126,10 @@ public class UploadToCentralMdsDbJob implements Job {
         logger.info("Query was posted to local datamanagement but is not ready yet");
         break;
       case US_QUERY_READY:
-        patientConverter = new PatientConverter(ApplicationBean.getMdrClient());
+        Integer exportWorkbookWindow = ConfigurationUtil
+            .getConfigurationElementValueAsInteger(EnumConfiguration.EXPORT_WORKBOOK_WINDOW);
+        patientConverter =
+            new PatientConverter(ApplicationBean.getMdrClient(), exportWorkbookWindow);
         handleUpload(csConnector);
         break;
       // The cases below are (currently?) not relevant
