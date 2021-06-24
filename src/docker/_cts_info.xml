@@ -8,4 +8,5 @@
   <com:searchIdType>{nngm-site-idtype}</com:searchIdType>
   <com:patientListApiKey>{nngm-mainzelliste-apikey}</com:patientListApiKey>
   <com:patientListUrl>{nngm-mainzelliste-url}</com:patientListUrl>
+  <com:cryptKey>{nngm-encrypt-key}</com:cryptKey>
 </com:cts>
