@@ -243,6 +243,38 @@ public class ConfigurationUtil {
   }
 
   /**
+   * Get the boolean value of a configuration element.
+   *
+   * @param configurationElement the configuration element to get the value from
+   * @return the integer value of the configuration value
+   */
+  public static Integer getConfigurationElementValueAsInteger(
+      EnumConfiguration configurationElement) {
+    Configuration configuration = getConfigurationElement(configurationElement);
+    try {
+      return Integer.parseInt(configuration.getSetting());
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  /**
+   * Get the boolean value of a configuration element.
+   *
+   * @param configurationElement the configuration element to get the value from
+   * @return the integer value of the configuration value
+   */
+  public static Long getConfigurationElementValueAsLong(
+      EnumConfiguration configurationElement) {
+    Configuration configuration = getConfigurationElement(configurationElement);
+    try {
+      return Long.parseLong(configuration.getSetting());
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  /**
    * Get the proxy configuration.
    *
    * @param configuration a samply.common.configuration element
