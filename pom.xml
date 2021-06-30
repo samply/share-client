@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>share-client</artifactId>
-  <version>7.3.0</version>
+  <version>7.3.2-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Connector</name>
@@ -64,7 +64,7 @@
     <common-ldmclient.samplystore.biobank.version>3.0.0
     </common-ldmclient.samplystore.biobank.version>
     <common-ldmclient.cql.version>2.0.0</common-ldmclient.cql.version>
-    <converter.dktk.patient.version>2.2.1</converter.dktk.patient.version>
+    <converter.dktk.patient.version>2.2.2</converter.dktk.patient.version>
     <project-directory-client.version>1.2.0</project-directory-client.version>
 
     <!-- general dependencies -->
