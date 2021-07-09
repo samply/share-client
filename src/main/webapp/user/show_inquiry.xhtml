@@ -81,7 +81,7 @@
                                     or inquiryBean.latestInquiryResult.size lt 1
                                     or inquiryBean.latestInquiryDetails.status eq InquiryStatusType.IS_PROCESSING
                                     or inquiryBean.latestInquiryDetails.status eq InquiryStatusType.IS_NEW
-                                    or not inquiryBean.latestInquiryResultHasStats()}"/>
+                                    }"/>
 
                                 <ui:param name="disableExecute"
                                           value="#{inquiryBean.latestInquiryDetails.status eq InquiryStatusType.IS_PROCESSING
