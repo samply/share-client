@@ -9,6 +9,7 @@ import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
+import de.samply.share.client.quality.report.chainlinks.instances.statistic.StatisticContext;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
@@ -70,8 +71,8 @@ public abstract class AbstractLdmConnectorView<
     ReferenceQueryCheckResult result = new ReferenceQueryCheckResult();
     try {
       View referenceView = createReferenceViewForMonitoring(referenceQuery);
-      Stopwatch stopwatch = Stopwatch.createStarted();
-      String resultLocation = ldmClient.postView(referenceView, true);
+      Stopwatch stopwatch = Stopwatch.createStarted(); //Stop time for Referenzquerry: Ausführzeit
+      String resultLocation = ldmClient.postView(referenceView, false);
 
       int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
           EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
@@ -105,11 +106,19 @@ public abstract class AbstractLdmConnectorView<
           } else if (ldmQueryResult.hasResult()) {
             QueryResultStatistic qrs = ldmQueryResult.getResult();
             result.setCount(qrs.getTotalSize());
+            // TODO: Query should be execute only a few times a day.
+            //  Separate in second report to monitoring job.
+
             if (isResultDone(resultLocation, qrs)) {
               stopwatch.stop();
               result.setExecutionTimeMilis(stopwatch.elapsed(TimeUnit.MILLISECONDS));
               return result;
             }
+
+            //Nur zum testen stpowatch und ExecutionTimeMilis hinzugefügt!
+            //stopwatch.stop();
+            //result.setExecutionTimeMilis(stopwatch.elapsed(TimeUnit.MILLISECONDS));
+            return result;
           }
 
           retryNr += 1;
@@ -197,7 +206,8 @@ public abstract class AbstractLdmConnectorView<
         return true;
       }
       int lastPageIndex = queryResultStatistic.getNumberOfPages() - 1;
-      return ldmClient.isResultPageAvailable(location, lastPageIndex);
+      boolean isResultDone = ldmClient.isResultPageAvailable(location, lastPageIndex);
+      return isResultDone; //Gibt hier false zurück
     } else {
       throw new LdmConnectorException("QueryResultStatistic is null.");
     }

@@ -49,7 +49,7 @@ public class ReportToMonitoringJob implements Job {
   public ReportToMonitoringJob() {
     ldmConnector = ApplicationBean.getLdmConnector();
     brokerConnectors = BrokerUtil.fetchBrokers().stream().map(BrokerConnector::new)
-        .collect(Collectors.toList());
+            .collect(Collectors.toList());
     jobParams = new ReportToMonitoringJobParams();
 
     LOGGER.debug(ReportToMonitoringJob.class.getName() + " created");
@@ -92,29 +92,6 @@ public class ReportToMonitoringJob implements Job {
         LOGGER.debug("dktk count calculated");
       }
 
-      if (jobParams.isCountReferenceQuery() || jobParams.isTimeReferenceQuery()) {
-        ReferenceQueryCheckResult referenceQueryCheckResult;
-        String errorMessage = "";
-        try {
-          referenceQueryCheckResult = getReferenceQueryResult(brokerConnector);
-        } catch (BrokerConnectorException | LdmConnectorException e) {
-          errorMessage = e.getMessage();
-          referenceQueryCheckResult = new ReferenceQueryCheckResult();
-        }
-        if (jobParams.isCountReferenceQuery()) {
-          StatusReportItem referenceQueryCount = getReferenceQueryCount(referenceQueryCheckResult,
-              errorMessage);
-          statusReportItems.add(referenceQueryCount);
-          LOGGER.debug("reference query count calculated");
-        }
-        if (jobParams.isTimeReferenceQuery()) {
-          StatusReportItem referenceQueryTime = getReferenceQueryTime(referenceQueryCheckResult,
-              errorMessage);
-          statusReportItems.add(referenceQueryTime);
-          LOGGER.debug("reference query time calculated");
-        }
-      }
-
       if (jobParams.isCentraxxMappingInformation()) {
         StatusReportItem centraxxMappingVersion = getCentraxxMappingVersion();
         statusReportItems.add(centraxxMappingVersion);
@@ -141,13 +118,13 @@ public class ReportToMonitoringJob implements Job {
         }
         if (jobParams.isCountReferenceQuery()) {
           StatusReportItem referenceQueryCount = getReferenceQueryCount(referenceQueryCheckResult,
-              errorMessage);
+                  errorMessage);
           statusReportItems.add(referenceQueryCount);
           LOGGER.debug("reference query count calculated");
         }
         if (jobParams.isTimeReferenceQuery()) {
           StatusReportItem referenceQueryTime = getReferenceQueryTime(referenceQueryCheckResult,
-              errorMessage);
+                  errorMessage);
           statusReportItems.add(referenceQueryTime);
           LOGGER.debug("reference query time calculated");
         }
@@ -197,15 +174,15 @@ public class ReportToMonitoringJob implements Job {
     try {
       jsonObject.addProperty("NEW", InquiryUtil.countInquiries(InquiryStatusType.IS_NEW));
       jsonObject.addProperty("PROCESSING",
-          InquiryUtil.countInquiries(InquiryStatusType.IS_PROCESSING));
+              InquiryUtil.countInquiries(InquiryStatusType.IS_PROCESSING));
       jsonObject.addProperty("READY",
-          InquiryUtil.countInquiries(InquiryStatusType.IS_READY));
+              InquiryUtil.countInquiries(InquiryStatusType.IS_READY));
       jsonObject.addProperty("ABANDONED",
-          InquiryUtil.countInquiries(InquiryStatusType.IS_ABANDONED));
+              InquiryUtil.countInquiries(InquiryStatusType.IS_ABANDONED));
       jsonObject.addProperty("LDM_ERROR",
-          InquiryUtil.countInquiries(InquiryStatusType.IS_LDM_ERROR));
+              InquiryUtil.countInquiries(InquiryStatusType.IS_LDM_ERROR));
       jsonObject.addProperty("Last query execution time",
-          InquiryDetailsUtil.getLastScheduledInquiry().getScheduledAt().toString());
+              InquiryDetailsUtil.getLastScheduledInquiry().getScheduledAt().toString());
       inquiryStats.setStatusText(jsonObject.toString());
       inquiryStats.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
     } catch (Exception e) {
@@ -265,14 +242,14 @@ public class ReportToMonitoringJob implements Job {
    * @return patient count and the execution time
    */
   private ReferenceQueryCheckResult getReferenceQueryResult(BrokerConnector brokerConnector)
-      throws BrokerConnectorException, LdmConnectorException {
+          throws BrokerConnectorException, LdmConnectorException {
     ReferenceQueryCheckResult referenceQueryCheckResult = null;
     if (ApplicationUtils.isLanguageQuery()) {
       referenceQueryCheckResult = ldmConnector
-          .getReferenceQueryCheckResult(brokerConnector.getReferenceQuery());
+              .getReferenceQueryCheckResult(brokerConnector.getReferenceQuery());
     } else if (ApplicationUtils.isLanguageCql()) {
       referenceQueryCheckResult = ldmConnector
-          .getReferenceQueryCheckResult(brokerConnector.getReferenceQueryCql());
+              .getReferenceQueryCheckResult(brokerConnector.getReferenceQueryCql());
     }
     return referenceQueryCheckResult;
   }
@@ -286,7 +263,7 @@ public class ReportToMonitoringJob implements Job {
    *        datamanagement for the reference query
    */
   private StatusReportItem getReferenceQueryCount(
-      ReferenceQueryCheckResult referenceQueryCheckResult, String errorMessage) {
+          ReferenceQueryCheckResult referenceQueryCheckResult, String errorMessage) {
     StatusReportItem referenceQueryCount = new StatusReportItem();
     referenceQueryCount.setParameterName(StatusReportItem.PARAMETER_REFERENCE_QUERY_RESULTCOUNT);
 
@@ -311,15 +288,15 @@ public class ReportToMonitoringJob implements Job {
    *        (containing a vagueness of 15 seconds)
    */
   private StatusReportItem getReferenceQueryTime(
-      ReferenceQueryCheckResult referenceQueryCheckResult, String errorMessage) {
+          ReferenceQueryCheckResult referenceQueryCheckResult, String errorMessage) {
     StatusReportItem referenceQueryTime = new StatusReportItem();
     referenceQueryTime.setParameterName(StatusReportItem.PARAMETER_REFERENCE_QUERY_RUNTIME);
 
     if (referenceQueryCheckResult != null
-        && referenceQueryCheckResult.getExecutionTimeMilis() >= 0) {
+            && referenceQueryCheckResult.getExecutionTimeMilis() >= 0) {
       referenceQueryTime.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
       referenceQueryTime
-          .setStatusText(Long.toString(referenceQueryCheckResult.getExecutionTimeMilis()));
+              .setStatusText(Long.toString(referenceQueryCheckResult.getExecutionTimeMilis()));
     } else {
       LOGGER.error(errorMessage);
       referenceQueryTime.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
