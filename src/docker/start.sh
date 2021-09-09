@@ -14,6 +14,13 @@ if [ -n "$HTTP_PROXY" ]; then
 fi
 
 file=${CATALINA_HOME}/conf/Catalina/localhost/ROOT.xml
+if [ -n "$DEPLOYMENT_CONTEXT" ]; then
+  echo "INFO: preparing deployment in context ${DEPLOYMENT_CONTEXT}"
+  mv "${CATALINA_HOME}"/webapps/ROOT "${CATALINA_HOME}"/webapps/"${DEPLOYMENT_CONTEXT}"
+  mv "${CATALINA_HOME}"/conf/Catalina/localhost/ROOT.xml "${CATALINA_HOME}"/conf/Catalina/localhost/"${DEPLOYMENT_CONTEXT}".xml
+fi
+
+file="${CATALINA_HOME}"/conf/Catalina/localhost/"${DEPLOYMENT_CONTEXT:-ROOT}".xml
 sed -i "s/{postgres-host}/${POSTGRES_HOST}/"              "$file"
 sed -i "s/{postgres-port}/${POSTGRES_PORT:-5432}/"        "$file"
 sed -i "s/{postgres-db}/${POSTGRES_DB}/"                  "$file"
