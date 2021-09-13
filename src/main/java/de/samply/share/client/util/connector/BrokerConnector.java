@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.db.enums.BrokerStatusType;
@@ -20,6 +21,7 @@ import de.samply.share.client.model.db.tables.pojos.InquiryAnswer;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
+import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.CredentialsUtil;
 import de.samply.share.client.util.db.EventLogUtil;
 import de.samply.share.client.util.db.InquiryAnswerUtil;
@@ -689,6 +691,7 @@ public class BrokerConnector {
     Reply reply = new Reply();
     reply.setDonor(replyDonor);
     reply.setSample(replySample);
+    reply.setRedirectUrl(createRedirectUrl(inquiryDetails.getInquiryId()));
 
     ObjectMapper mapper = new ObjectMapper();
     try {
@@ -702,6 +705,7 @@ public class BrokerConnector {
       throws URISyntaxException, IOException {
     de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = InquiryUtil
         .fetchInquiryById(inquiryDetails.getInquiryId());
+
     int inquirySourceId = inquiry.getSourceId();
 
     URI uri = new URI(
@@ -728,6 +732,11 @@ public class BrokerConnector {
     inquiryAnswer.setInquiryDetailsId(inquiryDetails.getId());
     inquiryAnswer.setContent(replyString);
     InquiryAnswerUtil.insertInquiryAnswer(inquiryAnswer);
+  }
+
+  private String createRedirectUrl(int id) {
+    return ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.SHARE_URL)
+        + "/user/show_inquiry.xhtml?inquiryId=" + id + "&faces-redirect=true";
   }
 
 
