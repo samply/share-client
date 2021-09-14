@@ -1,27 +1,18 @@
 package de.samply.share.client.job;
 
-import com.google.gson.JsonObject;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.ReportToMonitoringJobParams;
 import de.samply.share.client.model.EnumReportMonitoring;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
-import de.samply.share.client.model.db.enums.InquiryStatusType;
-import de.samply.share.client.model.db.tables.pojos.JobSchedule;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
-import de.samply.share.client.util.connector.LdmConnectorCentraxxExtension;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
-import de.samply.share.client.util.db.InquiryDetailsUtil;
-import de.samply.share.client.util.db.InquiryUtil;
-import de.samply.share.client.util.db.JobScheduleUtil;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -35,9 +26,10 @@ import org.quartz.JobExecutionContext;
  * frequently) for the reference query.
  */
 @DisallowConcurrentExecution
-public class ReportToMonitoringJobOnly24H implements Job {
+public class ReportToMonitoringJobLongFrequence implements Job {
 
-  private static final Logger LOGGER = LogManager.getLogger(ReportToMonitoringJobOnly24H.class);
+  private static final Logger LOGGER =
+          LogManager.getLogger(ReportToMonitoringJobLongFrequence.class);
 
   private final LdmConnector ldmConnector;
   private final List<BrokerConnector> brokerConnectors;
@@ -46,13 +38,13 @@ public class ReportToMonitoringJobOnly24H implements Job {
   /**
    * Get the ldmConnector, the registered brokers and the params.
    */
-  public ReportToMonitoringJobOnly24H() {
+  public ReportToMonitoringJobLongFrequence() {
     ldmConnector = ApplicationBean.getLdmConnector();
     brokerConnectors = BrokerUtil.fetchBrokers().stream().map(BrokerConnector::new)
         .collect(Collectors.toList());
     jobParams = new ReportToMonitoringJobParams();
 
-    LOGGER.debug(ReportToMonitoringJobOnly24H.class.getName() + " created");
+    LOGGER.debug(ReportToMonitoringJobLongFrequence.class.getName() + " created");
   }
 
   @Override
@@ -80,31 +72,6 @@ public class ReportToMonitoringJobOnly24H implements Job {
     List<StatusReportItem> statusReportItems = new ArrayList<>();
 
     if (ApplicationUtils.isDktk()) {
-      if (jobParams.isCountReferenceQuery() || jobParams.isTimeReferenceQuery()) {
-        ReferenceQueryCheckResult referenceQueryCheckResult;
-        String errorMessage = "";
-        try {
-          referenceQueryCheckResult = getReferenceQueryResult(brokerConnector);
-        } catch (BrokerConnectorException | LdmConnectorException e) {
-          errorMessage = e.getMessage();
-          referenceQueryCheckResult = new ReferenceQueryCheckResult();
-        }
-        if (jobParams.isCountReferenceQuery()) {
-          StatusReportItem referenceQueryCount = getReferenceQueryCount(referenceQueryCheckResult,
-              errorMessage);
-          statusReportItems.add(referenceQueryCount);
-          LOGGER.debug("reference query count calculated");
-        }
-        if (jobParams.isTimeReferenceQuery()) {
-          StatusReportItem referenceQueryTime = getReferenceQueryTime(referenceQueryCheckResult,
-              errorMessage);
-          statusReportItems.add(referenceQueryTime);
-          LOGGER.debug("reference query time calculated");
-        }
-      }
-    }
-
-    if (ApplicationUtils.isSamply()) {
       if (jobParams.isCountReferenceQuery() || jobParams.isTimeReferenceQuery()) {
         ReferenceQueryCheckResult referenceQueryCheckResult;
         String errorMessage = "";

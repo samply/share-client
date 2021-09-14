@@ -106,8 +106,6 @@ public abstract class AbstractLdmConnectorView<
           } else if (ldmQueryResult.hasResult()) {
             QueryResultStatistic qrs = ldmQueryResult.getResult();
             result.setCount(qrs.getTotalSize());
-            // TODO: Query should be execute only a few times a day.
-            //  Separate in second report to monitoring job.
 
             if (isResultDone(resultLocation, qrs)) {
               stopwatch.stop();
@@ -115,9 +113,6 @@ public abstract class AbstractLdmConnectorView<
               return result;
             }
 
-            //Nur zum testen stpowatch und ExecutionTimeMilis hinzugefügt!
-            //stopwatch.stop();
-            //result.setExecutionTimeMilis(stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return result;
           }
 
@@ -207,7 +202,7 @@ public abstract class AbstractLdmConnectorView<
       }
       int lastPageIndex = queryResultStatistic.getNumberOfPages() - 1;
       boolean isResultDone = ldmClient.isResultPageAvailable(location, lastPageIndex);
-      return isResultDone; //Gibt hier false zurück
+      return isResultDone;
     } else {
       throw new LdmConnectorException("QueryResultStatistic is null.");
     }

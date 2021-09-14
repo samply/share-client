@@ -136,10 +136,10 @@
 
   <schedule>
     <job>
-      <name>ReportToMonitoringJob</name>
+      <name>ReportToMonitoringJobShortFrequence</name>
       <group>MaintenanceGroup</group>
       <description>This job performs tests to determine values for an amount of patient data available or how long it takes to execute an inquiry</description>
-      <job-class>de.samply.share.client.job.ReportToMonitoringJob</job-class>
+      <job-class>de.samply.share.client.job.ReportToMonitoringJobShortFrequence</job-class>
       <durability>true</durability>
       <recover>false</recover>
       <job-data-map>
@@ -153,15 +153,19 @@
 
   <schedule>
     <job>
-      <name>ReportToMonitoringJob24H</name>
+      <name>ReportToMonitoringJobLongFrequence</name>
       <group>MaintenanceGroup</group>
       <description>This job performs every 24 hours tests to determine values for an amount of patient data available or how long it takes to execute an inquiry</description>
-      <job-class>de.samply.share.client.job.ReportToMonitoringJobOnly24H</job-class>
+      <job-class>de.samply.share.client.job.ReportToMonitoringJobLongFrequence</job-class>
       <durability>true</durability>
       <recover>false</recover>
       <job-data-map>
         <entry>
           <key>SHOW</key>
+          <value>true</value>
+        </entry>
+        <entry>
+          <key>dktk_flagged</key>
           <value>true</value>
         </entry>
       </job-data-map>

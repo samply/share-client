@@ -35,9 +35,10 @@ import org.quartz.JobExecutionContext;
  * frequently) for the reference query.
  */
 @DisallowConcurrentExecution
-public class ReportToMonitoringJob implements Job {
+public class ReportToMonitoringJobShortFrequence implements Job {
 
-  private static final Logger LOGGER = LogManager.getLogger(ReportToMonitoringJob.class);
+  private static final Logger LOGGER =
+          LogManager.getLogger(ReportToMonitoringJobShortFrequence.class);
 
   private final LdmConnector ldmConnector;
   private final List<BrokerConnector> brokerConnectors;
@@ -46,13 +47,13 @@ public class ReportToMonitoringJob implements Job {
   /**
    * Get the ldmConnector, the registered brokers and the params.
    */
-  public ReportToMonitoringJob() {
+  public ReportToMonitoringJobShortFrequence() {
     ldmConnector = ApplicationBean.getLdmConnector();
     brokerConnectors = BrokerUtil.fetchBrokers().stream().map(BrokerConnector::new)
             .collect(Collectors.toList());
     jobParams = new ReportToMonitoringJobParams();
 
-    LOGGER.debug(ReportToMonitoringJob.class.getName() + " created");
+    LOGGER.debug(ReportToMonitoringJobShortFrequence.class.getName() + " created");
   }
 
   @Override

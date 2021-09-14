@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.4.0 - 2021-09-09]
+### Added
+- New frequence for ReportToMonitoringJob: long frequence, only once a day
+### Fixed
+- Referencequerry: Executiontime in dktk
+
 ## [7.3.3 - 2021-06-19]
 ### Changed
 - Quality Report Info Sheet: CCP-Office as contact
