@@ -154,7 +154,7 @@
   <schedule>
     <job>
       <name>ReportToMonitoringJobLongFrequence</name>
-      <group>MaintenanceGroup</group>
+      <group>CentralSearchGroup</group>
       <description>This job performs every 24 hours tests to determine values for an amount of patient data available or how long it takes to execute an inquiry</description>
       <job-class>de.samply.share.client.job.ReportToMonitoringJobLongFrequence</job-class>
       <durability>true</durability>
