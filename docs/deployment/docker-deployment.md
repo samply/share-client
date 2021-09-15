@@ -79,4 +79,6 @@ If postgres connection errors occur, try your ip for POSTGRES_HOST. For all Envi
 | feature_DKTK_CENTRAL_SEARCH   |   false | Feature toggle for the DKTK central search     |
 | feature_NNGM_CTS              |   false | Feature toggle for the NNGM CTS                | 
 | CATALINA_OPTS  |         | JVM options                                                   |
+| DEPLOYMENT_CONTEXT |          | The subpath of the bridgehead installation. Normally bridgehead will be deployed to ROOT, but with this variable you can change it for example to "connector". It is not possible to pass multiple subdirectories like "connector/samply".|
+
 *necessary
