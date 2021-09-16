@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <job-scheduling-data
-  xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData
+        xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData
 	http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
-  version="1.8">
+        version="1.8">
 
   <!-- Define jobs whose triggers can be modified by the admin -->
 
@@ -136,15 +136,36 @@
 
   <schedule>
     <job>
-      <name>ReportToMonitoringJob</name>
+      <name>ReportToMonitoringJobShortFrequence</name>
       <group>MaintenanceGroup</group>
       <description>This job performs tests to determine values for an amount of patient data available or how long it takes to execute an inquiry</description>
-      <job-class>de.samply.share.client.job.ReportToMonitoringJob</job-class>
+      <job-class>de.samply.share.client.job.ReportToMonitoringJobShortFrequence</job-class>
       <durability>true</durability>
       <recover>false</recover>
       <job-data-map>
         <entry>
           <key>SHOW</key>
+          <value>true</value>
+        </entry>
+      </job-data-map>
+    </job>
+  </schedule>
+
+  <schedule>
+    <job>
+      <name>ReportToMonitoringJobLongFrequence</name>
+      <group>CentralSearchGroup</group>
+      <description>This job performs every 24 hours tests to determine values for an amount of patient data available or how long it takes to execute an inquiry</description>
+      <job-class>de.samply.share.client.job.ReportToMonitoringJobLongFrequence</job-class>
+      <durability>true</durability>
+      <recover>false</recover>
+      <job-data-map>
+        <entry>
+          <key>SHOW</key>
+          <value>true</value>
+        </entry>
+        <entry>
+          <key>dktk_flagged</key>
           <value>true</value>
         </entry>
       </job-data-map>

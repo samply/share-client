@@ -6,9 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [7.4.0 - 2021-09-13]
 ### Added
+- New frequence for ReportToMonitoringJob: long frequence, only once a day
 - Redirect url for the negotiator
 ### Changed
 - Share-dto version 5.1.0
+### Fixed
+- Referencequerry: Executiontime in dktk
 
 ## [7.3.3 - 2021-06-19]
 ### Changed
