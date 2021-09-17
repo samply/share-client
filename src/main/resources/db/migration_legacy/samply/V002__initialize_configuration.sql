@@ -137,4 +137,4 @@ INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('Centr
 INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('CentralSearchGroup.UploadToCentralMdsDbJobNoDktkFlag', '0 0 2 ? 1/1 SAT#1 *', false);
 INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('MaintenanceGroup.CheckLocalComponentsJob', '0 0 0/1 1/1 * ?', false);
 INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('MaintenanceGroup.DbCleanupJob', '0 30 0 1/1 * ?', false);
-INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('MaintenanceGroup.ReportToMonitoringJobShortFrequence', '0 0 0/1 ? * * *', false);
+INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('MaintenanceGroup.ReportToMonitoringJob', '0 0 0/1 ? * * *', false);
