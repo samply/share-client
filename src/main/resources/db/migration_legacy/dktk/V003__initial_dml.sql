@@ -91,7 +91,7 @@ INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('Centr
 INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('CentralSearchGroup.UploadToCentralMdsDbJobNoDktkFlag', '0 0 2 ? 1/1 SAT#1 *', false);
 INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('MaintenanceGroup.CheckLocalComponentsJob', '0 0 0/1 1/1 * ?', false);
 INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('MaintenanceGroup.DbCleanupJob', '0 30 0 1/1 * ?', false);
-INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('MaintenanceGroup.ReportToMonitoringJobShortFrequence', '0 0 1 1/1 * ? *', true);
+INSERT INTO samply.job_schedule(job_key, cron_expression, paused) VALUES ('MaintenanceGroup.ReportToMonitoringJob', '0 0 1 1/1 * ? *', true);
 
 -- Add additional keys for the viewfields when posting to local datamanagement
 INSERT INTO samply.configuration(name, setting, visible) values('INQUIRY_ADDITIONAL_MDRKEYS', 'urn:adt:dataelement:77:*;urn:adt:dataelement:78:*;urn:adt:dataelement:90:*;urn:adt:dataelement:93:*;urn:adt:dataelement:89:*;urn:adt:dataelement:91:*', false);
