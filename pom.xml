@@ -96,12 +96,7 @@
     <datatables.version>1.10.16</datatables.version>
     <twbs-pagination.version>1.4.1</twbs-pagination.version>
     <jqplot.version>1.0.9.d96a669-1</jqplot.version>
-
     <hapi.version>4.2.0</hapi.version>
-
-    <skipTests>false</skipTests>
-    <hapi-fhir-structures-r4.version>4.1.0</hapi-fhir-structures-r4.version>
-    <hapi-fhir-client.version>4.1.0</hapi-fhir-client.version>
     <directory-sync.version>0.1.0</directory-sync.version>
     <togglz-core.version>2.6.1.Final</togglz-core.version>
     <togglz-jsf.version>2.6.1.Final</togglz-jsf.version>
@@ -283,12 +278,12 @@
     <dependency>
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-structures-r4</artifactId>
-      <version>${hapi-fhir-structures-r4.version}</version>
+      <version>${hapi.version}</version>
     </dependency>
     <dependency>
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-client</artifactId>
-      <version>${hapi-fhir-client.version}</version>
+      <version>${hapi.version}</version>
     </dependency>
 
     <!--Jersey 1-->
