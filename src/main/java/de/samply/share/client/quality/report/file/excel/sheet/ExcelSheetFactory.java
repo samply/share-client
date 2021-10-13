@@ -9,4 +9,6 @@ public interface ExcelSheetFactory {
   SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
       ExcelRowContext excelRowContext) throws ExcelSheetFactoryException;
 
+  void setSheetWindow(Integer sheetWindow);
+
 }

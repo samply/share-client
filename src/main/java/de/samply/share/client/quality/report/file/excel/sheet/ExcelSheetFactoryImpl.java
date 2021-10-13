@@ -5,6 +5,7 @@ import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowEle
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactory;
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactoryException;
 import de.samply.share.common.utils.PercentageLogger;
+import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.SpreadsheetVersion;
@@ -16,6 +17,7 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
   protected static final Logger logger = LogManager.getLogger(ExcelSheetFactoryImpl.class);
   private final ExcelRowFactory excelRowFactory;
+  private Integer sheetWindow = 300;
 
 
   public ExcelSheetFactoryImpl(ExcelRowFactory excelRowFactory) {
@@ -36,10 +38,11 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
     PercentageLogger percentageLogger = new PercentageLogger(logger, numberOfRows,
         "adding rows...");
 
+    SheetFlusher sheetFlusher = new SheetFlusher(sheet);
     for (ExcelRowElements excelRowElements : excelRowContext) {
 
       percentageLogger.incrementCounter();
-      addRow(sheet, excelRowElements);
+      addRow(sheet, excelRowElements, sheetFlusher);
 
       maxNumberOfRows--;
       if (maxNumberOfRows <= 0) {
@@ -48,6 +51,34 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
     }
 
     return workbook;
+
+  }
+
+  private class SheetFlusher {
+
+    SXSSFSheet sheet;
+    int counter = 0;
+
+    public SheetFlusher(SXSSFSheet sheet) {
+      this.sheet = sheet;
+    }
+
+    public void addRow() throws ExcelSheetFactoryException {
+      counter++;
+      if (counter >= sheetWindow) {
+        flush();
+        counter = 0;
+      }
+
+    }
+
+    private void flush() throws ExcelSheetFactoryException {
+      try {
+        sheet.flushBufferedData();
+      } catch (IOException e) {
+        throw new ExcelSheetFactoryException(e);
+      }
+    }
 
   }
 
@@ -64,12 +95,15 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
   }
 
-  private SXSSFSheet addRow(SXSSFSheet sheet, ExcelRowElements excelRowElements)
+  private SXSSFSheet addRow(SXSSFSheet sheet, ExcelRowElements excelRowElements,
+      SheetFlusher sheetFlusher)
       throws ExcelSheetFactoryException {
 
     try {
 
-      return excelRowFactory.addRow(sheet, excelRowElements);
+      SXSSFSheet rows = excelRowFactory.addRow(sheet, excelRowElements);
+      sheetFlusher.addRow();
+      return rows;
 
     } catch (ExcelRowFactoryException e) {
       throw new ExcelSheetFactoryException(e);
@@ -77,5 +111,8 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
   }
 
+  public void setSheetWindow(Integer sheetWindow) {
+    this.sheetWindow = sheetWindow;
+  }
 
 }

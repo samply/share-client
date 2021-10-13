@@ -77,6 +77,7 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
 
     int workbookWindow = getWorkbookWindow();
     SXSSFWorkbook workbook = new SXSSFWorkbook(workbookWindow);
+    excelSheetFactory.setSheetWindow(workbookWindow);
 
     QualityResults filteredQualityResults = applyFiltersToQualityResults(qualityResults);
     QualityResults sortedQualityResults = sortQualityResults(qualityResults);

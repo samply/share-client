@@ -22,6 +22,12 @@ public class ExplanatoryExcelSheetFactory implements ExcelSheetFactory {
 
 
   @Override
+  public void setSheetWindow(Integer sheetWindow) {
+    // Not used here: The explanatory sheet is directly copied. Number of rows does not need
+    // to be controlled and flushed.
+  }
+
+  @Override
   public SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
       ExcelRowContext excelRowContext) throws ExcelSheetFactoryException {
     return addSheet();

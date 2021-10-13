@@ -38,6 +38,7 @@
     <Logger level="error" name="de.samply.share.client.util.Utils"/>
     <Logger level="warn" name="de.samply.config.util.FileFinderUtil"/>
     <Logger level="warn" name="ca.uhn.fhir"/>
+    <Logger level="error" name="org.apache.poi.xssf.streaming.SXSSFCreationHelper" />
     <Root level="debug">
       <AppenderRef ref="Console"/>
       <AppenderRef ref="RollingFileLinux"/>

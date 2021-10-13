@@ -12,6 +12,7 @@
     <Logger level="warn" name="org.flywaydb"/>
     <Logger level="error" name="de.samply.common.mdrclient"/>
     <Logger level="error" name="de.samply.share.client.util.Utils"/>
+    <Logger level="error" name="org.apache.poi.xssf.streaming.SXSSFCreationHelper" />
     <Root level="{level}">
       <AppenderRef ref="CONSOLE"/>
     </Root>

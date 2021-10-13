@@ -32,5 +32,9 @@ public abstract class ExcelSheetFactoryWrapper implements ExcelSheetFactory {
     return workbook;
   }
 
+  @Override
+  public void setSheetWindow(Integer sheetWindow) {
+    excelSheetFactory.setSheetWindow(sheetWindow);
+  }
 
 }
