@@ -16,6 +16,7 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
   protected static final Logger logger = LogManager.getLogger(ExcelSheetFactoryImpl.class);
   private final ExcelRowFactory excelRowFactory;
+  private int maxNumberOfRowsPerSheet = -1;
 
 
   public ExcelSheetFactoryImpl(ExcelRowFactory excelRowFactory) {
@@ -26,18 +27,41 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
   public SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
       ExcelRowContext excelRowContext) throws ExcelSheetFactoryException {
 
+    int numberOfRows = excelRowContext.getNumberOfRows();
+    if (maxNumberOfRowsPerSheet < 0) {
+      maxNumberOfRowsPerSheet = numberOfRows;
+    }
+
+    String sheetTitleTemp = sheetTitle;
+    int counter = 1;
+
+    while (numberOfRows > 0) {
+
+      workbook = addSheet(workbook, sheetTitleTemp, excelRowContext, maxNumberOfRowsPerSheet);
+      sheetTitleTemp = sheetTitle + "-" + (++counter);
+      numberOfRows -= maxNumberOfRowsPerSheet;
+
+    }
+
+    return workbook;
+
+  }
+
+  private SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
+      ExcelRowContext excelRowContext, int numberOfRows) throws ExcelSheetFactoryException {
+
     SXSSFSheet sheet = workbook.createSheet(sheetTitle);
     sheet = addRowTitles(sheet, excelRowContext);
     sheet.trackAllColumnsForAutoSizing();
 
     int maxNumberOfRows = SpreadsheetVersion.EXCEL2007.getMaxRows();
 
-    int numberOfRows = excelRowContext.getNumberOfRows();
     PercentageLogger percentageLogger = new PercentageLogger(logger, numberOfRows,
         "adding rows...");
 
-    for (ExcelRowElements excelRowElements : excelRowContext) {
+    while (numberOfRows-- > 0 && excelRowContext.iterator().hasNext()) {
 
+      ExcelRowElements excelRowElements = excelRowContext.iterator().next();
       percentageLogger.incrementCounter();
       addRow(sheet, excelRowElements);
 
@@ -77,5 +101,9 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
   }
 
+  @Override
+  public void setMaxNumberOfRowsPerSheet(int maxNumberOfRowsPerSheet) {
+    this.maxNumberOfRowsPerSheet = maxNumberOfRowsPerSheet;
+  }
 
 }
