@@ -6,17 +6,12 @@ import de.samply.share.client.quality.report.file.excel.cell.style.RightAlignedC
 
 public class FormattedExcelRowElements002 extends ExcelRowElements002 {
 
+  private RightAlignedCellStyle rightAlignedCellStyle = new RightAlignedCellStyle();
 
   @Override
   public void setNumberOfPatients(int numberOfPatients) {
-
     super.setNumberOfPatients(numberOfPatients);
-
-    ExcelCellStyle excelCellStyle = new ExcelCellStyleImpl();
-    excelCellStyle = new RightAlignedCellStyle(excelCellStyle);
-
-    addExcelCellStyle(excelCellStyle, ElementOrder.NUMBER_OF_PATIENTS.ordinal());
-
+    addExcelCellStyle(rightAlignedCellStyle, ElementOrder.NUMBER_OF_PATIENTS.ordinal());
   }
 
 }

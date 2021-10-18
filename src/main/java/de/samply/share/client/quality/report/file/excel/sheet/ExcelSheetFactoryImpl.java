@@ -5,6 +5,7 @@ import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowEle
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactory;
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactoryException;
 import de.samply.share.common.utils.PercentageLogger;
+import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.SpreadsheetVersion;
@@ -34,10 +35,12 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
     String sheetTitleTemp = sheetTitle;
     int counter = 1;
+    Iterator<ExcelRowElements> excelRowElementsIterator = excelRowContext.iterator();
 
     while (numberOfRows > 0) {
 
-      workbook = addSheet(workbook, sheetTitleTemp, excelRowContext, maxNumberOfRowsPerSheet);
+      workbook = addSheet(workbook, sheetTitleTemp, excelRowContext, excelRowElementsIterator,
+          maxNumberOfRowsPerSheet);
       sheetTitleTemp = sheetTitle + "-" + (++counter);
       numberOfRows -= maxNumberOfRowsPerSheet;
 
@@ -48,7 +51,9 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
   }
 
   private SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
-      ExcelRowContext excelRowContext, int numberOfRows) throws ExcelSheetFactoryException {
+      ExcelRowContext excelRowContext,
+      Iterator<ExcelRowElements> excelRowElementsIterator, int numberOfRows)
+      throws ExcelSheetFactoryException {
 
     SXSSFSheet sheet = workbook.createSheet(sheetTitle);
     sheet = addRowTitles(sheet, excelRowContext);
@@ -59,9 +64,9 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
     PercentageLogger percentageLogger = new PercentageLogger(logger, numberOfRows,
         "adding rows...");
 
-    while (numberOfRows-- > 0 && excelRowContext.iterator().hasNext()) {
+    while (numberOfRows-- > 0 && excelRowElementsIterator.hasNext()) {
 
-      ExcelRowElements excelRowElements = excelRowContext.iterator().next();
+      ExcelRowElements excelRowElements = excelRowElementsIterator.next();
       percentageLogger.incrementCounter();
       addRow(sheet, excelRowElements);
 
