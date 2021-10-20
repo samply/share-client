@@ -29,9 +29,8 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
       ExcelRowContext excelRowContext) throws ExcelSheetFactoryException {
 
     int numberOfRows = excelRowContext.getNumberOfRows();
-    if (maxNumberOfRowsPerSheet < 0) {
-      maxNumberOfRowsPerSheet = numberOfRows;
-    }
+    int tempMaxNumberOfRowsPerSheet =
+        (maxNumberOfRowsPerSheet <= 0) ? numberOfRows : maxNumberOfRowsPerSheet;
 
     String sheetTitleTemp = sheetTitle;
     int counter = 1;
@@ -40,9 +39,9 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
     while (numberOfRows > 0) {
 
       workbook = addSheet(workbook, sheetTitleTemp, excelRowContext, excelRowElementsIterator,
-          maxNumberOfRowsPerSheet);
+          tempMaxNumberOfRowsPerSheet);
       sheetTitleTemp = sheetTitle + "-" + (++counter);
-      numberOfRows -= maxNumberOfRowsPerSheet;
+      numberOfRows -= tempMaxNumberOfRowsPerSheet;
 
     }
 
