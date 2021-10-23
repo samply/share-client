@@ -1,55 +1,53 @@
 package de.samply.share.client.quality.report.views.fromto.scheduler;
 
-import de.samply.share.client.model.EnumConfiguration;
+import static de.samply.share.client.model.EnumConfiguration.QUALITY_REPORT_GROUP_MODUL;
+import static de.samply.share.client.model.EnumConfiguration.QUALITY_REPORT_SCHEDULER_FORMAT;
+import static de.samply.share.client.model.EnumConfiguration.QUALITY_REPORT_SCHEDULER_YEARS;
+import static de.samply.share.client.util.db.ConfigurationUtil.getConfigurationElementValue;
+
+import de.samply.share.client.quality.report.QualityReportSchedulerFormat;
+import de.samply.share.client.quality.report.views.fromto.ViewFromTo;
 import de.samply.share.client.quality.report.views.fromto.ViewFromToFactory;
-import de.samply.share.client.util.db.ConfigurationUtil;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ViewFromToSchedulerFactory {
 
+  private static final Map<String, QualityReportSchedulerFormat> FORMATS = Arrays.stream(
+      QualityReportSchedulerFormat.values()).collect(
+      Collectors.toMap(Enum::name, Function.identity()));
 
   private final ViewFromToFactory viewFromToFactory = new ViewFromToFactory();
 
   /**
-   * Create Scheduler for View From-To.
+   * Creates a scheduler for {@link ViewFromTo ViewFromTos} according to the config.
    *
-   * @return View From-To Scheduler.
+   * @return a scheduler
    */
   public ViewFromToScheduler createViewFromToScheduler() {
+    QualityReportSchedulerFormat format = FORMATS.getOrDefault(getConfigurationElementValue(
+        QUALITY_REPORT_SCHEDULER_FORMAT), QualityReportSchedulerFormat.YEAR);
 
-    String format = ConfigurationUtil
-        .getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_SCHEDULER_FORMAT);
-
-    ViewFromToSchedulerFormat viewFromToSchedulerFormat = ViewFromToSchedulerFormat
-        .getViewFromToSchedulerFormat(format);
-    if (viewFromToSchedulerFormat == null) {
-      viewFromToSchedulerFormat = ViewFromToSchedulerFormat.getDefault();
-    }
-
-    switch (viewFromToSchedulerFormat) {
-
-      case BY_MONTH:
+    switch (format) {
+      case MONTH:
         return createViewFromToSchedulerByMonthImpl();
-      case BY_YEAR:
+      case YEAR:
         return createViewFromToSchedulerByYearImpl();
+      case ALL:
+        return ViewFromToSchedulerAll.INSTANCE;
       default:
-        return null;
-
+        throw new IllegalStateException();
     }
-
-
   }
 
   private ViewFromToScheduler createViewFromToSchedulerByMonthImpl() {
-
-    ViewFromToSchedulerByMonthImpl viewFromToSchedulerByMonth = new ViewFromToSchedulerByMonthImpl(
+    ViewFromToSchedulerByMonth viewFromToSchedulerByMonth = new ViewFromToSchedulerByMonth(
         viewFromToFactory);
 
-    String groupsModulS = ConfigurationUtil
-        .getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_GROUP_MODUL);
-    Integer groupsModul = convert(groupsModulS);
-    String yearsS = ConfigurationUtil
-        .getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_SCHEDULER_YEARS);
-    Integer years = convert(yearsS);
+    Integer groupsModul = tryParseInt(getConfigurationElementValue(QUALITY_REPORT_GROUP_MODUL));
+    Integer years = tryParseInt(getConfigurationElementValue(QUALITY_REPORT_SCHEDULER_YEARS));
 
     if (groupsModul != null) {
       viewFromToSchedulerByMonth.setGroupsModul(groupsModul);
@@ -63,67 +61,22 @@ public class ViewFromToSchedulerFactory {
   }
 
   private ViewFromToScheduler createViewFromToSchedulerByYearImpl() {
-
-    ViewFromToSchedulerByYearImpl viewFromToSchedulerByYear = new ViewFromToSchedulerByYearImpl(
+    ViewFromToSchedulerByYear viewFromToSchedulerByYear = new ViewFromToSchedulerByYear(
         viewFromToFactory);
 
-    String yearsS = ConfigurationUtil
-        .getConfigurationElementValue(EnumConfiguration.QUALITY_REPORT_SCHEDULER_YEARS);
-    Integer years = convert(yearsS);
-
+    Integer years = tryParseInt(getConfigurationElementValue(QUALITY_REPORT_SCHEDULER_YEARS));
     if (years != null) {
       viewFromToSchedulerByYear.setYears(years);
     }
 
     return viewFromToSchedulerByYear;
-
   }
 
-  Integer convert(String number) {
-
+  private static Integer tryParseInt(String s) {
     try {
-      return Integer.valueOf(number);
-
+      return Integer.valueOf(s);
     } catch (Exception e) {
       return null;
     }
   }
-
-  public enum ViewFromToSchedulerFormat {
-
-    BY_YEAR(EnumConfiguration.QUALITY_REPORT_SCHEDULER_BY_YEAR.name()),
-    BY_MONTH(EnumConfiguration.QUALITY_REPORT_SCHEDULER_BY_MONTH.name());
-
-    String title;
-
-    ViewFromToSchedulerFormat(String title) {
-      this.title = title;
-    }
-
-    public static ViewFromToSchedulerFormat getDefault() {
-      return BY_YEAR;
-    }
-
-    /**
-     * Gets format of scheduler of view from-to .
-     *
-     * @param format format as String.
-     * @return format of scheduler of view from-to.
-     */
-    public static ViewFromToSchedulerFormat getViewFromToSchedulerFormat(String format) {
-
-      for (ViewFromToSchedulerFormat viewFromToSchedulerFormat : values()) {
-
-        if (viewFromToSchedulerFormat.title.equals(format)) {
-          return viewFromToSchedulerFormat;
-        }
-      }
-
-      return null;
-
-    }
-
-  }
-
-
 }
