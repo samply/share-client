@@ -82,7 +82,7 @@
 
     <!-- webjar dependencies -->
     <jquery.version>3.3.1-1</jquery.version>
-    <jquery-ui.version>1.12.1</jquery-ui.version>
+    <jquery-ui.version>1.13.0</jquery-ui.version>
     <jquery-blockui.version>2.70</jquery-blockui.version>
     <bootstrap.version>3.3.7-1</bootstrap.version>
     <bootstrap-switch.version>3.3.2</bootstrap-switch.version>
@@ -474,9 +474,7 @@
               </goals>
               <configuration>
                 <target>
-                  <copy file="docs/faces-config-${project.context}.xml"
-                    toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml"
-                    overwrite="true"/>
+                  <copy file="docs/faces-config-${project.context}.xml" toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml" overwrite="true"/>
                 </target>
               </configuration>
             </execution>
