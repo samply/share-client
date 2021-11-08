@@ -1,5 +1,3 @@
-ARG TOMCAT_IMAGE_VERSION=9-jdk8-openjdk-slim
-
 FROM alpine:latest as extract
 
 RUN apk add --no-cache unzip
@@ -9,7 +7,7 @@ ADD target/connector.war /connector/connector.war
 RUN mkdir -p /connector/extracted && \
        unzip /connector/connector.war -d /connector/extracted/
 
-FROM tomcat:$TOMCAT_IMAGE_VERSION
+FROM tomcat:9-jdk8-openjdk-slim
 
 ## Define for which project this image is build
 ARG PROJECT=samply
