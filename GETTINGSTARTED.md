@@ -40,7 +40,7 @@ After you are done with your changes, you need to test it locally before you cre
 This can be done using [Tomcat](#tomcat) or [Docker](#docker).
 
 #### Tomcat
-If you do not have [Tomcat](http://tomcat.apache.org/) please install the newest version of it.
+If you do not have [Tomcat](http://tomcat.apache.org/) please install Tomcat8.
 Then do the following steps:
 * Add Tomcat to the "Run/Debug Configurations" of Intellij
 * In the "Server" tab you can choose the port of Tomcat (default 8080)
@@ -53,21 +53,23 @@ The connector uses jooq and flyway to create the database.
 Depends on which maven profile you use, the configuration for the postgres can change.
 In the [pom.xml](https://github.com/samply/share-client/blob/master/pom.xml) you can see the configurations for each profile.
 Please create the user and the database in postgres according to the selected profile.
-After you created the database run in Intellij the command `mvn flyway:clean flyway:migrate jooq-codegen:generate` to initialise the empty database.
+After you created the database run in Intellij the command(if using other profile than samply) `mvn flyway:clean flyway:migrate jooq-codegen:generate` to initialise the empty database.
 
-After the configuration of Tomcat and Postgres run the maven command `mvn clean install` and run Tomcat in Intellij to deploy and run the connector with your changes.
+After the configuration of Tomcat and Postgres run the maven command `mvn clean install`/ (to run with samply profile) `mvn clean install -P samply` and run Tomcat in Intellij to deploy and run the connector with your changes.
 
 #### Docker (Only works with Maven profile "samply")
 If you want to use [Docker](https://www.docker.com/) for testing your changes you can do it by running the following commands.
-* `mvn clean install` to create a WAR-file for the Docker image
+* `mvn clean install -P samply` to create a WAR-file for the Docker image
 * Run at the directory of the share-client project the following script to deploy a Postgres container and then a connector container:
     
 
-        
+    docker network create BH    
     docker rm pg-connector
     
     docker run \
         --name pg-connector \
+        --network BH \
+        --network-alias psql
         -e POSTGRES_USER=samply \
         -e POSTGRES_DB=samply.connector \
         -e POSTGRES_PASSWORD=samply \
@@ -80,8 +82,9 @@ If you want to use [Docker](https://www.docker.com/) for testing your changes yo
     
     docker run \
         --name=connector \
+        --network BH \
         -p 8082:8080 \
-        -e POSTGRES_HOST='pg-connector' \
+        -e POSTGRES_HOST='psql' \
         -e POSTGRES_DB='samply.connector' \
         -e POSTGRES_USER='samply' \
         -e POSTGRES_PASS='samply' \
