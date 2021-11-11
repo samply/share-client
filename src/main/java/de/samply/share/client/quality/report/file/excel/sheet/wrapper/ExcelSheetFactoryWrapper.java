@@ -32,5 +32,9 @@ public abstract class ExcelSheetFactoryWrapper implements ExcelSheetFactory {
     return workbook;
   }
 
+  @Override
+  public void setMaxNumberOfRowsPerSheet(int maxNumberOfRowsPerSheet) {
+    excelSheetFactory.setMaxNumberOfRowsPerSheet(maxNumberOfRowsPerSheet);
+  }
 
 }
