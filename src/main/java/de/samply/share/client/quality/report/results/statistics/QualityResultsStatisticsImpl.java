@@ -4,7 +4,9 @@ import de.samply.share.client.quality.report.MdrMappedElements;
 import de.samply.share.client.quality.report.results.QualityResult;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.common.utils.MdrIdDatatype;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class QualityResultsStatisticsImpl implements QualityResultsStatistics,
@@ -17,6 +19,7 @@ public class QualityResultsStatisticsImpl implements QualityResultsStatistics,
   private final OrConditionsEvaluator orConditionsEvaluator = new OrConditionsEvaluator();
 
   private Integer totalNumberOfPatients;
+  private Map<MdrIdDatatype, Integer> mdrId_PatientsWithMdrId = new HashMap<>();
 
 
   public QualityResultsStatisticsImpl(QualityResults qualityResults,
@@ -82,7 +85,13 @@ public class QualityResultsStatisticsImpl implements QualityResultsStatistics,
 
   private int getPatientsWithMdrId(MdrIdDatatype mdrId) {
 
-    return countPatients(mdrId, qualityResult -> qualityResult.getPatientLocalIds());
+    Integer numberOfPatients = mdrId_PatientsWithMdrId.get(mdrId);
+    if (numberOfPatients == null){
+      numberOfPatients = countPatients(mdrId, qualityResult -> qualityResult.getPatientLocalIds());
+      mdrId_PatientsWithMdrId.put(mdrId, numberOfPatients);
+    }
+
+    return numberOfPatients;
 
   }
 
