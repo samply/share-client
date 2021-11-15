@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [7.5.3 - 2022-01-31]
 ### Fixed
 - Bug at the Searchbroker registration when typing two times unreachable urls
+- QB-Generator: Cache number of patients per mdrid (and per mdr id and value)
 
 ## [7.5.2 - 2022-01-24]
 ### Fixed
