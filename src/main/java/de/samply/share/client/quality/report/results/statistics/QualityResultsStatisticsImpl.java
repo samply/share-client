@@ -19,7 +19,8 @@ public class QualityResultsStatisticsImpl implements QualityResultsStatistics,
   private final OrConditionsEvaluator orConditionsEvaluator = new OrConditionsEvaluator();
 
   private Integer totalNumberOfPatients;
-  private Map<MdrIdDatatype, Integer> mdrId_PatientsWithMdrId = new HashMap<>();
+  private Map<MdrIdDatatype, Integer> mdrIdNumberOfPatients = new HashMap<>();
+  private MdrIdValueNumberOfPatients mdrIdValueNumberOfPatients = new MdrIdValueNumberOfPatients();
 
 
   public QualityResultsStatisticsImpl(QualityResults qualityResults,
@@ -31,6 +32,37 @@ public class QualityResultsStatisticsImpl implements QualityResultsStatistics,
 
   private double getPercentage(int part, int total) {
     return (total > 0) ? 100.0d * ((double) part) / ((double) total) : 0;
+  }
+
+  private class MdrIdValueNumberOfPatients {
+
+    private Map<String, Integer> mdrIdValueNumberOfPatients = new HashMap<>();
+
+    public void addMdrIdValueNumberOfPatients(MdrIdDatatype mdrId, String value,
+        Integer numberOfPatients) {
+      String id = convertToId(mdrId, value);
+      mdrIdValueNumberOfPatients.put(id, numberOfPatients);
+    }
+
+    public Integer getNumberOfPatients(MdrIdDatatype mdrId, String value) {
+
+      Integer numberOfPatients = null;
+
+      if (mdrId != null && value != null) {
+        String id = convertToId(mdrId, value);
+        if (id != null) {
+          numberOfPatients = mdrIdValueNumberOfPatients.get(id);
+        }
+      }
+
+      return numberOfPatients;
+
+    }
+
+    private String convertToId(MdrIdDatatype mdrId, String value) {
+      return mdrId.getMajor() + '-' + value;
+    }
+
   }
 
   @Override
@@ -56,8 +88,16 @@ public class QualityResultsStatisticsImpl implements QualityResultsStatistics,
 
   private int getPatientsWithValue(MdrIdDatatype mdrID, String value) {
 
-    QualityResult result = qualityResults.getResult(mdrID, value);
-    return (result == null) ? 0 : result.getNumberOfPatients();
+    Integer numberOfPatients = mdrIdValueNumberOfPatients.getNumberOfPatients(mdrID, value);
+    if (numberOfPatients == null) {
+
+      QualityResult result = qualityResults.getResult(mdrID, value);
+      numberOfPatients = (result == null) ? 0 : result.getNumberOfPatients();
+      mdrIdValueNumberOfPatients.addMdrIdValueNumberOfPatients(mdrID, value, numberOfPatients);
+
+    }
+
+    return numberOfPatients;
 
   }
 
@@ -85,10 +125,10 @@ public class QualityResultsStatisticsImpl implements QualityResultsStatistics,
 
   private int getPatientsWithMdrId(MdrIdDatatype mdrId) {
 
-    Integer numberOfPatients = mdrId_PatientsWithMdrId.get(mdrId);
-    if (numberOfPatients == null){
+    Integer numberOfPatients = mdrIdNumberOfPatients.get(mdrId);
+    if (numberOfPatients == null) {
       numberOfPatients = countPatients(mdrId, qualityResult -> qualityResult.getPatientLocalIds());
-      mdrId_PatientsWithMdrId.put(mdrId, numberOfPatients);
+      mdrIdNumberOfPatients.put(mdrId, numberOfPatients);
     }
 
     return numberOfPatients;
