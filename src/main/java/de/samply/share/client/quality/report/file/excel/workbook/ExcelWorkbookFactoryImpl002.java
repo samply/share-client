@@ -11,6 +11,7 @@ import de.samply.share.client.quality.report.file.excel.row.context.ExcelRowCont
 import de.samply.share.client.quality.report.file.excel.sheet.ExcelSheetFactory;
 import de.samply.share.client.quality.report.file.excel.sheet.ExcelSheetFactoryException;
 import de.samply.share.client.quality.report.file.excel.sheet.ExplanatoryExcelSheetFactory;
+import de.samply.share.client.quality.report.file.excel.sheet.wrapper.ExcelSheetFunctionality;
 import de.samply.share.client.quality.report.model.searcher.ModelSearcher;
 import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.client.quality.report.results.filter.QualityResultsSortedMdrIdsByDktkIdFilter;
@@ -21,6 +22,8 @@ import de.samply.share.client.quality.report.results.sorted.AlphabeticallySorted
 import de.samply.share.client.quality.report.results.statistics.QualityResultsStatistics;
 import de.samply.share.client.quality.report.results.statistics.QualityResultsStatisticsImpl;
 import de.samply.share.client.util.db.ConfigurationUtil;
+import java.util.Collections;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -109,8 +112,10 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
       logger.info("Adding all elements to quality report file");
 
       qualityResultsStatistics = getQualityResultStatistics(qualityResults);
+      Set<ExcelSheetFunctionality> deactivatedExcelSheetFunctionalities = Collections.singleton(
+          ExcelSheetFunctionality.AUTOSIZE_COLUMN);
       workbook = addSheet(workbook, ALL_ELEMENTS_SHEET_TITLE, sortedQualityResults,
-          asmQualityResults, qualityResultsStatistics);
+          asmQualityResults, qualityResultsStatistics, deactivatedExcelSheetFunctionalities);
 
     }
 
@@ -163,17 +168,34 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
   private SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
       QualityResults qualityResults, AlphabeticallySortedMismatchedQualityResults asmQualityResults,
       QualityResultsStatistics qualityResultsStatistics) throws ExcelWorkbookFactoryException {
+    return addSheet(workbook, sheetTitle, qualityResults, asmQualityResults,
+        qualityResultsStatistics, null);
+  }
+
+  private SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
+      QualityResults qualityResults, AlphabeticallySortedMismatchedQualityResults asmQualityResults,
+      QualityResultsStatistics qualityResultsStatistics,
+      Set<ExcelSheetFunctionality> deactivatedExcelSheetFunctionalities)
+      throws ExcelWorkbookFactoryException {
 
     ExcelRowContext excelRowContext = createExcelRowContext(qualityResults, asmQualityResults,
         qualityResultsStatistics);
-    return addSheet(workbook, sheetTitle, excelRowContext);
+    return addSheet(workbook, sheetTitle, excelRowContext, deactivatedExcelSheetFunctionalities);
 
   }
 
   private SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
       ExcelRowContext excelRowContext) throws ExcelWorkbookFactoryException {
+    return addSheet(workbook, sheetTitle, excelRowContext, null);
+  }
+
+  private SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
+      ExcelRowContext excelRowContext,
+      Set<ExcelSheetFunctionality> deactivatedExcelSheetFunctionalities)
+      throws ExcelWorkbookFactoryException {
     try {
-      return excelSheetFactory.addSheet(workbook, sheetTitle, excelRowContext);
+      return excelSheetFactory.addSheet(workbook, sheetTitle, excelRowContext,
+          deactivatedExcelSheetFunctionalities);
     } catch (ExcelSheetFactoryException e) {
       throw new ExcelWorkbookFactoryException(e);
     }

@@ -50,9 +50,7 @@ public class QualityResultsStatisticsImpl implements QualityResultsStatistics,
 
       if (mdrId != null && value != null) {
         String id = convertToId(mdrId, value);
-        if (id != null) {
-          numberOfPatients = mdrIdValueNumberOfPatients.get(id);
-        }
+        numberOfPatients = mdrIdValueNumberOfPatients.get(id);
       }
 
       return numberOfPatients;

@@ -2,11 +2,13 @@ package de.samply.share.client.quality.report.file.excel.sheet;
 
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.file.excel.row.context.ExcelRowContext;
+import de.samply.share.client.quality.report.file.excel.sheet.wrapper.ExcelSheetFunctionality;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -24,6 +26,14 @@ public class ExplanatoryExcelSheetFactory implements ExcelSheetFactory {
   @Override
   public SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
       ExcelRowContext excelRowContext) throws ExcelSheetFactoryException {
+    return addSheet();
+  }
+
+  @Override
+  public SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
+      ExcelRowContext excelRowContext,
+      Set<ExcelSheetFunctionality> deactivatedExcelSheetFunctionalities)
+      throws ExcelSheetFactoryException {
     return addSheet();
   }
 

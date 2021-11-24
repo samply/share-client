@@ -4,8 +4,10 @@ import de.samply.share.client.quality.report.file.excel.row.context.ExcelRowCont
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactory;
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactoryException;
+import de.samply.share.client.quality.report.file.excel.sheet.wrapper.ExcelSheetFunctionality;
 import de.samply.share.common.utils.PercentageLogger;
 import java.util.Iterator;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.SpreadsheetVersion;
@@ -47,6 +49,14 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
     return workbook;
 
+  }
+
+  @Override
+  public SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
+      ExcelRowContext excelRowContext,
+      Set<ExcelSheetFunctionality> deactivatedExcelSheetFunctionalities)
+      throws ExcelSheetFactoryException {
+    return addSheet(workbook, sheetTitle, excelRowContext);
   }
 
   private SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,

@@ -20,5 +20,10 @@ public class ExcelSheetWithAutoFilterFactory extends ExcelSheetFactoryWrapper {
     return sheet;
   }
 
+  @Override
+  protected ExcelSheetFunctionality getExcelSheetFunctionality() {
+    return ExcelSheetFunctionality.AUTOFILTER;
+  }
+
 
 }

@@ -16,6 +16,11 @@ public class HighlightNotMappedInOrangeExcelSheetFactory002 extends
     super(excelSheetFactory);
   }
 
+  @Override
+  protected ExcelSheetFunctionality getExcelSheetFunctionality() {
+    return ExcelSheetFunctionality.HIGHLIGHT_NOT_MAPPED_IN_ORANGE;
+  }
+
 
   @Override
   protected String getRule() {

@@ -36,6 +36,11 @@ public class ExcelSheetWithAutoSizeColumnFactory extends ExcelSheetFactoryWrappe
 
   }
 
+  @Override
+  protected ExcelSheetFunctionality getExcelSheetFunctionality() {
+    return ExcelSheetFunctionality.AUTOSIZE_COLUMN;
+  }
+
 
   private void autoSizeColumn(SXSSFSheet sheet, int column) {
     try {

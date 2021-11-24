@@ -15,6 +15,11 @@ public class HighlightMismatchInRedExcelSheetFactory002 extends ExcelSheetWithHi
     super(excelSheetFactory);
   }
 
+  @Override
+  protected ExcelSheetFunctionality getExcelSheetFunctionality() {
+    return ExcelSheetFunctionality.HIGHLIGHT_MISMATCH_IN_RED;
+  }
+
 
   @Override
   protected String getRule() {

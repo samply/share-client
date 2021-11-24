@@ -14,6 +14,11 @@ public class HighlightNotFoundInBlueExcelSheetFactory002 extends ExcelSheetWithH
     super(excelSheetFactory);
   }
 
+  @Override
+  protected ExcelSheetFunctionality getExcelSheetFunctionality() {
+    return ExcelSheetFunctionality.HIGHLIGHT_NOT_FOUND_IN_BLUE;
+  }
+
 
   @Override
   protected String getRule() {

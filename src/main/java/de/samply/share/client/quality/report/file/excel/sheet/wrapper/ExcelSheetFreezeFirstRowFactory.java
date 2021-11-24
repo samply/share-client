@@ -17,4 +17,9 @@ public class ExcelSheetFreezeFirstRowFactory extends ExcelSheetFactoryWrapper {
 
   }
 
+  @Override
+  protected ExcelSheetFunctionality getExcelSheetFunctionality() {
+    return ExcelSheetFunctionality.FREEZE_FIRST_ROW;
+  }
+
 }
