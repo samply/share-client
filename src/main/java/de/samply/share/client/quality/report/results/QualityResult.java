@@ -6,7 +6,7 @@ import java.util.Set;
 public class QualityResult {
 
 
-  private Integer numberOfPatients = 0;
+  private Integer numberOfPatients = null;
   private boolean isValid = false;
   private final Set<String> patientLocalIds = new HashSet<>();
   private final Set<String> patientDktkIds = new HashSet<>();
