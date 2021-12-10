@@ -1,0 +1,2 @@
+INSERT INTO samply.configuration(name, setting, visible) values('QUALITY_REPORT_MAX_NUMBER_OF_ROWS_PER_SHEET', '-1', false);
+UPDATE samply.configuration SET setting='urn:adt:dataelement:77:1, urn:adt:dataelement:78:1, urn:adt:dataelement:89:1, urn:adt:dataelement:90:1, urn:adt:dataelement:91:1, urn:adt:dataelement:93:1, urn:dktk:dataelement:118:3' WHERE name='QUALITY_REPORT_ADDITIONAL_MDR_DATA_ELEMENTS';
