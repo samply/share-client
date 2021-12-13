@@ -6,15 +6,26 @@ import java.util.Set;
 public class QualityResult {
 
 
-  private int numberOfPatients = 0;
+  private Integer numberOfPatients = null;
   private boolean isValid = false;
   private final Set<String> patientLocalIds = new HashSet<>();
   private final Set<String> patientDktkIds = new HashSet<>();
 
 
+  /**
+   * Get number of patients.
+   *
+   * @return number of patients.
+   *
+   */
   public int getNumberOfPatients() {
-    return (numberOfPatients > 0) ? numberOfPatients
-        : Math.max(patientLocalIds.size(), patientDktkIds.size());
+
+    if (numberOfPatients == null) {
+      numberOfPatients = Math.max(patientLocalIds.size(), patientDktkIds.size());
+    }
+
+    return numberOfPatients;
+
   }
 
   public void setNumberOfPatients(int numberOfPatients) {
@@ -52,6 +63,7 @@ public class QualityResult {
 
     if (patientLocalIds != null && patientLocalIds.size() > 0) {
       this.patientLocalIds.addAll(patientLocalIds);
+      this.numberOfPatients = null;
     }
 
   }
@@ -65,6 +77,7 @@ public class QualityResult {
 
     if (patientDktkId != null) {
       patientDktkIds.add(patientDktkId);
+      this.numberOfPatients = null;
     }
 
   }

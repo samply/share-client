@@ -17,6 +17,7 @@ public class ExplanatoryExcelSheetFactory implements ExcelSheetFactory {
 
 
   protected static final Logger logger = LogManager.getLogger(ExplanatoryExcelSheetFactory.class);
+  private Integer workbookWindow;
   //private ExplanatoryExcelFileDownloader explanatoryExcelFileDownloader =
   // new ExplanatoryExcelFileDownloader();
 
@@ -74,7 +75,8 @@ public class ExplanatoryExcelSheetFactory implements ExcelSheetFactory {
 
       logger.info("reading explanatory excel file");
       XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
-      return new SXSSFWorkbook(workbook);
+      return (workbookWindow != null) ? new SXSSFWorkbook(workbook, workbookWindow)
+          : new SXSSFWorkbook(workbook);
 
     } catch (IOException e) {
       throw new ExcelSheetFactoryException(e);
@@ -84,7 +86,7 @@ public class ExplanatoryExcelSheetFactory implements ExcelSheetFactory {
 
   @Override
   public void setMaxNumberOfRowsPerSheet(int maxNumberOfRowsPerSheet) {
-    // This method does not make sense here.
+    workbookWindow = maxNumberOfRowsPerSheet;
   }
 
 
