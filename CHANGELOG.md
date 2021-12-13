@@ -4,9 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.4.2 - 2021-12-13]
+### Changed
+- hapi version 5.6.1
+### Fixed
+- no class def error found for jacksonStructure
+
 ## [7.4.1 - 2021-10-18]
 ### Fixed
 - Quality Report for large amount of data
+- Log4j version to 2.15.0
 
 ## [7.4.0 - 2021-09-13]
 ### Added
