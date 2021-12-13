@@ -1,9 +1,13 @@
 package de.samply.share.client.quality.report.file.excel.row.factory;
 
+import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.file.excel.cell.element.ExcelCellElement;
 import de.samply.share.client.quality.report.file.excel.cell.element.StringExcelCellElement;
 import de.samply.share.client.quality.report.file.excel.row.context.ExcelRowContext;
 import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowElements;
+import de.samply.share.client.quality.report.properties.PropertyUtils;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -16,7 +20,29 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 public class ExcelRowFactoryImpl implements ExcelRowFactory {
 
   private final StringExcelCellElement emptyElement = new StringExcelCellElement("");
+  //TO DELETE:
+  private Set<Integer> toBeFiltered = getColumnsToBeFiltered();
+  // new HashSet<>(
+  //Arrays.asList(new Integer[]{0, 3, 4, 7, 9, 10}));
+  //Arrays.asList(new Integer[]{0, 3, 4, 5, 6, 7, 8, 9, 10}));
 
+  private Set<Integer> getColumnsToBeFiltered() {
+
+    Set<Integer> columnstoBeFilteredI = new HashSet<>();
+
+    String[] columnsToBeFilteredS = PropertyUtils.getListOfProperties(
+        EnumConfiguration.QUALITY_REPORT_COLUMNS_TO_BE_FILTERED);
+
+    for (String columnToBeFilteredS : columnsToBeFilteredS) {
+      Integer columnToBeFilteredI = new Integer(columnToBeFilteredS);
+      if (columnToBeFilteredI != null) {
+        columnstoBeFilteredI.add(columnToBeFilteredI);
+      }
+    }
+
+    return columnstoBeFilteredI;
+
+  }
 
   @Override
   public SXSSFSheet addRowTitles(SXSSFSheet sheet, ExcelRowContext excelRowContext)
@@ -72,12 +98,14 @@ public class ExcelRowFactoryImpl implements ExcelRowFactory {
 
     SXSSFRow row = sheet.createRow(rowNum);
 
-    addElementsToRow(row, excelRowElements);
+    boolean isToBeFiltered = sheet.getSheetName().equals("all elements");
+    addElementsToRow(row, excelRowElements, isToBeFiltered);
 
     return sheet;
   }
 
-  private SXSSFRow addElementsToRow(SXSSFRow row, ExcelRowElements elements) {
+  private SXSSFRow addElementsToRow(SXSSFRow row, ExcelRowElements elements,
+      boolean isToBeFiltered) {
 
     for (int i = 0;
         i < elements.getMaxNumberOfElements() && i < SpreadsheetVersion.EXCEL2007.getMaxColumns();
@@ -85,7 +113,7 @@ public class ExcelRowFactoryImpl implements ExcelRowFactory {
 
       ExcelCellElement element = elements.getElement(i);
 
-      if (element != null) {
+      if ((element != null) && (!isToBeFiltered || !toBeFiltered.contains(i))) {
         element.addAsCell(row);
       } else {
         emptyElement.addAsCell(row);

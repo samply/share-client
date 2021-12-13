@@ -86,7 +86,7 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
     if (isSheetSelectedToBeWritten(EnumConfiguration.QUALITY_REPORT_SHOW_INFO_SHEET)) {
       logger.info("Adding explanatory sheet to Excel quality report file");
       if (explanatoryExcelSheetFactory != null) {
-        SXSSFWorkbook workbook2 = addExplanatorySheet(workbook);
+        SXSSFWorkbook workbook2 = addExplanatorySheet(workbook, workbookWindow);
         if (workbook2 != null) {
           workbook = workbook2;
         }
@@ -220,10 +220,11 @@ public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
         .createExcelRowContext(qualityResults, asmQualityResults, qualityResultsStatistics);
   }
 
-  private SXSSFWorkbook addExplanatorySheet(SXSSFWorkbook workbook)
+  private SXSSFWorkbook addExplanatorySheet(SXSSFWorkbook workbook, int workbookWindow)
       throws ExcelWorkbookFactoryException {
 
     try {
+      explanatoryExcelSheetFactory.setMaxNumberOfRowsPerSheet(workbookWindow);
       return explanatoryExcelSheetFactory.addSheet(workbook, null, null);
     } catch (ExcelSheetFactoryException e) {
       throw new ExcelWorkbookFactoryException(e);
