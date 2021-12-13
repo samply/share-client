@@ -82,5 +82,10 @@ public class ExplanatoryExcelSheetFactory implements ExcelSheetFactory {
 
   }
 
+  @Override
+  public void setMaxNumberOfRowsPerSheet(int maxNumberOfRowsPerSheet) {
+    // This method does not make sense here.
+  }
+
 
 }
