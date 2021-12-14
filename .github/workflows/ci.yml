@@ -85,3 +85,16 @@ jobs:
             PROJECT=${{matrix.project_context}}
           push: true
           tags: ${{ github.repository }}:${{matrix.project}}-${{ steps.extract_docker_tag.outputs.tag }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ github.repository }}:${{matrix.project}}-${{ steps.extract_docker_tag.outputs.tag }}
+          format: template
+          template: '@/contrib/sarif.tpl'
+          output: trivy-results.sarif
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@codeql-bundle-20211208
+        with:
+          sarif_file: trivy-results.sarif
