@@ -102,7 +102,7 @@
     <jqplot.version>1.0.9.d96a669-1</jqplot.version>
     <hapi.version>5.6.1</hapi.version>
     <directory-sync.version>0.1.0</directory-sync.version>
-    <togglz-core.version>2.6.1.Final</togglz-core.version>
+    <togglz-core.version>2.9.9</togglz-core.version>
     <togglz-jsf.version>2.6.1.Final</togglz-jsf.version>
     <swagger-ui.version>3.42.0</swagger-ui.version>
     <microprofile-openapi-api.version>2.0-MR1</microprofile-openapi-api.version>
