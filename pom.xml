@@ -73,7 +73,7 @@
 
     <!-- general dependencies -->
     <version.flyway>4.2.0</version.flyway>
-    <version.jooq>3.11.11</version.jooq>
+    <version.jooq>3.15.4</version.jooq>
     <jta.version>1.1</jta.version>
     <quartz.version>2.3.2</quartz.version>
     <log4j.version>2.15.0</log4j.version>
