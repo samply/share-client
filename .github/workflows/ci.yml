@@ -6,10 +6,14 @@ name: Build with maven and docker
 on:
   push:
     branches:
-      - '**'
+      - master
+      - develop
     tags:
-      - 'release-*.*.*'
+      - 'v*.*.*'
   pull_request:
+    branches:
+      - master
+      - develop
 
 jobs:
   build:
@@ -55,13 +59,6 @@ jobs:
       - name: Build with Maven
         run: mvn -B package -P ${{matrix.maven_profile}},ci-override
 
-      - name: Extract docker tag
-        id: extract_docker_tag
-        shell: bash
-        # this is needed, because tags GITHUB_REF is inconsistent for pull requests.
-        if: ${{ github.event_name != 'pull_request' }}
-        run: echo "##[set-output name=tag;]$(echo ${GITHUB_REF##*/};)"
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
@@ -74,9 +71,25 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Docker meta
+        id: docker-meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            samply/share-client
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr,prefix=${{matrix.project}}-pr-
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha,format=long,prefix=${{matrix.project}}-sha-
+          flavor: |
+            prefix=${{matrix.project}}-,onlatest=true
+
       - name: Build and push
         uses: docker/build-push-action@v2
-        if: ${{ github.event_name != 'pull_request' }}
         with:
           context: .
           file: ./Dockerfile
@@ -84,4 +97,18 @@ jobs:
           build-args: |
             PROJECT=${{matrix.project_context}}
           push: true
-          tags: ${{ github.repository }}:${{matrix.project}}-${{ steps.extract_docker_tag.outputs.tag }}
+          tags: ${{ steps.docker-meta.outputs.tags }}
+          labels: ${{ steps.docker-meta.outputs.labels }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: samply/share-client:${{matrix.project}}-sha-${{ github.sha }}
+          format: template
+          template: '@/contrib/sarif.tpl'
+          output: trivy-results.sarif
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@codeql-bundle-20211208
+        with:
+          sarif_file: trivy-results.sarif
