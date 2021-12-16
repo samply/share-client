@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>share-client</artifactId>
-  <version>7.4.3-SNAPSHOT</version>
+  <version>7.4.3</version>
   <packaging>war</packaging>
 
   <name>Connector</name>
