@@ -2,6 +2,7 @@ package de.samply.share.client.util.connector;
 
 import static de.samply.share.common.utils.Constants.AUTH_HEADER_VALUE_SAMPLY;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
