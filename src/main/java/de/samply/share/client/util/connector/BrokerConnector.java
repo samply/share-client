@@ -2,6 +2,7 @@ package de.samply.share.client.util.connector;
 
 import static de.samply.share.common.utils.Constants.AUTH_HEADER_VALUE_SAMPLY;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -73,7 +74,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * A connector that handles all communication with a searchbroker.

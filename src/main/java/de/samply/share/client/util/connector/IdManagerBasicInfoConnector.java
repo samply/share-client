@@ -1,5 +1,7 @@
 package de.samply.share.client.util.connector;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.IdObject;
@@ -23,8 +25,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
 
 /**
  * A connector that handles all communication with the ID Manager.
@@ -86,7 +86,7 @@ public class IdManagerBasicInfoConnector extends AbstractComponentBasicInfoConne
 
     try {
       return getExportIds_WithoutExceptionManagement(idList, idObjectMap);
-    } catch (IOException | JSONException e) {
+    } catch (IOException e) {
       throw new IdManagerConnectorException(e);
     }
 
@@ -100,7 +100,7 @@ public class IdManagerBasicInfoConnector extends AbstractComponentBasicInfoConne
 
   private HashMap<String, String> getExportIds_WithoutExceptionManagement(
       LinkedList<IdObject> idList, HashMap<String, IdObject> idObjectMap)
-      throws IdManagerConnectorException, IOException, JSONException {
+      throws IdManagerConnectorException, IOException {
 
     HashMap<String, String> idMap = new HashMap<>();
 
@@ -123,11 +123,14 @@ public class IdManagerBasicInfoConnector extends AbstractComponentBasicInfoConne
 
     String jsonString = EntityUtils.toString(entity, Consts.UTF_8);
     logger.debug(jsonString);
-    JSONArray jsonArray = new JSONArray(jsonString);
-    List<String> exportIds = new ArrayList<>();
+    JsonNode jsonNode = new ObjectMapper().readTree(jsonString);
+    if (!jsonNode.isArray()) {
+      throw new IdManagerConnectorException("Expected JSON array bot got other json content.");
+    }
 
-    for (int i = 0; i < jsonArray.length(); i++) {
-      exportIds.add(jsonArray.getString(i));
+    List<String> exportIds = new ArrayList<>();
+    for (int i = 0; i < jsonNode.size(); i++) {
+      exportIds.add(jsonNode.get(i).textValue());
     }
 
     Iterator<Map.Entry<String, IdObject>> localIdIterator = idObjectMap.entrySet().iterator();
