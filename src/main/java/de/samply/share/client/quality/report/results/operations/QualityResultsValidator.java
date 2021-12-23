@@ -6,14 +6,14 @@ import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.PercentageLogger;
 import de.samply.share.common.utils.QueryValidator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class QualityResultsValidator {
 
 
-  private static final Logger logger = LogManager.getLogger(QualityResultsValidator.class);
+  private static final Logger logger = LoggerFactory.getLogger(QualityResultsValidator.class);
 
   private final QueryValidator queryValidator;
   private final MdrValidator mdrValidator;
@@ -107,7 +107,7 @@ public class QualityResultsValidator {
     } catch (ValidatorException e) {
       //throw new QualityResultsValidatorException(e);
       logger.debug(mdrId + ":" + value);
-      logger.debug(e);
+      logger.debug(e.getMessage(),e);
 
       return false;
       //return isValid_LastMdrId(mdrId, value);

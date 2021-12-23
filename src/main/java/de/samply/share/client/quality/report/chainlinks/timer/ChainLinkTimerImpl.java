@@ -1,6 +1,11 @@
 package de.samply.share.client.quality.report.chainlinks.timer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class ChainLinkTimerImpl implements ChainLinkTimer {
+
+  private static final Logger logger = LoggerFactory.getLogger(ChainLinkTimerImpl.class);
 
   private long maxTimeToWaitInMillis;
 
@@ -12,7 +17,7 @@ public abstract class ChainLinkTimerImpl implements ChainLinkTimer {
     try {
       Thread.sleep(getTimeToSleepInMillis(attempt));
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
 
   }
@@ -23,7 +28,7 @@ public abstract class ChainLinkTimerImpl implements ChainLinkTimer {
     try {
       wait(maxTimeToWaitInMillis);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
 
   }

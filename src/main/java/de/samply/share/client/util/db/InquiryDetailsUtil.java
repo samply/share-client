@@ -7,18 +7,18 @@ import de.samply.share.client.model.db.tables.pojos.Inquiry;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.model.db.tables.records.InquiryDetailsRecord;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
 import org.jooq.DatePart;
 import org.jooq.impl.DSL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper Class for CRUD operations with inquiry details objects.
  */
 public class InquiryDetailsUtil {
 
-  private static final Logger logger = LogManager.getLogger(InquiryDetailsUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(InquiryDetailsUtil.class);
 
   private static final InquiryDetailsDao inquiryDetailsDao;
 

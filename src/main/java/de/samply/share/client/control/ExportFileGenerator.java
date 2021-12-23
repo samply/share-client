@@ -24,16 +24,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generates export file.
  */
 public class ExportFileGenerator {
 
-  private static final Logger logger = LogManager.getLogger(ExportFileGenerator.class);
+  private static final Logger logger = LoggerFactory.getLogger(ExportFileGenerator.class);
 
   private static int DEFAULT_TIMEOUT_IN_MINUTEN = 6 * 60;
   private long timeoutInNanoseconds;
@@ -203,7 +203,7 @@ public class ExportFileGenerator {
       return mdrIdDatatypeList;
 
     } catch (Exception e) {
-      logger.error(e);
+      logger.error(e.getMessage(),e);
       return new ArrayList<>();
     }
 
@@ -233,7 +233,7 @@ public class ExportFileGenerator {
       byteArrayOutputStream.writeTo(fileOutputStream);
 
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 

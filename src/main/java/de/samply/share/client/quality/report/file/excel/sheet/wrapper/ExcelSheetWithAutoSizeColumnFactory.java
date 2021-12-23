@@ -3,15 +3,15 @@ package de.samply.share.client.quality.report.file.excel.sheet.wrapper;
 import de.samply.share.client.quality.report.file.excel.sheet.ExcelSheetFactory;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
 public class ExcelSheetWithAutoSizeColumnFactory extends ExcelSheetFactoryWrapper {
 
-  protected static final Logger logger = LogManager
+  protected static final Logger logger = LoggerFactory
       .getLogger(ExcelSheetWithAutoSizeColumnFactory.class);
   private final Set<Integer> excludedColumnsForAutoSize = new HashSet<>();
 

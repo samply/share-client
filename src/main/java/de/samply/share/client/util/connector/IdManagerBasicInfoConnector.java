@@ -21,17 +21,17 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A connector that handles all communication with the ID Manager.
  */
 public class IdManagerBasicInfoConnector extends AbstractComponentBasicInfoConnector {
 
-  private static final Logger logger = LogManager.getLogger(IdManagerBasicInfoConnector.class);
+  private static final Logger logger = LoggerFactory.getLogger(IdManagerBasicInfoConnector.class);
 
   private static final String EXPORT_ID_PATH = "getExportIds";
   
@@ -71,7 +71,7 @@ public class IdManagerBasicInfoConnector extends AbstractComponentBasicInfoConne
       return getExportIds(idList, idObjectMap);
     } catch (IdManagerConnectorException e) {
       if (numberOfConnectionAttempt < maxNumberOfConnectionAttempts) {
-        e.printStackTrace();
+        logger.error(e.getMessage(),e);
         sleepBetweenConnectionAttempts();
         logger.debug("Getting export ids: Attempt " + numberOfConnectionAttempt);
         return getExportIds(idList, idObjectMap, numberOfConnectionAttempt + 1);
@@ -87,6 +87,7 @@ public class IdManagerBasicInfoConnector extends AbstractComponentBasicInfoConne
     try {
       return getExportIds_WithoutExceptionManagement(idList, idObjectMap);
     } catch (IOException | JSONException e) {
+      logger.error(e.getMessage(),e);
       throw new IdManagerConnectorException(e);
     }
 
@@ -144,7 +145,7 @@ public class IdManagerBasicInfoConnector extends AbstractComponentBasicInfoConne
     try {
       TimeUnit.SECONDS.sleep(timeToWaitInSecondsBetweenConnectionAttempts);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 }

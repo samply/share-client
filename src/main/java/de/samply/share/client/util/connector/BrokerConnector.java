@@ -71,16 +71,16 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A connector that handles all communication with a searchbroker.
  */
 public class BrokerConnector {
 
-  private static final Logger logger = LogManager.getLogger(BrokerConnector.class);
+  private static final Logger logger = LoggerFactory.getLogger(BrokerConnector.class);
   private transient HttpConnector httpConnector;
   private Broker broker;
   private Credentials credentials;
@@ -182,6 +182,7 @@ public class BrokerConnector {
         return broker.getName();
       }
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
     return broker.getAddress();
@@ -215,6 +216,7 @@ public class BrokerConnector {
         return BrokerStatusType.BS_UNREACHABLE;
       }
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -243,6 +245,7 @@ public class BrokerConnector {
       response.close();
       return retCode == HttpStatus.SC_NO_CONTENT;
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -278,6 +281,7 @@ public class BrokerConnector {
 
       return retCode;
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -323,6 +327,7 @@ public class BrokerConnector {
           XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(responseString));
           inquiriesIdList = unmarshaller.unmarshal(reader, InquiriesIdList.class).getValue();
         } catch (Exception e) {
+          logger.error(e.getMessage(),e);
           throw new BrokerConnectorException("Error reading inquiries", e);
         }
 
@@ -337,6 +342,7 @@ public class BrokerConnector {
         return queryIds;
       }
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
     return new HashMap<>();
@@ -434,7 +440,7 @@ public class BrokerConnector {
         return responseString;
       }
     } catch (IOException | URISyntaxException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
     return null;
   }
@@ -479,6 +485,7 @@ public class BrokerConnector {
         return queryElement.getValue();
       }
     } catch (IOException | URISyntaxException | JAXBException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
     return null;
@@ -523,6 +530,7 @@ public class BrokerConnector {
               .unmarshal(new StreamSource(stringReader), Inquiry.class);
           return inquiryElement.getValue();
         } catch (JAXBException e) {
+          logger.error(e.getMessage(),e);
           throw new BrokerConnectorException(e);
         }
       } else {
@@ -532,6 +540,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -571,6 +580,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException | JAXBException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -610,6 +620,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException | JAXBException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -646,6 +657,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -664,6 +676,7 @@ public class BrokerConnector {
 
       reply(inquiryDetails, replyString);
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -697,6 +710,7 @@ public class BrokerConnector {
     try {
       reply(inquiryDetails, mapper.writeValueAsString(reply));
     } catch (URISyntaxException | IOException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -815,6 +829,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -835,6 +850,7 @@ public class BrokerConnector {
           AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
       return httpClient.execute(httpHost, httpPut);
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -863,6 +879,7 @@ public class BrokerConnector {
       }
       return new ArrayList<>();
     } catch (IOException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }

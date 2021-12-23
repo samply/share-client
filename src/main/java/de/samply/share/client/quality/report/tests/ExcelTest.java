@@ -26,9 +26,13 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/excel-test")
 public class ExcelTest {
+
+  private static final Logger logger = LoggerFactory.getLogger(ExcelTest.class);
 
 
   private final ModelSearcher modelSearcher;
@@ -87,7 +91,7 @@ public class ExcelTest {
       return modelReader.getModel();
 
     } catch (ModelReaderException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       return null;
     }
   }
@@ -102,7 +106,7 @@ public class ExcelTest {
       return new MdrClient(mdrUrl, httpConnector.getClient(httpConnector.getHttpClient(mdrUrl)));
 
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       return null;
     }
 

@@ -28,12 +28,12 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MagicPlConnector implements IdManagementConnector {
 
-  private static final Logger logger = LogManager.getLogger(MagicPlConnector.class);
+  private static final Logger logger = LoggerFactory.getLogger(MagicPlConnector.class);
   private static final String URL_PREFIX_READ_PATIENTS = "paths/readPatients";
   private static final String HTTP_HEADERS_API_KEY = "apiKey";
 
@@ -57,7 +57,7 @@ public class MagicPlConnector implements IdManagementConnector {
       this.httpClient = ApplicationBean.createHttpConnector().getHttpClient(httpHost);
     } catch (MalformedURLException e) {
       String message = "Initialization of connection to MagicPl failed: Malformed magicPl url: {0}";
-      logger.fatal(message, e.getMessage());
+      logger.error(message, e.getMessage());
       throw new RuntimeException(message, e);
     }
   }

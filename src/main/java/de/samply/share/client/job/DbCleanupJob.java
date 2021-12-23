@@ -17,11 +17,11 @@ import de.samply.share.client.util.db.InquiryResultUtil;
 import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Do some housekeeping in the database (e.g. mark inquiries as archived after a certain amount of
@@ -30,7 +30,7 @@ import org.quartz.JobExecutionContext;
 @DisallowConcurrentExecution
 public class DbCleanupJob implements Job {
 
-  private static final Logger logger = LogManager.getLogger(DbCleanupJob.class);
+  private static final Logger logger = LoggerFactory.getLogger(DbCleanupJob.class);
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) {

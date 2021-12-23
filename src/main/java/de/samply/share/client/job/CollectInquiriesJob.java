@@ -39,11 +39,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Job collects inquiries from all connected searchbrokers. It is defined and scheduled in the
@@ -54,7 +54,7 @@ import org.quartz.JobExecutionContext;
 @DisallowConcurrentExecution
 public class CollectInquiriesJob implements Job {
 
-  private static final Logger logger = LogManager.getLogger(CollectInquiriesJob.class);
+  private static final Logger logger = LoggerFactory.getLogger(CollectInquiriesJob.class);
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) {

@@ -6,12 +6,13 @@ import de.samply.share.client.quality.report.chainlinks.statistics.file.ChainLin
 import de.samply.share.client.quality.report.chainlinks.statistics.file.ChainLinkStaticStatisticsFileManager;
 import de.samply.share.client.quality.report.chainlinks.statistics.file.ChainLinkStaticStatisticsFileManagerException;
 import de.samply.share.client.quality.report.chainlinks.statistics.file.ChainLinkStaticStatisticsParameters;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ChainLinkStatisticsFactoryImpl implements ChainLinkStatisticsFactory {
 
-  protected static final Logger logger = LogManager.getLogger(ChainLinkStatisticsFactoryImpl.class);
+  protected static final Logger logger =
+      LoggerFactory.getLogger(ChainLinkStatisticsFactoryImpl.class);
   private final ChainLinkStaticStatisticsFileManager chainLinkStaticStatisticsFileManager;
 
 
@@ -78,7 +79,7 @@ public class ChainLinkStatisticsFactoryImpl implements ChainLinkStatisticsFactor
   }
 
   private ChainLinkStaticStatistics
-          createNewChainLinkStaticStatisticsFile_withoutExceptionManagement() throws
+      createNewChainLinkStaticStatisticsFile_withoutExceptionManagement() throws
       ChainLinkStaticStatisticsFileManagerException {
     ChainLinkStaticStatistics chainLinkStaticStatistics = new ChainLinkStaticStatistics();
     chainLinkStaticStatisticsFileManager.write(chainLinkStaticStatistics);

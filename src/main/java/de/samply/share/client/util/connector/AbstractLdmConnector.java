@@ -31,7 +31,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractLdmConnector<
     T_LDM_CLIENT extends AbstractLdmClient<T_RESULT, ResultStatisticsT, ErrorT>,
@@ -40,6 +41,8 @@ public abstract class AbstractLdmConnector<
     T_RESULT extends Result & Serializable,
     ResultStatisticsT extends Serializable,
     ErrorT extends Serializable> implements LdmConnector<QueryT, PostParameterT, T_RESULT> {
+
+  private static final Logger logger = LoggerFactory.getLogger(AbstractLdmConnector.class);
 
   private static final int TIMEOUT_LDM_IN_SECONDS = 5 * 60;
 
@@ -243,7 +246,7 @@ public abstract class AbstractLdmConnector<
     if (isLdmCentraxx()) {
       throw new LdmConnectorException(e);
     } else if (isLdmSamplystoreBiobank()) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 }

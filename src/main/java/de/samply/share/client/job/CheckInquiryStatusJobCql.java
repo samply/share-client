@@ -10,18 +10,18 @@ import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.InquiryCriteriaUtil;
 import de.samply.share.model.cql.CqlResult;
 import java.util.function.Consumer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class CheckInquiryStatusJobCql extends AbstractCheckInquiryStatusJob<LdmConnectorCql> {
 
-  private static final Logger logger = LogManager.getLogger(CheckInquiryStatusJobCql.class);
+  private static final Logger logger = LoggerFactory.getLogger(CheckInquiryStatusJobCql.class);
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -56,6 +56,7 @@ public class CheckInquiryStatusJobCql extends AbstractCheckInquiryStatusJob<LdmC
         CqlResult queryResult = new CqlResultFactory(inquiryDetails).createCqlResult();
         brokerConnector.reply(inquiryDetails, queryResult);
       } catch (BrokerConnectorException e) {
+        logger.error(e.getMessage(),e);
         handleBrokerConnectorException(e);
       }
     };

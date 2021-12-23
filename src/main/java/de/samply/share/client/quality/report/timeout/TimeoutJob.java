@@ -2,14 +2,14 @@ package de.samply.share.client.quality.report.timeout;
 
 import de.samply.share.client.quality.report.chainlinks.finalizer.ChainLinkFinalizer;
 import de.samply.share.client.quality.report.chainlinks.finalizer.ChainLinkFinalizerListener;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TimeoutJob implements Runnable, ChainLinkFinalizerListener {
 
   private final ChainLinkFinalizer chainLinkFinalizer;
   private final long timeout;
-  private final Logger logger = LogManager.getLogger(TimeoutJob.class);
+  private final Logger logger = LoggerFactory.getLogger(TimeoutJob.class);
   private boolean isTimeoutReached = false;
   private boolean isChainAlreadyFinished = false;
 
@@ -43,7 +43,7 @@ public class TimeoutJob implements Runnable, ChainLinkFinalizerListener {
 
     } catch (InterruptedException e) {
 
-      logger.info(e);
+      logger.info(e.getMessage(),e);
       finalizeChain();
 
     }

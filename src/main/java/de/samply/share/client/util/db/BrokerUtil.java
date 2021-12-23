@@ -5,16 +5,16 @@ import de.samply.share.client.model.db.tables.daos.BrokerDao;
 import de.samply.share.client.model.db.tables.pojos.Broker;
 import de.samply.share.client.model.db.tables.records.BrokerRecord;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper Class for CRUD operations with broker objects.
  */
 public class BrokerUtil {
 
-  private static final Logger logger = LogManager.getLogger(BrokerUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(BrokerUtil.class);
 
   private static final BrokerDao brokerDao;
 

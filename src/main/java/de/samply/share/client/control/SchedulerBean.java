@@ -14,8 +14,6 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -27,6 +25,8 @@ import org.quartz.UnableToInterruptJobException;
 import org.quartz.ee.servlet.QuartzInitializerListener;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A ViewScoped backing bean for the job scheduling page.
@@ -35,7 +35,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 @ViewScoped
 public class SchedulerBean implements Serializable {
 
-  private static final Logger logger = LogManager.getLogger(SchedulerBean.class);
+  private static final Logger logger = LoggerFactory.getLogger(SchedulerBean.class);
 
   private Scheduler scheduler;
 
@@ -173,7 +173,7 @@ public class SchedulerBean implements Serializable {
       scheduler.interrupt(jobKey);
       readAllJobs();
     } catch (UnableToInterruptJobException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
   

@@ -15,8 +15,6 @@ import de.samply.share.client.util.db.InquiryResultUtil;
 import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.client.util.db.UploadUtil;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -24,6 +22,8 @@ import org.quartz.JobKey;
 import org.quartz.JobListener;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This listener will be called when an instance of the CheckInquiryStatusJob is done. If the job
@@ -32,7 +32,7 @@ import org.quartz.Trigger;
  */
 public class CheckInquiryStatusJobListener implements JobListener {
 
-  private static final Logger logger = LogManager.getLogger(CheckInquiryStatusJobListener.class);
+  private static final Logger logger = LoggerFactory.getLogger(CheckInquiryStatusJobListener.class);
 
   private final String name;
 

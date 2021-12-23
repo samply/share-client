@@ -13,12 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.xml.bind.JAXBElement;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PatientValidator {
 
-  private static final Logger logger = LogManager.getLogger(PatientValidator.class);
+  private static final Logger logger = LoggerFactory.getLogger(PatientValidator.class);
   private static final String languageCode = "de";
 
   private static final String DATATYPE_ENUMERATED = "enumerated";

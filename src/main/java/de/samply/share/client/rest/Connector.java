@@ -33,17 +33,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/inquiries")
 public class Connector {
 
-  private static final Logger logger = LogManager.getLogger(InquiryHandlingBean.class);
+  private static final Logger logger = LoggerFactory.getLogger(InquiryHandlingBean.class);
 
   private static final String DATE_FORMAT = "dd.MM.yyyy HH:mm";
 
@@ -501,6 +501,7 @@ public class Connector {
       return inquiryResult.getSize().toString();
 
     } catch (Exception e) {
+      logger.error(e.getMessage(),e);
       return Messages.getString(defaultErrorMessage);
     }
 
@@ -543,6 +544,7 @@ public class Connector {
       return brokerName;
 
     } catch (Exception e) {
+      logger.error(e.getMessage(),e);
       return UNKNOWN;
     }
 

@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This job gathers the amount of patients (total, dktk flagged and for a reference query) and the
@@ -38,7 +38,7 @@ import org.quartz.JobExecutionContext;
 public class ReportToMonitoringJobShortFrequence implements Job {
 
   private static final Logger LOGGER =
-          LogManager.getLogger(ReportToMonitoringJobShortFrequence.class);
+          LoggerFactory.getLogger(ReportToMonitoringJobShortFrequence.class);
 
   private final LdmConnector ldmConnector;
   private final List<BrokerConnector> brokerConnectors;
@@ -207,7 +207,7 @@ public class ReportToMonitoringJobShortFrequence implements Job {
       dktkCount.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
       dktkCount.setStatusText(Integer.toString(count));
     } catch (Exception e) {
-      LOGGER.error(e);
+      LOGGER.error(e.getMessage(),e);
       dktkCount.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
       dktkCount.setStatusText(e.getMessage());
     }
@@ -229,7 +229,7 @@ public class ReportToMonitoringJobShortFrequence implements Job {
       totalCount.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
       totalCount.setStatusText(Integer.toString(count));
     } catch (Exception e) {
-      LOGGER.error(e);
+      LOGGER.error(e.getMessage(),e);
       totalCount.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
       totalCount.setStatusText(e.getMessage());
     }
@@ -323,7 +323,7 @@ public class ReportToMonitoringJobShortFrequence implements Job {
         centraxxMappingVersion.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
         centraxxMappingVersion.setStatusText(mappingVersion);
       } catch (Exception e) {
-        LOGGER.error(e);
+        LOGGER.error(e.getMessage(),e);
         centraxxMappingVersion.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
         centraxxMappingVersion.setStatusText(e.getMessage());
       }
@@ -348,7 +348,7 @@ public class ReportToMonitoringJobShortFrequence implements Job {
         centraxxMappingDate.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
         centraxxMappingDate.setStatusText(mappingDate);
       } catch (Exception e) {
-        LOGGER.error(e);
+        LOGGER.error(e.getMessage(),e);
         centraxxMappingDate.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
         centraxxMappingDate.setStatusText(e.getMessage());
       }

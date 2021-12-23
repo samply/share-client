@@ -14,8 +14,8 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the LdmConnector interface for samply store rest backends.
@@ -24,7 +24,8 @@ public class LdmConnectorSamplystoreBiobank extends
     AbstractLdmConnectorView<LdmClientSamplystoreBiobank, BbmriResult, QueryResultStatistic, Error,
         de.samply.share.model.osse.View> {
 
-  private static final Logger logger = LogManager.getLogger(LdmConnectorSamplystoreBiobank.class);
+  private static final Logger logger = LoggerFactory.getLogger(
+      LdmConnectorSamplystoreBiobank.class);
 
   public LdmConnectorSamplystoreBiobank(boolean useCaching) {
     super(useCaching);
