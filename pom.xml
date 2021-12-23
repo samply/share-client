@@ -159,6 +159,10 @@
           <groupId>com.sun.jersey</groupId>
           <artifactId>jersey-json</artifactId>
         </exclusion>
+<!--        <exclusion>
+          <groupId>jakarta.ws.rs</groupId>
+          <artifactId>jakarta.ws.rs-api</artifactId>
+        </exclusion>-->
       </exclusions>
     </dependency>
     <dependency>
