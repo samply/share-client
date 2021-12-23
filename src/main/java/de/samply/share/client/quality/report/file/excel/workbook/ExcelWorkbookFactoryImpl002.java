@@ -21,13 +21,13 @@ import de.samply.share.client.quality.report.results.sorted.AlphabeticallySorted
 import de.samply.share.client.quality.report.results.statistics.QualityResultsStatistics;
 import de.samply.share.client.quality.report.results.statistics.QualityResultsStatisticsImpl;
 import de.samply.share.client.util.db.ConfigurationUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExcelWorkbookFactoryImpl002 implements ExcelWorkbookFactory {
 
-  private static final Logger logger = LogManager.getLogger(ExcelWorkbookFactoryImpl002.class);
+  private static final Logger logger = LoggerFactory.getLogger(ExcelWorkbookFactoryImpl002.class);
 
   private static final String ALL_ELEMENTS_SHEET_TITLE = "all elements";
   private static final String FILTERED_ELEMENTS_SHEET_TITLE = "filtered elements";

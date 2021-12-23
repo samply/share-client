@@ -6,11 +6,11 @@ import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.ComponentConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.common.model.dto.UserAgent;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This job checks the other local components (id manager, local datamanagement) for their version
@@ -19,7 +19,7 @@ import org.quartz.JobExecutionContext;
 @DisallowConcurrentExecution
 public class CheckLocalComponentsJob implements Job {
 
-  private static final Logger logger = LogManager.getLogger(CheckLocalComponentsJob.class);
+  private static final Logger logger = LoggerFactory.getLogger(CheckLocalComponentsJob.class);
   private static IdManagerBasicInfoConnector idManagerConnector;
   private static LdmConnector ldmConnector;
   private static UserAgent userAgent;

@@ -5,16 +5,16 @@ import de.samply.share.client.model.db.tables.daos.UserSeenInquiryDao;
 import de.samply.share.client.model.db.tables.pojos.Inquiry;
 import de.samply.share.client.model.db.tables.pojos.User;
 import de.samply.share.client.model.db.tables.pojos.UserSeenInquiry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper Class for CRUD operations with user seen inquiry relations.
  */
 public class UserSeenInquiryUtil {
 
-  private static final Logger logger = LogManager.getLogger(UserSeenInquiryUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(UserSeenInquiryUtil.class);
 
   private static final UserSeenInquiryDao userSeenInquiryDao;
 

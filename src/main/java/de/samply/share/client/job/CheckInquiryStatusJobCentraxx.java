@@ -24,8 +24,6 @@ import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.client.util.db.UploadUtil;
 import de.samply.share.model.common.QueryResultStatistic;
 import java.util.function.Consumer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -33,12 +31,14 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.PersistJobDataAfterExecution;
 import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob<LdmConnectorCcp> {
 
-  private static final Logger logger = LogManager.getLogger(CheckInquiryStatusJobCentraxx.class);
+  private static final Logger logger = LoggerFactory.getLogger(CheckInquiryStatusJobCentraxx.class);
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -77,6 +77,7 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
             .put(CheckInquiryStatusJobParams.RESULT_STARTED, true);
       }
     } catch (LdmConnectorException e) {
+      logger.error(e.getMessage(),e);
       throw new JobExecutionException(e);
     }
   }
@@ -125,6 +126,7 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
         processReplyRules();
       }
     } catch (LdmConnectorException | SchedulerException e) {
+      logger.error(e.getMessage(),e);
       throw new JobExecutionException(e);
     }
   }
@@ -136,7 +138,7 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
       return (inquiryResult != null) ? inquiryResult.getLocation() : null;
 
     } catch (Exception e) {
-
+      logger.error(e.getMessage(),e);
       logger.debug("Location not found for inquiry result " + inquiryResult.getId());
       return null;
 
@@ -151,7 +153,7 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
       return (location != null) ? ldmConnector.getQueryResultStatistic(location) : null;
 
     } catch (Exception e) {
-
+      logger.error(e.getMessage(),e);
       logger.debug("Exception getting query result statistic");
       return null;
     }
@@ -228,6 +230,7 @@ public class CheckInquiryStatusJobCentraxx extends AbstractCheckInquiryStatusJob
       try {
         brokerConnector.reply(inquiryDetails, inquiryResult.getSize());
       } catch (BrokerConnectorException e) {
+        logger.error(e.getMessage(),e);
         handleBrokerConnectorException(e);
       }
     };

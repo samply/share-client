@@ -73,7 +73,7 @@ public class MetadataQualityReportFileWriterChainLink<I extends ChainLinkItem & 
 
     } catch (LocalDataManagementRequesterException e) {
 
-      logger.error(e);
+      logger.error(e.getMessage(),e);
       return null;
 
     }

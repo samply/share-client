@@ -5,15 +5,15 @@ import de.samply.share.client.model.db.tables.daos.InquiryRequestedEntityDao;
 import de.samply.share.client.model.db.tables.daos.RequestedEntityDao;
 import de.samply.share.client.model.db.tables.pojos.InquiryRequestedEntity;
 import de.samply.share.client.model.db.tables.pojos.RequestedEntity;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper Class for CRUD operations with requested entity objects.
  */
 public class RequestedEntityUtil {
 
-  private static final Logger logger = LogManager.getLogger(BrokerUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(BrokerUtil.class);
 
   private static final RequestedEntityDao requestedEntityDao;
   private static final InquiryRequestedEntityDao inquiryRequestedEntityDao;

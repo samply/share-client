@@ -51,10 +51,10 @@ import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A connector that handles all communication with the central MDS database.
@@ -69,7 +69,7 @@ public class CentralSearchConnector {
    * The constant DATE_FORMAT_TARGET.
    */
   public static final DateFormat DATE_FORMAT_TARGET;
-  private static final Logger logger = LogManager.getLogger(CentralSearchConnector.class);
+  private static final Logger logger = LoggerFactory.getLogger(CentralSearchConnector.class);
   /**
    * The path where the statistics of the last upload can be retrieved (central mds db).
    */
@@ -263,7 +263,7 @@ public class CentralSearchConnector {
       return getLastUploadTimestamp_WithoutManagementException(uploadStats);
 
     } catch (Exception e) {
-      logger.info(e);
+      logger.info(e.getMessage(),e);
       return DEFAULT_LAST_UPDATE_DATE;
     }
 

@@ -1,7 +1,11 @@
 package de.samply.share.client.quality.report.chainlinks;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ChainLinkItem implements Cloneable {
+
+  private static final Logger logger = LoggerFactory.getLogger(Cloneable.class);
 
 
   protected boolean isToBeReused;
@@ -107,7 +111,7 @@ public class ChainLinkItem implements Cloneable {
       return cloneAndResetOperationalValues();
 
     } catch (CloneNotSupportedException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       return null;
     }
   }

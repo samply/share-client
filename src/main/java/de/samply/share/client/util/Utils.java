@@ -43,15 +43,15 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A collection of utility methods.
  */
 public final class Utils {
 
-  private static final Logger logger = LogManager.getLogger(Utils.class);
+  private static final Logger logger = LoggerFactory.getLogger(Utils.class);
   private static PublicKey mdsDbPubKey;
 
   /**
@@ -100,7 +100,7 @@ public final class Utils {
         break;
       case AS_KERBEROS:
         authSchemeName = AuthSchemes.KERBEROS;
-        logger.fatal("tried to add kerberos credentials. Currently unsupported.");
+        logger.error("tried to add kerberos credentials. Currently unsupported.");
         return;
       //            apacheCredentials = new KerberosCredentials(gssCredential);
       //            break;
@@ -111,7 +111,7 @@ public final class Utils {
         break;
       case AS_SPNEGO:
         authSchemeName = AuthSchemes.SPNEGO;
-        logger.fatal("tried to add kerberos credentials. Currently unsupported.");
+        logger.error("tried to add kerberos credentials. Currently unsupported.");
         return;
       //          apacheCredentials = new KerberosCredentials(gssCredential);
       //            break;
@@ -262,7 +262,7 @@ public final class Utils {
     try {
       return getServletContext().getRealPath("/WEB-INF");
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       return null;
     }
   }

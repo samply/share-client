@@ -27,8 +27,6 @@ import de.samply.share.common.utils.QueryValidator;
 import de.samply.share.model.common.Query;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.omnifaces.model.tree.TreeModel;
 import org.quartz.DateBuilder;
 import org.quartz.Job;
@@ -41,6 +39,8 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.matchers.KeyMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Job posts an inquiry to the local datamanagement, stores the location and spawns a
@@ -51,7 +51,7 @@ import org.quartz.impl.matchers.KeyMatcher;
 public abstract class AbstractExecuteInquiryJob<ldmConnectorT extends LdmConnector> implements
     Job {
 
-  private static final Logger logger = LogManager.getLogger(AbstractExecuteInquiryJob.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractExecuteInquiryJob.class);
   ExecuteInquiryJobParams jobParams;
   ldmConnectorT ldmConnector;
   Inquiry inquiry;
@@ -73,7 +73,8 @@ public abstract class AbstractExecuteInquiryJob<ldmConnectorT extends LdmConnect
     JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();
 
     jobParams = new ExecuteInquiryJobParams(dataMap);
-    logger.debug(jobParams);
+    // ToDo:Check if debug print is needed
+    logger.debug(jobParams.toString());
     inquiry = InquiryUtil.fetchInquiryById(jobParams.getInquiryId());
     inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(jobParams.getInquiryDetailsId());
 

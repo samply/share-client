@@ -20,14 +20,14 @@ import de.samply.share.model.ccp.Patient;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.utils.Converter;
 import javax.xml.bind.JAXBException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.joda.time.Years;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This job reads the result set of a given inquiry and extracts basic statistical information from
@@ -37,7 +37,7 @@ import org.quartz.JobKey;
  */
 public class GenerateInquiryResultStatsJob implements Job {
 
-  private static final Logger logger = LogManager.getLogger(GenerateInquiryResultStatsJob.class);
+  private static final Logger logger = LoggerFactory.getLogger(GenerateInquiryResultStatsJob.class);
 
   private final LdmConnector ldmConnector;
   private InquiryResult inquiryResult;
@@ -96,7 +96,7 @@ public class GenerateInquiryResultStatsJob implements Job {
           try {
             patientCommon = Converter.convertCcpPatientToCommonPatient(patient);
           } catch (JAXBException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
           }
           ageDistribution.incrementCountForAge(getAge(patientCommon,
               "urn:dktk:dataelement:28:"));
@@ -114,7 +114,7 @@ public class GenerateInquiryResultStatsJob implements Job {
           try {
             donorCommon = Converter.convertOssePatientToCommonPatient(donor);
           } catch (JAXBException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
           }
           ageDistribution.incrementCountForAge(getAge(donorCommon,
               "urn:mdr16:dataelement:22:"));

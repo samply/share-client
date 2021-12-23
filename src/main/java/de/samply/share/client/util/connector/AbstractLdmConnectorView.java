@@ -28,6 +28,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractLdmConnectorView<
     T_LDM_CLIENT extends LdmClientView<T_RESULT, ResultStatisticsT, ErrorT, SpecificViewT>,
@@ -37,6 +39,8 @@ public abstract class AbstractLdmConnectorView<
     SpecificViewT extends Serializable> extends
     AbstractLdmConnector<T_LDM_CLIENT, LdmPostQueryParameterView, Query, T_RESULT,
         ResultStatisticsT, ErrorT> {
+
+  private static final Logger logger = LoggerFactory.getLogger(AbstractLdmConnectorView.class);
 
   AbstractLdmConnectorView(boolean useCaching) {
     super(useCaching);
@@ -163,7 +167,7 @@ public abstract class AbstractLdmConnectorView<
     if (isLdmCentraxx()) {
       throw new LdmConnectorException(e);
     } else if (isLdmSamplystoreBiobank()) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 

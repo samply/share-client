@@ -13,8 +13,8 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A ViewScoped backing bean used on the credentials page.
@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 @ViewScoped
 public class CredentialsBean implements Serializable {
 
-  private static final Logger logger = LogManager.getLogger(CredentialsBean.class);
+  private static final Logger logger = LoggerFactory.getLogger(CredentialsBean.class);
 
   /**
    * The credentials list.

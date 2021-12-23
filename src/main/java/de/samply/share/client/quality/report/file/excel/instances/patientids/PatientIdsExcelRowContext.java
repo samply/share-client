@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class PatientIdsExcelRowContext implements ExcelRowContext {
 
-  protected static final Logger logger = LogManager.getLogger(PatientIdsExcelRowContext.class);
+  protected static final Logger logger = LoggerFactory.getLogger(PatientIdsExcelRowContext.class);
   private final String mdrLinkPrefix;
   private final Integer maxNumberOfPatientIdsToBeShown;
   private final PatientIdsList patientIdsList = new PatientIdsList();

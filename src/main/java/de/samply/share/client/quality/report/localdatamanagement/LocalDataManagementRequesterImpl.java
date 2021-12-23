@@ -25,15 +25,16 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class LocalDataManagementRequesterImpl extends LocalDataManagementConnector implements
     LocalDataManagementRequester {
 
 
-  private static final Logger logger = LogManager.getLogger(LocalDataManagementRequesterImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(
+      LocalDataManagementRequesterImpl.class);
 
   private final QueryResultStatisticClassGetter queryResultStatisticClassGetter =
       new QueryResultStatisticClassGetter();
