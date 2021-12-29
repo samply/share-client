@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - switch from log4j to slf4j
 - logged many Exceptions
 - removed log4j Configurator
-
 ### Changed
 - share-common version 4.4.0
 - dktk.patient.converter 2.3.1
