@@ -15,12 +15,12 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.omnifaces.util.Messages;
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ViewScoped backing bean that is used on upload related pages.
@@ -29,7 +29,7 @@ import org.quartz.SchedulerException;
 @ViewScoped
 public class UploadBean implements Serializable {
 
-  private static final Logger logger = LogManager.getLogger(UploadBean.class);
+  private static final Logger logger = LoggerFactory.getLogger(UploadBean.class);
 
   @ManagedProperty(value = "#{loginBean}")
   private LoginBean loginBean;

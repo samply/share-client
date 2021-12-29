@@ -12,19 +12,19 @@ import de.samply.share.client.util.db.InquiryCriteriaUtil;
 import de.samply.share.client.util.db.InquiryResultUtil;
 import de.samply.share.model.bbmri.BbmriResult;
 import java.util.function.Consumer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class CheckInquiryStatusJobSamplystoreBiobanks extends
     AbstractCheckInquiryStatusJob<LdmConnectorSamplystoreBiobank> {
 
-  private static final Logger logger = LogManager
+  private static final Logger logger = LoggerFactory
       .getLogger(CheckInquiryStatusJobSamplystoreBiobanks.class);
 
   @Override
@@ -58,7 +58,7 @@ public class CheckInquiryStatusJobSamplystoreBiobanks extends
                 .getLocation());
         brokerConnector.reply(inquiryDetails, queryResult);
       } catch (LdmConnectorException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage(),e);
       } catch (BrokerConnectorException e) {
         handleBrokerConnectorException(e);
       }

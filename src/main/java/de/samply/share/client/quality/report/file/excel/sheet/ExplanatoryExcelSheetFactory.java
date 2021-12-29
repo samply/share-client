@@ -7,16 +7,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ExplanatoryExcelSheetFactory implements ExcelSheetFactory {
 
 
-  protected static final Logger logger = LogManager.getLogger(ExplanatoryExcelSheetFactory.class);
+  protected static final Logger logger = LoggerFactory.getLogger(
+      ExplanatoryExcelSheetFactory.class);
   //private ExplanatoryExcelFileDownloader explanatoryExcelFileDownloader =
   // new ExplanatoryExcelFileDownloader();
 
@@ -80,6 +81,11 @@ public class ExplanatoryExcelSheetFactory implements ExcelSheetFactory {
       throw new ExcelSheetFactoryException(e);
     }
 
+  }
+
+  @Override
+  public void setMaxNumberOfRowsPerSheet(int maxNumberOfRowsPerSheet) {
+    // This method does not make sense here.
   }
 
 

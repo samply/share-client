@@ -8,12 +8,12 @@ import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.PercentageLogger;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CxxMappingParser {
 
-  private static final Logger logger = LogManager.getLogger(CxxMappingParser.class);
+  private static final Logger logger = LoggerFactory.getLogger(CxxMappingParser.class);
 
   /**
    * Analyzes mapping between mdr data elements and centraxx data elements returned
@@ -27,7 +27,7 @@ public class CxxMappingParser {
     try {
       return parseWithoutExceptionManagement(httpEntity);
     } catch (Exception e) {
-      logger.info(e);
+      logger.info(e.getMessage(),e);
       return new ArrayList<>();
     }
   }
@@ -44,7 +44,7 @@ public class CxxMappingParser {
 
         CxxMappingElement cxxMappingElement = getCxxMappingElement(jsonElement);
         if (cxxMappingElement != null) {
-          logger.debug(cxxMappingElement.getMdrId());
+          logger.debug(cxxMappingElement.getMdrId().toString());
           cxxMappingElementList.add(cxxMappingElement);
         }
 
@@ -98,7 +98,7 @@ public class CxxMappingParser {
 
     } catch (Exception e) {
 
-      logger.debug(e);
+      logger.debug(e.getMessage(),e);
       return cxxMappingElement;
 
     }
@@ -146,7 +146,7 @@ public class CxxMappingParser {
 
     } catch (Exception e) {
 
-      logger.debug(e);
+      logger.debug(e.getMessage(),e);
       return cxxMappingElement;
 
     }

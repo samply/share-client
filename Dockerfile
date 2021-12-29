@@ -1,5 +1,3 @@
-ARG TOMCAT_IMAGE_VERSION=9-jdk8-openjdk-slim
-
 FROM alpine:latest as extract
 
 RUN apk add --no-cache unzip
@@ -9,7 +7,7 @@ ADD target/connector.war /connector/connector.war
 RUN mkdir -p /connector/extracted && \
        unzip /connector/connector.war -d /connector/extracted/
 
-FROM tomcat:$TOMCAT_IMAGE_VERSION
+FROM tomcat:9-jdk8-openjdk-slim
 
 ## Define for which project this image is build
 ARG PROJECT=samply
@@ -37,7 +35,7 @@ ADD src/docker/secrets.properties               ${CATALINA_HOME}/conf/
 ADD src/docker/reports                          /var/lib/samply/reports
 
 # JMX Exporter
-ENV JMX_EXPORTER_VERSION 0.3.1
+ENV JMX_EXPORTER_VERSION 0.16.1
 COPY src/docker/jmx-exporter.yml                /docker/jmx-exporter.yml
 ADD https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${JMX_EXPORTER_VERSION}/jmx_prometheus_javaagent-${JMX_EXPORTER_VERSION}.jar /docker/
 

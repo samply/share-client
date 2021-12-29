@@ -1,6 +1,7 @@
 package de.samply.share.client.quality.report.file.excel.pattern;
 
 import de.samply.common.mdrclient.MdrClient;
+import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.quality.report.MdrMappedElements;
 import de.samply.share.client.quality.report.centraxx.CentraxxMapper;
 import de.samply.share.client.quality.report.dktk.DktkIdMdrIdConverter;
@@ -27,6 +28,7 @@ import de.samply.share.client.quality.report.file.excel.workbook.ExcelWorkbookFa
 import de.samply.share.client.quality.report.file.excel.workbook.ExcelWorkbookFactoryParameters002;
 import de.samply.share.client.quality.report.model.Model;
 import de.samply.share.client.quality.report.model.searcher.ModelSearcher;
+import de.samply.share.client.util.db.ConfigurationUtil;
 
 public class ExcelPattern002 implements ExcelPattern {
 
@@ -110,6 +112,8 @@ public class ExcelPattern002 implements ExcelPattern {
 
     ExcelSheetFactory excelSheetFactory = new ExcelSheetFactoryImpl(excelRowFactory);
 
+    excelSheetFactory = addMaxNumberOfRowsPerSheet(excelSheetFactory);
+
     excelSheetFactory = new ExcelSheetWithAutoFilterFactory(excelSheetFactory);
     excelSheetFactory = new HighlightMismatchInRedExcelSheetFactory002(excelSheetFactory);
     excelSheetFactory = new HighlightNotMappedInOrangeExcelSheetFactory002(excelSheetFactory);
@@ -120,6 +124,27 @@ public class ExcelPattern002 implements ExcelPattern {
     return excelSheetFactory;
 
   }
+
+  private ExcelSheetFactory addMaxNumberOfRowsPerSheet(ExcelSheetFactory excelSheetFactory) {
+
+    Integer maxNumberOfRowsPerSheet = getMaxNumberOfRowsPerSheet();
+    if (maxNumberOfRowsPerSheet != null && maxNumberOfRowsPerSheet > 0) {
+      excelSheetFactory.setMaxNumberOfRowsPerSheet(maxNumberOfRowsPerSheet);
+    }
+
+    return excelSheetFactory;
+
+  }
+
+  private Integer getMaxNumberOfRowsPerSheet() {
+
+    Integer workbookWindow = ConfigurationUtil
+        .getConfigurationElementValueAsInteger(
+            EnumConfiguration.QUALITY_REPORT_MAX_NUMBER_OF_ROWS_PER_SHEET);
+    return (workbookWindow != null) ? workbookWindow : null;
+
+  }
+
 
   private ExcelRowContextFactory002 createExcelRowContextFactory() {
 
@@ -140,9 +165,7 @@ public class ExcelPattern002 implements ExcelPattern {
   }
 
   private ExplanatoryExcelSheetFactory createExplanatoryExcelSheetFactory() {
-
     return new ExplanatoryExcelSheetFactory();
-
   }
 
 }

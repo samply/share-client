@@ -14,10 +14,10 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 import org.omnifaces.util.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ViewScoped backing bean that is used on the user list.
@@ -26,7 +26,7 @@ import org.omnifaces.util.Messages;
 @ViewScoped
 public class UserBean implements Serializable {
 
-  private static final Logger logger = LogManager.getLogger(UserBean.class);
+  private static final Logger logger = LoggerFactory.getLogger(UserBean.class);
 
   private List<User> userList;
   private User newUser;

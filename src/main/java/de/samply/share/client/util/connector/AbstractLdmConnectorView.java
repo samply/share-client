@@ -9,6 +9,7 @@ import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
+import de.samply.share.client.quality.report.chainlinks.instances.statistic.StatisticContext;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
@@ -27,6 +28,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractLdmConnectorView<
     T_LDM_CLIENT extends LdmClientView<T_RESULT, ResultStatisticsT, ErrorT, SpecificViewT>,
@@ -36,6 +39,8 @@ public abstract class AbstractLdmConnectorView<
     SpecificViewT extends Serializable> extends
     AbstractLdmConnector<T_LDM_CLIENT, LdmPostQueryParameterView, Query, T_RESULT,
         ResultStatisticsT, ErrorT> {
+
+  private static final Logger logger = LoggerFactory.getLogger(AbstractLdmConnectorView.class);
 
   AbstractLdmConnectorView(boolean useCaching) {
     super(useCaching);
@@ -70,8 +75,8 @@ public abstract class AbstractLdmConnectorView<
     ReferenceQueryCheckResult result = new ReferenceQueryCheckResult();
     try {
       View referenceView = createReferenceViewForMonitoring(referenceQuery);
-      Stopwatch stopwatch = Stopwatch.createStarted();
-      String resultLocation = ldmClient.postView(referenceView, true);
+      Stopwatch stopwatch = Stopwatch.createStarted(); //Stop time for Referenzquerry: Ausführzeit
+      String resultLocation = ldmClient.postView(referenceView, false);
 
       int maxAttempts = ConfigurationUtil.getConfigurationTimingsElementValue(
           EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS);
@@ -105,11 +110,14 @@ public abstract class AbstractLdmConnectorView<
           } else if (ldmQueryResult.hasResult()) {
             QueryResultStatistic qrs = ldmQueryResult.getResult();
             result.setCount(qrs.getTotalSize());
+
             if (isResultDone(resultLocation, qrs)) {
               stopwatch.stop();
               result.setExecutionTimeMilis(stopwatch.elapsed(TimeUnit.MILLISECONDS));
               return result;
             }
+
+            return result;
           }
 
           retryNr += 1;
@@ -159,7 +167,7 @@ public abstract class AbstractLdmConnectorView<
     if (isLdmCentraxx()) {
       throw new LdmConnectorException(e);
     } else if (isLdmSamplystoreBiobank()) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 
@@ -197,7 +205,8 @@ public abstract class AbstractLdmConnectorView<
         return true;
       }
       int lastPageIndex = queryResultStatistic.getNumberOfPages() - 1;
-      return ldmClient.isResultPageAvailable(location, lastPageIndex);
+      boolean isResultDone = ldmClient.isResultPageAvailable(location, lastPageIndex);
+      return isResultDone;
     } else {
       throw new LdmConnectorException("QueryResultStatistic is null.");
     }

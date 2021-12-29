@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.check.CheckResult;
 import de.samply.share.client.model.check.Message;
 import de.samply.share.client.model.db.enums.BrokerStatusType;
@@ -20,6 +21,7 @@ import de.samply.share.client.model.db.tables.pojos.InquiryAnswer;
 import de.samply.share.client.model.db.tables.pojos.InquiryDetails;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
+import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.CredentialsUtil;
 import de.samply.share.client.util.db.EventLogUtil;
 import de.samply.share.client.util.db.InquiryAnswerUtil;
@@ -69,16 +71,16 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A connector that handles all communication with a searchbroker.
  */
 public class BrokerConnector {
 
-  private static final Logger logger = LogManager.getLogger(BrokerConnector.class);
+  private static final Logger logger = LoggerFactory.getLogger(BrokerConnector.class);
   private transient HttpConnector httpConnector;
   private Broker broker;
   private Credentials credentials;
@@ -180,6 +182,7 @@ public class BrokerConnector {
         return broker.getName();
       }
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
     return broker.getAddress();
@@ -213,6 +216,7 @@ public class BrokerConnector {
         return BrokerStatusType.BS_UNREACHABLE;
       }
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -241,6 +245,7 @@ public class BrokerConnector {
       response.close();
       return retCode == HttpStatus.SC_NO_CONTENT;
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -276,6 +281,7 @@ public class BrokerConnector {
 
       return retCode;
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -321,6 +327,7 @@ public class BrokerConnector {
           XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(responseString));
           inquiriesIdList = unmarshaller.unmarshal(reader, InquiriesIdList.class).getValue();
         } catch (Exception e) {
+          logger.error(e.getMessage(),e);
           throw new BrokerConnectorException("Error reading inquiries", e);
         }
 
@@ -335,6 +342,7 @@ public class BrokerConnector {
         return queryIds;
       }
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
     return new HashMap<>();
@@ -432,7 +440,7 @@ public class BrokerConnector {
         return responseString;
       }
     } catch (IOException | URISyntaxException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
     return null;
   }
@@ -477,6 +485,7 @@ public class BrokerConnector {
         return queryElement.getValue();
       }
     } catch (IOException | URISyntaxException | JAXBException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
     return null;
@@ -521,6 +530,7 @@ public class BrokerConnector {
               .unmarshal(new StreamSource(stringReader), Inquiry.class);
           return inquiryElement.getValue();
         } catch (JAXBException e) {
+          logger.error(e.getMessage(),e);
           throw new BrokerConnectorException(e);
         }
       } else {
@@ -530,6 +540,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -569,6 +580,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException | JAXBException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -608,6 +620,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException | JAXBException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -644,6 +657,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -662,6 +676,7 @@ public class BrokerConnector {
 
       reply(inquiryDetails, replyString);
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -689,11 +704,13 @@ public class BrokerConnector {
     Reply reply = new Reply();
     reply.setDonor(replyDonor);
     reply.setSample(replySample);
+    reply.setRedirectUrl(createRedirectUrl(inquiryDetails.getInquiryId()));
 
     ObjectMapper mapper = new ObjectMapper();
     try {
       reply(inquiryDetails, mapper.writeValueAsString(reply));
     } catch (URISyntaxException | IOException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -702,6 +719,7 @@ public class BrokerConnector {
       throws URISyntaxException, IOException {
     de.samply.share.client.model.db.tables.pojos.Inquiry inquiry = InquiryUtil
         .fetchInquiryById(inquiryDetails.getInquiryId());
+
     int inquirySourceId = inquiry.getSourceId();
 
     URI uri = new URI(
@@ -728,6 +746,11 @@ public class BrokerConnector {
     inquiryAnswer.setInquiryDetailsId(inquiryDetails.getId());
     inquiryAnswer.setContent(replyString);
     InquiryAnswerUtil.insertInquiryAnswer(inquiryAnswer);
+  }
+
+  private String createRedirectUrl(int id) {
+    return ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.SHARE_URL)
+        + "/user/show_inquiry.xhtml?inquiryId=" + id + "&faces-redirect=true";
   }
 
 
@@ -806,6 +829,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -826,6 +850,7 @@ public class BrokerConnector {
           AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
       return httpClient.execute(httpHost, httpPut);
     } catch (IOException | URISyntaxException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -854,6 +879,7 @@ public class BrokerConnector {
       }
       return new ArrayList<>();
     } catch (IOException e) {
+      logger.error(e.getMessage(),e);
       throw new BrokerConnectorException(e);
     }
   }

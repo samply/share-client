@@ -26,9 +26,9 @@ import java.io.Serializable;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.omnifaces.util.Faces;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -39,7 +39,7 @@ import org.omnifaces.util.Faces;
 public class QualityReportController implements Serializable {
 
 
-  private static final Logger logger = LogManager.getLogger(QualityReportController.class);
+  private static final Logger logger = LoggerFactory.getLogger(QualityReportController.class);
   private final IdPathManager002 idPathManager = new IdPathManager002();
   private final QualityFileIdGenerator qualityFileIdGenerator = new QualityFileIdGeneratorImpl();
   private ChainFactory qualityReportChainFactory;
@@ -175,7 +175,7 @@ public class QualityReportController implements Serializable {
       return qualityReportFileInfoManager.getQualityReportFiles();
 
     } catch (QualityReportFileInfoManagerException e) {
-      logger.error(e);
+      logger.error(e.getMessage(),e);
       return null;
     }
 
@@ -194,7 +194,7 @@ public class QualityReportController implements Serializable {
       Faces.sendFile(new FileInputStream(filePath), filename, true);
 
     } catch (IOException e) {
-      logger.error(e);
+      logger.error(e.getMessage(),e);
     }
   }
   

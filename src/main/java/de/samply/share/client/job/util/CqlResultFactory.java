@@ -12,8 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CqlResultFactory {
+
+  private static final Logger logger = LoggerFactory.getLogger(CqlResultFactory.class);
 
   private final InquiryDetails inquiryDetails;
 
@@ -57,6 +61,7 @@ public class CqlResultFactory {
           .readValue(inquiryResult.getStratifications(), new TypeReference<List<Stratification>>() {
           });
     } catch (IOException e) {
+      logger.error(e.getMessage(),e);
       return new ArrayList<>();
     }
   }

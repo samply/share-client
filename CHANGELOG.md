@@ -4,6 +4,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.4.5 - 2021-12-23]
+### Security
+- switch from log4j to slf4j
+- logged many Exceptions
+- removed log4j Configurator
+
+### Changed
+- share-common version 4.4.0
+- dktk.patient.converter 2.3.1
+
+## [7.4.4 - 2021-12-20]
+### Security
+- log4j version 2.17.0
+
+## [7.4.3 - 2021-12-16]
+### Security
+- log4j version 2.16.0
+
+## [7.4.2 - 2021-12-13]
+### Changed
+- hapi version 5.6.1
+### Fixed
+- no class def error found for jacksonStructure
+
+## [7.4.1 - 2021-10-18]
+### Fixed
+- Quality Report for large amount of data
+- Log4j version to 2.15.0
+
+## [7.4.0 - 2021-09-13]
+### Added
+- New frequence for ReportToMonitoringJob: long frequence, only once a day
+- Redirect url for the negotiator
+### Changed
+- Share-dto version 5.1.0
+### Fixed
+- Referencequerry: Executiontime in dktk
+
 ## [7.3.3 - 2021-06-19]
 ### Changed
 - Quality Report Info Sheet: CCP-Office as contact

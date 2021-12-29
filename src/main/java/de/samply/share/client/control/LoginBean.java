@@ -11,11 +11,11 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 import org.omnifaces.context.OmniPartialViewContext;
 import org.omnifaces.util.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A SessionScoped backing bean handling login information.
@@ -26,7 +26,7 @@ public class LoginBean implements Serializable {
 
   public static final String REQUESTED_PAGE_PARAMETER = "requestedPage";
   public static final String ESCAPED_PARAMETER_SEPARATOR = "__";
-  private static final Logger logger = LogManager.getLogger(LoginBean.class);
+  private static final Logger logger = LoggerFactory.getLogger(LoginBean.class);
   /**
    * The Constant SESSION_USERNAME.
    */

@@ -18,15 +18,15 @@ import de.samply.share.model.common.Query;
 import de.samply.share.model.common.View;
 import de.samply.share.model.common.Where;
 import java.util.concurrent.ExecutionException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for methods to create Views and Queries.
  */
 public class UploadUtils {
 
-  private static final Logger logger = LogManager.getLogger(UploadUtils.class);
+  private static final Logger logger = LoggerFactory.getLogger(UploadUtils.class);
 
   private UploadUtils() {
 

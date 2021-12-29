@@ -5,17 +5,19 @@ import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowEle
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactory;
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactoryException;
 import de.samply.share.common.utils.PercentageLogger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.Iterator;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
-  protected static final Logger logger = LogManager.getLogger(ExcelSheetFactoryImpl.class);
+  protected static final Logger logger = LoggerFactory.getLogger(ExcelSheetFactoryImpl.class);
   private final ExcelRowFactory excelRowFactory;
+  private int maxNumberOfRowsPerSheet = -1;
 
 
   public ExcelSheetFactoryImpl(ExcelRowFactory excelRowFactory) {
@@ -26,18 +28,44 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
   public SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
       ExcelRowContext excelRowContext) throws ExcelSheetFactoryException {
 
+    int numberOfRows = excelRowContext.getNumberOfRows();
+    int tempMaxNumberOfRowsPerSheet =
+        (maxNumberOfRowsPerSheet <= 0) ? numberOfRows : maxNumberOfRowsPerSheet;
+
+    String sheetTitleTemp = sheetTitle;
+    int counter = 1;
+    Iterator<ExcelRowElements> excelRowElementsIterator = excelRowContext.iterator();
+
+    while (numberOfRows > 0) {
+
+      workbook = addSheet(workbook, sheetTitleTemp, excelRowContext, excelRowElementsIterator,
+          tempMaxNumberOfRowsPerSheet);
+      sheetTitleTemp = sheetTitle + "-" + (++counter);
+      numberOfRows -= tempMaxNumberOfRowsPerSheet;
+
+    }
+
+    return workbook;
+
+  }
+
+  private SXSSFWorkbook addSheet(SXSSFWorkbook workbook, String sheetTitle,
+      ExcelRowContext excelRowContext,
+      Iterator<ExcelRowElements> excelRowElementsIterator, int numberOfRows)
+      throws ExcelSheetFactoryException {
+
     SXSSFSheet sheet = workbook.createSheet(sheetTitle);
     sheet = addRowTitles(sheet, excelRowContext);
     sheet.trackAllColumnsForAutoSizing();
 
     int maxNumberOfRows = SpreadsheetVersion.EXCEL2007.getMaxRows();
 
-    int numberOfRows = excelRowContext.getNumberOfRows();
     PercentageLogger percentageLogger = new PercentageLogger(logger, numberOfRows,
         "adding rows...");
 
-    for (ExcelRowElements excelRowElements : excelRowContext) {
+    while (numberOfRows-- > 0 && excelRowElementsIterator.hasNext()) {
 
+      ExcelRowElements excelRowElements = excelRowElementsIterator.next();
       percentageLogger.incrementCounter();
       addRow(sheet, excelRowElements);
 
@@ -77,5 +105,9 @@ public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
   }
 
+  @Override
+  public void setMaxNumberOfRowsPerSheet(int maxNumberOfRowsPerSheet) {
+    this.maxNumberOfRowsPerSheet = maxNumberOfRowsPerSheet;
+  }
 
 }

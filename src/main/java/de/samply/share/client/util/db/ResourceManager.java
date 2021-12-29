@@ -13,11 +13,15 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Offers objects to handle database connections.
  */
 public class ResourceManager implements Serializable {
+
+  private static final Logger logger = LoggerFactory.getLogger(ResourceManager.class);
 
   @Resource(name = "jdbc/postgres")
   private static final DataSource dataSource;
@@ -81,7 +85,7 @@ public class ResourceManager implements Serializable {
         connection.close();
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 

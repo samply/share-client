@@ -8,8 +8,8 @@ import de.samply.share.common.utils.ProjectInfo;
 import java.io.File;
 import java.io.FileNotFoundException;
 import javax.enterprise.context.ApplicationScoped;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.togglz.core.Feature;
 import org.togglz.core.manager.FeatureManager;
 import org.togglz.core.manager.FeatureManagerBuilder;
@@ -24,7 +24,7 @@ import org.togglz.core.user.UserProvider;
 @ApplicationScoped
 public class ClientConfiguration implements TogglzConfig, FeatureManagerProvider {
 
-  private static final Logger logger = LogManager.getLogger(ClientConfiguration.class);
+  private static final Logger logger = LoggerFactory.getLogger(ClientConfiguration.class);
   private static final String featureProperties = "features.properties";
 
   private FeatureManager featureManager;

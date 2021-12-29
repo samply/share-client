@@ -5,8 +5,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MappingFileReader {
+
+  private static final Logger logger = LoggerFactory.getLogger(MappingFileReader.class);
 
   private final String cxxMdrCxxRepresentationsFilename = "CENTRAXX_MDRCXXREPRESENTATION.csv";
   private final String cxxMdrRepresentationsFilename = "CENTRAXX_MDRREPRESENTATION.csv";
@@ -34,7 +38,7 @@ public class MappingFileReader {
     try {
       return new Integer(numberS);
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       return null;
     }
   }
@@ -52,7 +56,7 @@ public class MappingFileReader {
       return lineAnalyzer.getResults();
 
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       return null;
     }
 

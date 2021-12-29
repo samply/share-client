@@ -31,7 +31,7 @@ public class QualityReportFileWriterChainLink<I extends ChainLinkItem & FileCont
       return item;
 
     } catch (QualityReportFileManagerException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       throw new ChainLinkException(e);
     }
 

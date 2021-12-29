@@ -55,8 +55,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -66,6 +64,8 @@ import org.quartz.JobKey;
 import org.quartz.PersistJobDataAfterExecution;
 import org.quartz.SchedulerException;
 import org.quartz.impl.matchers.KeyMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Job prepares and/or performs an upload to the central mds database, depending on the status.
@@ -85,7 +85,7 @@ import org.quartz.impl.matchers.KeyMatcher;
 @DisallowConcurrentExecution
 public class UploadToCentralMdsDbJob implements Job {
 
-  private static final Logger logger = LogManager.getLogger(UploadToCentralMdsDbJob.class);
+  private static final Logger logger = LoggerFactory.getLogger(UploadToCentralMdsDbJob.class);
   private UploadJobParams jobParams;
   private Upload upload;
 
@@ -184,6 +184,7 @@ public class UploadToCentralMdsDbJob implements Job {
         addInquiryDetailsAndSpawnExecutionJob(inquiryId, dateRestriction);
       }
     } catch (CentralSearchConnectorException e) {
+      logger.error(e.getMessage(),e);
       throw new JobExecutionException(e);
     }
   }
@@ -278,6 +279,7 @@ public class UploadToCentralMdsDbJob implements Job {
                   attempt = maxAttempts;
                 }
               } catch (InterruptedException e) {
+                logger.error(e.getMessage(),e);
                 logger.info("Exception caught while trying to upload. Trying to go on anyways.",
                     e);
               }
@@ -316,6 +318,7 @@ public class UploadToCentralMdsDbJob implements Job {
               : UploadStatusType.US_COMPLETED);
     } catch (LdmConnectorException | CentralSearchConnectorException | IOException
         | IdManagementConnectorException e) {
+      logger.error(e.getMessage(),e);
       throw new JobExecutionException(e);
     }
   }

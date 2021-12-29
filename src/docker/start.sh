@@ -14,6 +14,13 @@ if [ -n "$HTTP_PROXY" ]; then
 fi
 
 file=${CATALINA_HOME}/conf/Catalina/localhost/ROOT.xml
+if [ -n "$DEPLOYMENT_CONTEXT" ]; then
+  echo "INFO: preparing deployment in context ${DEPLOYMENT_CONTEXT}"
+  mv "${CATALINA_HOME}"/webapps/ROOT "${CATALINA_HOME}"/webapps/"${DEPLOYMENT_CONTEXT}"
+  mv "${CATALINA_HOME}"/conf/Catalina/localhost/ROOT.xml "${CATALINA_HOME}"/conf/Catalina/localhost/"${DEPLOYMENT_CONTEXT}".xml
+fi
+
+file="${CATALINA_HOME}"/conf/Catalina/localhost/"${DEPLOYMENT_CONTEXT:-ROOT}".xml
 sed -i "s/{postgres-host}/${POSTGRES_HOST}/"              "$file"
 sed -i "s/{postgres-port}/${POSTGRES_PORT:-5432}/"        "$file"
 sed -i "s/{postgres-db}/${POSTGRES_DB}/"                  "$file"
@@ -89,7 +96,7 @@ sed -i "s|{nngm-mainzelliste-apikey}|${NNGM_MAINZELLISTE_APIKEY}|"          "$fi
 sed -i "s|{nngm-mainzelliste-url}|${NNGM_MAINZELLISTE_URL}|"                "$file"
 sed -i "s|{nngm-cryptkey}|${NNGM_CRYPTKEY}|"                                "$file"
 
-export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/docker/jmx_prometheus_javaagent-0.3.1.jar=9100:/docker/jmx-exporter.yml"
+export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/docker/jmx_prometheus_javaagent-0.16.1.jar=9100:/docker/jmx-exporter.yml"
 
 # SSL Certs
 if [ -d "/custom-certs" ]; then

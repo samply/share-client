@@ -53,19 +53,19 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.UriType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A connector that handles all communication with the EDC system.
  */
 public class CtsConnector {
 
-  private static final Logger logger = LogManager.getLogger(CtsConnector.class);
+  private static final Logger logger = LoggerFactory.getLogger(CtsConnector.class);
   private static final String CONTENT_TYPE_CTS_FHIR_JSON = "application/fhir+json; fhirVersion=4.0";
   private static final String X_BK_PSEUDONYM_JSONPATHS = "X-BK-pseudonym-jsonpaths";
   private static final String X_BK_TARGET_URL = "X-BK-target-url";
@@ -144,6 +144,7 @@ public class CtsConnector {
       }
       return Response.status(statusCode).entity(message).build();
     } catch (IOException e) {
+      logger.error(e.getMessage(),e);
       throw new IOException(e);
     } finally {
       closeResponse(response);
@@ -183,6 +184,7 @@ public class CtsConnector {
       }
       return Response.status(statusCode).entity(message).build();
     } catch (IOException e) {
+      logger.error(e.getMessage(),e);
       throw new IOException(e);
     } finally {
       closeResponse(response);
@@ -247,8 +249,10 @@ public class CtsConnector {
       logger.error("PostLocalPatientToCentralCts response: " + message);
       return Response.status(statusCode).entity(message).build();
     } catch (IOException e) {
+      logger.error(e.getMessage(),e);
       throw new IOException(e);
     } catch (StringIndexOutOfBoundsException | PathNotFoundException e) {
+      logger.error(e.getMessage(),e);
       throw new CtsConnectorException(e.getMessage());
     } finally {
       closeResponse(response);
@@ -387,6 +391,7 @@ public class CtsConnector {
       logger.error("Authorization: IOException, URI: " + httpPost.getURI() + ", e: " + e);
       throw new IOException("Authorization: IOException, URI: " + httpPost.getURI() + ", e: " + e);
     } catch (IllegalArgumentException e) {
+      logger.error(e.getMessage(),e);
       throw new CtsConnectorException(e.getMessage());
     } finally {
       closeResponse(response);

@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This job gathers the amount of patients (total, dktk flagged and for a reference query) and the
@@ -35,9 +35,10 @@ import org.quartz.JobExecutionContext;
  * frequently) for the reference query.
  */
 @DisallowConcurrentExecution
-public class ReportToMonitoringJob implements Job {
+public class ReportToMonitoringJobShortFrequence implements Job {
 
-  private static final Logger LOGGER = LogManager.getLogger(ReportToMonitoringJob.class);
+  private static final Logger LOGGER =
+          LoggerFactory.getLogger(ReportToMonitoringJobShortFrequence.class);
 
   private final LdmConnector ldmConnector;
   private final List<BrokerConnector> brokerConnectors;
@@ -46,13 +47,13 @@ public class ReportToMonitoringJob implements Job {
   /**
    * Get the ldmConnector, the registered brokers and the params.
    */
-  public ReportToMonitoringJob() {
+  public ReportToMonitoringJobShortFrequence() {
     ldmConnector = ApplicationBean.getLdmConnector();
     brokerConnectors = BrokerUtil.fetchBrokers().stream().map(BrokerConnector::new)
-        .collect(Collectors.toList());
+            .collect(Collectors.toList());
     jobParams = new ReportToMonitoringJobParams();
 
-    LOGGER.debug(ReportToMonitoringJob.class.getName() + " created");
+    LOGGER.debug(ReportToMonitoringJobShortFrequence.class.getName() + " created");
   }
 
   @Override
@@ -92,29 +93,6 @@ public class ReportToMonitoringJob implements Job {
         LOGGER.debug("dktk count calculated");
       }
 
-      if (jobParams.isCountReferenceQuery() || jobParams.isTimeReferenceQuery()) {
-        ReferenceQueryCheckResult referenceQueryCheckResult;
-        String errorMessage = "";
-        try {
-          referenceQueryCheckResult = getReferenceQueryResult(brokerConnector);
-        } catch (BrokerConnectorException | LdmConnectorException e) {
-          errorMessage = e.getMessage();
-          referenceQueryCheckResult = new ReferenceQueryCheckResult();
-        }
-        if (jobParams.isCountReferenceQuery()) {
-          StatusReportItem referenceQueryCount = getReferenceQueryCount(referenceQueryCheckResult,
-              errorMessage);
-          statusReportItems.add(referenceQueryCount);
-          LOGGER.debug("reference query count calculated");
-        }
-        if (jobParams.isTimeReferenceQuery()) {
-          StatusReportItem referenceQueryTime = getReferenceQueryTime(referenceQueryCheckResult,
-              errorMessage);
-          statusReportItems.add(referenceQueryTime);
-          LOGGER.debug("reference query time calculated");
-        }
-      }
-
       if (jobParams.isCentraxxMappingInformation()) {
         StatusReportItem centraxxMappingVersion = getCentraxxMappingVersion();
         statusReportItems.add(centraxxMappingVersion);
@@ -141,13 +119,13 @@ public class ReportToMonitoringJob implements Job {
         }
         if (jobParams.isCountReferenceQuery()) {
           StatusReportItem referenceQueryCount = getReferenceQueryCount(referenceQueryCheckResult,
-              errorMessage);
+                  errorMessage);
           statusReportItems.add(referenceQueryCount);
           LOGGER.debug("reference query count calculated");
         }
         if (jobParams.isTimeReferenceQuery()) {
           StatusReportItem referenceQueryTime = getReferenceQueryTime(referenceQueryCheckResult,
-              errorMessage);
+                  errorMessage);
           statusReportItems.add(referenceQueryTime);
           LOGGER.debug("reference query time calculated");
         }
@@ -197,15 +175,15 @@ public class ReportToMonitoringJob implements Job {
     try {
       jsonObject.addProperty("NEW", InquiryUtil.countInquiries(InquiryStatusType.IS_NEW));
       jsonObject.addProperty("PROCESSING",
-          InquiryUtil.countInquiries(InquiryStatusType.IS_PROCESSING));
+              InquiryUtil.countInquiries(InquiryStatusType.IS_PROCESSING));
       jsonObject.addProperty("READY",
-          InquiryUtil.countInquiries(InquiryStatusType.IS_READY));
+              InquiryUtil.countInquiries(InquiryStatusType.IS_READY));
       jsonObject.addProperty("ABANDONED",
-          InquiryUtil.countInquiries(InquiryStatusType.IS_ABANDONED));
+              InquiryUtil.countInquiries(InquiryStatusType.IS_ABANDONED));
       jsonObject.addProperty("LDM_ERROR",
-          InquiryUtil.countInquiries(InquiryStatusType.IS_LDM_ERROR));
+              InquiryUtil.countInquiries(InquiryStatusType.IS_LDM_ERROR));
       jsonObject.addProperty("Last query execution time",
-          InquiryDetailsUtil.getLastScheduledInquiry().getScheduledAt().toString());
+              InquiryDetailsUtil.getLastScheduledInquiry().getScheduledAt().toString());
       inquiryStats.setStatusText(jsonObject.toString());
       inquiryStats.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
     } catch (Exception e) {
@@ -229,7 +207,7 @@ public class ReportToMonitoringJob implements Job {
       dktkCount.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
       dktkCount.setStatusText(Integer.toString(count));
     } catch (Exception e) {
-      LOGGER.error(e);
+      LOGGER.error(e.getMessage(),e);
       dktkCount.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
       dktkCount.setStatusText(e.getMessage());
     }
@@ -251,7 +229,7 @@ public class ReportToMonitoringJob implements Job {
       totalCount.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
       totalCount.setStatusText(Integer.toString(count));
     } catch (Exception e) {
-      LOGGER.error(e);
+      LOGGER.error(e.getMessage(),e);
       totalCount.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
       totalCount.setStatusText(e.getMessage());
     }
@@ -265,14 +243,14 @@ public class ReportToMonitoringJob implements Job {
    * @return patient count and the execution time
    */
   private ReferenceQueryCheckResult getReferenceQueryResult(BrokerConnector brokerConnector)
-      throws BrokerConnectorException, LdmConnectorException {
+          throws BrokerConnectorException, LdmConnectorException {
     ReferenceQueryCheckResult referenceQueryCheckResult = null;
     if (ApplicationUtils.isLanguageQuery()) {
       referenceQueryCheckResult = ldmConnector
-          .getReferenceQueryCheckResult(brokerConnector.getReferenceQuery());
+              .getReferenceQueryCheckResult(brokerConnector.getReferenceQuery());
     } else if (ApplicationUtils.isLanguageCql()) {
       referenceQueryCheckResult = ldmConnector
-          .getReferenceQueryCheckResult(brokerConnector.getReferenceQueryCql());
+              .getReferenceQueryCheckResult(brokerConnector.getReferenceQueryCql());
     }
     return referenceQueryCheckResult;
   }
@@ -286,7 +264,7 @@ public class ReportToMonitoringJob implements Job {
    *        datamanagement for the reference query
    */
   private StatusReportItem getReferenceQueryCount(
-      ReferenceQueryCheckResult referenceQueryCheckResult, String errorMessage) {
+          ReferenceQueryCheckResult referenceQueryCheckResult, String errorMessage) {
     StatusReportItem referenceQueryCount = new StatusReportItem();
     referenceQueryCount.setParameterName(StatusReportItem.PARAMETER_REFERENCE_QUERY_RESULTCOUNT);
 
@@ -311,15 +289,15 @@ public class ReportToMonitoringJob implements Job {
    *        (containing a vagueness of 15 seconds)
    */
   private StatusReportItem getReferenceQueryTime(
-      ReferenceQueryCheckResult referenceQueryCheckResult, String errorMessage) {
+          ReferenceQueryCheckResult referenceQueryCheckResult, String errorMessage) {
     StatusReportItem referenceQueryTime = new StatusReportItem();
     referenceQueryTime.setParameterName(StatusReportItem.PARAMETER_REFERENCE_QUERY_RUNTIME);
 
     if (referenceQueryCheckResult != null
-        && referenceQueryCheckResult.getExecutionTimeMilis() >= 0) {
+            && referenceQueryCheckResult.getExecutionTimeMilis() >= 0) {
       referenceQueryTime.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
       referenceQueryTime
-          .setStatusText(Long.toString(referenceQueryCheckResult.getExecutionTimeMilis()));
+              .setStatusText(Long.toString(referenceQueryCheckResult.getExecutionTimeMilis()));
     } else {
       LOGGER.error(errorMessage);
       referenceQueryTime.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
@@ -345,7 +323,7 @@ public class ReportToMonitoringJob implements Job {
         centraxxMappingVersion.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
         centraxxMappingVersion.setStatusText(mappingVersion);
       } catch (Exception e) {
-        LOGGER.error(e);
+        LOGGER.error(e.getMessage(),e);
         centraxxMappingVersion.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
         centraxxMappingVersion.setStatusText(e.getMessage());
       }
@@ -370,7 +348,7 @@ public class ReportToMonitoringJob implements Job {
         centraxxMappingDate.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
         centraxxMappingDate.setStatusText(mappingDate);
       } catch (Exception e) {
-        LOGGER.error(e);
+        LOGGER.error(e.getMessage(),e);
         centraxxMappingDate.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
         centraxxMappingDate.setStatusText(e.getMessage());
       }
