@@ -1020,7 +1020,7 @@ public class ApplicationBean implements Serializable {
     String mdrUrl;
 
     mdrUrl = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.MDR_URL);
-    mdrClient = new MdrClient(mdrUrl, createHttpConnector().getJerseyClient(mdrUrl));
+    mdrClient = new MdrClient(mdrUrl, createHttpConnector().getJakartaClient(mdrUrl));
     mdrClient.cleanCache();
     MdrContext.getMdrContext().init(mdrClient);
     logger.debug(
