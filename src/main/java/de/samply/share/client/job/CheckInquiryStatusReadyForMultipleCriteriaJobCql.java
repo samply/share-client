@@ -18,8 +18,6 @@ import de.samply.share.client.util.db.InquiryDetailsUtil;
 import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.model.cql.CqlResult;
 import java.util.function.Consumer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DateBuilder;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -28,10 +26,12 @@ import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CheckInquiryStatusReadyForMultipleCriteriaJobCql implements Job {
 
-  private static final Logger logger = LogManager
+  private static final Logger logger = LoggerFactory
       .getLogger(CheckInquiryStatusReadyForMultipleCriteriaJobCql.class);
 
   private static final int DELAY_RESCHEDULING = 10;

@@ -9,14 +9,14 @@ import de.samply.share.client.util.db.InquiryDetailsUtil;
 import de.samply.share.client.util.db.InquiryHandlingRuleUtil;
 import de.samply.share.client.util.db.InquiryUtil;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Job checks the database for new jobs and gives them to an execution handler one by one. It
@@ -27,7 +27,7 @@ import org.quartz.SchedulerException;
 @DisallowConcurrentExecution
 public class ExecuteInquiriesJob implements Job {
 
-  private static final Logger logger = LogManager.getLogger(ExecuteInquiriesJob.class);
+  private static final Logger logger = LoggerFactory.getLogger(ExecuteInquiriesJob.class);
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) {

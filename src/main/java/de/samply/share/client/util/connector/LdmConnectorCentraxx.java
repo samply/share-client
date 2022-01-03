@@ -41,8 +41,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the LdmConnector interface for centraxx backends.
@@ -51,7 +51,7 @@ public class LdmConnectorCentraxx extends
     AbstractLdmConnectorView<LdmClientCentraxx, QueryResult, QueryResultStatistic, Error,
         de.samply.share.model.ccp.View> implements LdmConnectorCentraxxExtension {
 
-  private static final Logger logger = LogManager.getLogger(LdmConnectorCentraxx.class);
+  private static final Logger logger = LoggerFactory.getLogger(LdmConnectorCentraxx.class);
   private final String mappingPath = "mapping";
   private final CxxMappingParser cxxMappingParser = new CxxMappingParser();
   private MdrMappedElements mdrMappedElements;

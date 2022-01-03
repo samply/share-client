@@ -11,10 +11,10 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.omnifaces.filter.HttpFilter;
 import org.omnifaces.util.Servlets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This HttpFilter prevents access to the standard user pages without being logged in.
@@ -22,7 +22,7 @@ import org.omnifaces.util.Servlets;
 @WebFilter("/user/*")
 public class AccessControlFilterUser extends HttpFilter {
 
-  private static final Logger logger = LogManager.getLogger(AccessControlFilterUser.class);
+  private static final Logger logger = LoggerFactory.getLogger(AccessControlFilterUser.class);
   private static final String SESSION_USER = "user";
 
   @Override

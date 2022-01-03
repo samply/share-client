@@ -7,17 +7,17 @@ import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.model.db.tables.records.InquiryResultRecord;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper Class for CRUD operations with inquiry result objects.
  */
 public class InquiryResultUtil {
 
-  private static final Logger logger = LogManager.getLogger(InquiryResultUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(InquiryResultUtil.class);
 
   private static final InquiryResultDao inquiryResultDao;
 

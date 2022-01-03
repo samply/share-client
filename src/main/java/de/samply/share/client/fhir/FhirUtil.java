@@ -7,8 +7,12 @@ import java.util.Objects;
 import javax.ws.rs.core.MediaType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FhirUtil {
+
+  private static final Logger logger = LoggerFactory.getLogger(FhirUtil.class);
 
   private final FhirContext ctx;
 
@@ -35,6 +39,7 @@ public class FhirUtil {
         return (Bundle) ctx.newXmlParser().parseResource(bundleString);
       }
     } catch (ConfigurationException | DataFormatException e) {
+      logger.error(e.getMessage(),e);
       throw new FhirParseException("Error while parsing a " + mediaType.getSubtype() + " bundle.",
           e);
     }
@@ -51,6 +56,7 @@ public class FhirUtil {
     try {
       return ctx.newJsonParser().encodeResourceToString(resource);
     } catch (DataFormatException e) {
+      logger.error(e.getMessage(),e);
       throw new FhirEncodeException("Error while encoding a bundle to json.", e);
     }
   }

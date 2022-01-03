@@ -8,13 +8,13 @@ import de.samply.share.client.quality.report.chainlinks.timer.ChainLinkTimer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
 
-  protected static final Logger logger = LogManager.getLogger(ChainLink.class);
+  protected static final Logger logger = LoggerFactory.getLogger(ChainLink.class);
   protected ConcurrentLinkedDeque<ChainLinkItem> deque = new ConcurrentLinkedDeque<>();
   private ChainLinkFinalizer chainLinkFinalizer;
   private ChainLinkStatisticsProducer chainLinkStatisticsProducer;
@@ -183,8 +183,8 @@ public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
 
       finalizeStatisticsWithoutExceptionManagement();
 
-    } catch (ChainLinkStatisticsException chainLinkStatisticsExeption) {
-      logger.error(chainLinkStatisticsExeption);
+    } catch (ChainLinkStatisticsException chainLinkStatisticsException) {
+      logger.error(chainLinkStatisticsException.getMessage(),chainLinkStatisticsException);
     }
 
   }
@@ -221,7 +221,7 @@ public abstract class ChainLink<I extends ChainLinkItem> extends Thread {
 
     } catch (ChainLinkException e) {
 
-      logger.error(e);
+      logger.error(e.getMessage(),e);
       chainLinkItem.setToBeRepeated();
 
       return chainLinkItem;

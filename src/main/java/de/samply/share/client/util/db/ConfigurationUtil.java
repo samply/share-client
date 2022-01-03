@@ -19,15 +19,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper Class for CRUD operations with configuration objects.
  */
 public class ConfigurationUtil {
 
-  private static final Logger logger = LogManager.getLogger(ConfigurationUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(ConfigurationUtil.class);
 
   private static final ConfigurationDao configurationDao;
   private static final ConfigurationTimingsDao configurationTimingsDao;
@@ -306,7 +306,7 @@ public class ConfigurationUtil {
       configParams.put(USER_AGENT, userAgent.toString());
 
     } catch (NumberFormatException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
     return configParams;
   }

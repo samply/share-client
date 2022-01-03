@@ -111,8 +111,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.flywaydb.core.api.FlywayException;
 import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
@@ -126,6 +124,8 @@ import org.quartz.TriggerBuilder;
 import org.quartz.ee.servlet.QuartzInitializerListener;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.togglz.core.manager.FeatureManager;
 import org.xml.sax.SAXException;
 
@@ -138,7 +138,7 @@ import org.xml.sax.SAXException;
 @ApplicationScoped
 public class ApplicationBean implements Serializable {
 
-  private static final Logger logger = LogManager.getLogger(ApplicationBean.class);
+  private static final Logger logger = LoggerFactory.getLogger(ApplicationBean.class);
 
   private static final String PROJECT_DIRECTORY_FILENAME = "projectDirectory.json";
   private static final String COMMON_CONFIG_FILENAME_SUFFIX = "_common_config.xml";
@@ -278,7 +278,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal config file");
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 
@@ -301,7 +301,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal common_urls file", ue);
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 
@@ -324,7 +324,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal common_operator file");
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 
@@ -347,7 +347,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal bridgehead_info file", ue);
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 
@@ -370,7 +370,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal CTS file", ue);
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 
@@ -863,7 +863,7 @@ public class ApplicationBean implements Serializable {
       logger.info("Migrating Flyway...");
       Migration.doUpgrade();
     } catch (FlywayException e) {
-      logger.fatal("Could not initialize or migrate database", e);
+      logger.error("Could not initialize or migrate database", e);
       throw new RuntimeException(e);
     }
     logger.info("Creating featureManager...");

@@ -19,9 +19,9 @@ import de.samply.share.utils.QueryConverter;
 import java.util.List;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Job posts an inquiry to the local datamanagement, stores the location and spawns a
@@ -31,7 +31,7 @@ import org.quartz.JobExecutionException;
  */
 public class ExecuteInquiryJobCentraxx extends AbstractExecuteInquiryJob<LdmConnectorCcp> {
 
-  private static final Logger logger = LogManager.getLogger(ExecuteInquiryJobCentraxx.class);
+  private static final Logger logger = LoggerFactory.getLogger(ExecuteInquiryJobCentraxx.class);
 
   void execute() throws JobExecutionException {
     InquiryCriteria inquiryCriteria = InquiryCriteriaUtil

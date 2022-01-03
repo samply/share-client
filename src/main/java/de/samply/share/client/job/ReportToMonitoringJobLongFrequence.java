@@ -14,11 +14,11 @@ import de.samply.share.common.model.dto.monitoring.StatusReportItem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This job gathers the amount of patients (total, dktk flagged and for a reference query) and the
@@ -28,8 +28,8 @@ import org.quartz.JobExecutionContext;
 @DisallowConcurrentExecution
 public class ReportToMonitoringJobLongFrequence implements Job {
 
-  private static final Logger LOGGER =
-          LogManager.getLogger(ReportToMonitoringJobLongFrequence.class);
+  private static final Logger logger =
+          LoggerFactory.getLogger(ReportToMonitoringJobLongFrequence.class);
 
   private final LdmConnector ldmConnector;
   private final List<BrokerConnector> brokerConnectors;
@@ -44,19 +44,19 @@ public class ReportToMonitoringJobLongFrequence implements Job {
         .collect(Collectors.toList());
     jobParams = new ReportToMonitoringJobParams();
 
-    LOGGER.debug(ReportToMonitoringJobLongFrequence.class.getName() + " created");
+    logger.debug(ReportToMonitoringJobLongFrequence.class.getName() + " created");
   }
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) {
     if (jobParams.anyCheckToPerform()) {
       for (BrokerConnector brokerConnector : brokerConnectors) {
-        LOGGER.debug("sending report to broker: " + brokerConnector.getBroker().getAddress());
+        logger.debug("sending report to broker: " + brokerConnector.getBroker().getAddress());
         List<StatusReportItem> statusReportItems = gatherStatusReportItems(brokerConnector);
         try {
           brokerConnector.sendStatusReportItems(statusReportItems);
         } catch (BrokerConnectorException e) {
-          LOGGER.warn("Caught exception while trying to report to monitoring", e);
+          logger.warn("Caught exception while trying to report to monitoring", e);
         }
       }
     }
@@ -78,6 +78,7 @@ public class ReportToMonitoringJobLongFrequence implements Job {
         try {
           referenceQueryCheckResult = getReferenceQueryResult(brokerConnector);
         } catch (BrokerConnectorException | LdmConnectorException e) {
+
           errorMessage = e.getMessage();
           referenceQueryCheckResult = new ReferenceQueryCheckResult();
         }
@@ -85,13 +86,13 @@ public class ReportToMonitoringJobLongFrequence implements Job {
           StatusReportItem referenceQueryCount = getReferenceQueryCount(referenceQueryCheckResult,
               errorMessage);
           statusReportItems.add(referenceQueryCount);
-          LOGGER.debug("reference query count calculated");
+          logger.debug("reference query count calculated");
         }
         if (jobParams.isTimeReferenceQuery()) {
           StatusReportItem referenceQueryTime = getReferenceQueryTime(referenceQueryCheckResult,
               errorMessage);
           statusReportItems.add(referenceQueryTime);
-          LOGGER.debug("reference query time calculated");
+          logger.debug("reference query time calculated");
         }
       }
     }
@@ -135,7 +136,7 @@ public class ReportToMonitoringJobLongFrequence implements Job {
       referenceQueryCount.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
       referenceQueryCount.setStatusText(Integer.toString(referenceQueryCheckResult.getCount()));
     } else {
-      LOGGER.error(errorMessage);
+      logger.error(errorMessage);
       referenceQueryCount.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
       referenceQueryCount.setStatusText(errorMessage);
     }
@@ -163,7 +164,7 @@ public class ReportToMonitoringJobLongFrequence implements Job {
       referenceQueryTime
           .setStatusText(Long.toString(referenceQueryCheckResult.getExecutionTimeMilis()));
     } else {
-      LOGGER.error(errorMessage);
+      logger.error(errorMessage);
       referenceQueryTime.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
       referenceQueryTime.setStatusText(errorMessage);
     }

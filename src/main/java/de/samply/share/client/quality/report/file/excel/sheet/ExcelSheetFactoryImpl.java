@@ -6,16 +6,16 @@ import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFact
 import de.samply.share.client.quality.report.file.excel.row.factory.ExcelRowFactoryException;
 import de.samply.share.common.utils.PercentageLogger;
 import java.util.Iterator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ExcelSheetFactoryImpl implements ExcelSheetFactory {
 
-  protected static final Logger logger = LogManager.getLogger(ExcelSheetFactoryImpl.class);
+  protected static final Logger logger = LoggerFactory.getLogger(ExcelSheetFactoryImpl.class);
   private final ExcelRowFactory excelRowFactory;
   private int maxNumberOfRowsPerSheet = -1;
 

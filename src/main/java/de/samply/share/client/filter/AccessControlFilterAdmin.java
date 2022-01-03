@@ -11,9 +11,9 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.omnifaces.filter.HttpFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This HttpFilter prevents users without admin privilege from accessing the admin area.
@@ -22,7 +22,7 @@ import org.omnifaces.filter.HttpFilter;
 @WebFilter("/admin/*")
 public class AccessControlFilterAdmin extends HttpFilter {
 
-  private static final Logger logger = LogManager.getLogger(AccessControlFilterAdmin.class);
+  private static final Logger logger = LoggerFactory.getLogger(AccessControlFilterAdmin.class);
   private static final String SESSION_USER = "user";
 
   @Override

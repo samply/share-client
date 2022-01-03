@@ -21,11 +21,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import javax.xml.bind.JAXBElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handle MDR related tasks.
  */
 public class MdrUtils {
+
+  private static final Logger logger = LoggerFactory.getLogger(MdrUtils.class);
 
   private static final String VALIDATION_DATATYPE_ENUMERATED = "enumerated";
 
@@ -110,7 +114,7 @@ public class MdrUtils {
       return mdrClient.getDataElementDefinition(dataElement, languageCode).getDesignations().get(0)
           .getDesignation();
     } catch (MdrConnectionException | MdrInvalidResponseException | ExecutionException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       return ("??" + dataElement + "??");
     }
 
@@ -156,7 +160,7 @@ public class MdrUtils {
         }
       }
     } catch (MdrConnectionException | MdrInvalidResponseException | ExecutionException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
     return designation;
   }
