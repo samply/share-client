@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.4.6 - 2022-01-03]
+### Security
+- log4j 2.17.1
+
 ## [7.4.5 - 2021-12-23]
 ### Security
 - switch from log4j to slf4j
