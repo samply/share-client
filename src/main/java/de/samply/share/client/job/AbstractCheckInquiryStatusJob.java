@@ -33,8 +33,6 @@ import de.samply.share.model.common.Error;
 import de.samply.share.model.common.QueryResultStatistic;
 import java.io.IOException;
 import java.util.function.Consumer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.quartz.DateBuilder;
 import org.quartz.Job;
@@ -46,6 +44,8 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Job checks the status of the given inquiry and spawns new jobs if necessary. It is defined
@@ -70,7 +70,7 @@ import org.quartz.TriggerBuilder;
  */
 abstract class AbstractCheckInquiryStatusJob<ldmConnectorT extends LdmConnector> implements Job {
 
-  private static final Logger logger = LogManager.getLogger(AbstractCheckInquiryStatusJob.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractCheckInquiryStatusJob.class);
 
   CheckInquiryStatusJobParams jobParams;
   ldmConnectorT ldmConnector;
@@ -192,7 +192,7 @@ abstract class AbstractCheckInquiryStatusJob<ldmConnectorT extends LdmConnector>
         unscheduleThisJob(jobExecutionContext);
         return true;
       } catch (SchedulerException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage(),e);
       }
     } else {
       rescheduleCheckingForResults(jobExecutionContext);

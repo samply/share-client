@@ -15,9 +15,9 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.validator.ValidatorException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.omnifaces.util.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A SessionScoped backing bean that is used for configuration handling.
@@ -26,7 +26,7 @@ import org.omnifaces.util.Messages;
 @SessionScoped
 public class ConfigurationBean implements Serializable {
 
-  private static final Logger logger = LogManager.getLogger(ConfigurationBean.class);
+  private static final Logger logger = LoggerFactory.getLogger(ConfigurationBean.class);
   private static final DateFormat hourMinuteFormat = new SimpleDateFormat("HH:mm");
   private Map<EnumConfiguration, Object> configurationMap;
   private Map<EnumConfigurationTimings, Object> configurationTimingsMap;

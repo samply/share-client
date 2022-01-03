@@ -4,16 +4,16 @@ import de.samply.share.client.model.db.Tables;
 import de.samply.share.client.model.db.tables.daos.ContactDao;
 import de.samply.share.client.model.db.tables.pojos.Contact;
 import de.samply.share.client.model.db.tables.records.ContactRecord;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper Class for CRUD operations with contact objects.
  */
 public class ContactUtil {
 
-  private static final Logger logger = LogManager.getLogger(ContactUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(ContactUtil.class);
 
   private static final ContactDao contactDao;
 

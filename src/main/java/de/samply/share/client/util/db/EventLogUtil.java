@@ -10,16 +10,16 @@ import de.samply.share.common.utils.SamplyShareUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper Class for CRUD operations with event log objects.
  */
 public class EventLogUtil {
 
-  private static final Logger logger = LogManager.getLogger(EventLogUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(EventLogUtil.class);
 
   private static final EventLogDao eventLogDao;
 

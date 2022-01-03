@@ -25,9 +25,13 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/patient-data-f100")
 public class CsvFileReaderTest {
+
+  private static final Logger logger = LoggerFactory.getLogger(CsvFileReaderTest.class);
 
   private static final String FILE_ID_SUFFIX = "_2";
 
@@ -56,7 +60,7 @@ public class CsvFileReaderTest {
       return modelReader.getModel();
 
     } catch (ModelReaderException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       return null;
     }
   }
@@ -71,7 +75,7 @@ public class CsvFileReaderTest {
       return new MdrClient(mdrUrl, httpConnector.getClient(httpConnector.getHttpClient(mdrUrl)));
 
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       return null;
     }
 

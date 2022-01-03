@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>share-client</artifactId>
-  <version>7.4.4</version>
+  <version>7.4.6-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Connector</name>
@@ -59,7 +59,7 @@
 
     <!-- Samply dependencies -->
     <version.samply.common.config>5.1.0</version.samply.common.config>
-    <share-common.version>4.3.0</share-common.version>
+    <share-common.version>4.4.0</share-common.version>
     <share-dto.version>5.1.0</share-dto.version>
     <jsf-renderer.version>2.0.0</jsf-renderer.version>
     <common-mailing.version>3.0.0</common-mailing.version>
@@ -75,8 +75,9 @@
     <version.flyway>4.2.0</version.flyway>
     <version.jooq>3.11.11</version.jooq>
     <jta.version>1.1</jta.version>
+    <log4j.version>2.17.1</log4j.version>
+    <slf4j.version>1.7.32</slf4j.version>
     <quartz.version>2.3.2</quartz.version>
-    <log4j.version>2.17.0</log4j.version>
     <omnifaces.version>1.14.1</omnifaces.version>
     <simple-xml.version>2.7.1</simple-xml.version>
 
@@ -257,10 +258,14 @@
       <version>${jta.version}</version>
     </dependency>
     <!-- Logging -->
-    <!-- TODO: Change logging to SLF4J ??? -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
+      <artifactId>log4j-web</artifactId>
       <version>${log4j.version}</version>
     </dependency>
     <dependency>
@@ -270,19 +275,8 @@
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-1.2-api</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
       <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-web</artifactId>
-      <version>${log4j.version}</version>
-      <scope>runtime</scope>
     </dependency>
 
     <!-- Third party libraries -->
@@ -560,7 +554,9 @@
               </goals>
               <configuration>
                 <target>
-                  <copy file="docs/faces-config-${project.context}.xml" toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml" overwrite="true"/>
+                  <copy file="docs/faces-config-${project.context}.xml"
+                    toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml"
+                    overwrite="true"/>
                 </target>
               </configuration>
             </execution>

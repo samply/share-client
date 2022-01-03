@@ -4,16 +4,17 @@ import de.samply.share.client.quality.report.file.excel.row.elements.ExcelRowEle
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ExcelRowContextImpl<ExcelRowParametersT> implements ExcelRowContext {
 
+  protected static final Logger logger = LoggerFactory.getLogger(ExcelRowContextImpl.class);
 
   protected List<ExcelRowParametersT> excelRowParametersList = new ArrayList<>();
 
   protected abstract ExcelRowElements convert(ExcelRowParametersT excelRowParameters)
       throws Exception;
-
-  protected abstract org.apache.logging.log4j.Logger getLogger();
 
   public Integer getNumberOfRows() {
     return excelRowParametersList.size();
@@ -52,7 +53,7 @@ public abstract class ExcelRowContextImpl<ExcelRowParametersT> implements ExcelR
 
       } catch (Exception e) {
 
-        getLogger().error(e.getMessage(), e);
+        logger.error(e.getMessage(), e);
         return createEmptyExcelRowElements();// If there is an exception, the exception is logged
         // and the row is left clean in QB.
 

@@ -14,8 +14,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class StoreConnector {
@@ -26,7 +26,7 @@ public class StoreConnector {
   private static final String TEST_AUTH = "testAuth";
   private static final String DEFAULT_USERNAME = "local_admin";
   private static final String DEFAULT_PASSWORD = "local_admin";
-  private static final Logger logger = LogManager.getLogger(StoreConnector.class);
+  private static final Logger logger = LoggerFactory.getLogger(StoreConnector.class);
   private static final String storeUrl =
       ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.LDM_URL);
   public static String authorizedUsername = "";
@@ -141,7 +141,7 @@ public class StoreConnector {
               + response.getStatusLine().getStatusCode());
       return response.getStatusLine().getStatusCode();
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       logger.info("IOException of HttpClient.execute() or CloseableHttpResponse.close");
       return -1;
     }

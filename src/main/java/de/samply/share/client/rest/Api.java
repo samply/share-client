@@ -24,12 +24,12 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Rest API endpoints.
@@ -37,7 +37,7 @@ import org.mindrot.jbcrypt.BCrypt;
 @Path("/")
 public class Api {
 
-  private static final Logger logger = LogManager.getLogger(Api.class);
+  private static final Logger logger = LoggerFactory.getLogger(Api.class);
 
   /**
    * Send a patient bundle to the CTS.

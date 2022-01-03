@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.TimeZone;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class WebUtils offers methods to be used directly from xhtml via the corresponding taglib
@@ -40,7 +40,7 @@ import org.apache.logging.log4j.Logger;
  */
 public final class WebUtils {
 
-  private static final Logger logger = LogManager.getLogger(WebUtils.class);
+  private static final Logger logger = LoggerFactory.getLogger(WebUtils.class);
 
   /**
    * Prohibit class instantiation.

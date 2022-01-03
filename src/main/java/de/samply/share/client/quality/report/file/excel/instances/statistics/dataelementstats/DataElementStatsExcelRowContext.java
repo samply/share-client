@@ -6,15 +6,15 @@ import de.samply.share.client.quality.report.results.QualityResults;
 import de.samply.share.client.quality.report.results.statistics.QualityResultsStatistics;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.PercentageLogger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class DataElementStatsExcelRowContext extends
     ExcelRowContextImpl<DataElementStatsExcelRowParameters> {
 
 
-  protected static final Logger logger = LogManager
+  protected static final Logger logger = LoggerFactory
       .getLogger(DataElementStatsExcelRowContext.class);
   private final DataElementStatsExcelRowMapper excelRowMapper;
 
@@ -72,11 +72,6 @@ public class DataElementStatsExcelRowContext extends
   protected ExcelRowElements convert(DataElementStatsExcelRowParameters table2ExcelRowParametersT)
       throws Exception {
     return excelRowMapper.convert(table2ExcelRowParametersT);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   @Override

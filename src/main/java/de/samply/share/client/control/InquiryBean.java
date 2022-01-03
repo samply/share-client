@@ -71,8 +71,6 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import javax.xml.bind.JAXBException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.omnifaces.model.tree.ListTreeModel;
 import org.omnifaces.model.tree.TreeModel;
 import org.omnifaces.util.Ajax;
@@ -85,6 +83,8 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ViewScoped backing bean, used for pages that deal with inquiries.
@@ -93,7 +93,7 @@ import org.quartz.TriggerKey;
 @ViewScoped
 public class InquiryBean implements Serializable {
 
-  private static final Logger logger = LogManager.getLogger(InquiryBean.class);
+  private static final Logger logger = LoggerFactory.getLogger(InquiryBean.class);
   private static final String RESET_FILEINPUT = "$('.fileinput-remove-button').trigger('click');";
   private static final String CREATE_EVENTHANDLERS = "createEventhandlers();";
   private static final String XMLNS_PATH_COMMON = "/common/";
@@ -151,7 +151,7 @@ public class InquiryBean implements Serializable {
           try {
             containerTmp = Converter.convertCcpContainerToCommonContainer(patientContainer);
           } catch (JAXBException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
           }
           containerTree = visitContainerNode(containerTree, containerTmp);
 
@@ -173,7 +173,7 @@ public class InquiryBean implements Serializable {
           try {
             containerTmp = Converter.convertOsseContainerToCommonContainer(patientContainer);
           } catch (JAXBException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
           }
 
           containerTree = visitContainerNode(containerTree, containerTmp);
@@ -593,7 +593,7 @@ public class InquiryBean implements Serializable {
       }
     } catch (NullPointerException npe) {
       //throw new RuntimeException("Could not load inquiry, inquirydetails or inquiry answer.");
-      logger.error(npe);
+      logger.error(npe.getMessage());
     }
   }
 
@@ -808,7 +808,7 @@ public class InquiryBean implements Serializable {
                   .getLocation());
               brokerConnector.reply(latestInquiryDetails, queryResult);
             } catch (LdmConnectorException e) {
-              e.printStackTrace();
+              logger.error(e.getMessage(),e);
             }
           } else if (ApplicationUtils.isLanguageCql()) {
             CqlResult queryResult = new CqlResultFactory(latestInquiryDetails).createCqlResult();
@@ -885,7 +885,7 @@ public class InquiryBean implements Serializable {
       newDocument = null;
       Ajax.oncomplete(RESET_FILEINPUT, CREATE_EVENTHANDLERS);
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
       logger.error("Document upload failed.");
     }
   }
@@ -955,7 +955,7 @@ public class InquiryBean implements Serializable {
     try {
       reloadPageWithoutExceptionManagement();
     } catch (IOException e) {
-      logger.error(e);
+      logger.error(e.getMessage(),e);
     }
   }
 

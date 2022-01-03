@@ -7,16 +7,16 @@ import de.samply.share.client.model.db.tables.pojos.Inquiry;
 import de.samply.share.client.model.db.tables.pojos.InquiryHandlingRule;
 import de.samply.share.client.model.db.tables.records.InquiryHandlingRuleRecord;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper Class for CRUD operations with inquiry handling rule objects.
  */
 public class InquiryHandlingRuleUtil {
 
-  private static final Logger logger = LogManager.getLogger(InquiryHandlingRuleUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(InquiryHandlingRuleUtil.class);
 
   private static final InquiryHandlingRuleDao inquiryHandlingRuleDao;
 

@@ -10,12 +10,12 @@ import de.samply.share.client.quality.report.results.sorted.AlphabeticallySorted
 import de.samply.share.client.quality.report.results.statistics.QualityResultsStatistics;
 import de.samply.share.common.utils.MdrIdDatatype;
 import de.samply.share.common.utils.PercentageLogger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExcelRowContext002 extends ExcelRowContextImpl<ExcelRowParameters002> {
 
-  protected static final Logger logger = LogManager.getLogger(ExcelRowContext002.class);
+  protected static final Logger logger = LoggerFactory.getLogger(ExcelRowContext002.class);
 
   private final ExcelRowMapper002 excelRowMapper;
   private final AlphabeticallySortedMismatchedQualityResults asmQualityResults;
@@ -126,10 +126,4 @@ public class ExcelRowContext002 extends ExcelRowContextImpl<ExcelRowParameters00
       throw new Exception(e);
     }
   }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
-
 }

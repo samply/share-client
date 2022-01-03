@@ -10,16 +10,17 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Enumeration;
 import java.util.ResourceBundle;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of a ServletContextListener. On startup, sets message resolvers, checks if the
@@ -28,23 +29,13 @@ import org.omnifaces.util.Messages;
 @WebListener
 public class StartupListener implements ServletContextListener {
 
-  private static final Logger logger = LogManager.getLogger(StartupListener.class);
+  private static final Logger logger = LoggerFactory.getLogger(StartupListener.class);
 
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     logger.info("context initialized!");
     setMessagesResolver();
     ProjectInfo.INSTANCE.initProjectMetadata(sce);
-    try {
-      Configurator.initialize(
-          null,
-          FileFinderUtil.findFile(
-              "log4j2.xml", ProjectInfo.INSTANCE.getProjectName(),
-              System.getProperty("catalina.base") + File.separator + "conf",
-              sce.getServletContext().getRealPath("/WEB-INF")).getAbsolutePath());
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
   }
 
   @Override
@@ -59,7 +50,7 @@ public class StartupListener implements ServletContextListener {
         DriverManager.deregisterDriver(driver);
         logger.info("Deregistered driver " + driver);
       } catch (SQLException e) {
-        logger.fatal("Error deregistering driver:" + driver + "\n" + e.getMessage());
+        logger.error("Error deregistering driver:" + driver + "\n" + e.getMessage());
       }
     }
   }

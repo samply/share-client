@@ -28,10 +28,10 @@ import org.apache.http.Consts;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.omnifaces.util.Messages;
 import org.primefaces.PrimeFaces;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A ViewScoped backing bean that is used on pages dealing with interaction with searchbrokers.
@@ -40,7 +40,7 @@ import org.primefaces.PrimeFaces;
 @ViewScoped
 public class BrokerBean implements Serializable {
 
-  private static final Logger logger = LogManager.getLogger(BrokerBean.class);
+  private static final Logger logger = LoggerFactory.getLogger(BrokerBean.class);
 
   private List<Broker> brokerList;
 

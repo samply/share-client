@@ -5,12 +5,12 @@ import de.samply.share.client.model.db.enums.UploadStatusType;
 import de.samply.share.client.model.db.tables.pojos.Inquiry;
 import de.samply.share.client.util.db.InquiryUtil;
 import de.samply.share.client.util.db.UploadUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This listener will be called when an instance of the ExecuteInquiryStatusJob is done. It checks
@@ -18,7 +18,8 @@ import org.quartz.JobListener;
  */
 public class ExecuteInquiryStatusJobListener implements JobListener {
 
-  private static final Logger logger = LogManager.getLogger(ExecuteInquiryStatusJobListener.class);
+  private static final Logger logger = LoggerFactory.getLogger(
+      ExecuteInquiryStatusJobListener.class);
 
   private final String name;
 

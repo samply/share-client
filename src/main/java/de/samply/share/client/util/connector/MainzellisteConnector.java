@@ -44,8 +44,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Composition;
@@ -55,13 +53,15 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mainzelliste Connector.
  */
 public class MainzellisteConnector {
 
-  private static final Logger logger = LogManager.getLogger(MainzellisteConnector.class);
+  private static final Logger logger = LoggerFactory.getLogger(MainzellisteConnector.class);
   private static final String FHIR_RESOURCE_PATIENT = "patient";
   private static final String FHIR_RESOURCE_COVERAGE = "coverage";
   private static final String FHIR_RESOURCE_COMPOSITION = "composition";
