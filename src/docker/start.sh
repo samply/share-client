@@ -96,7 +96,7 @@ sed -i "s|{nngm-mainzelliste-apikey}|${NNGM_MAINZELLISTE_APIKEY}|"          "$fi
 sed -i "s|{nngm-mainzelliste-url}|${NNGM_MAINZELLISTE_URL}|"                "$file"
 sed -i "s|{nngm-cryptkey}|${NNGM_CRYPTKEY}|"                                "$file"
 
-export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/docker/jmx_prometheus_javaagent-0.3.1.jar=9100:/docker/jmx-exporter.yml"
+export CATALINA_OPTS="${CATALINA_OPTS} -javaagent:/docker/jmx_prometheus_javaagent-0.16.1.jar=9100:/docker/jmx-exporter.yml"
 
 # SSL Certs
 if [ -d "/custom-certs" ]; then
