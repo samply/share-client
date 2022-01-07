@@ -37,7 +37,7 @@
         <h:outputScript library="webjars"
                         name="jqplot/1.0.9.d96a669/plugins/jqplot.canvasAxisTickRenderer.js"
                         target="head"/>
-        <h:outputScript name="js/charts.js" target="head"/>
+        <!--<h:outputScript name="js/charts.js" target="head"/>-->
 
         <ui:fragment rendered="#{cc.attrs.chart ne null}">
             <div class="panel panel-default">
@@ -46,11 +46,11 @@
                         <div style="float:right;">
                             <h:commandLink
                                     action="#{chartDefinitionBean.editChartDefinition(cc.attrs.index)}">
-                                <i class="fa fa-edit"/>
+                                <i class="fas fa-edit"/>
                             </h:commandLink>
                             <h:outputLink value="#"
                                           onclick="showDeleteChartModal#{cc.attrs.index}();return false;">
-                                <i class="fa fa-trash"/>
+                                <i class="fas fa-trash"/>
                             </h:outputLink>
                         </div>
                         <h:outputText

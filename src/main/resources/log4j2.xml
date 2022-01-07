@@ -29,17 +29,18 @@
   </Appenders>
 
   <Loggers>
-    <Logger level="warn" name="org.apache.http"/>
+    <Logger level="warn"  name="org.apache.http"/>
     <Logger level="error" name="org.jooq"/>
     <Logger level="error" name="org.jooq.Constants"/>
     <Logger level="error" name="org.quartz"/>
-    <Logger level="warn" name="org.flywaydb"/>
+    <Logger level="warn"  name="org.flywaydb"/>
     <Logger level="error" name="de.samply.common.mdrclient"/>
     <Logger level="error" name="de.samply.share.client.util.Utils"/>
-    <Logger level="warn" name="de.samply.config.util.FileFinderUtil"/>
-    <Logger level="warn" name="ca.uhn.fhir"/>
+    <Logger level="warn"  name="de.samply.config.util.FileFinderUtil"/>
+    <Logger level="warn"  name="ca.uhn.fhir"/>
     <Logger level="error" name="org.apache.poi.xssf.streaming.SXSSFCreationHelper" />
     <Logger level="error" name="org.apache.poi.openxml4j.opc.ZipPackage" />
+    <Logger level="error" name="org.apache.poi.util.XMLHelper" />
     <Root level="debug">
       <AppenderRef ref="Console"/>
       <AppenderRef ref="RollingFileLinux"/>

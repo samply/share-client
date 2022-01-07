@@ -18,7 +18,7 @@ public abstract class ExcelSheetFactoryWrapper implements ExcelSheetFactory {
 
   private SXSSFWorkbook addFunctionalityToSheet(SXSSFWorkbook workbook, String sheetTitle) {
     SXSSFSheet sheet = workbook.getSheet(sheetTitle);
-    if (sheet != null){
+    if (sheet != null) {
       addFunctionalityToSheet(sheet);
     }
     return workbook;

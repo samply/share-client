@@ -18,7 +18,7 @@
                     <h3 class="panel-title">#{msg.si_documents} <span class="badge"
                                                                       style="background-color: #989898;">#{fn:length(inquiryBean.documents)}</span>
                         <button type="button" class="close collapseToggle" aria-label="Close">
-                            <i class="fa fa-chevron-right"/>
+                            <i class="fas fa-chevron-right"/>
                         </button>
                     </h3>
                 </h:form>
@@ -62,7 +62,7 @@
                                 <h:commandLink value=""
                                                class="deleteDocument hasConfirmPopover btn btn-default btn-xs"
                                                title="#{msg.common_delete}" rendered="#{!readOnly}">
-                                    <i class="fa fa-fw fa-trash-o"></i>
+                                    <i class="fas fa-fw fa-trash-o"></i>
                                     <f:ajax/>
                                 </h:commandLink>
                                 <o:commandScript name="deleteDocument"
@@ -73,7 +73,7 @@
                                                class="infoDocument hasPopover btn btn-default btn-xs"
                                                title="Zusätzliche Infos" style="margin-left: 2px;"
                                                pass:data-content="#{msg.si_uploadedAt} #{wu:dateToGermanFormatString(document.uploadedAt)} von #{wu:getUsernameById(document.userId)}">
-                                    <i class="fa fa-fw fa-info-circle"></i>
+                                    <i class="fas fa-fw fa-info-circle"></i>
                                     <f:ajax/>
                                 </h:commandLink>
                             </div>
