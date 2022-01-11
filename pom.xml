@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>share-client</artifactId>
-  <version>7.4.5-SNAPSHOT</version>
+  <version>7.4.6-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Connector</name>
@@ -87,7 +87,7 @@
     <jquery.version>3.6.0</jquery.version>
     <jquery-ui.version>1.13.0</jquery-ui.version>
     <jquery-blockui.version>2.70-1</jquery-blockui.version>
-    <bootstrap.version>3.3.2</bootstrap.version>
+    <bootstrap.version>3.3.7-1</bootstrap.version>
     <bootstrap-switch.version>3.3.2</bootstrap-switch.version>
     <bootstrap-datepicker.version>1.9.0</bootstrap-datepicker.version>
     <bootstrap-fileinput.version>5.2.5</bootstrap-fileinput.version>
