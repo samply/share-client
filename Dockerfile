@@ -7,7 +7,7 @@ ADD target/connector.war /connector/connector.war
 RUN mkdir -p /connector/extracted && \
        unzip /connector/connector.war -d /connector/extracted/
 
-FROM tomcat:9-jdk8-openjdk-slim
+FROM tomcat:9-jre8-temurin
 
 ## Define for which project this image is build
 ARG PROJECT=samply
