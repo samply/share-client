@@ -75,14 +75,14 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <h:panelGroup rendered="#{empty cc.attrs.checkResult.success}">
-                                    <i class="fa fa-spin fa-spinner fa-3x"/>
+                                    <i class="fas fa-spin fa-spinner fa-3x"/>
                                 </h:panelGroup>
                                 <h:panelGroup
                                         rendered="#{not empty cc.attrs.checkResult.success and not cc.attrs.checkResult.success}">
-                                    <i class="fa fa-times fa-3x" style="color: red;"/>
+                                    <i class="fas fa-times fa-3x" style="color: red;"/>
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{cc.attrs.checkResult.success}">
-                                    <i class="fa fa-check fa-3x" style="color: green;"/>
+                                    <i class="fas fa-check fa-3x" style="color: green;"/>
                                 </h:panelGroup>
                             </div>
                         </div>

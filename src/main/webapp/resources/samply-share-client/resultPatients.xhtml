@@ -26,19 +26,19 @@
                                    aria-controls="collapse_#{node.index}">
                                     <span class="badge pull-right">#{fn:length(item.container)}</span>
                                     <ui:fragment rendered="#{gender == 'W' or gender == 'female'}">
-                                        <i class="fa fa-lg fa-fw fa-venus" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-venus" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{gender == 'M' or gender == 'male'}">
-                                        <i class="fa fa-lg fa-fw fa-mars" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-mars" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{gender == 'S' or gender == 'sex_other/intersexual'}">
-                                        <i class="fa fa-lg fa-fw fa-intersex" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-intersex" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{gender == 'U' or gender == 'sex_uncharted'}">
 												<span class="fa-stack fa-lg fa-fw">
-												  <i class="fa fa-genderless"></i>
+												  <i class="fas fa-genderless"></i>
 												</span>
                                     </ui:fragment>
                                     Patient #{item.id}
@@ -83,55 +83,55 @@
 
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('diagnosis')}">
-                                        <i class="fa fa-lg fa-fw fa-stethoscope"
+                                        <i class="fas fa-lg fa-fw fa-stethoscope"
                                            aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('sample')}">
-                                        <i class="fa fa-lg fa-fw fa-flask" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-flask" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('tumour')}">
-                                        <i class="fa fa-lg fa-fw fa-arrows-alt" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-arrows-alt" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{designation.equalsIgnoreCase('tnm')}">
-                                        <i class="fa fa-lg fa-fw fa-sliders" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-sliders" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('metastasis')}">
-                                        <i class="fa fa-lg fa-fw fa-share-alt" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-share-alt" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('histology')}">
-                                        <i class="fa fa-lg fa-fw fa-picture-o" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-picture-o" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('progress')}">
-                                        <i class="fa fa-lg fa-fw fa-spinner" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-spinner" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('radiationtherapy')}">
-                                        <i class="fa fa-lg fa-fw fa-circle-o" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-circle-o" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('systemtherapy')}">
-                                        <i class="fa fa-lg fa-fw fa-circle-o" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-circle-o" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('surgery')}">
-                                        <i class="fa fa-lg fa-fw fa-user-md" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-user-md" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('SystemAdverseEffects')}">
-                                        <i class="fa fa-lg fa-fw fa-circle-o" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-circle-o" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('RadiationAdverseEffects')}">
-                                        <i class="fa fa-lg fa-fw fa-circle-o" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-circle-o" aria-hidden="true"/>
                                     </ui:fragment>
                                     <ui:fragment
                                             rendered="#{designation.equalsIgnoreCase('SampleContext')}">
-                                        <i class="fa fa-lg fa-fw fa-circle-o" aria-hidden="true"/>
+                                        <i class="fas fa-lg fa-fw fa-circle-o" aria-hidden="true"/>
                                     </ui:fragment>
 
                                     #{designation} #{item.id}

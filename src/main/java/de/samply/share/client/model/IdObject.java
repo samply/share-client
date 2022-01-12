@@ -1,7 +1,7 @@
 package de.samply.share.client.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * An ID Object, as needed to request export ids from the id manager.

@@ -24,12 +24,12 @@ $(document).ready(function () {
               $(nTd).html("<a href='show_inquiry.xhtml?inquiryId=" + oData.id
                   + "&faces-redirect=true' style='font-weight: bold;'>"
                   + oData.name
-                  + "</a> <i class='fa fa-info-circle fa-fw' title='Source: "
+                  + "</a> <i class='fas fa-info-circle fa-fw' title='Source: "
                   + oData.brokerName + "'></i>");
             } else {
               $(nTd).html("<a href='show_inquiry.xhtml?inquiryId=" + oData.id
                   + "&faces-redirect=true'>" + oData.name
-                  + "</a> <i class='fa fa-info-circle fa-fw' title='Source: "
+                  + "</a> <i class='fas fa-info-circle fa-fw' title='Source: "
                   + oData.brokerName + "'></i>");
             }
           }
