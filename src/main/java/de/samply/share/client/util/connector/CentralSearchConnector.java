@@ -1,5 +1,8 @@
 package de.samply.share.client.util.connector;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import de.samply.common.http.HttpConnector;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.EnumConfiguration;
@@ -19,7 +22,10 @@ import de.samply.share.client.util.db.EventLogUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
 import de.samply.share.model.ccp.ObjectFactory;
 import de.samply.share.model.ccp.Patient;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -30,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -51,8 +58,6 @@ import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * A connector that handles all communication with the central MDS database.
  */
 public class CentralSearchConnector {
-  
+
   /**
    * The constant DATE_FORMAT_HTTP_HEADER.
    */
@@ -108,7 +113,7 @@ public class CentralSearchConnector {
   private URL centralSearchUrl;
   private RequestConfig requestConfig;
   private String anonymizedPatientPrefix;
-  
+
   /**
    * Initialise a CenteralSearchConnector object.
    */
@@ -128,7 +133,7 @@ public class CentralSearchConnector {
       throw new RuntimeException(e);
     }
   }
-  
+
   /**
    * Gets credentials.
    *
@@ -137,7 +142,7 @@ public class CentralSearchConnector {
   public Credentials getCredentials() {
     return credentials;
   }
-  
+
   /**
    * Sets credentials.
    *
@@ -173,7 +178,7 @@ public class CentralSearchConnector {
       throw new CentralSearchConnectorException(e);
     }
   }
-  
+
   /**
    * Get the last upload timestamp as well as the current server time.
    *
@@ -203,10 +208,9 @@ public class CentralSearchConnector {
     }
 
     if (statusCode == HttpStatus.SC_OK) {
-      Serializer serializer = new Persister();
       UploadStats uploadStats;
       try {
-        uploadStats = serializer.read(UploadStats.class, responseString);
+        uploadStats = deserialize(responseString);
       } catch (Exception e) {
         if (uploadId != null) {
           EventLogUtil
@@ -256,6 +260,16 @@ public class CentralSearchConnector {
     }
   }
 
+  private String serialize(UploadStats uploadStats) throws JsonProcessingException {
+    ObjectMapper xmlMapper = new XmlMapper();
+    return xmlMapper.writeValueAsString(uploadStats);
+  }
+
+  private UploadStats deserialize(String uploadStats) throws JsonProcessingException {
+    ObjectMapper objectMapper = new XmlMapper();
+    return objectMapper.readValue(uploadStats, UploadStats.class);
+  }
+
   private String getLastUploadTimestamp(UploadStats uploadStats) {
 
     try {
@@ -263,7 +277,7 @@ public class CentralSearchConnector {
       return getLastUploadTimestamp_WithoutManagementException(uploadStats);
 
     } catch (Exception e) {
-      logger.info(e.getMessage(),e);
+      logger.info(e.getMessage(), e);
       return DEFAULT_LAST_UPDATE_DATE;
     }
 
@@ -280,8 +294,8 @@ public class CentralSearchConnector {
         ? lastUploadTimestamp : DEFAULT_LAST_UPDATE_DATE;
 
   }
-  
-  
+
+
   /**
    * Set the upload time on the central mds db.
    *
@@ -295,10 +309,7 @@ public class CentralSearchConnector {
           SamplyShareUtils.addTrailingSlash(centralSearchUrl.getPath()) + PATH_UPLOAD_STATS);
 
       UploadStats uploadStats = new UploadStats(timestamp);
-      Serializer serializer = new Persister();
-      StringWriter writer = new StringWriter();
-      serializer.write(uploadStats, writer);
-      HttpEntity httpEntity = new StringEntity(writer.getBuffer().toString());
+      HttpEntity httpEntity = new StringEntity(serialize(uploadStats));
       httpPut.setEntity(httpEntity);
       logger.debug("Trying to set last upload timestamp on " + httpHost.toString());
       try (CloseableHttpResponse response = httpClient.execute(httpHost, httpPut)) {
@@ -315,7 +326,7 @@ public class CentralSearchConnector {
       throw new CentralSearchConnectorException(e);
     }
   }
-  
+
   /**
    * Delete all patients on the central mds db, that are prefixed with a given string.
    *
@@ -342,7 +353,7 @@ public class CentralSearchConnector {
     }
     return statusCode;
   }
-  
+
   /**
    * Upload one patient dataset to the central mds database. TODO: Maybe add preemptive
    * authentication here (manually add Authorization header - as in samply.share v1.x).
@@ -392,7 +403,7 @@ public class CentralSearchConnector {
     }
     return result;
   }
-  
+
   /**
    * Get the string representation of a patient.
    *
@@ -410,7 +421,7 @@ public class CentralSearchConnector {
       return null;
     }
   }
-  
+
   /**
    * Check the reachability of the central MDS database.
    *

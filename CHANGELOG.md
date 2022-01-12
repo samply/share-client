@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Security
 - Jersey 3
 - Frontend Updates
+- Jackson for serialization and deserialization
 
 ## [7.4.6 - 2022-01-03]
 ### Security
