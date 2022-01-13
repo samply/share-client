@@ -91,7 +91,7 @@
     <bootstrap-switch.version>3.3.2</bootstrap-switch.version>
     <bootstrap-datepicker.version>1.9.0</bootstrap-datepicker.version>
     <bootstrap-fileinput.version>5.2.5</bootstrap-fileinput.version>
-    <jasny-bootstrap.version>3.1.3</jasny-bootstrap.version>
+    <jasny-bootstrap.version>3.1.3-2</jasny-bootstrap.version>
     <font-awesome.version>5.15.4</font-awesome.version>
     <lato.version>0.3.0</lato.version>
     <html5shiv.version>3.7.3-1</html5shiv.version>
@@ -563,9 +563,7 @@
               </goals>
               <configuration>
                 <target>
-                  <copy file="docs/faces-config-${project.context}.xml"
-                    toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml"
-                    overwrite="true"/>
+                  <copy file="docs/faces-config-${project.context}.xml" toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml" overwrite="true"/>
                 </target>
               </configuration>
             </execution>
