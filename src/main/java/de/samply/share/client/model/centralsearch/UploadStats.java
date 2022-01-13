@@ -1,19 +1,17 @@
 package de.samply.share.client.model.centralsearch;
 
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents the upload stats as received from central search.
  */
-@Root(name = "UploadStats")
+
 public class UploadStats {
 
-  @Element(name = "LastUploadTimestamp")
+  @JsonProperty(namespace = "LastUploadTimestamp")
   private String lastUploadTimestamp;
 
   public UploadStats() {
-    super();
   }
 
   public UploadStats(String lastUploadTimestamp) {
@@ -23,4 +21,5 @@ public class UploadStats {
   public String getLastUploadTimestamp() {
     return lastUploadTimestamp;
   }
+
 }
