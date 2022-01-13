@@ -436,6 +436,19 @@
       <artifactId>jqplot</artifactId>
       <version>${jqplot.version}</version>
     </dependency>
+
+    <!--
+    Togglz-jsf needs togglze-core. Since tooglze-jsf is no longer upgraded (2020, version 2.8.0),
+    togglz-core cannot be updated. The standard JSF (com.sun.faces) is also no longer upgraded.
+    This is a limitation for the update of all frontend library dependencies.
+
+    Solutions:
+    A) Use a modern implementation of JSF (e.g. Jackarta JBoss)
+    B) User another frontend technology (e.g. Angular)
+
+    Both solutions imply a big effort. A) shouldn't be so complicated but we wonder if it worth it.
+    JSF is used less and less.
+    -->
     <dependency>
       <groupId>org.togglz</groupId>
       <artifactId>togglz-core</artifactId>
