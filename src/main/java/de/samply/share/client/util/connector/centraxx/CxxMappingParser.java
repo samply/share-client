@@ -60,8 +60,7 @@ public class CxxMappingParser {
 
   private List<CxxMappingElement> parseWithoutExceptionManagement(String httpEntity) {
 
-    JsonParser jsonParser = new JsonParser();
-    JsonArray jsonArray = jsonParser.parse(httpEntity).getAsJsonArray();
+    JsonArray jsonArray = JsonParser.parseString(httpEntity).getAsJsonArray();
 
     return parse(jsonArray);
 

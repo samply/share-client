@@ -885,8 +885,7 @@ public class BrokerConnector {
   }
 
   private List<String> convertSiteNameResponseToList(String response) {
-    JsonParser parser = new JsonParser();
-    JsonArray sitesJsonArray = (JsonArray) parser.parse(response);
+    JsonArray sitesJsonArray = JsonParser.parseString(response).getAsJsonArray();
     List<String> siteNames = new ArrayList<>();
     for (int i = 0; i < sitesJsonArray.size(); i++) {
       JsonObject site = sitesJsonArray.get(i).getAsJsonObject();
