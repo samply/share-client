@@ -114,6 +114,7 @@
     <primefaces.version>11.0.0</primefaces.version>
     <junit-jupiter.version>5.8.2</junit-jupiter.version>
     <mockito-core.version>4.2.0</mockito-core.version>
+    <jackson-dataformat-xml.version>2.13.1</jackson-dataformat-xml.version>
 
     <sonar.organization>samply</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -122,6 +123,8 @@
     <slf4j.version>1.7.32</slf4j.version>
 
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+
+
   </properties>
 
   <dependencies>
@@ -152,6 +155,11 @@
           <artifactId>jackson-annotations</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>${jackson-dataformat-xml.version}</version>
     </dependency>
     <dependency>
       <groupId>de.samply</groupId>
@@ -323,11 +331,6 @@
       <groupId>org.quartz-scheduler</groupId>
       <artifactId>quartz-jobs</artifactId>
       <version>${quartz.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.carrotsearch.thirdparty</groupId>
-      <artifactId>simple-xml-safe</artifactId>
-      <version>${simple-xml-safe.version}</version>
     </dependency>
     <dependency>
       <groupId>ca.uhn.hapi.fhir</groupId>
