@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>share-client</artifactId>
-  <version>7.4.6</version>
+  <version>7.5.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Connector</name>
@@ -58,68 +58,75 @@
   <properties>
 
     <!-- Samply dependencies -->
-    <version.samply.common.config>5.1.0</version.samply.common.config>
+    <common-config.version>5.1.0</common-config.version>
     <share-common.version>4.4.0</share-common.version>
-    <share-dto.version>5.1.0</share-dto.version>
+    <share-dto.version>5.2.0</share-dto.version>
     <jsf-renderer.version>2.0.0</jsf-renderer.version>
     <common-mailing.version>3.0.0</common-mailing.version>
-    <common-http.version>7.1.1</common-http.version>
-    <common-ldmclient.centraxx.version>6.1.3</common-ldmclient.centraxx.version>
+    <common-http.version>7.4.0</common-http.version>
+    <common-ldmclient.centraxx.version>6.2.0</common-ldmclient.centraxx.version>
     <common-ldmclient.samplystore.biobank.version>3.0.0
     </common-ldmclient.samplystore.biobank.version>
     <common-ldmclient.cql.version>2.0.0</common-ldmclient.cql.version>
-    <converter.dktk.patient.version>2.2.2</converter.dktk.patient.version>
-    <project-directory-client.version>1.2.0</project-directory-client.version>
+    <converter.dktk.patient.version>2.4.0</converter.dktk.patient.version>
+    <project-directory-client.version>1.3.0</project-directory-client.version>
 
     <!-- general dependencies -->
     <version.flyway>4.2.0</version.flyway>
-    <version.jooq>3.11.11</version.jooq>
+    <version.jooq>3.14.15</version.jooq>
     <jta.version>1.1</jta.version>
-    <log4j.version>2.17.1</log4j.version>
-    <slf4j.version>1.7.32</slf4j.version>
     <quartz.version>2.3.2</quartz.version>
     <omnifaces.version>1.14.1</omnifaces.version>
-    <simple-xml.version>2.7.1</simple-xml.version>
+    <simple-xml-safe.version>2.7.1</simple-xml-safe.version>
 
     <!-- Jersey 2.x is incompatible with 1.19.4 -->
     <jersey.version>1.19.4</jersey.version>
     <jbcrypt.version>0.4</jbcrypt.version>
 
     <!-- webjar dependencies -->
-    <jquery.version>3.3.1-1</jquery.version>
+    <jquery.version>3.6.0</jquery.version>
     <jquery-ui.version>1.13.0</jquery-ui.version>
-    <jquery-blockui.version>2.70</jquery-blockui.version>
+    <jquery-blockui.version>2.70-1</jquery-blockui.version>
     <bootstrap.version>3.3.7-1</bootstrap.version>
     <bootstrap-switch.version>3.3.2</bootstrap-switch.version>
-    <bootstrap-datepicker.version>1.8.0</bootstrap-datepicker.version>
-    <bootstrap-fileinput.version>4.4.8</bootstrap-fileinput.version>
-    <font-awesome.version>4.7.0</font-awesome.version>
+    <bootstrap-datepicker.version>1.9.0</bootstrap-datepicker.version>
+    <bootstrap-fileinput.version>5.2.5</bootstrap-fileinput.version>
+    <jasny-bootstrap.version>3.1.3</jasny-bootstrap.version>
+    <font-awesome.version>5.15.4</font-awesome.version>
     <lato.version>0.3.0</lato.version>
     <html5shiv.version>3.7.3-1</html5shiv.version>
-    <respond.version>1.4.2</respond.version>
-    <jasny-bootstrap.version>3.1.3-2</jasny-bootstrap.version>
-    <datatables.version>1.10.16</datatables.version>
+    <respond.version>1.4.2-1</respond.version>
+    <datatables.version>1.11.3</datatables.version>
     <twbs-pagination.version>1.4.1</twbs-pagination.version>
     <jqplot.version>1.0.9.d96a669-1</jqplot.version>
     <hapi.version>5.6.1</hapi.version>
     <directory-sync.version>0.1.0</directory-sync.version>
-    <togglz-core.version>2.6.1.Final</togglz-core.version>
-    <togglz-jsf.version>2.6.1.Final</togglz-jsf.version>
-    <swagger-ui.version>3.42.0</swagger-ui.version>
-    <microprofile-openapi-api.version>2.0-MR1</microprofile-openapi-api.version>
+    <togglz.version>2.8.0</togglz.version>
+    <swagger-ui.version>4.1.3</swagger-ui.version>
+    <microprofile-openapi-api.version>3.0</microprofile-openapi-api.version>
     <postgresql.version>42.3.1</postgresql.version>
     <commons-validator.version>1.7</commons-validator.version>
     <jsf.version>2.2.20</jsf.version>
-    <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
-    <tink.version>1.4.0</tink.version>
+    <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+    <tink.version>1.6.1</tink.version>
     <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
     <json-path.version>2.6.0</json-path.version>
-    <primefaces.version>8.0</primefaces.version>
-    <junit-jupiter.version>5.8.1</junit-jupiter.version>
-    <mockito-core.version>4.0.0</mockito-core.version>
+    <primefaces.version>11.0.0</primefaces.version>
+    <junit-jupiter.version>5.8.2</junit-jupiter.version>
+    <mockito-core.version>4.2.0</mockito-core.version>
+    <jackson-dataformat-xml.version>2.13.1</jackson-dataformat-xml.version>
 
     <sonar.organization>samply</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <commons-io.version>2.11.0</commons-io.version>
+    <log4j.version>2.17.1</log4j.version>
+    <slf4j.version>1.7.32</slf4j.version>
+
+    <protobuf-java.version>3.19.3</protobuf-java.version>
+
+    <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+
+
   </properties>
 
   <dependencies>
@@ -152,9 +159,20 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>${jackson-dataformat-xml.version}</version>
+    </dependency>
+    <dependency>
       <groupId>de.samply</groupId>
       <artifactId>common-http</artifactId>
       <version>${common-http.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.jersey</groupId>
+          <artifactId>jersey-json</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.samply</groupId>
@@ -181,7 +199,7 @@
     <dependency>
       <groupId>de.samply</groupId>
       <artifactId>common-config</artifactId>
-      <version>${version.samply.common.config}</version>
+      <version>${common-config.version}</version>
     </dependency>
     <dependency>
       <groupId>de.samply</groupId>
@@ -258,14 +276,10 @@
       <version>${jta.version}</version>
     </dependency>
     <!-- Logging -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
+
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-web</artifactId>
+      <artifactId>log4j-api</artifactId>
       <version>${log4j.version}</version>
     </dependency>
     <dependency>
@@ -321,11 +335,6 @@
       <version>${quartz.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.simpleframework</groupId>
-      <artifactId>simple-xml</artifactId>
-      <version>${simple-xml.version}</version>
-    </dependency>
-    <dependency>
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-structures-r4</artifactId>
       <version>${hapi.version}</version>
@@ -354,6 +363,10 @@
     </dependency>
 
     <!--Webjars from webjars.org-->
+    <!-- Due to a dependency with the standard JSF (com.sun.faces), some of this bootstrap
+    libraries cannot be longer upgraded. Use another implementation of JSF or another frontend
+    technology.
+    -->
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
@@ -381,16 +394,6 @@
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
-      <artifactId>html5shiv</artifactId>
-      <version>${html5shiv.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>respond</artifactId>
-      <version>${respond.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
       <artifactId>jasny-bootstrap</artifactId>
       <version>${jasny-bootstrap.version}</version>
     </dependency>
@@ -398,6 +401,16 @@
       <groupId>org.webjars.bower</groupId>
       <artifactId>bootstrap-fileinput</artifactId>
       <version>${bootstrap-fileinput.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>html5shiv</artifactId>
+      <version>${html5shiv.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>respond</artifactId>
+      <version>${respond.version}</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
@@ -429,15 +442,28 @@
       <artifactId>jqplot</artifactId>
       <version>${jqplot.version}</version>
     </dependency>
+
+    <!--
+    Togglz-jsf needs togglze-core. Since tooglze-jsf is no longer upgraded (2020, version 2.8.0),
+    togglz-core cannot be updated. The standard JSF (com.sun.faces) is also no longer upgraded.
+    This is a limitation for the update of all frontend library dependencies.
+
+    Solutions:
+    A) Use a modern implementation of JSF (e.g. Jackarta JBoss)
+    B) User another frontend technology (e.g. Angular)
+
+    Both solutions imply a big effort. A) shouldn't be so complicated but we wonder if it worth it.
+    JSF is used less and less.
+    -->
     <dependency>
       <groupId>org.togglz</groupId>
       <artifactId>togglz-core</artifactId>
-      <version>${togglz-core.version}</version>
+      <version>${togglz.version}</version>
     </dependency>
     <dependency>
       <groupId>org.togglz</groupId>
       <artifactId>togglz-jsf</artifactId>
-      <version>${togglz-jsf.version}</version>
+      <version>${togglz.version}</version>
     </dependency>
 
     <dependency>
@@ -470,6 +496,11 @@
       <groupId>com.google.crypto.tink</groupId>
       <artifactId>tink</artifactId>
       <version>${tink.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>${protobuf-java.version}</version>
     </dependency>
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
@@ -517,6 +548,11 @@
       <artifactId>mockito-junit-jupiter</artifactId>
       <version>${mockito-core.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
     </dependency>
   </dependencies>
 
@@ -568,7 +604,7 @@
       <!-- Copy script common and project specific flyway scripts to be used for migration -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>${maven-resources-plugin.version}</version>
         <executions>
           <execution>
             <id>copy-resources</id>
@@ -676,21 +712,17 @@
               <includes>.*</includes>
               <excludes>samply.schema_version</excludes>
               <inputSchema>${database.schema}</inputSchema>
-              <customTypes>
-                <customType>
-                  <name>Date</name>
-                  <type>java.util.Date</type>
-                  <converter>de.samply.share.client.util.jooq.DateConverter</converter>
-                </customType>
-              </customTypes>
               <forcedTypes>
                 <forcedType>
                   <name>Date</name>
-                  <types>date</types>
+                  <includeTypes>date</includeTypes>
+                  <userType>java.util.Date</userType>
+                  <converter>de.samply.share.client.util.jooq.DateConverter</converter>
                 </forcedType>
               </forcedTypes>
             </database>
             <generate>
+              <javaTimeTypes>false</javaTimeTypes>
               <relations>true</relations>
               <deprecated>true</deprecated>
               <instanceFields>true</instanceFields>

@@ -93,7 +93,6 @@ public class MainzellisteConnector {
 
 
   private final CloseableHttpClient httpClient;
-  private final JsonParser parser;
   private final FhirUtil fhirUtil;
 
 
@@ -112,7 +111,6 @@ public class MainzellisteConnector {
       logger.error("Init Mainzelliste connection: MalformedURLException: e: " + e);
       throw e;
     }
-    parser = new JsonParser();
     fhirUtil = new FhirUtil(FhirContext.forR4());
   }
 
@@ -438,7 +436,7 @@ public class MainzellisteConnector {
       insertEventLog(statusCode);
       checkStatusCode(response, statusCode, reasonPhrase);
       String encryptedIdString = EntityUtils.toString(response.getEntity());
-      encryptedId = (JsonObject) parser.parse(encryptedIdString);
+      encryptedId = JsonParser.parseString(encryptedIdString).getAsJsonObject();
     } catch (IOException e) {
       logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
       throw new IOException(e);
@@ -458,7 +456,7 @@ public class MainzellisteConnector {
   public JsonObject requestEncryptedIdForPatient(String patient)
       throws IOException,
       NotFoundException, NotAuthorizedException, MainzellisteConnectorException {
-    JsonObject patientAsJson = (JsonObject) parser.parse(patient);
+    JsonObject patientAsJson = JsonParser.parseString(patient).getAsJsonObject();
     JsonObject jsonEntity = new JsonObject();
     jsonEntity.addProperty("searchIdType",
         ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_SEARCH_ID_TYPE));
@@ -514,7 +512,7 @@ public class MainzellisteConnector {
       insertEventLog(statusCode);
       checkStatusCode(response, statusCode, reasonPhrase);
       String encryptedIdString = EntityUtils.toString(response.getEntity());
-      JsonObject encryptedId = (JsonObject) new JsonParser().parse(encryptedIdString);
+      JsonObject encryptedId = JsonParser.parseString(encryptedIdString).getAsJsonObject();
       return encryptedId.get("EncID").getAsString();
     } catch (IOException e) {
       logger.error("Get Pseudonym from Mainzelliste: IOException: e: " + e);
@@ -546,9 +544,8 @@ public class MainzellisteConnector {
       String reasonPhrase = statusLine.getReasonPhrase();
       insertEventLog(statusCode);
       checkStatusCode(response, statusCode, reasonPhrase);
-      JsonParser jsonParser = new JsonParser();
       String responseBody = EntityUtils.toString(response.getEntity());
-      return jsonParser.parse(responseBody).getAsJsonArray();
+      return JsonParser.parseString(responseBody).getAsJsonArray();
     } catch (IOException e) {
       logger.error("Get local id from Mainzelliste: IOException: e: " + e);
       throw new IOException(e);
@@ -571,9 +568,8 @@ public class MainzellisteConnector {
       String reasonPhrase = response.getStatusLine().getReasonPhrase();
       insertEventLog(statusCode);
       checkStatusCode(response, statusCode, reasonPhrase);
-      JsonParser jsonParser = new JsonParser();
-      JsonObject jsonObject = (JsonObject) jsonParser
-          .parse(EntityUtils.toString(response.getEntity()));
+      String stringSessionId = EntityUtils.toString(response.getEntity());
+      JsonObject jsonObject = JsonParser.parseString(stringSessionId).getAsJsonObject();
       return jsonObject.get("sessionId").getAsString();
     } catch (IOException e) {
       logger.error("Get session uri from Mainzelliste: IOException: e: " + e);
@@ -599,9 +595,8 @@ public class MainzellisteConnector {
       String reasonPhrase = response.getStatusLine().getReasonPhrase();
       insertEventLog(statusCode);
       checkStatusCode(response, statusCode, reasonPhrase);
-      JsonParser jsonParser = new JsonParser();
-      JsonObject jsonObject = (JsonObject) jsonParser
-          .parse(EntityUtils.toString(response.getEntity()));
+      String stringToken = EntityUtils.toString(response.getEntity());
+      JsonObject jsonObject = JsonParser.parseString(stringToken).getAsJsonObject();
       return jsonObject.get("id").getAsString();
     } catch (IOException e) {
       logger.error("Get read token from Mainzelliste: IOException: e: " + e);
@@ -627,7 +622,7 @@ public class MainzellisteConnector {
 
   private void addEncryptedIdToPatient(JsonObject patientAsJson,
       String encryptedIdString) {
-    JsonObject encryptedId = (JsonObject) parser.parse(encryptedIdString);
+    JsonObject encryptedId = JsonParser.parseString(encryptedIdString).getAsJsonObject();
     patientAsJson.addProperty("patid", encryptedId.get("EncID").getAsString());
   }
 

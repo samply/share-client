@@ -4,11 +4,11 @@ $(document).ready(function () {
   $(".documentUploadFileInput").fileinput({
     language: 'de',
     browseLabel: "Datei wählen",
-    browseIcon: "<i class='fa fa-folder-open-o'></i>&nbsp;",
+    browseIcon: "<i class='fas fa-folder-open-o'></i>&nbsp;",
     removeLabel: "Entfernen",
-    removeIcon: "<i class='fa fa-ban'></i>&nbsp;",
+    removeIcon: "<i class='fas fa-ban'></i>&nbsp;",
     uploadLabel: "Hochladen",
-    uploadIcon: "<i class='fa fa-upload'></i>&nbsp;",
+    uploadIcon: "<i class='fas fa-upload'></i>&nbsp;",
     uploadTitle: 'Dokument zur Liste hinzufügen',
     previewFileIcon: ''
   });
