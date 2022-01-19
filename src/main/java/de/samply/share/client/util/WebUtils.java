@@ -269,7 +269,7 @@ public final class WebUtils {
             break;
           case E_REPEAT_EXECUTE_INQUIRY_JOB_WITHOUT_UNKNOWN_KEYS:
             stringBuilder.append(Messages.getString(eventType.getLiteral() + "-SHORT"));
-            stringBuilder.append(" <i class=\"fa fa-lg fa-info-circle\" title=\"");
+            stringBuilder.append(" <i class=\"fas fa-lg fa-info-circle\" title=\"");
             stringBuilder.append(Joiner.on(", ").join(entry.getParameters()));
             stringBuilder.append("\"></i>");
             break;

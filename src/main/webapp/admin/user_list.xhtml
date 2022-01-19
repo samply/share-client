@@ -36,10 +36,10 @@
                     <th>#{msg.common_username}</th>
                     <th>#{msg.common_email}</th>
                     <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
-                        <th><i class="fa fa-flask fa-fw" title="#{msg.ul_notifyBiomaterial}"/></th>
-                        <th><i class="fa fa-file-excel-o fa-fw"
+                        <th><i class="fas fa-flask fa-fw" title="#{msg.ul_notifyBiomaterial}"/></th>
+                        <th><i class="fas fa-file-excel-o fa-fw"
                                title="#{msg.ul_notifyClinicalData}"/></th>
-                        <th><i class="fa fa-users fa-fw" title="#{msg.ul_notifyPatients}"/></th>
+                        <th><i class="fas fa-users fa-fw" title="#{msg.ul_notifyPatients}"/></th>
                     </ui:fragment>
                     <th>#{msg.ul_setNewPassword}</th>
                     <th>#{msg.common_delete}</th>
@@ -81,14 +81,14 @@
                                 <a href="#"
                                    onclick="$('#changeUserPassword .modal-footer :input').val('#{user.username}'); $('#changeUserPassword').modal();"
                                    class="btn btn-default btn-sm"><span
-                                        class="fa fa-gear"></span></a>
+                                        class="fas fa-gear"></span></a>
                             </td>
                             <td>
                                 <h:commandLink value="" rendered="#{!user.adminPrivilege}"
                                                styleClass="btn btn-default btn-sm"
                                                action="#{userBean.deleteUser(user)}">
                                     <f:ajax render="@form" execute="@form"/>
-                                    <span class="fa fa-trash-o"></span>
+                                    <span class="fas fa-trash-o"></span>
                                 </h:commandLink>
                             </td>
                         </tr>

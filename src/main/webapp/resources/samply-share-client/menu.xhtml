@@ -56,18 +56,18 @@
                             </a>
                                 <ul class="dropdown-menu">
                                     <li><a href="#" onclick="$('#changePasswordModal').modal();"><i
-                                            class="fa fa-gear"/> #{msg.common_changePassword}</a>
+                                            class="fas fa-gear"/> #{msg.common_changePassword}</a>
                                     </li>
                                     <ui:fragment
                                             rendered="#{loginBean.user.username != 'admin' and wu:getProjectName() != 'osse'}">
                                         <li><a href="#" onclick="$('#changeEmail').modal();"><i
-                                                class="fa fa-envelope"/> #{msg.common_changeEmail}
+                                                class="fas fa-envelope"/> #{msg.common_changeEmail}
                                         </a></li>
                                     </ui:fragment>
                                     <li class="divider"></li>
                                     <li class="logoutElement">
                                         <h:commandLink action="#{loginBean.logout}"><i
-                                                class="fa fa-sign-out"/> #{msg.common_logout}
+                                                class="fas fa-sign-out"/> #{msg.common_logout}
                                         </h:commandLink>
                                     </li>
                                 </ul>

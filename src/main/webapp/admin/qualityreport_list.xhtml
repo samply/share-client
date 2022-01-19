@@ -16,12 +16,12 @@
 
     <ui:define name="additional-css">
         <h:outputStylesheet library="webjars"
-                            name="datatables/1.10.16/css/dataTables.bootstrap.min.css"/>
+                            name="datatables/1.11.3/css/dataTables.bootstrap.min.css"/>
     </ui:define>
 
     <ui:define name="additional-js">
-        <h:outputScript library="webjars" name="datatables/1.10.16/js/jquery.dataTables.min.js"/>
-        <h:outputScript library="webjars" name="datatables/1.10.16/js/dataTables.bootstrap.min.js"/>
+        <h:outputScript library="webjars" name="datatables/1.11.3/js/jquery.dataTables.min.js"/>
+        <h:outputScript library="webjars" name="datatables/1.11.3/js/dataTables.bootstrap.min.js"/>
         <h:outputScript library="js" name="pages/qualityreport_list.js"/>
         <h:outputScript library="js" name="date-de.js"/>
     </ui:define>
@@ -96,7 +96,7 @@
                                     <h:commandLink styleClass="btn btn-md btn-primary btn-block"
                                                    id="cancel-quality-report"
                                                    actionListener="#{qualityReportController.finalizeChain}">
-                                        <i class="fa fa-stop-circle"
+                                        <i class="fas fa-stop-circle"
                                            aria-hidden="true"></i> #{msg.common_cancel}
                                     </h:commandLink>
                                 </h:panelGroup>
@@ -114,7 +114,7 @@
                                        onclick="$(this).button('loading');">
                             <f:ajax listener="#{qualityReportController.generate}" execute="@this"
                                     render="quality-report-action"/>
-                            <i class="fa fa-pie-chart" aria-hidden="true"/> #{msg.qr_generation}
+                            <i class="fas fa-pie-chart" aria-hidden="true"/> #{msg.qr_generation}
                         </h:commandLink>
                     </h:panelGroup>
                 </h:panelGroup>

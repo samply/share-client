@@ -1,5 +1,6 @@
 package de.samply.share.client.job;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import de.samply.common.ldmclient.AbstractLdmClient;
 import de.samply.common.ldmclient.model.LdmQueryResult;
@@ -33,7 +34,6 @@ import de.samply.share.model.common.Error;
 import de.samply.share.model.common.QueryResultStatistic;
 import java.io.IOException;
 import java.util.function.Consumer;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.quartz.DateBuilder;
 import org.quartz.Job;
 import org.quartz.JobDataMap;

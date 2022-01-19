@@ -265,8 +265,7 @@ public class LdmConnectorCentraxx extends
       String mappingInfo = EntityUtils.toString(entity, "UTF-8");
       EntityUtils.consume(entity);
 
-      JsonParser jsonParser = new JsonParser();
-      JsonArray jsonArray = jsonParser.parse(mappingInfo).getAsJsonArray();
+      JsonArray jsonArray = JsonParser.parseString(mappingInfo).getAsJsonArray();
 
       if (jsonArray != null && jsonArray.size() > 0) {
         JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
