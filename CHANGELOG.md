@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.5.1 - 2022-01-20]
+### Changed
+- Quality report scheduler format simplified
+### Added
+- New value for quality report scheduler format: All
+
 ## [7.5.0 - 2022-01-12]
 ### Security
 - Jersey 3

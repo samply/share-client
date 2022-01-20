@@ -29,34 +29,20 @@ public class ConfigurationUtil {
 
   private static final Logger logger = LoggerFactory.getLogger(ConfigurationUtil.class);
 
-  private static final ConfigurationDao configurationDao;
-  private static final ConfigurationTimingsDao configurationTimingsDao;
-
-  static {
-    configurationDao = new ConfigurationDao(ResourceManager.getConfiguration());
-    configurationTimingsDao = new ConfigurationTimingsDao(ResourceManager.getConfiguration());
-  }
-
   // Prevent instantiation
   private ConfigurationUtil() {
   }
 
-  /**
-   * Get the configuration DAO.
-   *
-   * @return the configuration DAO
-   */
-  public static ConfigurationDao getConfigurationDao() {
-    return configurationDao;
+  private static class ConfigurationDaoHolder {
+
+    static final ConfigurationDao INSTANCE = new ConfigurationDao(
+        ResourceManager.getConfiguration());
   }
 
-  /**
-   * Get the configuration timings DAO.
-   *
-   * @return the configuration timings DAO
-   */
-  public static ConfigurationTimingsDao getConfigurationTimingsDao() {
-    return configurationTimingsDao;
+  private static class ConfigurationTimingsDaoHolder {
+
+    static final ConfigurationTimingsDao INSTANCE = new ConfigurationTimingsDao(
+        ResourceManager.getConfiguration());
   }
 
   /**
@@ -66,7 +52,7 @@ public class ConfigurationUtil {
    * @return the configuration element
    */
   public static Configuration getConfigurationElement(EnumConfiguration configurationElement) {
-    return configurationDao.fetchOneByName(configurationElement.name());
+    return ConfigurationDaoHolder.INSTANCE.fetchOneByName(configurationElement.name());
   }
 
   /**
@@ -77,7 +63,8 @@ public class ConfigurationUtil {
    */
   public static ConfigurationTimings getConfigurationTimingsElement(
       EnumConfigurationTimings configurationTimingsElement) {
-    return configurationTimingsDao.fetchOneByName(configurationTimingsElement.name());
+    return ConfigurationTimingsDaoHolder.INSTANCE.fetchOneByName(
+        configurationTimingsElement.name());
   }
 
   /**
@@ -86,7 +73,7 @@ public class ConfigurationUtil {
    * @param configuration the new configuration element to insert
    */
   private static void insertConfigurationElement(Configuration configuration) {
-    configurationDao.insert(configuration);
+    ConfigurationDaoHolder.INSTANCE.insert(configuration);
   }
 
   /**
@@ -95,7 +82,7 @@ public class ConfigurationUtil {
    * @param configurationTimings the new configuration timing element to insert
    */
   private static void insertConfigurationTimingsElement(ConfigurationTimings configurationTimings) {
-    configurationTimingsDao.insert(configurationTimings);
+    ConfigurationTimingsDaoHolder.INSTANCE.insert(configurationTimings);
   }
 
   /**
@@ -104,7 +91,7 @@ public class ConfigurationUtil {
    * @param configuration the configuration element to update
    */
   private static void updateConfigurationElement(Configuration configuration) {
-    configurationDao.update(configuration);
+    ConfigurationDaoHolder.INSTANCE.update(configuration);
   }
 
   /**
@@ -113,7 +100,7 @@ public class ConfigurationUtil {
    * @param configurationTimings the configuration timing element to update
    */
   private static void updateConfigurationTimingsElement(ConfigurationTimings configurationTimings) {
-    configurationTimingsDao.update(configurationTimings);
+    ConfigurationTimingsDaoHolder.INSTANCE.update(configurationTimings);
   }
 
   /**
@@ -123,7 +110,7 @@ public class ConfigurationUtil {
    */
   private static void deleteConfigurationElement(Configuration configuration) {
     if (configuration != null) {
-      configurationDao.delete(configuration);
+      ConfigurationDaoHolder.INSTANCE.delete(configuration);
     }
   }
 
@@ -133,7 +120,7 @@ public class ConfigurationUtil {
    * @param configurationTimings the configuration timing element to delete
    */
   private static void deleteConfigurationTimingsElement(ConfigurationTimings configurationTimings) {
-    configurationTimingsDao.delete(configurationTimings);
+    ConfigurationTimingsDaoHolder.INSTANCE.delete(configurationTimings);
   }
 
   /**
@@ -142,7 +129,8 @@ public class ConfigurationUtil {
    * @param configuration the configuration element to insert or update
    */
   public static void insertOrUpdateConfigurationElement(Configuration configuration) {
-    Configuration configurationElement = configurationDao.fetchOneByName(configuration.getName());
+    Configuration configurationElement = ConfigurationDaoHolder.INSTANCE.fetchOneByName(
+        configuration.getName());
     if (configuration.getSetting() == null) {
       deleteConfigurationElement(configurationElement);
     } else if (configurationElement == null) {
@@ -161,7 +149,7 @@ public class ConfigurationUtil {
    */
   public static void insertOrUpdateConfigurationTimingsElement(
       ConfigurationTimings configurationTimings) {
-    ConfigurationTimings configurationTimingsElement = configurationTimingsDao
+    ConfigurationTimings configurationTimingsElement = ConfigurationTimingsDaoHolder.INSTANCE
         .fetchOneByName(configurationTimings.getName());
     if (configurationTimings.getSetting() == null) {
       deleteConfigurationTimingsElement(configurationTimingsElement);
@@ -211,7 +199,6 @@ public class ConfigurationUtil {
     return results;
 
   }
-
 
   /**
    * Get the int value of a configuration timing element.

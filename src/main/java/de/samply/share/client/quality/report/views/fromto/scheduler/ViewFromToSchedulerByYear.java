@@ -6,19 +6,19 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 
-public class ViewFromToSchedulerByYearImpl implements ViewFromToScheduler {
+public class ViewFromToSchedulerByYear implements ViewFromToScheduler {
 
-  private int years = 20;
   private final ViewFromToFactory viewFromToFactory;
+  private int years = 20;
 
-  public ViewFromToSchedulerByYearImpl(ViewFromToFactory viewFromToFactory) {
-    this.viewFromToFactory = viewFromToFactory;
+  public ViewFromToSchedulerByYear(ViewFromToFactory viewFromToFactory) {
+    this.viewFromToFactory = Objects.requireNonNull(viewFromToFactory);
   }
 
   @Override
   public List<ViewFromTo> createViewFromTos() {
-
     List<ViewFromTo> viewFromToList = new ArrayList<>();
 
     Calendar calendar = new GregorianCalendar();
@@ -36,5 +36,4 @@ public class ViewFromToSchedulerByYearImpl implements ViewFromToScheduler {
   public void setYears(int years) {
     this.years = years;
   }
-
 }
