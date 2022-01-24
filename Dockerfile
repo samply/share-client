@@ -7,7 +7,7 @@ ADD target/connector.war /connector/connector.war
 RUN mkdir -p /connector/extracted && \
        unzip /connector/connector.war -d /connector/extracted/
 
-FROM tomcat:9-jre8-temurin
+FROM tomcat:9-jre8-temurin as docker-build
 
 ## Define for which project this image is build
 ARG PROJECT=samply
@@ -43,3 +43,18 @@ ENV JAVA_OPTS "-Dlog4j.configurationFile=${CATALINA_HOME}/conf/log4j2.xml"
 ADD src/docker/start.sh                         /docker/
 RUN chmod +x                                    /docker/start.sh
 CMD ["sh", "-c", "/docker/start.sh"]
+
+# Stage used by ci for dktk images (--target=dktk)
+FROM docker-build as dktk
+ENV TEST_PROJECT="dktk"
+
+# Stage used by ci for gbn images (--target=gbn)
+FROM docker-build as gbn
+ENV TEST_PROJECT="gbn"
+
+# Stage used by ci for c4 images (--target=c4)
+FROM docker-build as c4
+ENV TEST_PROJECT="c4"
+
+# This stage is build when defining no target
+FROM docker-build as vanilla
