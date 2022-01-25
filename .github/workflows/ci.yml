@@ -112,3 +112,12 @@ jobs:
         uses: github/codeql-action/upload-sarif@codeql-bundle-20211208
         with:
           sarif_file: trivy-results.sarif
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/connector.war
+          asset_name: ${{matrix.project_context}}_connector.war
+          tag: ${{ github.ref }}
+          overwrite: true
