@@ -119,6 +119,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/connector.war
-          asset_name: ${{matrix.project_context}}_connector.war
+          asset_name: ${{matrix.project_context}}_connector_${{ github.tag }}.war
           tag: ${{ github.ref }}
           overwrite: true
