@@ -45,7 +45,7 @@ public class StartupListener implements ServletContextListener {
               sce.getServletContext().getRealPath("/WEB-INF")).getAbsolutePath());
       logger.info("context initialized!");
     } catch (FileNotFoundException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(),e);
     }
   }
 
