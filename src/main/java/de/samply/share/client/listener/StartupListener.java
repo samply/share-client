@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
 import org.slf4j.Logger;
@@ -33,9 +34,19 @@ public class StartupListener implements ServletContextListener {
 
   @Override
   public void contextInitialized(ServletContextEvent sce) {
-    logger.info("context initialized!");
     setMessagesResolver();
     ProjectInfo.INSTANCE.initProjectMetadata(sce);
+    try {
+      Configurator.initialize(
+          null,
+          FileFinderUtil.findFile(
+              "log4j2.xml", ProjectInfo.INSTANCE.getProjectName(),
+              System.getProperty("catalina.base") + File.separator + "conf",
+              sce.getServletContext().getRealPath("/WEB-INF")).getAbsolutePath());
+      logger.info("context initialized!");
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
