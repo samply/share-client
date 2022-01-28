@@ -78,6 +78,7 @@ ENV QUERY_LANGUAGE="CQL"
 ENV DEPLOYMENT_CONTEXT="gbn-connector"
 ENV LOG_LEVEL="info"
 ENV STORE_URL="http://bridgehead_gbn_blaze_store:8080"
+ENV MDR_URL="https://mdr.germanbiobanknode.de/v3/api/mdr"
 ENV PROTOCOL="http"
 ENV PORT="8080"
 

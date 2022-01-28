@@ -27,7 +27,7 @@ sed -i "s/{postgres-host}/${POSTGRES_HOST}/"              "$file"
 sed -i "s/{postgres-port}/${POSTGRES_PORT:-5432}/"        "$file"
 sed -i "s/{postgres-db}/${POSTGRES_DB}/"                  "$file"
 sed -i "s/{postgres-user}/${POSTGRES_USER}/"              "$file"
-sed -i "s/{postgres-pass}/${POSTGRES_PASS}/"              "$file"
+sed -i "s/{postgres-pass}/${POSTGRES_PASSWORD}/"              "$file"
 
 file=${CATALINA_HOME}/conf/${PROJECT}_common_config.xml
 sed -i "s|{http-proxy-url}|${HTTP_PROXY_URL:-}|"              "$file"
