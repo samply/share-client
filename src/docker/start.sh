@@ -13,6 +13,8 @@ if [ -n "$HTTP_PROXY" ]; then
 	HTTPS_PROXY_PASSWORD=$PROXY_PASS;
 fi
 
+export CONNECTOR_SHARE_URL="${PROTOCOL}://${HOST}:${PORT}"
+
 file=${CATALINA_HOME}/conf/Catalina/localhost/ROOT.xml
 if [ -n "$DEPLOYMENT_CONTEXT" ]; then
   echo "INFO: preparing deployment in context ${DEPLOYMENT_CONTEXT}"
