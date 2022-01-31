@@ -261,10 +261,7 @@ public class BrokerBean implements Serializable {
       InquiryHandlingRuleUtil.insertInquiryHandlingRule(inquiryHandlingRule);
     } catch (BrokerConnectorException e) {
       logger.error("Caught BrokerConnectorException when trying to join broker", e);
-      return "";
     }
-
-    // TODO faces message on error and success?
     return "broker_list?faces-redirect=true";
   }
 
