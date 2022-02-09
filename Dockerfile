@@ -55,7 +55,8 @@ ENV CCP_DECENTRALSEARCH_URL="https://decentralsearch-test.ccp-it.dktk.dkfz.de/"
 ENV CONNECTOR_ENABLE_METRICS="false"
 ENV POSTGRES_DB="share_v2"
 ENV POSTGRES_USER="samplyweb"
-ENV CONNECTOR_SHARE_URL="${PROTOCOL}://${HOST}:${PORT}"
+ENV PROTOCOL="http"
+ENV PORT="8080"
 ENV DEPLOYMENT_CONTEXT="dktk-connector"
 ENV feature_BBMRI_DIRECTORY_SYNC="false"
 ENV feature_DKTK_CENTRAL_SEARCH="false"
@@ -63,9 +64,10 @@ ENV feature_NNGM_CTS="false"
 ENV LOG_LEVEL="info"
 ENV MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
 ENV POSTGRES_HOST="bridgehead_dktk_connector_db"
-ENV PROTOCOL="http"
 ENV QUERY_LANGUAGE="QUERY"
-ENV CCP_PATIENTLIST_URL="http://bridgehead_patientlist:8080/Patientlist"
+ENV PATIENTLIST_URL="http://bridgehead_patientlist:8080/Patientlist"
+ENV ID_MANAGER_URL="http://bridgehead_id-manager:8080"
+
 
 # Stage used by ci for gbn images (--target=gbn)
 FROM docker-build as gbn
