@@ -42,67 +42,34 @@ ADD https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${
 ENV JAVA_OPTS "-Dlog4j.configurationFile=${CATALINA_HOME}/conf/log4j2.xml"
 ADD src/docker/start.sh                         /docker/
 RUN chmod +x                                    /docker/start.sh
-CMD ["sh", "-c", "/docker/start.sh"]
+ENTRYPOINT [ "/docker/start.sh" ]
 
-ENV TZ="Europe/Berlin"
-
+ENV TZ="Europe/Berlin" LOG_LEVEL="info" \
+    POSTGRES_HOST="connector-db" \
+    MONITOR_URL="https://ccpit.dktk.dkfz.de/dktk.monitor/rest/info" MONITOR_OPTOUT="false" \
+    CONNECTOR_ENABLE_METRICS="false" CONNECTOR_MONITOR_INTERVAL="" CONNECTOR_UPDATE_SERVER="" \
+    feature_BBMRI_DIRECTORY_SYNC="false" feature_DKTK_CENTRAL_SEARCH="false" feature_NNGM_CTS="false"
 # Stage used by ci for dktk images (--target=dktk)
 FROM docker-build as dktk
-ENV TEST_PROJECT="dktk"
-ENV POSTGRES_PORT="5432"
-ENV CCP_CENTRALSEARCH_URL="https://centralsearch-test.dktk.dkfz.de/"
-ENV CCP_DECENTRALSEARCH_URL="https://decentralsearch-test.ccp-it.dktk.dkfz.de/"
-ENV CONNECTOR_ENABLE_METRICS="false"
-ENV POSTGRES_DB="share_v2"
-ENV POSTGRES_USER="samplyweb"
-ENV PROTOCOL="http"
-ENV PORT="8080"
-ENV DEPLOYMENT_CONTEXT="dktk-connector"
-ENV feature_BBMRI_DIRECTORY_SYNC="false"
-ENV feature_DKTK_CENTRAL_SEARCH="false"
-ENV feature_NNGM_CTS="false"
-ENV LOG_LEVEL="info"
-ENV MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
-ENV POSTGRES_HOST="bridgehead_dktk_connector_db"
-ENV QUERY_LANGUAGE="QUERY"
-ENV PATIENTLIST_URL="http://bridgehead_patientlist:8080/Patientlist"
-ENV ID_MANAGER_URL="http://bridgehead_id-manager:8080"
+ENV DEPLOYMENT_CONTEXT="dktk-connector" \
+    POSTGRES_DB="share_v2" POSTGRES_USER="samplyweb" \
+    MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
 
+CMD ["dktk"]
 
 # Stage used by ci for gbn images (--target=gbn)
 FROM docker-build as gbn
-ENV TEST_PROJECT="gbn"
-ENV CONNECTOR_ENABLE_METRICS="false"
-ENV POSTGRES_DB="samply.connector"
-ENV POSTGRES_HOST="bridgehead_gbn_connector_db"
-ENV POSTGRES_USER="samply"
-ENV QUERY_LANGUAGE="CQL"
-ENV DEPLOYMENT_CONTEXT="gbn-connector"
-ENV LOG_LEVEL="info"
-ENV STORE_URL="http://bridgehead_gbn_blaze_store:8080"
-ENV MDR_URL="https://mdr.germanbiobanknode.de/v3/api/mdr"
-ENV PROTOCOL="http"
-ENV PORT="8080"
+ENV DEPLOYMENT_CONTEXT="gbn-connector" \
+    POSTGRES_HOST="bridgehead_gbn_connector_db" POSTGRES_DB="samply.connector" POSTGRES_USER="samply" \
+    MDR_URL="https://mdr.germanbiobanknode.de/v3/api/mdr" QUERY_LANGUAGE="CQL"
+CMD ["gbn"]
 
 # Stage used by ci for c4 images (--target=c4)
 FROM docker-build as c4
-ENV TEST_PROJECT="c4"
-ENV POSTGRES_PORT="5432"
-ENV CCP_CENTRALSEARCH_URL="https://centralsearch-test.dktk.dkfz.de/"
-ENV CCP_DECENTRALSEARCH_URL="https://decentralsearch-test.ccp-it.dktk.dkfz.de/"
-ENV CONNECTOR_ENABLE_METRICS="false"
-ENV POSTGRES_DB="share_v2"
-ENV POSTGRES_USER="samplyweb"
-ENV CONNECTOR_SHARE_URL="${PROTOCOL}://${HOST}:${PORT}"
-ENV DEPLOYMENT_CONTEXT="dktk-connector"
-ENV feature_BBMRI_DIRECTORY_SYNC="false"
-ENV feature_DKTK_CENTRAL_SEARCH="false"
-ENV feature_NNGM_CTS="false"
-ENV LOG_LEVEL="info"
-ENV MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
-ENV POSTGRES_HOST="bridgehead_dktk_connector_db"
-ENV PROTOCOL="http"
-ENV QUERY_LANGUAGE="QUERY"
+ENV DEPLOYMENT_CONTEXT="c4-connector" \
+    POSTGRES_HOST="bridgehead_connector_db" POSTGRES_DB="share_v2" POSTGRES_USER="samplyweb" \
+    MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
+CMD ["c4"]
 
 # This stage is build when defining no target
 FROM docker-build as vanilla

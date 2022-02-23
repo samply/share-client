@@ -2,6 +2,8 @@
 
 set -e
 
+### TODO: Check the mandatory variables and stop execution if something is missing
+
 ### Backward compatibility
 if [ -n "$HTTP_PROXY" ]; then
 	echo "Warning: Detected proxy configuration in the old style. Please switch to passing the configuration the new way. For more information visit: https://github.com/samply/share-client/blob/master/docs/deployment/docker-deployment.md#environment-variables"
@@ -13,7 +15,24 @@ if [ -n "$HTTP_PROXY" ]; then
 	HTTPS_PROXY_PASSWORD=$PROXY_PASS;
 fi
 
-export CONNECTOR_SHARE_URL="${PROTOCOL}://${HOST}:${PORT}"
+export CONNECTOR_SHARE_URL="${PROTOCOL}://${HOST}:${PORT}/${PROJECT}-connector"
+
+if [ "$1" = "dktk" ] || [ "$1" = "c4" ]; then
+    export PATIENTLIST_URL="${PROTOCOL}://${HOST}:${PORT}/Patientlist"
+    export ID_MANAGER_URL="${PROTOCOL}://${HOST}:${PORT}/ID-Manager"
+    export PROJECTPSEUDONYMISATION_URL="${PROTOCOL}://${HOST}:${PORT}/ID-Manager/html/projectSelection.html"
+    if [ "$TESTPROD" = "test" ]; then
+        export CCP_CENTRALSEARCH_URL="https://centralsearch-test.dktk.dkfz.de/"
+        export CCP_DECENTRALSEARCH_URL="https://decentralsearch-test.ccp-it.dktk.dkfz.de/"
+    elif [ "$TESTPROD" = "prod" ]; then
+        export CCP_CENTRALSEARCH_URL="https://centralsearch.dktk.dkfz.de/"
+        export CCP_DECENTRALSEARCH_URL="https://decentralsearch.ccp-it.dktk.dkfz.de/"
+    fi
+elif [ "$1" = "gbn" ]; then
+	STORE_URL="${PROTOCOL}://${HOST}:${PORT}/Blaze"
+else
+	echo "No project defined, using vanialla settings";
+fi
 
 file=${CATALINA_HOME}/conf/Catalina/localhost/ROOT.xml
 if [ -n "$DEPLOYMENT_CONTEXT" ]; then

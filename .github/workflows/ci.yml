@@ -9,6 +9,7 @@ on:
       - master
       - develop
       - feature/environmentPreconfiguration
+      - feature/environmentPreconfigurationTorben
     tags:
       - 'v*.*.*'
   pull_request:
