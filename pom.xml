@@ -63,7 +63,7 @@
     <share-dto.version>5.2.0</share-dto.version>
     <jsf-renderer.version>2.0.0</jsf-renderer.version>
     <common-mailing.version>3.0.0</common-mailing.version>
-    <common-http.version>7.4.0</common-http.version>
+    <common-http.version>7.4.2</common-http.version>
     <common-ldmclient.centraxx.version>6.2.0</common-ldmclient.centraxx.version>
     <common-ldmclient.samplystore.biobank.version>3.0.0
     </common-ldmclient.samplystore.biobank.version>
@@ -117,7 +117,7 @@
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <commons-io.version>2.11.0</commons-io.version>
     <log4j.version>2.17.1</log4j.version>
-    <slf4j.version>1.7.32</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
 
     <protobuf-java.version>3.19.3</protobuf-java.version>
 
@@ -164,12 +164,6 @@
       <groupId>de.samply</groupId>
       <artifactId>common-http</artifactId>
       <version>${common-http.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-json</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.samply</groupId>
