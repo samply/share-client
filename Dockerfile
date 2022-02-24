@@ -44,11 +44,10 @@ ADD src/docker/start.sh                         /docker/
 RUN chmod +x                                    /docker/start.sh
 ENTRYPOINT [ "/docker/start.sh" ]
 
-ENV TZ="Europe/Berlin" LOG_LEVEL="info" \
+ENV TZ="Europe/Berlin" \
     POSTGRES_HOST="connector-db" \
     MONITOR_URL="https://ccpit.dktk.dkfz.de/dktk.monitor/rest/info" MONITOR_OPTOUT="false" \
-    CONNECTOR_ENABLE_METRICS="false" CONNECTOR_MONITOR_INTERVAL="" CONNECTOR_UPDATE_SERVER="" \
-    feature_BBMRI_DIRECTORY_SYNC="false" feature_DKTK_CENTRAL_SEARCH="false" feature_NNGM_CTS="false"
+    CONNECTOR_ENABLE_METRICS="false" CONNECTOR_MONITOR_INTERVAL="" CONNECTOR_UPDATE_SERVER=""
 # Stage used by ci for dktk images (--target=dktk)
 FROM docker-build as dktk
 ENV DEPLOYMENT_CONTEXT="dktk-connector" \
@@ -60,14 +59,14 @@ CMD ["dktk"]
 # Stage used by ci for gbn images (--target=gbn)
 FROM docker-build as gbn
 ENV DEPLOYMENT_CONTEXT="gbn-connector" \
-    POSTGRES_HOST="bridgehead_gbn_connector_db" POSTGRES_DB="samply.connector" POSTGRES_USER="samply" \
+    POSTGRES_DB="samply.connector" POSTGRES_USER="samply" \
     MDR_URL="https://mdr.germanbiobanknode.de/v3/api/mdr" QUERY_LANGUAGE="CQL"
 CMD ["gbn"]
 
 # Stage used by ci for c4 images (--target=c4)
 FROM docker-build as c4
 ENV DEPLOYMENT_CONTEXT="c4-connector" \
-    POSTGRES_HOST="bridgehead_connector_db" POSTGRES_DB="share_v2" POSTGRES_USER="samplyweb" \
+    POSTGRES_DB="share_v2" POSTGRES_USER="samplyweb" \
     MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
 CMD ["c4"]
 
