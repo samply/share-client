@@ -29,7 +29,12 @@ if [ "$1" = "dktk" ] || [ "$1" = "c4" ]; then
         export CCP_DECENTRALSEARCH_URL="https://decentralsearch.ccp-it.dktk.dkfz.de/"
     fi
 elif [ "$1" = "gbn" ]; then
-	STORE_URL="${PROTOCOL}://${HOST}:${PORT}/Blaze"
+    if [ -z "$STORE_URL" ]; then
+        LDM_URL="${PROTOCOL}://${HOST}:${PORT}/Blaze";
+    else
+        echo "Warning: We moved the STORE_URL Variable to the common naming \"LDM_URL\". For now we port your setting \"$STORE_URL\" to the new variable";
+        LDM_URL=$STORE_URL;
+    fi
 else
 	echo "No project defined, using vanialla settings";
 fi
@@ -58,7 +63,7 @@ sed -i "s|{https-proxy-password}|${HTTPS_PROXY_PASSWORD:-}|"  "$file"
 sed -i "s|{no-proxy-hosts}|${NO_PROXY_HOSTS:-}|"              "$file"
 
 file=${CATALINA_HOME}/conf/${PROJECT}_common_urls.xml
-sed -i "s#{store-url}#${STORE_URL}#"                      "$file"
+sed -i "s#{store-url}#${LDM_URL}#"                      "$file"
 sed -i "s#{id-manager-url}#${ID_MANAGER_URL}#"            "$file"
 sed -i "s#{mdr-url}#${MDR_URL}#"                          "$file"
 sed -i "s#{directory-url}#${DIRECTORY_URL}#"              "$file"
