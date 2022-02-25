@@ -639,9 +639,7 @@ public class MainzellisteConnector {
   }
 
   private void insertEventLog(int statusCode) {
-    String ctsUser = ConfigurationUtil
-        .getConfigurationElementValue(EnumConfiguration.CTS_USERNAME);
-    AuditEvent auditEvent = EventLogMainzellisteUtil.createAuditEvent(ctsUser, statusCode);
+    AuditEvent auditEvent = EventLogMainzellisteUtil.createAuditEvent(statusCode);
     EventLogUtil.insertEventLog(createAuditEventLog(auditEvent));
   }
 
