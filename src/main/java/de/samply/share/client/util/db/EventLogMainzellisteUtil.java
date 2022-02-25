@@ -22,11 +22,10 @@ public class EventLogMainzellisteUtil {
   /**
    * Todo.
    *
-   * @param userId     the cts User-Id
    * @param statusCode statusCode of the http response
    * @return FHIR-AuditEvent in JSON
    */
-  public static AuditEvent createAuditEvent(String userId, int statusCode) {
+  public static AuditEvent createAuditEvent(int statusCode) {
     AuditEvent auditEvent = new AuditEvent();
     auditEvent.setId(UUID.randomUUID().toString());
     Coding typeCoding = new Coding();
@@ -42,7 +41,6 @@ public class EventLogMainzellisteUtil {
     List<AuditEvent.AuditEventAgentComponent> auditEventAgentComponentsList = new ArrayList<>();
     AuditEvent.AuditEventAgentComponent auditEventAgentComponent =
         new AuditEvent.AuditEventAgentComponent();
-    auditEventAgentComponent.setAltId(userId);
     auditEventAgentComponent.setRequestor(true);
     auditEventAgentComponentsList.add(auditEventAgentComponent);
     auditEvent.setAgent(auditEventAgentComponentsList);

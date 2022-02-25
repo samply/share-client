@@ -1,6 +1,5 @@
 <com:cts xmlns:com="http://schema.samply.de/config/CtsInfo">
-  <com:username>{nngm-cts-user}</com:username>
-  <com:password>{nngm-cts-password}</com:password>
+  <com:apiKey>{nngm-cts-apikey}</com:apiKey>
   <com:url>{nngm-cts-url}</com:url>
   <com:profile>{nngm-profile}</com:profile>
   <com:mainzellisteUrl>{nngm-magicpl-url}</com:mainzellisteUrl>

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.6.0 - 2022-02-25]
+### Changed
+- Use api key for the communication with cts instead of username and password
+
 ## [7.5.3 - 2022-01-31]
 ### Fixed
 - Bug at the Searchbroker registration when typing two times unreachable urls
