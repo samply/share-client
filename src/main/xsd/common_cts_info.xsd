@@ -5,8 +5,7 @@
   <xs:element name="cts">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="username" type="xs:string"/>
-        <xs:element name="password" type="xs:string"/>
+        <xs:element name="apiKey" type="xs:string"/>
         <xs:element name="url" type="xs:anyURI"/>
         <xs:element name="profile" type="xs:anyURI"/>
         <xs:element name="mainzellisteUrl" type="xs:anyURI"/>

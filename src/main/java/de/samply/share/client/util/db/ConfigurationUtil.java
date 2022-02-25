@@ -2,9 +2,15 @@ package de.samply.share.client.util.db;
 
 import static de.samply.common.http.HttpConnector.PROXY_BYPASS_PRIVATE_NETWORKS;
 import static de.samply.common.http.HttpConnector.PROXY_HTTPS_HOST;
+import static de.samply.common.http.HttpConnector.PROXY_HTTPS_PASSWORD;
 import static de.samply.common.http.HttpConnector.PROXY_HTTPS_PORT;
+import static de.samply.common.http.HttpConnector.PROXY_HTTPS_PROTOCOL;
+import static de.samply.common.http.HttpConnector.PROXY_HTTPS_USERNAME;
 import static de.samply.common.http.HttpConnector.PROXY_HTTP_HOST;
+import static de.samply.common.http.HttpConnector.PROXY_HTTP_PASSWORD;
 import static de.samply.common.http.HttpConnector.PROXY_HTTP_PORT;
+import static de.samply.common.http.HttpConnector.PROXY_HTTP_PROTOCOL;
+import static de.samply.common.http.HttpConnector.PROXY_HTTP_USERNAME;
 import static de.samply.common.http.HttpConnector.USER_AGENT;
 
 import de.samply.share.client.control.ApplicationBean;
@@ -276,6 +282,10 @@ public class ConfigurationUtil {
         configParams.put(PROXY_HTTP_HOST, configuration.getProxy().getHttp().getUrl().getHost());
         configParams.put(PROXY_HTTP_PORT,
             Integer.toString(configuration.getProxy().getHttp().getUrl().getPort()));
+        configParams.put(PROXY_HTTP_USERNAME, configuration.getProxy().getHttp().getUsername());
+        configParams.put(PROXY_HTTP_PASSWORD, configuration.getProxy().getHttp().getPassword());
+        configParams.put(PROXY_HTTP_PROTOCOL,
+            configuration.getProxy().getHttp().getUrl().getProtocol());
       } catch (NullPointerException npe) {
         // Note: it is too often shown -> makes large logs
         //logger.debug("Could not get HTTP Proxy Settings...should be empty or null");
@@ -284,6 +294,10 @@ public class ConfigurationUtil {
         configParams.put(PROXY_HTTPS_HOST, configuration.getProxy().getHttps().getUrl().getHost());
         configParams.put(PROXY_HTTPS_PORT,
             Integer.toString(configuration.getProxy().getHttps().getUrl().getPort()));
+        configParams.put(PROXY_HTTPS_USERNAME, configuration.getProxy().getHttps().getUsername());
+        configParams.put(PROXY_HTTPS_PASSWORD, configuration.getProxy().getHttps().getPassword());
+        configParams.put(PROXY_HTTPS_PROTOCOL,
+            configuration.getProxy().getHttps().getUrl().getProtocol());
       } catch (NullPointerException npe) {
         //logger.debug("Could not get HTTPS Proxy Settings...should be empty or null");
       }

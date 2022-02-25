@@ -149,6 +149,7 @@ public final class Utils {
           logger.debug("HTTP Proxy port apparently not set. Use default (80)");
           httpProxyPort = 80;
         }
+        //TODO: protocol ???
         authScope = new AuthScope(httpProxyHostString, httpProxyPort, AuthScope.ANY_REALM,
             authSchemeName);
         break;
