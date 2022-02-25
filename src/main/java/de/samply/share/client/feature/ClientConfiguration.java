@@ -2,12 +2,12 @@ package de.samply.share.client.feature;
 
 import static org.omnifaces.util.Faces.getServletContext;
 
-import com.sun.jersey.spi.resource.Singleton;
 import de.samply.config.util.FileFinderUtil;
 import de.samply.share.common.utils.ProjectInfo;
 import java.io.File;
 import java.io.FileNotFoundException;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.togglz.core.Feature;

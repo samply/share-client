@@ -63,7 +63,7 @@
     <share-dto.version>5.2.0</share-dto.version>
     <jsf-renderer.version>2.0.0</jsf-renderer.version>
     <common-mailing.version>3.0.0</common-mailing.version>
-    <common-http.version>7.4.0</common-http.version>
+    <common-http.version>7.4.2</common-http.version>
     <common-ldmclient.centraxx.version>6.2.0</common-ldmclient.centraxx.version>
     <common-ldmclient.samplystore.biobank.version>3.0.0
     </common-ldmclient.samplystore.biobank.version>
@@ -78,9 +78,6 @@
     <quartz.version>2.3.2</quartz.version>
     <omnifaces.version>1.14.1</omnifaces.version>
     <simple-xml-safe.version>2.7.1</simple-xml-safe.version>
-
-    <!-- Jersey 2.x is incompatible with 1.19.4 -->
-    <jersey.version>1.19.4</jersey.version>
     <jbcrypt.version>0.4</jbcrypt.version>
 
     <!-- webjar dependencies -->
@@ -120,7 +117,7 @@
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <commons-io.version>2.11.0</commons-io.version>
     <log4j.version>2.17.1</log4j.version>
-    <slf4j.version>1.7.32</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
 
     <protobuf-java.version>3.19.3</protobuf-java.version>
 
@@ -167,12 +164,6 @@
       <groupId>de.samply</groupId>
       <artifactId>common-http</artifactId>
       <version>${common-http.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-json</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.samply</groupId>
@@ -348,18 +339,6 @@
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-client</artifactId>
       <version>${hapi.version}</version>
-    </dependency>
-
-    <!--Jersey 1-->
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-core</artifactId>
-      <version>${jersey.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-servlet</artifactId>
-      <version>${jersey.version}</version>
     </dependency>
     <dependency>
       <groupId>org.mindrot</groupId>

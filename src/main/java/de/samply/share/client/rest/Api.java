@@ -3,7 +3,6 @@ package de.samply.share.client.rest;
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 import com.mchange.rmi.NotAuthorizedException;
-import com.sun.jersey.api.NotFoundException;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.feature.ClientFeature;
 import de.samply.share.client.fhir.FhirParseException;
@@ -12,6 +11,7 @@ import de.samply.share.client.util.connector.CtsConnector;
 import de.samply.share.client.util.connector.exception.CtsConnectorException;
 import de.samply.share.client.util.connector.exception.MainzellisteConnectorException;
 import de.samply.share.client.util.db.UserUtil;
+import jakarta.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
