@@ -107,7 +107,7 @@
     <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
     <tink.version>1.6.1</tink.version>
     <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
-    <json-path.version>2.6.0</json-path.version>
+    <json-path.version>2.7.0</json-path.version>
     <primefaces.version>11.0.0</primefaces.version>
     <junit-jupiter.version>5.8.2</junit-jupiter.version>
     <mockito-core.version>4.2.0</mockito-core.version>
