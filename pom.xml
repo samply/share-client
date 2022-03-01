@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>share-client</artifactId>
-  <version>7.6.0</version>
+  <version>7.6.1</version>
   <packaging>war</packaging>
 
   <name>Connector</name>
@@ -79,6 +79,7 @@
     <omnifaces.version>1.14.1</omnifaces.version>
     <simple-xml-safe.version>2.7.1</simple-xml-safe.version>
     <jbcrypt.version>0.4</jbcrypt.version>
+    <jersey.version>1.19.4</jersey.version>
 
     <!-- webjar dependencies -->
     <jquery.version>3.6.0</jquery.version>
@@ -345,6 +346,19 @@
       <artifactId>jbcrypt</artifactId>
       <version>${jbcrypt.version}</version>
     </dependency>
+
+    <!--Jersey 1-->
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-core</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-servlet</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+
 
     <!--Webjars from webjars.org-->
     <!-- Due to a dependency with the standard JSF (com.sun.faces), some of this bootstrap
