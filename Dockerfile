@@ -66,6 +66,8 @@ ENV MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
 ENV POSTGRES_HOST="bridgehead_dktk_connector_db"
 ENV QUERY_LANGUAGE="QUERY"
 ENV PATIENTLIST_URL="http://bridgehead_patientlist:8080/Patientlist"
+ENV PROJECTPSEUDONYMISATION_URL="http://bridgehead_id-manager:8080/html/projectSelection.html"
+
 ENV ID_MANAGER_URL="http://bridgehead_id-manager:8080"
 
 
