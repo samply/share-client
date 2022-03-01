@@ -1,6 +1,5 @@
 <com:cts xmlns:com="http://schema.samply.de/config/CtsInfo">
-  <com:username></com:username>
-  <com:password></com:password>
+  <com:apiKey></com:apiKey>
   <com:url></com:url>
   <com:profile></com:profile>
   <com:mainzellisteUrl></com:mainzellisteUrl>

@@ -472,8 +472,7 @@ public class ApplicationBean implements Serializable {
   private static void updateCtsInfo() {
     if (cts != null) {
       if (ProjectInfo.INSTANCE.getProjectName().equals("dktk")) {
-        insertConfigElement(EnumConfiguration.CTS_USERNAME.name(), cts.getUsername());
-        insertConfigElement(EnumConfiguration.CTS_PASSWORD.name(), cts.getPassword());
+        insertConfigElement(EnumConfiguration.CTS_APIKEY.name(), cts.getApiKey());
         insertConfigElement(EnumConfiguration.CTS_URL.name(), cts.getUrl());
         insertConfigElement(EnumConfiguration.CTS_PROFILE.name(), cts.getProfile());
         insertConfigElement(EnumConfiguration.CTS_MAINZELLISTE_URL.name(),

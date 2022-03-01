@@ -11,7 +11,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.mchange.rmi.NotAuthorizedException;
-import com.sun.jersey.api.NotFoundException;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.crypt.Crypt;
 import de.samply.share.client.feature.ClientFeature;
@@ -23,6 +22,7 @@ import de.samply.share.client.util.connector.exception.CtsConnectorException;
 import de.samply.share.client.util.connector.exception.MainzellisteConnectorException;
 import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
+import jakarta.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.security.GeneralSecurityException;
@@ -74,8 +74,7 @@ public class CtsConnector {
   private final CloseableHttpClient httpClient;
   private final String ctsBaseUrl;
   private final HttpHost ctsHost;
-  private final String username;
-  private final String password;
+  private final String apiKey;
   private final FhirContext fhirContext;
 
   /**
@@ -88,8 +87,7 @@ public class CtsConnector {
       ctsBaseUrl = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_URL);
       ctsHost = SamplyShareUtils.getAsHttpHost(ctsBaseUrl);
       httpClient = ApplicationBean.createHttpConnector().getHttpClient(ctsHost);
-      username = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_USERNAME);
-      password = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PASSWORD);
+      apiKey = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_APIKEY);
     } catch (MalformedURLException e) {
       logger.error("URL problem while initializing CTS uploader, e: " + e);
       throw e;
@@ -130,11 +128,10 @@ public class CtsConnector {
     HttpEntity entity = new StringEntity(pseudonymBundleAsString, Consts.UTF_8);
     HttpPost httpPost = new HttpPost(ctsBaseUrl);
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_CTS_FHIR_JSON);
+    httpPost.setHeader("X-API-KEY", apiKey);
     httpPost.setEntity(entity);
     CloseableHttpResponse response = null;
     try {
-      HttpContext ctsContext = createCtsContext();
-      response = httpClient.execute(httpPost, ctsContext);
       int statusCode = response.getStatusLine().getStatusCode();
       String message =
           "CTS server response: statusCode:" + statusCode + "; response: " + response.toString();
@@ -170,11 +167,11 @@ public class CtsConnector {
     HttpEntity entity = new StringEntity(pseudonimisedPatient.toString(), Consts.UTF_8);
     HttpPost httpPost = new HttpPost(ctsBaseUrl);
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+    httpPost.setHeader("X-API-KEY", apiKey);
     httpPost.setEntity(entity);
     CloseableHttpResponse response = null;
     try {
-      HttpContext ctsContext = createCtsContext();
-      response = httpClient.execute(httpPost, ctsContext);
+      response = httpClient.execute(httpPost);
       int statusCode = response.getStatusLine().getStatusCode();
       String message =
           "CTS server response: statusCode:" + statusCode + "; response: " + response.toString();
@@ -221,12 +218,13 @@ public class CtsConnector {
       encryptedIds = readIds(patient, jsonpathsHeaders.get(0), false);
     }
     // Set up the API call
-    HttpEntity entity = new StringEntity(encryptedIds, Consts.UTF_8);
     HttpPost httpPost = new HttpPost(urlTarget);
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+    httpPost.setHeader("X-API-KEY", apiKey);
     for (Entry<String, Object> entry : headerMapToSend.entrySet()) {
       httpPost.setHeader(entry.getKey(), entry.getValue().toString());
     }
+    HttpEntity entity = new StringEntity(encryptedIds, Consts.UTF_8);
     httpPost.setEntity(entity);
     CloseableHttpResponse response = null;
     try {
@@ -279,26 +277,6 @@ public class CtsConnector {
   }
 
   /**
-   * Create a BasicHttpContext for CTS upload, with the cookies needed for authorization.
-   *
-   * @return HttpContext.
-   * @throws IOException IOException
-   */
-  private HttpContext createCtsContext() throws IOException, CtsConnectorException,
-          NotAuthorizedException {
-    CtsAuthorization ctsAuthorization = getCtsAuthorization();
-
-    BasicCookieStore cookieStore = new BasicCookieStore();
-    // Recycle the authorization cookies that we received from the CTS
-    cookieStore.addCookie(ctsAuthorization.codeCookie);
-    cookieStore.addCookie(ctsAuthorization.userCookie);
-    HttpContext ctsContext = new BasicHttpContext();
-    ctsContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
-
-    return ctsContext;
-  }
-
-  /**
    * Pseudonymise any patient data in the bundle.
    *
    * @param bundleString the patient bundle which should be pseudonimised
@@ -316,89 +294,6 @@ public class CtsConnector {
     Bundle pseudonymizedBundle = null;
     pseudonymizedBundle = mainzellisteConnector.getPatientPseudonym(bundle);
     return pseudonymizedBundle;
-  }
-
-
-  /**
-   * Returns CTS code and CTS user.
-   *
-   * @return CtsAuthorization
-   */
-  private CtsAuthorization getCtsAuthorization() throws IOException, CtsConnectorException,
-          NotAuthorizedException {
-    logger.debug("getCtsInfo: entered");
-
-    // Build a form-based entity to realize the login
-    List<NameValuePair> formElements = new ArrayList<NameValuePair>();
-    formElements.add(new BasicNameValuePair("username", username));
-    formElements.add(new BasicNameValuePair("password", password));
-    formElements.add(new BasicNameValuePair("login", "")); // seems to be required, not sure why
-    HttpEntity entity = new UrlEncodedFormEntity(formElements, Consts.UTF_8);
-
-    // Build the HttpPost object that specifies the request.
-    HttpPost httpPost = new HttpPost(ctsHost.toURI());
-    httpPost.setEntity(entity);
-
-    // Run the request and gather the CTS authorization parameters.
-    CloseableHttpResponse response = null;
-    CtsAuthorization ctsAuthorization = new CtsAuthorization();
-    try {
-      HttpClientContext context = new HttpClientContext();
-      response = httpClient.execute(httpPost, context);
-      int statusCode = response.getStatusLine().getStatusCode();
-      StatusLine statusLine = response.getStatusLine();
-      String reasonPhrase = statusLine.getReasonPhrase();
-      logger.info("CTS authorization status code: " + statusCode);
-      if (statusCode >= 500 && statusCode < 600) {
-        String bodyResponse = EntityUtils.toString(response.getEntity());
-        logger.error(
-            getMessage("Authorization: CTS server error", statusCode, reasonPhrase, bodyResponse));
-        throw new IOException(
-            getMessage("Authorization: CTS server error", statusCode, reasonPhrase, bodyResponse));
-      }
-      if (statusCode == 401) {
-        String bodyResponse = EntityUtils.toString(response.getEntity());
-        logger.error(getMessage("Authorization: CTS permission problem", statusCode, reasonPhrase,
-                bodyResponse));
-        throw new NotAuthorizedException(
-                getMessage("Authorization: CTS permission problem", statusCode, reasonPhrase,
-                        bodyResponse));
-      }
-      if (statusCode >= 400 && statusCode < 500) {
-        String bodyResponse = EntityUtils.toString(response.getEntity());
-        logger.error(getMessage("Authorization: CTS permission problem", statusCode, reasonPhrase,
-            bodyResponse));
-        throw new IllegalArgumentException(
-            getMessage("Authorization: CTS permission problem", statusCode, reasonPhrase,
-                bodyResponse));
-      }
-      CookieStore cookieStore = context.getCookieStore();
-      List<Cookie> cookies = cookieStore.getCookies();
-      for (Cookie cookie : cookies) {
-        String cookieName = cookie.getName();
-        if (cookieName.equals("SDMS_code")) {
-          ctsAuthorization.codeCookie = cookie;
-        } else if (cookieName.equals("SDMS_user")) {
-          ctsAuthorization.userCookie = cookie;
-        }
-      }
-      if (ctsAuthorization.codeCookie == null || ctsAuthorization.userCookie == null) {
-        logger.error("Authorization: missing cookie, SDMS_code or SDMS_user could not be found");
-        throw new IllegalArgumentException(
-            "Authorization: missing cookie, SDMS_code or SDMS_user could not be found");
-      }
-    } catch (IOException e) {
-      logger.error("Authorization: IOException, URI: " + httpPost.getURI() + ", e: " + e);
-      throw new IOException("Authorization: IOException, URI: " + httpPost.getURI() + ", e: " + e);
-    } catch (IllegalArgumentException e) {
-      logger.error(e.getMessage(),e);
-      throw new CtsConnectorException(e.getMessage());
-    } finally {
-      closeResponse(response);
-    }
-
-    logger.debug("getCtsInfo: done");
-    return ctsAuthorization;
   }
 
   private String readIds(String json, String headerIdKey, boolean response)
@@ -574,13 +469,5 @@ public class CtsConnector {
         logger.error("Get Pseudonym from Mainzelliste: Exception when closing response", e);
       }
     }
-  }
-
-  /**
-   * Class for transporting CTS-authorization parameters.
-   */
-  public class CtsAuthorization {
-    Cookie codeCookie;
-    Cookie userCookie;
   }
 }

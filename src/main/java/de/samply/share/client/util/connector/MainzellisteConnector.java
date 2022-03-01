@@ -8,7 +8,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mchange.rmi.NotAuthorizedException;
-import com.sun.jersey.api.NotFoundException;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.fhir.FhirUtil;
 import de.samply.share.client.model.EnumConfiguration;
@@ -24,6 +23,7 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.db.EventLogMainzellisteUtil;
 import de.samply.share.client.util.db.EventLogUtil;
 import de.samply.share.common.utils.SamplyShareUtils;
+import jakarta.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -639,9 +639,7 @@ public class MainzellisteConnector {
   }
 
   private void insertEventLog(int statusCode) {
-    String ctsUser = ConfigurationUtil
-        .getConfigurationElementValue(EnumConfiguration.CTS_USERNAME);
-    AuditEvent auditEvent = EventLogMainzellisteUtil.createAuditEvent(ctsUser, statusCode);
+    AuditEvent auditEvent = EventLogMainzellisteUtil.createAuditEvent(statusCode);
     EventLogUtil.insertEventLog(createAuditEventLog(auditEvent));
   }
 
