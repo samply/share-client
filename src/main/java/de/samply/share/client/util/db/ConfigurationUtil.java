@@ -273,12 +273,12 @@ public class ConfigurationUtil {
     return getHttpConfigParams(configuration, userAgent);
   }
 
-    /**
-     * Get the proxy configuration.
-     *
-     * @param configuration a samply.common.configuration element
-     * @return a map containing the proxy settings as well as the user agent string
-     */
+  /**
+   * Get the proxy configuration.
+   *
+   * @param configuration a samply.common.configuration element
+   * @return a map containing the proxy settings as well as the user agent string
+   */
   public static HashMap<String, String> getHttpConfigParams(
       de.samply.common.config.Configuration configuration, UserAgent userAgent) {
     HashMap<String, String> configParams = new HashMap<>();
