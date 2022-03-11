@@ -32,10 +32,17 @@ import org.junit.jupiter.api.Test;
 public class HttpConnectorTest {
 
 
+  /*
+    For testing the apache http client and the jersey 3 client, we installed a local proxy
+    with the following configuration:
+  */
   private final String HTTP_PROXY_URL = "http://localhost:808";
   private final String HTTP_PROXY_USERNAME = "test";
   private final String HTTP_PROXY_PASSWORD = "test";
 
+  /*
+    We tested both http clients with an external URL (MDR) and an internal URL (CentraXX)
+   */
   private final String URL_BASE1 = "https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr";
   private final String URL_PATH1 = "/dataelements/urn:dktk:dataelement:1:3";
   private final String URL_BASE2 = "http://dktk-bridge-dev:8080/centraxx/rest";
@@ -62,7 +69,7 @@ public class HttpConnectorTest {
     HostAuth hostAuth = createHostAuth();
     proxy.setHttp(hostAuth);
     proxy.setHttps(hostAuth);
-    proxy.setBypassPrivateNetworks(false);
+    proxy.setBypassProxyOnPrivateNetwork(false);
 
     return proxy;
 

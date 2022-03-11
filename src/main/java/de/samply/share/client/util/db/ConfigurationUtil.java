@@ -307,7 +307,12 @@ public class ConfigurationUtil {
       } catch (NullPointerException npe) {
         //logger.debug("Could not get HTTPS Proxy Settings...should be empty or null");
       }
-      configParams.put(PROXY_BYPASS_PRIVATE_NETWORKS, Boolean.TRUE.toString());
+      Boolean proxyByPassPrivateNetworks = configuration
+          .getProxy().getBypassProxyOnPrivateNetwork();
+      if (proxyByPassPrivateNetworks == null) {
+        proxyByPassPrivateNetworks = true;
+      }
+      configParams.put(PROXY_BYPASS_PRIVATE_NETWORKS, proxyByPassPrivateNetworks.toString());
       configParams.put(USER_AGENT, userAgent.toString());
 
     } catch (NumberFormatException e) {
