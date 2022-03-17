@@ -267,6 +267,12 @@ public class ConfigurationUtil {
     }
   }
 
+  public static HashMap<String, String> getHttpConfigParams(
+      de.samply.common.config.Configuration configuration) {
+    UserAgent userAgent = ApplicationBean.getDefaultUserAgent();
+    return getHttpConfigParams(configuration, userAgent);
+  }
+
   /**
    * Get the proxy configuration.
    *
@@ -274,7 +280,7 @@ public class ConfigurationUtil {
    * @return a map containing the proxy settings as well as the user agent string
    */
   public static HashMap<String, String> getHttpConfigParams(
-      de.samply.common.config.Configuration configuration) {
+      de.samply.common.config.Configuration configuration, UserAgent userAgent) {
     HashMap<String, String> configParams = new HashMap<>();
 
     try {
@@ -301,9 +307,12 @@ public class ConfigurationUtil {
       } catch (NullPointerException npe) {
         //logger.debug("Could not get HTTPS Proxy Settings...should be empty or null");
       }
-      configParams.put(PROXY_BYPASS_PRIVATE_NETWORKS, Boolean.TRUE.toString());
-
-      UserAgent userAgent = ApplicationBean.getDefaultUserAgent();
+      Boolean proxyByPassPrivateNetworks = configuration
+          .getProxy().getBypassProxyOnPrivateNetwork();
+      if (proxyByPassPrivateNetworks == null) {
+        proxyByPassPrivateNetworks = true;
+      }
+      configParams.put(PROXY_BYPASS_PRIVATE_NETWORKS, proxyByPassPrivateNetworks.toString());
       configParams.put(USER_AGENT, userAgent.toString());
 
     } catch (NumberFormatException e) {

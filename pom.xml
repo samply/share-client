@@ -58,12 +58,12 @@
   <properties>
 
     <!-- Samply dependencies -->
-    <common-config.version>5.1.0</common-config.version>
+    <common-config.version>5.2.0</common-config.version>
     <share-common.version>4.4.0</share-common.version>
     <share-dto.version>5.2.0</share-dto.version>
     <jsf-renderer.version>2.0.0</jsf-renderer.version>
     <common-mailing.version>3.0.0</common-mailing.version>
-    <common-http.version>7.4.2</common-http.version>
+    <common-http.version>7.4.4</common-http.version>
     <common-ldmclient.centraxx.version>6.2.0</common-ldmclient.centraxx.version>
     <common-ldmclient.samplystore.biobank.version>3.0.0
     </common-ldmclient.samplystore.biobank.version>
