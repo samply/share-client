@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Removal of the composition profiles
 - Test HttpConnector Http Clients (Jersey 3 und Apache)
 - Allow false value configuration for bypass proxy for private networks property
+- Update Button CollectInquiries in Inquiries List
 
 
 ## [7.6.1 - 2022-02-28]

@@ -22,7 +22,13 @@
     </ui:define>
 
     <ui:define name="main-content">
+
         <h:form prependId="false">
+<!--ib-content -->
+            <h:commandLink  styleClass="btn btn-default btn-sm mb-4"
+                              action="#{schedulerBean.fireNow('CollectInquiriesJob', 'DecentralSearchGroup')}"
+                              data-toggle="tooltip" data-placement="top" title="#{msg.update_btn}"
+            > <i class="fas fa-sync-alt"></i> </h:commandLink>
             <table id="active-inquiries-table"
                    class="table table-hover table-condensed inquiry-table">
                 <thead>
@@ -36,6 +42,7 @@
                 </thead>
             </table>
             <h:messages showDetail="true" showSummary="true" id="messages" globalOnly="true"/>
+
         </h:form>
 
         <div id="userIdDiv" style="display: none;">
@@ -44,6 +51,8 @@
         <div id="base64CredentialsDiv" style="display: none;">
             <h:outputText value="#{credentialsBean.getBase64Credentials()}"/>
         </div>
+
+
 
         <ssc:pleaseWaitModal/>
     </ui:define>
