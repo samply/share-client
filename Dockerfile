@@ -67,9 +67,11 @@ ENV POSTGRES_HOST="bridgehead_dktk_connector_db"
 ENV QUERY_LANGUAGE="QUERY"
 ENV PATIENTLIST_URL="http://bridgehead_patientlist:8080/Patientlist"
 ENV PROJECTPSEUDONYMISATION_URL="http://bridgehead_id-manager:8080/html/projectSelection.html"
-
+ENV http_proxy="http://bridgehead_squid:3128"
+ENV https_proxy="http://bridgehead_squid:3128"
+ENV HTTP_PROXY="http://bridgehead_squid:3128"
+ENV HTTPS_PROXY="http://bridgehead_squid:3128"
 ENV ID_MANAGER_URL="http://bridgehead_id-manager:8080"
-
 
 # Stage used by ci for gbn images (--target=gbn)
 FROM docker-build as gbn
@@ -85,6 +87,10 @@ ENV STORE_URL="http://bridgehead_gbn_blaze_store:8080"
 ENV MDR_URL="https://mdr.germanbiobanknode.de/v3/api/mdr"
 ENV PROTOCOL="http"
 ENV PORT="8080"
+ENV http_proxy="http://bridgehead_squid:3128"
+ENV https_proxy="http://bridgehead_squid:3128"
+ENV HTTP_PROXY="http://bridgehead_squid:3128"
+ENV HTTPS_PROXY="http://bridgehead_squid:3128"
 
 # Stage used by ci for c4 images (--target=c4)
 FROM docker-build as c4
@@ -105,6 +111,10 @@ ENV MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
 ENV POSTGRES_HOST="bridgehead_dktk_connector_db"
 ENV PROTOCOL="http"
 ENV QUERY_LANGUAGE="QUERY"
+ENV http_proxy="http://bridgehead_squid:3128"
+ENV https_proxy="http://bridgehead_squid:3128"
+ENV HTTP_PROXY="http://bridgehead_squid:3128"
+ENV HTTPS_PROXY="http://bridgehead_squid:3128"
 
 # This stage is build when defining no target
 FROM docker-build as vanilla
