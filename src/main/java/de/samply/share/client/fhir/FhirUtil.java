@@ -39,7 +39,6 @@ public class FhirUtil {
         return (Bundle) ctx.newXmlParser().parseResource(bundleString);
       }
     } catch (ConfigurationException | DataFormatException e) {
-      logger.error(e.getMessage(), e);
       throw new FhirParseException("Error while parsing a "
               + mediaType.getSubtype() + " bundle: " + e.getMessage(), e);
     }
@@ -56,7 +55,6 @@ public class FhirUtil {
     try {
       return ctx.newJsonParser().encodeResourceToString(resource);
     } catch (DataFormatException e) {
-      logger.error(e.getMessage(), e);
       throw new FhirEncodeException("Error while encoding a bundle to json.", e);
     }
   }
