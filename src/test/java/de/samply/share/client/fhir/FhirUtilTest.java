@@ -66,7 +66,6 @@ class FhirUtilTest {
     FhirParseException exception = assertThrows(FhirParseException.class, ()->fhirUtil.parseBundleResource(BUNDLE_STRING,
         MEDIA_TYPE_JSON));
 
-    assertEquals("Error while parsing a json bundle.", exception.getMessage());
     assertEquals(configurationException, exception.getCause());
   }
 
@@ -79,7 +78,6 @@ class FhirUtilTest {
     FhirParseException exception = assertThrows(FhirParseException.class, ()->fhirUtil.parseBundleResource(BUNDLE_STRING,
         MEDIA_TYPE_JSON));
 
-    assertEquals("Error while parsing a json bundle.", exception.getMessage());
     assertEquals(dataFormatException, exception.getCause());
   }
 
