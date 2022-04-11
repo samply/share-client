@@ -97,7 +97,7 @@
     <datatables.version>1.11.3</datatables.version>
     <twbs-pagination.version>1.4.1</twbs-pagination.version>
     <jqplot.version>1.0.9.d96a669-1</jqplot.version>
-    <hapi.version>5.6.2</hapi.version>
+    <hapi.version>5.7.2</hapi.version>
     <directory-sync.version>0.1.0</directory-sync.version>
     <togglz.version>2.8.0</togglz.version>
     <swagger-ui.version>4.1.3</swagger-ui.version>
@@ -117,7 +117,7 @@
     <sonar.organization>samply</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <commons-io.version>2.11.0</commons-io.version>
-    <log4j.version>2.17.1</log4j.version>
+    <log4j.version>2.17.2</log4j.version>
     <slf4j.version>1.7.36</slf4j.version>
 
     <protobuf-java.version>3.19.4</protobuf-java.version>
@@ -154,6 +154,14 @@
           <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-annotations</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -174,6 +182,10 @@
         <exclusion>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -202,6 +214,10 @@
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -212,6 +228,10 @@
         <exclusion>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -244,6 +264,12 @@
       <groupId>de.samply</groupId>
       <artifactId>directory-sync</artifactId>
       <version>${directory-sync.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- JSF 2 -->
@@ -288,6 +314,11 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
       <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
     </dependency>
 
     <!-- Third party libraries -->
@@ -468,6 +499,12 @@
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-base</artifactId>
       <version>${hapi.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.samply</groupId>
