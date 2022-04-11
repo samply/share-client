@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>share-client</artifactId>
-  <version>7.6.2-SNAPSHOT</version>
+  <version>7.6.3-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Connector</name>
@@ -121,7 +121,6 @@
     <slf4j.version>1.7.36</slf4j.version>
 
     <protobuf-java.version>3.19.4</protobuf-java.version>
-
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
 
 
