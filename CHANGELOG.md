@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.6.2 - 2022-04-11]
+### Added
+- Use log4j implementation of slf4j-api (exclude all slf4j-simple dependencies)
+- Solving the problem with the nNGM POST request
+- Adaptations to the new MS-nNGM profiles
+- Removal of the composition profiles
+- Test HttpConnector Http Clients (Jersey 3 und Apache)
+- Allow false value configuration for bypass proxy for private networks property
+
+
 ## [7.6.1 - 2022-02-28]
 ### Fixed
 - Add Jersey 1 libraries for JSF 2

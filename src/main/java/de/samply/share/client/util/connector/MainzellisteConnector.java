@@ -46,9 +46,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Coverage;
 import org.hl7.fhir.r4.model.DateType;
+import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Patient;
@@ -64,10 +64,10 @@ public class MainzellisteConnector {
   private static final Logger logger = LoggerFactory.getLogger(MainzellisteConnector.class);
   private static final String FHIR_RESOURCE_PATIENT = "patient";
   private static final String FHIR_RESOURCE_COVERAGE = "coverage";
-  private static final String FHIR_RESOURCE_COMPOSITION = "composition";
   private static final String MAINZELLISTE_IDTYPE_ENC_ID = "EncID";
   private static final String IDAT_VORNAME = "vorname";
   private static final String IDAT_NACHNAME = "nachname";
+  private static final String IDAT_GEBURTSNAME = "geburtsname";
   private static final String IDAT_GEBURTSDATUM = "Geburtsdatum";
   private static final String IDAT_GEBURTSTAG = "geburtstag";
   private static final String IDAT_GEBURTSMONAT = "geburtsmonat";
@@ -81,15 +81,10 @@ public class MainzellisteConnector {
   private static final String CTS_COVERAGE_PROFILE =
       "http://uk-koeln.de/fhir/StructureDefinition/Coverage/nNGM/pseudonymisiert";
   private static final String PATIENT_IDENTIFIER_SYSTEM =
-      "http://uk-koeln.de/fhir/NamingSystem/nNGM/patient-identifier";
+      "http://uk-koeln.de/fhir/sid/nNGM/patient-pseudonym";
   private static final String GET_ENCRYPT_ID_URL = "/paths/getEncryptId";
   private static final String GET_ENCRYPT_ID_WITH_PATIENT_ID_URL = "/paths/getEncryptIdWithId";
   private static final String HEADER_PARAM_API_KEY = "apiKey";
-  private static final String STAMMDATEN_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Stammdaten-pseudonymisiert";
-  private static final String ANTRAG_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Antrag-pseudonymisiert";
-  private static final String TNM_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/TNM-pseudonymisiert";
-  private static final String BEFUND_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/molpatho-befund-pseudonymisiert";
-  private static final String THERAPIE_PSEUDONYMISIERT_PROFILE = "http://uk-koeln.de/fhir/StructureDefinition/Composition/nNGM/Therapie-pseudonymisiert";
 
 
   private final CloseableHttpClient httpClient;
@@ -139,20 +134,13 @@ public class MainzellisteConnector {
     Patient patientPseudonym = null;
     Coverage coverage = null;
     Coverage coveragePseudonym = null;
-    Composition composition = null;
-    Composition compositionPseudonym = null;
     JsonObject encryptedId;
     int patientEntryIndex = 0;
     int coverageEntryIndex = 0;
-    int compositionEntryIndex = 0;
     try {
       for (int i = 0; i < bundle.getEntry().size(); i++) {
         Resource resource = bundle.getEntry().get(i).getResource();
-        if (resource.fhirType().equalsIgnoreCase(FHIR_RESOURCE_COMPOSITION)) {
-          composition = (Composition) resource;
-          compositionPseudonym = pseudonymComposition(composition);
-          compositionEntryIndex = i;
-        } else if (resource.fhirType().equalsIgnoreCase(FHIR_RESOURCE_PATIENT)) {
+        if (resource.fhirType().equalsIgnoreCase(FHIR_RESOURCE_PATIENT)) {
           patient = (Patient) resource;
           patientPseudonym = createPseudonymizedPatient(patient);
           patientEntryIndex = i;
@@ -161,12 +149,10 @@ public class MainzellisteConnector {
           coveragePseudonym = pseudonymCoverage(coverage);
           coverageEntryIndex = i;
         }
-        if (patient != null && coverage != null && composition != null) {
+        if (patient != null && coverage != null) {
           JsonObject jsonIdatObject = createJsonPatient(patient, coverage);
           encryptedId = requestPseudonymFromMainzelliste(jsonIdatObject);
           patientPseudonym = addPseudonymToPatient(patientPseudonym, encryptedId);
-          compositionPseudonym = addPseudonymToComposition(compositionPseudonym, encryptedId);
-          bundle.getEntry().get(compositionEntryIndex).setResource(compositionPseudonym);
           bundle.getEntry().get(patientEntryIndex).setResource(patientPseudonym);
           bundle.getEntry().get(coverageEntryIndex).setResource(coveragePseudonym);
           return bundle;
@@ -174,7 +160,6 @@ public class MainzellisteConnector {
       }
       checkNonNull(patient, "The required patient resource is empty");
       checkNonNull(coverage, "The required coverage resource is empty");
-      checkNonNull(composition, "The required composition resource is empty");
     } catch (ConflictException | MandatoryAttributeException | IllegalArgumentException e) {
       throw new MainzellisteConnectorException(e);
     }
@@ -191,64 +176,15 @@ public class MainzellisteConnector {
   private Coverage pseudonymCoverage(Coverage originalCoverage) {
     Coverage coveragePseudonym = originalCoverage.copy();
     Meta meta = new Meta();
-    //@TODO Hard-coded to avoid changing the configuration file and the installation program...
-    // but it should be changed in the next versions to follow the default configuration.
-    //String pseudonymizedProfile =
-    // ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PROFILE);
     meta.addProfile(CTS_COVERAGE_PROFILE);
     coveragePseudonym.setMeta(meta);
     coveragePseudonym.getIdentifier().clear();
+    coveragePseudonym.getContract().clear();
+    coveragePseudonym.getCostToBeneficiary().clear();
+    coveragePseudonym.setDependent(null);
+    coveragePseudonym.setSubrogationElement(null);
     return coveragePseudonym;
   }
-
-  /**
-   * Pseudonymise the Composition resource.
-   *
-   * @param originalComposition originalComposition
-   * @return Coverage
-   */
-
-  private Composition pseudonymComposition(Composition originalComposition) {
-    Composition compositionPseudonym = originalComposition.copy();
-
-    Meta meta = new Meta();
-    String canoicalPseudonymizedProfile = "";
-    if (originalComposition.hasMeta()) {
-      canoicalPseudonymizedProfile = getCanonicalPseudonymProfile(
-          originalComposition.getMeta().getProfile().get(0).getValue());
-    }
-    if (compositionPseudonym.hasTitle()) {
-      compositionPseudonym.setTitle("");
-    }
-    meta.addProfile(canoicalPseudonymizedProfile);
-    compositionPseudonym.setMeta(meta);
-    if (compositionPseudonym.hasCategory()) {
-      compositionPseudonym.getCategoryFirstRep().getCoding().get(0).setCode("psn");
-    }
-    return compositionPseudonym;
-  }
-
-  /**
-   * Get the profile to each composition.
-   *
-   * @param idatCompositionProfile path of the composition
-   * @return the profile of the composition
-   */
-  private String getCanonicalPseudonymProfile(String idatCompositionProfile) {
-    if (idatCompositionProfile.contains("Stammdaten")) {
-      return STAMMDATEN_PSEUDONYMISIERT_PROFILE;
-    } else if (idatCompositionProfile.contains("Antrag")) {
-      return ANTRAG_PSEUDONYMISIERT_PROFILE;
-    } else if (idatCompositionProfile.contains("TNM")) {
-      return TNM_PSEUDONYMISIERT_PROFILE;
-    } else if (idatCompositionProfile.contains("molpatho")) {
-      return BEFUND_PSEUDONYMISIERT_PROFILE;
-    } else if (idatCompositionProfile.contains("Therapie")) {
-      return THERAPIE_PSEUDONYMISIERT_PROFILE;
-    }
-    return idatCompositionProfile;
-  }
-
 
   /**
    * Create a new patient and add only the necessary attributes for a pseudonymized patient.
@@ -267,9 +203,8 @@ public class MainzellisteConnector {
       patientNew.setBirthDateElement(date);
     }
     patientNew.setId(originalPatient.getId());
-    patientNew.setGender(originalPatient.getGender());
+    patientNew.setGenderElement(originalPatient.getGenderElement());
     patientNew.setDeceased(originalPatient.getDeceased());
-    patientNew.setId(originalPatient.getId());
     String profile = ConfigurationUtil.getConfigurationElementValue(EnumConfiguration.CTS_PROFILE);
     Meta meta = new Meta();
     meta.addProfile(profile);
@@ -301,22 +236,6 @@ public class MainzellisteConnector {
   }
 
   /**
-   * Add the identifier to the composition.
-   *
-   * @param composition the composition
-   * @param encryptedId encryptedID
-   * @return composition with subject identifier
-   */
-  private Composition addPseudonymToComposition(Composition composition, JsonObject encryptedId) {
-    Identifier identifier = new Identifier();
-    identifier.setSystem("http://uk-koeln.de/fhir/NamingSystem/nNGM/patient-identifier");
-    composition.getSubject().setIdentifier(identifier);
-    composition.getSubject().getIdentifier()
-        .setValue(encryptedId.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
-    return composition;
-  }
-
-  /**
    * Extract the necessary attributes for the Mainzelliste from the patient.
    *
    * @param patient  the patient FHIR-resource
@@ -330,11 +249,29 @@ public class MainzellisteConnector {
     Objects.requireNonNull(patient);
     Objects.requireNonNull(coverage);
     JsonObject jsonIdatObject = new JsonObject();
+    String nachname = "";
+    String vorname = "";
+    String geburtsname = "";
+
     try {
-      jsonIdatObject.addProperty(IDAT_VORNAME,
-          checkIfAttributeExist(patient.getNameFirstRep().getGivenAsSingleString(), IDAT_VORNAME));
-      jsonIdatObject.addProperty(IDAT_NACHNAME,
-          checkIfAttributeExist(patient.getNameFirstRep().getFamily(), IDAT_NACHNAME));
+      if (patient.getName().size() == 1) {
+        vorname = checkIfAttributeExist(patient.getNameFirstRep().getGivenAsSingleString(),
+                IDAT_VORNAME);
+        nachname = checkIfAttributeExist(patient.getNameFirstRep().getFamily(), IDAT_NACHNAME);
+      } else {
+        checkIfListEmpty(patient.getName(), IDAT_NACHNAME);
+        HumanName officialHumanName = getPatientName(patient.getName(), HumanName.NameUse.OFFICIAL);
+        checkNonNull(officialHumanName, getMissingErrorMessage("official patient name"));
+        nachname = checkIfAttributeExist(officialHumanName.getFamily(), IDAT_NACHNAME);
+        vorname = checkIfAttributeExist(officialHumanName.getGivenAsSingleString(), IDAT_VORNAME);
+        HumanName maidenHumanName = getPatientName(patient.getName(), HumanName.NameUse.MAIDEN);
+        if (maidenHumanName != null && maidenHumanName.getFamily() != null) {
+          geburtsname = maidenHumanName.getFamily();
+        }
+      }
+      jsonIdatObject.addProperty(IDAT_VORNAME, vorname);
+      jsonIdatObject.addProperty(IDAT_NACHNAME, nachname);
+      jsonIdatObject.addProperty(IDAT_GEBURTSNAME, geburtsname);
       DateType birthDateElement = patient.getBirthDateElement();
       if (! birthDateElement.getPrecision().equals(TemporalPrecisionEnum.DAY)) {
         birthDateElement.setValue(null);
@@ -388,18 +325,19 @@ public class MainzellisteConnector {
    *
    * @param attribute     attribute
    * @param attributeName attributeName
-   * @return the attribute if its not empty
+   * @return the attribute if it's not empty
    * @throws MandatoryAttributeException if attribute is empty
    */
   private String checkIfAttributeExist(String attribute, String attributeName)
       throws MandatoryAttributeException {
     if (attribute == null || attribute.isEmpty()) {
-      logger.error(getMissigErrorMessage(attributeName));
-      throw new MandatoryAttributeException(getMissigErrorMessage(attributeName));
+      logger.error(getMissingErrorMessage(attributeName));
+      throw new MandatoryAttributeException(getMissingErrorMessage(attributeName));
     } else {
       return attribute;
     }
   }
+
 
   /**
    * Check if a resource is empty.
@@ -409,7 +347,23 @@ public class MainzellisteConnector {
    */
   private void checkNonNull(Object object, String message) throws MandatoryAttributeException {
     if (object == null) {
+      logger.error(message);
       throw new MandatoryAttributeException(message);
+    }
+  }
+
+  /**
+   * Check if an attribute is empty.
+   *
+   * @param list     list to be checked
+   * @param listName name of the list to be checked
+   * @throws MandatoryAttributeException if the list is empty
+   */
+  private <T> void checkIfListEmpty(List<T> list, String listName)
+          throws MandatoryAttributeException {
+    if (list == null || list.isEmpty()) {
+      logger.error(getMissingErrorMessage(listName));
+      throw new MandatoryAttributeException(getMissingErrorMessage(listName));
     }
   }
 
@@ -717,7 +671,24 @@ public class MainzellisteConnector {
    * @param attributeName attributeName
    * @return error message
    */
-  String getMissigErrorMessage(String attributeName) {
-    return "Mandatory attribute is missing: " + attributeName;
+  String getMissingErrorMessage(String attributeName) {
+    return "Mandatory element is missing: " + attributeName;
+  }
+
+
+  /**
+   * return a human name.
+   *
+   * @param nameList human name list
+   * @param nameUse nameUse
+   * @return humanName
+   */
+  HumanName getPatientName(List<HumanName> nameList, HumanName.NameUse nameUse) {
+    for (HumanName humanName : nameList) {
+      if (humanName.hasUse() && humanName.getUse() == nameUse) {
+        return humanName;
+      }
+    }
+    return null;
   }
 }
