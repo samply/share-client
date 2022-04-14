@@ -31,6 +31,9 @@ jobs:
           - project: c4
             project_context: dktk
             maven_profile: dktk
+          - project: nngm
+            project_context: dktk
+            maven_profile: dktk
     services:
       postgres:
         image: postgres

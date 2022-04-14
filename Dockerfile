@@ -116,5 +116,31 @@ ENV https_proxy="http://bridgehead-squid:3128"
 ENV HTTP_PROXY="http://bridgehead-squid:3128"
 ENV HTTPS_PROXY="http://bridgehead-squid:3128"
 
+FROM docker-build as nngm
+ENV TEST_PROJECT="nngm"
+ENV POSTGRES_PORT="5432"
+ENV CONNECTOR_ENABLE_METRICS="false"
+ENV POSTGRES_DB="share_v2"
+ENV POSTGRES_USER="samplyweb"
+ENV CONNECTOR_SHARE_URL="${PROTOCOL}://${HOST}:${PORT}"
+ENV DEPLOYMENT_CONTEXT="nngm-connector"
+ENV feature_BBMRI_DIRECTORY_SYNC="false"
+ENV feature_DKTK_CENTRAL_SEARCH="false"
+ENV feature_NNGM_CTS="true"
+ENV feature_NNGM_ENCRYPT_ID="false"
+ENV LOG_LEVEL="info"
+ENV POSTGRES_HOST="bridgehead-nngm-connector-db"
+ENV PROTOCOL="http"
+ENV QUERY_LANGUAGE="CQL"
+ENV http_proxy="http://bridgehead-squid:3128"
+ENV https_proxy="http://bridgehead-squid:3128"
+ENV HTTP_PROXY="http://bridgehead-squid:3128"
+ENV HTTPS_PROXY="http://bridgehead-squid:3128"
+ENV nngm-cts-url="https://nngm-test.medicalsyn.com/api/v1.0/hl7/patient"
+ENV nngm-profile="http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert"
+ENV nngm-magicpl-url="https://test.verbis.dkfz.de/nngm/magicpl"
+ENV nngm-mainzelliste-url="https://test.verbis.dkfz.de/nngm/mainzelliste"
+
+
 # This stage is build when defining no target
 FROM docker-build as vanilla
