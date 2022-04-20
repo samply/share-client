@@ -65,6 +65,7 @@ If postgres connection errors occur, try your ip for POSTGRES_HOST. For all Envi
 | QUERY_LANGUAGE | *QUERY* | `QUERY` for Classic Store, `CQL` for Blaze                    |
 | MDR_URL*       |         | The URL under which the Metadata Repository is accessible     |
 | DIRECTORY_URL  |         | The URL under which the BBMRI Directory is accessible         |
+| SHARE_URL      |         | Ip adress of the connector                                    |
 | OPERATOR_FIRST_NAME  |   | The first name from the connector admin                       |
 | OPERATOR_LAST_NAME   |   | The last name from the connector admin                        |
 | OPERATOR_EMAIL |         | The email from the connector admin                            |
