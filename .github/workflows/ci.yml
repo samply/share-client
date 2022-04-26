@@ -32,7 +32,7 @@ jobs:
             project_context: dktk
             maven_profile: dktk
           - project: nngm
-            project_context: nngm
+            project_context: dktk
             maven_profile: dktk
     services:
       postgres:
