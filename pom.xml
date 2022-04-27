@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>share-client</artifactId>
-  <version>7.6.1</version>
+  <version>7.6.2</version>
   <packaging>war</packaging>
 
   <name>Connector</name>
@@ -58,12 +58,12 @@
   <properties>
 
     <!-- Samply dependencies -->
-    <common-config.version>5.1.0</common-config.version>
+    <common-config.version>5.2.0</common-config.version>
     <share-common.version>4.4.0</share-common.version>
     <share-dto.version>5.2.0</share-dto.version>
     <jsf-renderer.version>2.0.0</jsf-renderer.version>
     <common-mailing.version>3.0.0</common-mailing.version>
-    <common-http.version>7.4.2</common-http.version>
+    <common-http.version>7.4.4</common-http.version>
     <common-ldmclient.centraxx.version>6.2.0</common-ldmclient.centraxx.version>
     <common-ldmclient.samplystore.biobank.version>3.0.0
     </common-ldmclient.samplystore.biobank.version>
@@ -97,30 +97,30 @@
     <datatables.version>1.11.3</datatables.version>
     <twbs-pagination.version>1.4.1</twbs-pagination.version>
     <jqplot.version>1.0.9.d96a669-1</jqplot.version>
-    <hapi.version>5.6.2</hapi.version>
+    <hapi.version>5.7.2</hapi.version>
     <directory-sync.version>0.1.0</directory-sync.version>
     <togglz.version>2.8.0</togglz.version>
     <swagger-ui.version>4.1.3</swagger-ui.version>
     <microprofile-openapi-api.version>3.0</microprofile-openapi-api.version>
-    <postgresql.version>42.3.2</postgresql.version>
+    <postgresql.version>42.3.3</postgresql.version>
     <commons-validator.version>1.7</commons-validator.version>
     <jsf.version>2.2.20</jsf.version>
     <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
     <tink.version>1.6.1</tink.version>
     <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
-    <json-path.version>2.6.0</json-path.version>
+    <json-path.version>2.7.0</json-path.version>
     <primefaces.version>11.0.0</primefaces.version>
     <junit-jupiter.version>5.8.2</junit-jupiter.version>
     <mockito-core.version>4.2.0</mockito-core.version>
-    <jackson-dataformat-xml.version>2.13.1</jackson-dataformat-xml.version>
+    <jackson-dataformat-xml.version>2.13.2</jackson-dataformat-xml.version>
 
     <sonar.organization>samply</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <commons-io.version>2.11.0</commons-io.version>
-    <log4j.version>2.17.1</log4j.version>
+    <log4j.version>2.17.2</log4j.version>
     <slf4j.version>1.7.36</slf4j.version>
 
-    <protobuf-java.version>3.19.3</protobuf-java.version>
+    <protobuf-java.version>3.19.4</protobuf-java.version>
 
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
 
@@ -154,13 +154,33 @@
           <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-annotations</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
       <version>${jackson-dataformat-xml.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.13.2.2</version>
+    </dependency>
+
     <dependency>
       <groupId>de.samply</groupId>
       <artifactId>common-http</artifactId>
@@ -174,6 +194,10 @@
         <exclusion>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -202,6 +226,10 @@
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -212,6 +240,10 @@
         <exclusion>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -244,6 +276,12 @@
       <groupId>de.samply</groupId>
       <artifactId>directory-sync</artifactId>
       <version>${directory-sync.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- JSF 2 -->
@@ -288,6 +326,11 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
       <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
     </dependency>
 
     <!-- Third party libraries -->
@@ -468,6 +511,12 @@
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-base</artifactId>
       <version>${hapi.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.samply</groupId>

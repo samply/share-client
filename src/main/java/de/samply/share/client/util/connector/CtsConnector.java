@@ -38,20 +38,10 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
-import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -60,13 +50,14 @@ import org.hl7.fhir.r4.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * A connector that handles all communication with the EDC system.
  */
 public class CtsConnector {
 
   private static final Logger logger = LoggerFactory.getLogger(CtsConnector.class);
-  private static final String CONTENT_TYPE_CTS_FHIR_JSON = "application/fhir+json; fhirVersion=4.0";
+  private static final String CONTENT_TYPE_CTS_FHIR_JSON = "application/fhir+json";
   private static final String X_BK_PSEUDONYM_JSONPATHS = "X-BK-pseudonym-jsonpaths";
   private static final String X_BK_TARGET_URL = "X-BK-target-url";
 
@@ -128,10 +119,11 @@ public class CtsConnector {
     HttpEntity entity = new StringEntity(pseudonymBundleAsString, Consts.UTF_8);
     HttpPost httpPost = new HttpPost(ctsBaseUrl);
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_CTS_FHIR_JSON);
-    httpPost.setHeader("X-API-KEY", apiKey);
+    httpPost.setHeader(HttpHeaders.AUTHORIZATION, apiKey);
     httpPost.setEntity(entity);
     CloseableHttpResponse response = null;
     try {
+      response = httpClient.execute(httpPost);
       int statusCode = response.getStatusLine().getStatusCode();
       String message =
           "CTS server response: statusCode:" + statusCode + "; response: " + response.toString();
@@ -141,7 +133,7 @@ public class CtsConnector {
       }
       return Response.status(statusCode).entity(message).build();
     } catch (IOException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new IOException(e);
     } finally {
       closeResponse(response);
@@ -167,7 +159,7 @@ public class CtsConnector {
     HttpEntity entity = new StringEntity(pseudonimisedPatient.toString(), Consts.UTF_8);
     HttpPost httpPost = new HttpPost(ctsBaseUrl);
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-    httpPost.setHeader("X-API-KEY", apiKey);
+    httpPost.setHeader(HttpHeaders.AUTHORIZATION, apiKey);
     httpPost.setEntity(entity);
     CloseableHttpResponse response = null;
     try {
@@ -181,7 +173,7 @@ public class CtsConnector {
       }
       return Response.status(statusCode).entity(message).build();
     } catch (IOException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new IOException(e);
     } finally {
       closeResponse(response);
@@ -220,7 +212,7 @@ public class CtsConnector {
     // Set up the API call
     HttpPost httpPost = new HttpPost(urlTarget);
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-    httpPost.setHeader("X-API-KEY", apiKey);
+    httpPost.setHeader(HttpHeaders.AUTHORIZATION, apiKey);
     for (Entry<String, Object> entry : headerMapToSend.entrySet()) {
       httpPost.setHeader(entry.getKey(), entry.getValue().toString());
     }
@@ -247,10 +239,10 @@ public class CtsConnector {
       logger.error("PostLocalPatientToCentralCts response: " + message);
       return Response.status(statusCode).entity(message).build();
     } catch (IOException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new IOException(e);
     } catch (StringIndexOutOfBoundsException | PathNotFoundException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new CtsConnectorException(e.getMessage());
     } finally {
       closeResponse(response);
@@ -350,7 +342,7 @@ public class CtsConnector {
    * @param bundle  the patient bundle
    * @param encrypt if the ids should encrypted or decrypted
    * @return the encrypted/decrypted bundle
-   * @throws GeneralSecurityException GeneralSecurityException
+   * @throws CtsConnectorException CtsConnectorException
    */
   private String cryptIds(Bundle bundle, boolean encrypt) throws CtsConnectorException {
     Crypt crypt = ApplicationBean.getCrypt();
