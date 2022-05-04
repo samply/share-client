@@ -18,6 +18,7 @@ public class ReportToMonitoringJobParams {
   private final boolean countReferenceQuery;
   private final boolean timeReferenceQuery;
   private final boolean centraxxMappingInformation;
+  private final boolean ldmCertificateDate;
 
   /**
    * Read the configs for the reporting job from the database.
@@ -33,6 +34,9 @@ public class ReportToMonitoringJobParams {
         EnumConfiguration.MONITORING_REPORT_TIME_REFERENCEQUERY);
     this.centraxxMappingInformation = ConfigurationUtil.getConfigurationElementValueAsBoolean(
         EnumConfiguration.MONITORING_REPORT_CENTRAXX_MAPPING_INFORMATION);
+    this.ldmCertificateDate = ConfigurationUtil.getConfigurationElementValueAsBoolean(
+        EnumConfiguration.MONITORING_REPORT_LDM_CERTIFICATE_DATE);
+
   }
 
   public boolean isCountTotal() {
@@ -55,6 +59,10 @@ public class ReportToMonitoringJobParams {
     return centraxxMappingInformation;
   }
 
+  public boolean isLdmCertificateDate() {
+    return ldmCertificateDate;
+  }
+
   /**
    * Is any of the (currently) four checks enabled?.
    *
@@ -62,7 +70,7 @@ public class ReportToMonitoringJobParams {
    */
   public boolean anyCheckToPerform() {
     return (countTotal || countDktkFlagged || countReferenceQuery || timeReferenceQuery
-        || centraxxMappingInformation);
+        || centraxxMappingInformation || ldmCertificateDate);
   }
 
   @Override

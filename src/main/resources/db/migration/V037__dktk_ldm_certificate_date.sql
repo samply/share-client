@@ -1,0 +1,1 @@
+INSERT INTO samply.configuration(name, setting, visible) VALUES ('MONITORING_REPORT_LDM_CERTIFICATE_DATE', 'false', true);
