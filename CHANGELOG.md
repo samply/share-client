@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.7.0 - 2022-05-11]
+### Added
+- Send ldm certificate date to monitoring 
+
 ## [7.6.2 - 2022-04-11]
 ### Added
 - Use log4j implementation of slf4j-api (exclude all slf4j-simple dependencies)

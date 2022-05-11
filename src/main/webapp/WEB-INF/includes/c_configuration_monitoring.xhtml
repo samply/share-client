@@ -46,6 +46,15 @@
                 </f:facet>
             </sscl:formEntryElement>
 
+            <sscl:formEntryElement labelText="#{msg.configuration_sendLdmCertificateDate}"
+                                   labelFor="sendLdmCertificateDate">
+                <f:facet name="input">
+                    <h:selectBooleanCheckbox id="sendLdmCertificateDate"
+                                             styleClass="form-control switch"
+                                             value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_LDM_CERTIFICATE_DATE]}"/>
+                </f:facet>
+            </sscl:formEntryElement>
+
             <sscl:formEntryElement labelText="#{msg.configuration_sendDktkCount}"
                                    labelFor="sendDktkCount">
                 <f:facet name="input">
