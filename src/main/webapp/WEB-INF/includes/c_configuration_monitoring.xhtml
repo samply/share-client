@@ -20,7 +20,7 @@
                                          styleClass="form-control switch"
                                          value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_TOTAL]}"
                                          onchange="storeConfiguration()">
-                <f:ajax execute="@form" listener="#{configurationBean.retune}" />
+                    <!--   <f:ajax execute="@form" listener="#{configurationBean.retune}" /> -->
                 </h:selectBooleanCheckbox>
 
             </f:facet>
@@ -33,7 +33,7 @@
                                          styleClass="form-control switch"
                                          value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_REFERENCEQUERY]}"
                  onchange="storeConfiguration()">
-                <f:ajax execute="@form" listener="#{configurationBean.retune}" />
+                    <!--   <f:ajax execute="@form" listener="#{configurationBean.retune}" /> -->
             </h:selectBooleanCheckbox>
             </f:facet>
         </sscl:formEntryElement>
@@ -56,33 +56,33 @@
                                              styleClass="form-control switch"
                                              value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_CENTRAXX_MAPPING_INFORMATION]}"
                                              onchange="storeConfiguration()">
-                        <f:ajax execute="@form" listener="#{configurationBean.retune}" />
-                    </h:selectBooleanCheckbox>
-                </f:facet>
-            </sscl:formEntryElement>
+                        <!--   <f:ajax execute="@form" listener="#{configurationBean.retune}" /> -->
+                       </h:selectBooleanCheckbox>
+                   </f:facet>
+               </sscl:formEntryElement>
 
-            <sscl:formEntryElement labelText="#{msg.configuration_sendLdmCertificateDate}"
-                                   labelFor="sendLdmCertificateDate">
-                <f:facet name="input">
-                    <h:selectBooleanCheckbox id="sendLdmCertificateDate"
-                                             styleClass="form-control switch"
-                                             value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_LDM_CERTIFICATE_DATE]}"/>
-                </f:facet>
-            </sscl:formEntryElement>
+               <sscl:formEntryElement labelText="#{msg.configuration_sendLdmCertificateDate}"
+                                      labelFor="sendLdmCertificateDate">
+                   <f:facet name="input">
+                       <h:selectBooleanCheckbox id="sendLdmCertificateDate"
+                                                styleClass="form-control switch"
+                                                value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_LDM_CERTIFICATE_DATE]}"/>
+                   </f:facet>
+               </sscl:formEntryElement>
 
-            <sscl:formEntryElement labelText="#{msg.configuration_sendDktkCount}"
-                                   labelFor="sendDktkCount">
-                <f:facet name="input">
-                    <h:selectBooleanCheckbox id="sendDktkCount"
-                                             styleClass="form-control switch"
-                                             value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_DKTKFLAG]}"
-                                             onchange="storeConfiguration()">
-                        <f:ajax execute="@form" listener="#{configurationBean.retune}" />
-                    </h:selectBooleanCheckbox>
-                </f:facet>
-            </sscl:formEntryElement>
-        </ui:fragment>
+               <sscl:formEntryElement labelText="#{msg.configuration_sendDktkCount}"
+                                      labelFor="sendDktkCount">
+                   <f:facet name="input">
+                       <h:selectBooleanCheckbox id="sendDktkCount"
+                                                styleClass="form-control switch"
+                                                value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_DKTKFLAG]}"
+                                                onchange="storeConfiguration()">
+                           <!--   <f:ajax execute="@form" listener="#{configurationBean.retune}" /> -->
+                       </h:selectBooleanCheckbox>
+                   </f:facet>
+               </sscl:formEntryElement>
+           </ui:fragment>
 
-    </fieldset>
+       </fieldset>
 
-</ui:composition>
+   </ui:composition>
