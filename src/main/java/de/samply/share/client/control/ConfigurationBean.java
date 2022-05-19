@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
 import org.omnifaces.util.Messages;
 import org.slf4j.Logger;
@@ -86,6 +87,7 @@ public class ConfigurationBean implements Serializable {
       Configuration configurationElement = new Configuration();
       configurationElement.setName(conf.getKey().name());
       String value = null;
+
       if (conf.getValue().getClass() == String.class) {
         value = (String) conf.getValue();
       } else if (conf.getValue().getClass() == Boolean.class) {
@@ -95,6 +97,7 @@ public class ConfigurationBean implements Serializable {
       }
       configurationElement.setSetting(value);
       ConfigurationUtil.insertOrUpdateConfigurationElement(configurationElement);
+
     }
   }
 
@@ -144,8 +147,23 @@ public class ConfigurationBean implements Serializable {
     this.configurationTimingsMap = configurationTimingsMap;
   }
 
+  /**
+   * Get configuration enum as boolean.
+   *
+   * @param configuration configuration enum.
+   * @return configuration enum as boolean.
+   */
   public boolean getAsBoolean(EnumConfiguration configuration) {
     return ConfigurationUtil.getConfigurationElementValueAsBoolean(configuration);
+  }
+
+  /**
+   * Save automatically form information after any change.
+   *
+   * @param event event after modifying any form field.
+   */
+  public void retune(AjaxBehaviorEvent event) { // Note: the argument is optional.
+    storeConfiguration();
   }
 
 }

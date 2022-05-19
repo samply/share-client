@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [7.7.0 - 2022-05-11]
 ### Added
 - Send ldm certificate date to monitoring 
+- Configuration site: Autosave
+- Update Button CollectInquiries in Inquiries List
+ 
+### Fixed
+- Missing icons
 
 ## [7.6.2 - 2022-04-11]
 ### Added
@@ -16,7 +21,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Removal of the composition profiles
 - Test HttpConnector Http Clients (Jersey 3 und Apache)
 - Allow false value configuration for bypass proxy for private networks property
-- Update Button CollectInquiries in Inquiries List
 
 
 ## [7.6.1 - 2022-02-28]
