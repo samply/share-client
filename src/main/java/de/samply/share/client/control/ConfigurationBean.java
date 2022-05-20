@@ -80,6 +80,15 @@ public class ConfigurationBean implements Serializable {
   }
 
   /**
+   * Save automatically form information after any change.
+   *
+   * @param event event after modifying any form field.
+   */
+  public void storeConfiguration(AjaxBehaviorEvent event) {
+    storeConfiguration();
+  }
+
+  /**
    * Write the settings from the Configuration Map to the database.
    */
   private void storeConfigurationMap() {
@@ -155,15 +164,6 @@ public class ConfigurationBean implements Serializable {
    */
   public boolean getAsBoolean(EnumConfiguration configuration) {
     return ConfigurationUtil.getConfigurationElementValueAsBoolean(configuration);
-  }
-
-  /**
-   * Save automatically form information after any change.
-   *
-   * @param event event after modifying any form field.
-   */
-  public void retune(AjaxBehaviorEvent event) { // Note: the argument is optional.
-    storeConfiguration();
   }
 
 }

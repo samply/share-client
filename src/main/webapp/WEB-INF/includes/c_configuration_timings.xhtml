@@ -23,7 +23,7 @@
                     <h:inputText id="checkInquiryStatusInitialDelay" styleClass="form-control"
                                  value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_INITIAL_DELAY_SECONDS]}">
                         <f:validator validatorId="positiveIntegerValidator"/>
-                        <f:ajax listener="#{configurationBean.retune}"/>
+                        <f:ajax listener="#{configurationBean.storeConfiguration}"/>
 
 
 
@@ -44,7 +44,7 @@
                     <h:inputText id="checkInquiryStatsInterval" styleClass="form-control"
                                  value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_STATS_RETRY_INTERVAL_SECONDS]}">
                         <f:validator validatorId="positiveIntegerValidator"/>
-                        <f:ajax listener="#{configurationBean.retune}"/>
+                        <f:ajax listener="#{configurationBean.storeConfiguration}"/>
                     </h:inputText>
                     <div class="input-group-addon">
                         #{msg.configuration_seconds}
@@ -60,7 +60,7 @@
                 <h:inputText id="checkInquiryStatsAttempts" styleClass="form-control"
                              value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_STATS_RETRY_ATTEMPTS]}">
                     <f:validator validatorId="positiveIntegerValidator"/>
-                    <f:ajax listener="#{configurationBean.retune}"/>
+                    <f:ajax listener="#{configurationBean.storeConfiguration}"/>
                 </h:inputText>
             </f:facet>
         </sscl:formEntryElement>
@@ -73,7 +73,7 @@
                     <h:inputText id="checkInquiryResultsInterval" styleClass="form-control"
                                  value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_INTERVAL_SECONDS]}">
                         <f:validator validatorId="positiveIntegerValidator"/>
-                        <f:ajax listener="#{configurationBean.retune}"/>
+                        <f:ajax listener="#{configurationBean.storeConfiguration}"/>
                     </h:inputText>
                     <div class="input-group-addon">
                         #{msg.configuration_seconds}
@@ -90,7 +90,7 @@
                              converterMessage="Please enter digits only."
                              value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_INQUIRY_STATUS_RESULTS_RETRY_ATTEMPTS]}">
                     <f:validator validatorId="positiveIntegerValidator"/>
-                    <f:ajax listener="#{configurationBean.retune}"/>
+                    <f:ajax listener="#{configurationBean.storeConfiguration}"/>
                 </h:inputText>
             </f:facet>
         </sscl:formEntryElement>
@@ -104,7 +104,7 @@
                                  converterMessage="Please enter digits only."
                                  value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_MOVE_INQUIRIES_TO_ARCHIVE_AFTER_DAYS]}">
                         <f:validator validatorId="positiveIntegerValidator"/>
-                        <f:ajax listener="#{configurationBean.retune}"/>
+                        <f:ajax listener="#{configurationBean.storeConfiguration}"/>
                     </h:inputText>
                     <div class="input-group-addon">
                         #{msg.configuration_days}
@@ -123,7 +123,7 @@
                                  converterMessage="Please enter digits only."
                                  value="#{configurationBean.configurationTimingsMap[EnumConfigurationTimings.JOB_CHECK_SCHEDULED_INQUIRY_INTERVAL_MINUTES]}">
                         <f:validator validatorId="positiveIntegerValidator"/>
-                        <f:ajax listener="#{configurationBean.retune}"/>
+                        <f:ajax listener="#{configurationBean.storeConfiguration}"/>
                     </h:inputText>
                     <div class="input-group-addon">
                         #{msg.configuration_minutes}

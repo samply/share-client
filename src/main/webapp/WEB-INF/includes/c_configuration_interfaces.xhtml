@@ -34,8 +34,6 @@
                                          onchange="storeConfiguration()"
 
                 >
-
-                    <!--   <f:ajax execute="@form" listener="#{configurationBean.retune}" /> -->
             </h:selectBooleanCheckbox>
 
 
@@ -55,7 +53,7 @@
                              style="text-align: right"
                              validatorMessage="#{msg.configuration_ldmCachingMaxSizeValidationError}">
                     <f:validateLongRange minimum="1" maximum="5000"/>
-                    <f:ajax listener="#{configurationBean.retune}"/>
+                    <f:ajax listener="#{configurationBean.storeConfiguration}"/>
                 </h:inputText>
             </f:facet>
         </sscl:formEntryElement>
