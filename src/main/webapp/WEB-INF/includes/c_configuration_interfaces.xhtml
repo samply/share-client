@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
-
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:pass="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
-                xmlns:wu="http://share.samply.de/webutils">
+                xmlns:wu="http://share.samply.de/webutils"
+                xmlns:pf="http://primefaces.org/ui">
 
     <fieldset class="configurationGroup">
         <legend class="scheduler-border">#{msg.configuration_interfaces}</legend>
+        <pf:remoteCommand name="storeConfiguration" actionListener="#{configurationBean.storeConfiguration}" />
 
         <sscl:formEntryElement labelFor="ldmUrl" labelText="#{msg.configuration_ldmUrl}"
                                xmlTooltip="true">
@@ -22,12 +23,25 @@
             </f:facet>
         </sscl:formEntryElement>
 
+
         <sscl:formEntryElement labelFor="ldmCachingEnabled"
                                labelText="#{msg.configuration_ldmEnableCaching}">
+
             <f:facet name="input">
                 <h:selectBooleanCheckbox id="ldmCachingEnabled"
                                          value="#{configurationBean.configurationMap[EnumConfiguration.LDM_CACHING_ENABLED]}"
-                                         styleClass="switch"/>
+                                         styleClass="switch"
+                                         onchange="storeConfiguration()"
+
+                >
+            </h:selectBooleanCheckbox>
+
+
+
+
+
+
+
             </f:facet>
         </sscl:formEntryElement>
 
@@ -39,6 +53,7 @@
                              style="text-align: right"
                              validatorMessage="#{msg.configuration_ldmCachingMaxSizeValidationError}">
                     <f:validateLongRange minimum="1" maximum="5000"/>
+                    <f:ajax listener="#{configurationBean.storeConfiguration}"/>
                 </h:inputText>
             </f:facet>
         </sscl:formEntryElement>

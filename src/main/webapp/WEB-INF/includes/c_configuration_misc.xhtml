@@ -6,10 +6,12 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client">
+                xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
+                xmlns:pf="http://primefaces.org/ui">
 
     <fieldset class="configurationGroup">
         <legend class="scheduler-border">#{msg.configuration_misc}</legend>
+        <pf:remoteCommand name="storeConfiguration" actionListener="#{configurationBean.storeConfiguration}" />
 
 
         <sscl:formEntryElement labelFor="notifyEmptyResults"
@@ -17,7 +19,9 @@
             <f:facet name="input">
                 <h:selectBooleanCheckbox id="notifyEmptyResults"
                                          value="#{configurationBean.configurationMap[EnumConfiguration.DECENTRAL_SEARCH_MAIL_INCLUDE_EMPTY_RESULTS]}"
-                                         styleClass="switch"/>
+                                         styleClass="switch"
+                                         onchange="storeConfiguration()">
+                </h:selectBooleanCheckbox>
             </f:facet>
         </sscl:formEntryElement>
     </fieldset>
