@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  
 ### Fixed
 - Missing icons
+- Jsonproperty in UploadStats
 
 ## [7.6.2 - 2022-04-11]
 ### Added
