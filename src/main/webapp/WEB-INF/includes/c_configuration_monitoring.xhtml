@@ -6,17 +6,22 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client">
+                xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
+                xmlns:pf="http://primefaces.org/ui">
 
     <fieldset class="configurationGroup">
         <legend class="scheduler-border">#{msg.configuration_monitoring}</legend>
+        <pf:remoteCommand name="storeConfiguration" actionListener="#{configurationBean.storeConfiguration}" />
 
         <sscl:formEntryElement labelText="#{msg.configuration_sendTotalCount}"
                                labelFor="sendTotalCount">
             <f:facet name="input">
                 <h:selectBooleanCheckbox id="sendTotalCount"
                                          styleClass="form-control switch"
-                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_TOTAL]}"/>
+                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_TOTAL]}"
+                                         onchange="storeConfiguration()">
+                </h:selectBooleanCheckbox>
+
             </f:facet>
         </sscl:formEntryElement>
 
@@ -25,7 +30,9 @@
             <f:facet name="input">
                 <h:selectBooleanCheckbox id="sendReferenceQueryCount"
                                          styleClass="form-control switch"
-                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_REFERENCEQUERY]}"/>
+                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_REFERENCEQUERY]}"
+                 onchange="storeConfiguration()">
+            </h:selectBooleanCheckbox>
             </f:facet>
         </sscl:formEntryElement>
 
@@ -34,7 +41,10 @@
             <f:facet name="input">
                 <h:selectBooleanCheckbox id="sendReferenceQueryTime"
                                          styleClass="form-control switch"
-                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_TIME_REFERENCEQUERY]}"/>
+                                         value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_TIME_REFERENCEQUERY]}"
+                                         onchange="storeConfiguration()">
+                    <f:ajax execute="@form" listener="#{configurationBean.storeConfiguration}" />
+                </h:selectBooleanCheckbox>
             </f:facet></sscl:formEntryElement>
         <ui:fragment rendered="#{wu:getProjectName() == 'dktk'}">
             <sscl:formEntryElement labelText="#{msg.configuration_sendCentraxxMappingVersion}"
@@ -42,20 +52,34 @@
                 <f:facet name="input">
                     <h:selectBooleanCheckbox id="sendCentraxxMappingVersion"
                                              styleClass="form-control switch"
-                                             value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_CENTRAXX_MAPPING_INFORMATION]}"/>
-                </f:facet>
-            </sscl:formEntryElement>
+                                             value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_CENTRAXX_MAPPING_INFORMATION]}"
+                                             onchange="storeConfiguration()">
+                       </h:selectBooleanCheckbox>
+                   </f:facet>
+               </sscl:formEntryElement>
 
-            <sscl:formEntryElement labelText="#{msg.configuration_sendDktkCount}"
-                                   labelFor="sendDktkCount">
-                <f:facet name="input">
-                    <h:selectBooleanCheckbox id="sendDktkCount"
-                                             styleClass="form-control switch"
-                                             value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_DKTKFLAG]}"/>
-                </f:facet>
-            </sscl:formEntryElement>
-        </ui:fragment>
+               <sscl:formEntryElement labelText="#{msg.configuration_sendLdmCertificateDate}"
+                                      labelFor="sendLdmCertificateDate">
+                   <f:facet name="input">
+                       <h:selectBooleanCheckbox id="sendLdmCertificateDate"
+                                                styleClass="form-control switch"
+                                                value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_LDM_CERTIFICATE_DATE]}"
+                                                onchange="storeConfiguration()"/>
+                   </f:facet>
+               </sscl:formEntryElement>
 
-    </fieldset>
+               <sscl:formEntryElement labelText="#{msg.configuration_sendDktkCount}"
+                                      labelFor="sendDktkCount">
+                   <f:facet name="input">
+                       <h:selectBooleanCheckbox id="sendDktkCount"
+                                                styleClass="form-control switch"
+                                                value="#{configurationBean.configurationMap[EnumConfiguration.MONITORING_REPORT_COUNT_DKTKFLAG]}"
+                                                onchange="storeConfiguration()">
+                       </h:selectBooleanCheckbox>
+                   </f:facet>
+               </sscl:formEntryElement>
+           </ui:fragment>
 
-</ui:composition>
+       </fieldset>
+
+   </ui:composition>

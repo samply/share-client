@@ -3,15 +3,20 @@ package de.samply.share.client.job;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.job.params.ReportToMonitoringJobParams;
+import de.samply.share.client.model.EnumConfiguration;
 import de.samply.share.client.model.EnumReportMonitoring;
 import de.samply.share.client.model.check.ReferenceQueryCheckResult;
+import de.samply.share.client.util.CertificateReader;
+import de.samply.share.client.util.CertificateReaderException;
 import de.samply.share.client.util.connector.BrokerConnector;
 import de.samply.share.client.util.connector.LdmConnector;
 import de.samply.share.client.util.connector.exception.BrokerConnectorException;
 import de.samply.share.client.util.connector.exception.LdmConnectorException;
 import de.samply.share.client.util.db.BrokerUtil;
+import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.common.model.dto.monitoring.StatusReportItem;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.quartz.DisallowConcurrentExecution;
@@ -29,11 +34,12 @@ import org.slf4j.LoggerFactory;
 public class ReportToMonitoringJobLongFrequence implements Job {
 
   private static final Logger logger =
-          LoggerFactory.getLogger(ReportToMonitoringJobLongFrequence.class);
+      LoggerFactory.getLogger(ReportToMonitoringJobLongFrequence.class);
 
   private final LdmConnector ldmConnector;
   private final List<BrokerConnector> brokerConnectors;
   private final ReportToMonitoringJobParams jobParams;
+  private final CertificateReader certificateReader;
 
   /**
    * Get the ldmConnector, the registered brokers and the params.
@@ -43,8 +49,13 @@ public class ReportToMonitoringJobLongFrequence implements Job {
     brokerConnectors = BrokerUtil.fetchBrokers().stream().map(BrokerConnector::new)
         .collect(Collectors.toList());
     jobParams = new ReportToMonitoringJobParams();
+    certificateReader = createCertificateReader();
 
     logger.debug(ReportToMonitoringJobLongFrequence.class.getName() + " created");
+  }
+
+  private CertificateReader createCertificateReader() {
+    return new CertificateReader(ApplicationBean.getConfiguration().getProxy());
   }
 
   @Override
@@ -72,6 +83,13 @@ public class ReportToMonitoringJobLongFrequence implements Job {
     List<StatusReportItem> statusReportItems = new ArrayList<>();
 
     if (ApplicationUtils.isDktk()) {
+
+      if (jobParams.isLdmCertificateDate()) {
+        StatusReportItem ldmCertificateDate = getLdmCertificateDate();
+        statusReportItems.add(ldmCertificateDate);
+        logger.debug("ldm certificate date");
+      }
+
       if (jobParams.isCountReferenceQuery() || jobParams.isTimeReferenceQuery()) {
         ReferenceQueryCheckResult referenceQueryCheckResult;
         String errorMessage = "";
@@ -97,6 +115,30 @@ public class ReportToMonitoringJobLongFrequence implements Job {
       }
     }
     return statusReportItems;
+  }
+
+  private StatusReportItem getLdmCertificateDate() {
+
+    StatusReportItem statusReportItem = new StatusReportItem();
+    statusReportItem.setParameterName(StatusReportItem.PARAMETER_LDM_CERTIFICATE_DATE);
+
+    String ldmUrl = ConfigurationUtil
+        .getConfigurationElementValue(EnumConfiguration.LDM_URL);
+
+    try {
+
+      Date certificateDate = certificateReader.extractCertificateValidationDate(ldmUrl);
+      statusReportItem.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_OK.getValue());
+      if (certificateDate != null) {
+        statusReportItem.setStatusText(certificateDate.toString());
+      }
+
+    } catch (CertificateReaderException e) {
+      statusReportItem.setExitStatus(EnumReportMonitoring.ICINGA_STATUS_ERROR.getValue());
+      logger.error(e.getMessage());
+    }
+
+    return statusReportItem;
   }
 
   /**
@@ -125,7 +167,7 @@ public class ReportToMonitoringJobLongFrequence implements Job {
    * @param referenceQueryCheckResult the result that was generated while executing the reference
    *                                  query
    * @return a status report item, containing the total amount of patients found in local
-   *        datamanagement for the reference query
+   *         datamanagement for the reference query
    */
   private StatusReportItem getReferenceQueryCount(
       ReferenceQueryCheckResult referenceQueryCheckResult, String errorMessage) {
@@ -151,7 +193,7 @@ public class ReportToMonitoringJobLongFrequence implements Job {
    * @param referenceQueryCheckResult the result that was generated while executing the reference
    *                                  query
    * @return a status report item, containing the time it took to execute the reference query
-   *        (containing a vagueness of 15 seconds)
+   *         (containing a vagueness of 15 seconds)
    */
   private StatusReportItem getReferenceQueryTime(
       ReferenceQueryCheckResult referenceQueryCheckResult, String errorMessage) {

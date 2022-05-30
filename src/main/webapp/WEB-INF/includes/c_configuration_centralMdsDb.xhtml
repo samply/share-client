@@ -33,6 +33,7 @@
                              value="#{configurationBean.configurationMap[EnumConfiguration.CENTRAL_MDS_DATABASE_PATH]}"
                              styleClass="form-control"
                              pass:placeholder="e.g. /dktk/sites/standort/teiler/ttlrst1/">
+                    <f:ajax listener="#{configurationBean.storeConfiguration}"/>
                 </h:inputText>
             </f:facet>
         </sscl:formEntryElement>

@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>share-client</artifactId>
-  <version>7.6.2</version>
+  <version>7.7.0</version>
   <packaging>war</packaging>
 
   <name>Connector</name>
@@ -59,7 +59,7 @@
 
     <!-- Samply dependencies -->
     <common-config.version>5.2.0</common-config.version>
-    <share-common.version>4.4.0</share-common.version>
+    <share-common.version>4.5.0</share-common.version>
     <share-dto.version>5.2.0</share-dto.version>
     <jsf-renderer.version>2.0.0</jsf-renderer.version>
     <common-mailing.version>3.0.0</common-mailing.version>
@@ -121,7 +121,6 @@
     <slf4j.version>1.7.36</slf4j.version>
 
     <protobuf-java.version>3.19.4</protobuf-java.version>
-
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
 
 
