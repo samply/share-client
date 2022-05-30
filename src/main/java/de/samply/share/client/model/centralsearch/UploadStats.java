@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UploadStats {
 
-  @JsonProperty(namespace = "LastUploadTimestamp")
+  @JsonProperty("LastUploadTimestamp")
   private String lastUploadTimestamp;
 
   public UploadStats() {
