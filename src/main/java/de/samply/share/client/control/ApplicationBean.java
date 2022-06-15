@@ -412,6 +412,8 @@ public class ApplicationBean implements Serializable {
             EnumConfiguration.PATIENTLIST_URL, urls.getPatientlistUrl());
         insertOrUpdateConfigurationElement(EnumConfiguration.PROJECT_PSEUDONYMISATION_URL,
             urls.getProjectPseudonymisationUrl());
+        insertOrUpdateConfigurationElement(EnumConfiguration.PROJECT_PSEUDONYMISATION_URL_CHECK,
+            urls.getProjectPseudonymisationUrlCheck());
       }
 
       insertOrUpdateConfigurationElement(EnumConfiguration.LDM_URL, urls.getLdmUrl());

@@ -58,7 +58,17 @@ public class ConfigurationUtil {
    * @return the configuration element
    */
   public static Configuration getConfigurationElement(EnumConfiguration configurationElement) {
-    return ConfigurationDaoHolder.INSTANCE.fetchOneByName(configurationElement.name());
+    return getConfigurationElement(configurationElement.name());
+  }
+
+  /**
+   * Get a configuration element by name.
+   *
+   * @param configurationElement the element to get
+   * @return the configuration element
+   */
+  public static Configuration getConfigurationElement(String configurationElement) {
+    return ConfigurationDaoHolder.INSTANCE.fetchOneByName(configurationElement);
   }
 
   /**
@@ -175,6 +185,16 @@ public class ConfigurationUtil {
    * @return the string representation of the configuration value
    */
   public static String getConfigurationElementValue(EnumConfiguration configurationElement) {
+    return getConfigurationElementValue(configurationElement.name());
+  }
+
+  /**
+   * Get the settings for a configuration element.
+   *
+   * @param configurationElement configurationElement
+   * @return a setting
+   */
+  public static String getConfigurationElementValue(String configurationElement) {
     Configuration configuration = getConfigurationElement(configurationElement);
     return (configuration == null) ? "" : configuration.getSetting();
   }
@@ -316,7 +336,7 @@ public class ConfigurationUtil {
       configParams.put(USER_AGENT, userAgent.toString());
 
     } catch (NumberFormatException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
     return configParams;
   }
