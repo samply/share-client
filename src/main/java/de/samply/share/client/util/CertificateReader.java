@@ -28,13 +28,12 @@ public class CertificateReader {
   }
 
   /**
-   * Extracts cetificate validation date.
+   * Extracts certificate validation date.
    *
    * @param url url with the certificate to be extracted.
    * @return Date of certificate.
    * @throws CertificateReaderException Encapsulates inner exceptions.
    */
-
   public Date extractCertificateValidationDate(String url) throws CertificateReaderException {
 
     try {
@@ -50,7 +49,7 @@ public class CertificateReader {
 
     Date certificateValidationDate = null;
 
-    if (url.contains("https")) {
+    if (url.startsWith("https")) {
 
       HttpsURLConnection httpsUrlConnection = this.proxy.isPresent()
           ? (HttpsURLConnection) new URL(url).openConnection(this.proxy.get()) :
@@ -74,7 +73,7 @@ public class CertificateReader {
 
   private static Optional<Proxy> convert(de.samply.common.config.Proxy proxy) {
 
-    final HostAuth hostAuth = (proxy.getHttp() != null) ? proxy.getHttp() : proxy.getHttps();
+    HostAuth hostAuth = (proxy.getHttp() != null) ? proxy.getHttp() : proxy.getHttps();
 
     if (hostAuth != null) {
 
