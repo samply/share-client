@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Check Pseudonymisation GUI
 - increased Directory Sync version
+- Json-Smart 1.3.3
 
 ## [7.7.0 - 2022-05-19]
 ### Added
