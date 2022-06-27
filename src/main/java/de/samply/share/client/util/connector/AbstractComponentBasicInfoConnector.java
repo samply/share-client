@@ -44,12 +44,14 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractComponentBasicInfoConnector implements IcomponentBasicInfoConnector {
 
+  public static final String CHECK_URL_SUFFIX = "_CHECK";
   private static final Logger logger = LoggerFactory.getLogger(IdManagerBasicInfoConnector.class);
-  
+
   /**
    * The Url.
    */
   protected final URL url;
+  protected final URL checkUrl;
   private static final int DEFAULT_SOCKET_TIMEOUT = 10000;
   private static final int DEFAULT_CONNECT_TIMEOUT = 10000;
   private static final int DEFAULT_CONNECTION_REQUEST_TIMEOUT = 10000;
@@ -77,7 +79,7 @@ public abstract class AbstractComponentBasicInfoConnector implements IcomponentB
    * The Request config.
    */
   protected final RequestConfig requestConfig;
-  
+
   /**
    * Constructor of connector for receiving basic information of components.
    *
@@ -86,7 +88,10 @@ public abstract class AbstractComponentBasicInfoConnector implements IcomponentB
   public AbstractComponentBasicInfoConnector(EnumConfiguration enumConfiguration) {
     try {
       url = SamplyShareUtils.stringToUrl(
-              ConfigurationUtil.getConfigurationElementValue(enumConfiguration));
+          ConfigurationUtil.getConfigurationElementValue(enumConfiguration));
+      String checkUrl = ConfigurationUtil.getConfigurationElementValue(
+          enumConfiguration.name() + CHECK_URL_SUFFIX);
+      this.checkUrl = (checkUrl != null && !checkUrl.isEmpty()) ? new URL(checkUrl) : url;
       httpConnector = ApplicationBean.createHttpConnector();
 
       //Read configuration from database
@@ -128,12 +133,12 @@ public abstract class AbstractComponentBasicInfoConnector implements IcomponentB
       @Override
       public ComponentInfo handleResponse(final HttpResponse response) throws IOException {
         StatusLine statusLine = response.getStatusLine();
-        HttpEntity entity = response.getEntity();
         if (statusLine.getStatusCode() >= 300) {
           throw new HttpResponseException(
                   statusLine.getStatusCode(),
                   statusLine.getReasonPhrase());
         }
+        HttpEntity entity = response.getEntity();
         if (entity == null) {
           throw new ClientProtocolException("Response contains no content");
         }
@@ -149,7 +154,7 @@ public abstract class AbstractComponentBasicInfoConnector implements IcomponentB
 
     ComponentInfo componentInfo;
     try {
-      HttpGet httpGet = new HttpGet(url.toURI());
+      HttpGet httpGet = new HttpGet(checkUrl.toURI());
       httpGet.setHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
       componentInfo = httpClient.execute(httpGet, responseHandler);
     } catch (IOException | URISyntaxException e) {
