@@ -5,12 +5,14 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import de.samply.directory_sync.Sync;
 import de.samply.directory_sync.directory.DirectoryApi;
+import de.samply.directory_sync.directory.DirectoryService;
 import de.samply.directory_sync.fhir.FhirApi;
 import de.samply.directory_sync.fhir.FhirReporting;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.model.db.enums.TargetType;
 import de.samply.share.client.model.db.tables.pojos.Credentials;
 import de.samply.share.client.util.db.CredentialsUtil;
+import io.vavr.control.Either;
 import java.io.IOException;
 import java.util.List;
 import javax.security.auth.login.CredentialNotFoundException;
@@ -40,19 +42,23 @@ public class DirectorySyncJob implements Job {
   }
 
   private void syncWithDirectory() throws CredentialNotFoundException, IOException {
-    DirectoryApi directoryApi = createDirectoryApi();
+    DirectoryApi directoryApi = createDirectoryApi().get();
+    DirectoryService directoryService = new DirectoryService(directoryApi);
     FhirApi fhirApi = createFhirApi();
-    FhirReporting fhirReporting = new FhirReporting(fhirApi);
-    Sync sync = new Sync(fhirApi, fhirReporting, directoryApi);
-    OperationOutcome operationOutcome = sync.syncCollectionSizesToDirectory();
-    List<OperationOutcome> operationOutcomes = sync.updateAllBiobanksOnFhirServerIfNecessary();
-    logger.debug(ctx.newJsonParser().encodeResourceToString(operationOutcome));
-    for (OperationOutcome operationOutcomeTmp : operationOutcomes) {
+    FhirReporting fhirReporting = new FhirReporting(ctx, fhirApi);
+    Sync sync = new Sync(fhirApi, fhirReporting, directoryApi, directoryService);
+    List<OperationOutcome> operationOutcomes = sync.syncCollectionSizesToDirectory();
+    for (OperationOutcome oo : operationOutcomes) {
+      logger.debug(ctx.newJsonParser().encodeResourceToString(oo));
+    }
+    List<OperationOutcome> oo = sync.updateAllBiobanksOnFhirServerIfNecessary();
+    for (OperationOutcome operationOutcomeTmp : oo) {
       logger.debug(ctx.newJsonParser().encodeResourceToString(operationOutcomeTmp));
     }
   }
 
-  private DirectoryApi createDirectoryApi() throws CredentialNotFoundException, IOException {
+  private Either<OperationOutcome, DirectoryApi> createDirectoryApi()
+      throws CredentialNotFoundException, IOException {
     List<Credentials> credentialsList = CredentialsUtil
         .getCredentialsByTarget(TargetType.TT_DIRECTORY);
     if (credentialsList.size() < 1) {

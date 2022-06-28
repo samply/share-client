@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.7.1 - 2022-06-15]
+### Fixed
+- Check Pseudonymisation GUI
+- increased Directory Sync version
+- Json-Smart 1.3.3
+
 ## [7.7.0 - 2022-05-19]
 ### Added
 - Send ldm certificate date to monitoring 

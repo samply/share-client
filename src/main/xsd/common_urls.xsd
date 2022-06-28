@@ -12,6 +12,7 @@
       <xs:element name="directoryUrl" type="xs:anyURI" minOccurs="0"/>
       <xs:element name="patientlistUrl" type="xs:anyURI" minOccurs="0" />
       <xs:element name="projectPseudonymisationUrl" type="xs:anyURI" minOccurs="0"/>
+      <xs:element name="projectPseudonymisationUrlCheck" type="xs:anyURI" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
 
