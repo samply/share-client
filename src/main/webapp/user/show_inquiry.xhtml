@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
-
 <ui:composition template="/WEB-INF/templates/globalTemplate.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -12,6 +11,7 @@
                 xmlns:sscl="http://xmlns.jcp.org/jsf/composite/samply-share-client"
                 xmlns:wu="http://share.samply.de/webutils"
                 xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:p="http://primefaces.org/ui"
 
 
 >
@@ -309,7 +309,7 @@
 
         <!--In dktk, show results panel. Check for availability is done in the included facelet-->
         <ui:fragment
-                rendered="#{(wu:getProjectName() == 'samply' or wu:getProjectName() == 'dktk')}">
+                rendered="#{(wu:getProjectName() == 'dktk')}">
             <div class="row">
                 <div class="col-xs-12" id="resultDiv">
                     <ui:include src="../WEB-INF/includes/c_inquiry_results.xhtml"/>
@@ -321,6 +321,26 @@
                                          oncomplete="unblockElement('#resultDiv .panel-body'); initPagination();"/>
                     </h:form>
                 </div>
+            </div>
+        </ui:fragment>
+        <ui:fragment
+                rendered="#{(wu:getProjectName() == 'samply')}">
+            <ui:param name="sublist" value="#{inquiryBean.loadSubListUrls()}"/>
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <h:outputFormat value="#{msg.si_matchingResults}"/>
+                    </h3>
+                </div>
+                <br/>
+                <p:linkButton value="Patient" styleClass="ui-button-raised ui-button-secondary"
+                              style="font-size:1.4em; margin-right: .5rem;"
+                              href="#{sublist[0]}"
+                              target="_blank"/>
+                <p:linkButton value="Specimen" styleClass="ui-button-raised ui-button-secondary"
+                              style="font-size:1.4em; margin-right: .5rem;"
+                              href="#{sublist[1]}"
+                              target="_blank"/>
             </div>
         </ui:fragment>
     </ui:define>

@@ -151,7 +151,7 @@ public class InquiryBean implements Serializable {
           try {
             containerTmp = Converter.convertCcpContainerToCommonContainer(patientContainer);
           } catch (JAXBException e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
           }
           containerTree = visitContainerNode(containerTree, containerTmp);
 
@@ -173,7 +173,7 @@ public class InquiryBean implements Serializable {
           try {
             containerTmp = Converter.convertOsseContainerToCommonContainer(patientContainer);
           } catch (JAXBException e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
           }
 
           containerTree = visitContainerNode(containerTree, containerTmp);
@@ -598,7 +598,6 @@ public class InquiryBean implements Serializable {
   }
 
 
-
   /**
    * Generate the query criteria tree from the criteria string in common namespace.
    *
@@ -786,6 +785,19 @@ public class InquiryBean implements Serializable {
   }
 
   /**
+   * Load the sublist results.
+   * @return sublist results
+   */
+  public List<String> loadSubListUrls() {
+    List<InquiryResult> inquiryResultList = InquiryResultUtil.fetchLastTwoInquiryResult(
+        latestInquiryDetails.getId(), false);
+    List<String> locations = new ArrayList<>();
+    locations.add(inquiryResultList.get(0).getLocation());
+    locations.add(inquiryResultList.get(1).getLocation());
+    return locations;
+  }
+
+  /**
    * Send a reply back to the broker. Currently only supports the size. TODO: Add support for other
    * reply types TODO: Add success/error message
    *
@@ -808,7 +820,7 @@ public class InquiryBean implements Serializable {
                   .getLocation());
               brokerConnector.reply(latestInquiryDetails, queryResult);
             } catch (LdmConnectorException e) {
-              logger.error(e.getMessage(),e);
+              logger.error(e.getMessage(), e);
             }
           } else if (ApplicationUtils.isLanguageCql()) {
             CqlResult queryResult = new CqlResultFactory(latestInquiryDetails).createCqlResult();
@@ -885,7 +897,7 @@ public class InquiryBean implements Serializable {
       newDocument = null;
       Ajax.oncomplete(RESET_FILEINPUT, CREATE_EVENTHANDLERS);
     } catch (IOException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       logger.error("Document upload failed.");
     }
   }
@@ -955,7 +967,7 @@ public class InquiryBean implements Serializable {
     try {
       reloadPageWithoutExceptionManagement();
     } catch (IOException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -1003,7 +1015,7 @@ public class InquiryBean implements Serializable {
     Integer timeout = ConfigurationUtil
         .getConfigurationElementValueAsInteger(EnumConfiguration.EXPORT_TIMEOUT_IN_MINUTES);
     ExportFileGenerator exportFileGenerator =
-        new ExportFileGenerator(latestInquiryResult, ldmConnector, inquiry,selectedInquiryContact,
+        new ExportFileGenerator(latestInquiryResult, ldmConnector, inquiry, selectedInquiryContact,
             validationHandling, timeout);
 
     ByteArrayOutputStream bos = exportFileGenerator.generateExport();
