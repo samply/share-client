@@ -7,7 +7,7 @@ ADD target/connector.war /connector/connector.war
 RUN mkdir -p /connector/extracted && \
        unzip /connector/connector.war -d /connector/extracted/
 
-FROM tomcat:9-jre8-temurin
+FROM tomcat:9-jre8-temurin as docker-build
 
 ## Define for which project this image is build
 ARG PROJECT=samply
@@ -43,3 +43,110 @@ ENV JAVA_OPTS "-Dlog4j.configurationFile=${CATALINA_HOME}/conf/log4j2.xml"
 ADD src/docker/start.sh                         /docker/
 RUN chmod +x                                    /docker/start.sh
 CMD ["sh", "-c", "/docker/start.sh"]
+
+ENV TZ="Europe/Berlin"
+
+# Stage used by ci for dktk images (--target=dktk)
+FROM docker-build as dktk
+ENV TEST_PROJECT="dktk"
+ENV POSTGRES_PORT="5432"
+ENV CCP_CENTRALSEARCH_URL="https://centralsearch-test.dktk.dkfz.de/"
+ENV CCP_DECENTRALSEARCH_URL="https://decentralsearch-test.ccp-it.dktk.dkfz.de/"
+ENV CONNECTOR_ENABLE_METRICS="false"
+ENV POSTGRES_DB="share_v2"
+ENV POSTGRES_USER="samplyweb"
+ENV PROTOCOL="http"
+ENV PORT="8080"
+ENV DEPLOYMENT_CONTEXT="dktk-connector"
+ENV FEATURE_BBMRI_DIRECTORY_SYNC="false"
+ENV FEATURE_DKTK_CENTRAL_SEARCH="false"
+ENV FEATURE_NNGM_CTS="false"
+ENV LOG_LEVEL="info"
+ENV MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
+ENV POSTGRES_HOST="bridgehead-dktk-connector-db"
+ENV QUERY_LANGUAGE="QUERY"
+ENV PATIENTLIST_URL="http://bridgehead-patientlist:8080/Patientlist"
+ENV PROJECTPSEUDONYMISATION_URL="http://bridgehead-id-manager:8080/html/projectSelection.html"
+ENV http_proxy="http://bridgehead-forward-proxy:3128"
+ENV https_proxy="http://bridgehead-forward-proxy:3128"
+ENV HTTP_PROXY="http://bridgehead-forward-proxy:3128"
+ENV HTTPS_PROXY="http://bridgehead-forward-proxy:3128"
+ENV ID_MANAGER_URL="http://bridgehead-id-manager:8080"
+
+# Stage used by ci for gbn images (--target=gbn)
+FROM docker-build as gbn
+ENV TEST_PROJECT="gbn"
+ENV CONNECTOR_ENABLE_METRICS="false"
+ENV POSTGRES_DB="samply.connector"
+ENV POSTGRES_HOST="bridgehead-gbn-connector-db"
+ENV POSTGRES_USER="samply"
+ENV QUERY_LANGUAGE="CQL"
+ENV DEPLOYMENT_CONTEXT="gbn-connector"
+ENV LOG_LEVEL="info"
+ENV STORE_URL="http://bridgehead-gbn-blaze-store:8080/fhir"
+ENV MDR_URL="https://mdr.germanbiobanknode.de/v3/api/mdr"
+ENV PROTOCOL="http"
+ENV PORT="8080"
+ENV http_proxy="http://bridgehead-forward-proxy:3128"
+ENV https_proxy="http://bridgehead-forward-proxy:3128"
+ENV HTTP_PROXY="http://bridgehead-forward-proxy:3128"
+ENV HTTPS_PROXY="http://bridgehead-forward-proxy:3128"
+
+# Stage used by ci for c4 images (--target=c4)
+FROM docker-build as c4
+ENV TEST_PROJECT="c4"
+ENV POSTGRES_PORT="5432"
+ENV CCP_CENTRALSEARCH_URL="https://centralsearch-test.dktk.dkfz.de/"
+ENV CCP_DECENTRALSEARCH_URL="https://decentralsearch-test.ccp-it.dktk.dkfz.de/"
+ENV CONNECTOR_ENABLE_METRICS="false"
+ENV POSTGRES_DB="share_v2"
+ENV POSTGRES_USER="samplyweb"
+ENV CONNECTOR_SHARE_URL="${PROTOCOL}://${HOST}:${PORT}"
+ENV DEPLOYMENT_CONTEXT="dktk-connector"
+ENV FEATURE_BBMRI_DIRECTORY_SYNC="false"
+ENV FEATURE_DKTK_CENTRAL_SEARCH="false"
+ENV FEATURE_NNGM_CTS="false"
+ENV LOG_LEVEL="info"
+ENV MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
+ENV POSTGRES_HOST="bridgehead-dktk-connector-db"
+ENV PROTOCOL="http"
+ENV QUERY_LANGUAGE="QUERY"
+ENV http_proxy="http://bridgehead-forward-proxy:3128"
+ENV https_proxy="http://bridgehead-forward-proxy:3128"
+ENV HTTP_PROXY="http://bridgehead-forward-proxy:3128"
+ENV HTTPS_PROXY="http://bridgehead-forward-proxy:3128"
+
+FROM docker-build as nngm
+ENV TEST_PROJECT="nngm"
+ENV POSTGRES_PORT="5432"
+ENV CONNECTOR_ENABLE_METRICS="false"
+ENV POSTGRES_DB="share_v2"
+ENV POSTGRES_USER="samplyweb"
+ENV CONNECTOR_SHARE_URL="${PROTOCOL}://${HOST}:${PORT}"
+ENV DEPLOYMENT_CONTEXT="nngm-connector"
+ENV FEATURE_BBMRI_DIRECTORY_SYNC="false"
+ENV FEATURE_DKTK_CENTRAL_SEARCH="false"
+ENV FEATURE_NNGM_CTS="true"
+ENV FEATURE_NNGM_ENCRYPT_ID="false"
+ENV ID_MANAGER_URL="http://bridgehead-example:8080"
+ENV PATIENTLIST_URL="http://bridgehead-example:8080"
+ENV PROJECTPSEUDONYMISATION_URL="http://bridgehead-example:8080"
+ENV MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
+ENV NO_PROXY="bridgehead-example"
+ENV STORE_URL="http://bridgehead-example:8080"
+ENV LOG_LEVEL="info"
+ENV POSTGRES_HOST="bridgehead-nngm-connector-db"
+ENV PROTOCOL="http"
+ENV QUERY_LANGUAGE="CQL"
+ENV http_proxy="http://bridgehead-forward-proxy:3128"
+ENV https_proxy="http://bridgehead-forward-proxy:3128"
+ENV HTTP_PROXY="http://bridgehead-forward-proxy:3128"
+ENV HTTPS_PROXY="http://bridgehead-forward-proxy:3128"
+ENV NNGM_CTS_URL="https://nngm-test.medicalsyn.com/api/v1.0/hl7/patient"
+ENV NNGM_PROFILE="http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert"
+ENV NNGM_MAGICPL_URL="https://test.verbis.dkfz.de/nngm/magicpl"
+ENV NNGM_MAINZELLISTE_URL="https://test.verbis.dkfz.de/nngm/mainzelliste"
+
+
+# This stage is build when defining no target
+FROM docker-build as vanilla

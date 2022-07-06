@@ -8,6 +8,7 @@ on:
     branches:
       - master
       - develop
+      - feature/environmentPreconfiguration
     tags:
       - 'v*.*.*'
   pull_request:
@@ -28,6 +29,9 @@ jobs:
             project_context: dktk
             maven_profile: dktk
           - project: c4
+            project_context: dktk
+            maven_profile: dktk
+          - project: nngm
             project_context: dktk
             maven_profile: dktk
     services:
@@ -93,6 +97,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
+          target: ${{matrix.project}}
           platforms: linux/amd64,linux/arm64
           build-args: |
             PROJECT=${{matrix.project_context}}
