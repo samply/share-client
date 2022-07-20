@@ -6,4 +6,5 @@
   <com:shareUrl>{share-url}</com:shareUrl>
   <com:patientlistUrl>{patientlist-url}</com:patientlistUrl>
   <com:projectPseudonymisationUrl>{projectpseudonymisation-url}</com:projectPseudonymisationUrl>
+  <com:projectPseudonymisationUrlCheck>{projectpseudonymisation-url-check}</com:projectPseudonymisationUrlCheck>
 </com:urls>
