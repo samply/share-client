@@ -43,3 +43,6 @@ ENV JAVA_OPTS "-Dlog4j.configurationFile=${CATALINA_HOME}/conf/log4j2.xml"
 ADD src/docker/start.sh                         /docker/
 RUN chmod +x                                    /docker/start.sh
 CMD ["sh", "-c", "/docker/start.sh"]
+
+FROM httpd:2.4
+COPY ./index.html/ /usr/local/apache2/htdocs/

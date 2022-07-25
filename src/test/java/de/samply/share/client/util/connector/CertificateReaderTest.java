@@ -23,7 +23,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-
+@Disabled
 @Testcontainers
 public class CertificateReaderTest {
   private static final Logger logger = LoggerFactory.getLogger(
