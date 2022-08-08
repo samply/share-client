@@ -7,7 +7,6 @@ import de.samply.share.client.model.db.tables.pojos.InquiryResult;
 import de.samply.share.client.model.db.tables.records.InquiryResultRecord;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.scene.control.Tab;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
