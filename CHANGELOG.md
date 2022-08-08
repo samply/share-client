@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.8.0 - 2022-08-08]
+### Changed
+- Changed NumberDisguiser to LaplaceMechanism
+
 ## [7.7.2 - 2022-07-27]
 ### Fixed
 - Translate German remaining sentences for English version of main site

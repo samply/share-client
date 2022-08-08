@@ -693,12 +693,12 @@ public class BrokerConnector {
       throws BrokerConnectorException {
     ReplyEntity replyDonor = new ReplyEntity();
     replyDonor.setLabel("Donors");
-    replyDonor.setCount(NumberDisguiser.getDisguisedNumber(result.getNumberOfPatients()));
+    replyDonor.setCount(LaplaceMechanism.privatize(result.getNumberOfPatients(), 1, 0.12));
     replyDonor.setStratifications(result.getStratificationsOfPatients());
 
     ReplyEntity replySample = new ReplyEntity();
     replySample.setLabel("Samples");
-    replySample.setCount(NumberDisguiser.getDisguisedNumber(result.getNumberOfSpecimens()));
+    replySample.setCount(LaplaceMechanism.privatize(result.getNumberOfSpecimens(), 1, 0.12));
     replySample.setStratifications(result.getStratificationsOfSpecimens());
 
     Reply reply = new Reply();
