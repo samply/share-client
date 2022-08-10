@@ -5,8 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [7.8.0 - 2022-08-08]
-### Changed
-- Changed NumberDisguiser to LaplaceMechanism
+### Added
+- create sublist for cql results
+- changed NumberDisguiser to LaplaceMechanism
 
 ## [7.7.2 - 2022-07-27]
 ### Fixed

@@ -28,7 +28,7 @@ public class InquiryResultUtil {
   // Prevent instantiation
   private InquiryResultUtil() {
   }
-  
+
   /**
    * Get the inquiry result DAO.
    *
@@ -37,7 +37,7 @@ public class InquiryResultUtil {
   public static InquiryResultDao getInquiryResultDao() {
     return inquiryResultDao;
   }
-  
+
   /**
    * Get a list of all inquiry results.
    *
@@ -46,7 +46,7 @@ public class InquiryResultUtil {
   public static List<InquiryResult> fetchInquiryResults() {
     return inquiryResultDao.findAll();
   }
-  
+
   /**
    * Get a list of all inquiry results for certain inquiry details.
    *
@@ -56,22 +56,25 @@ public class InquiryResultUtil {
   public static List<InquiryResult> fetchInquiryResultsForInquiryDetailsById(int inquiryDetailsId) {
     return inquiryResultDao.fetchByInquiryDetailsId(inquiryDetailsId);
   }
-  
+
   /**
    * Get the last two inquiry result (patient,specimen) for a cql query.
    *
    * @param inquiryDetailsId the id of the inquiry details
+   * @param statsOnly        if the results from the stats only should be loaded
    * @return the list of inquiry results
    */
-  public static List<InquiryResult> fetchLastTwoInquiryResult(int inquiryDetailsId) {
+  public static List<InquiryResult> fetchLastTwoInquiryResult(int inquiryDetailsId,
+      boolean statsOnly) {
     DSLContext dslContext = ResourceManager.getDslContext();
     return dslContext
         .selectFrom(Tables.INQUIRY_RESULT)
-        .where(Tables.INQUIRY_RESULT.INQUIRY_DETAILS_ID.equal(inquiryDetailsId))
+        .where(Tables.INQUIRY_RESULT.INQUIRY_DETAILS_ID.equal(inquiryDetailsId)
+            .and(Tables.INQUIRY_RESULT.STATISTICS_ONLY.eq(statsOnly)))
         .orderBy(Tables.INQUIRY_RESULT.EXECUTED_AT.desc()).limit(2)
         .fetchInto(InquiryResult.class);
   }
-  
+
   /**
    * Get one inquiry result.
    *
@@ -81,28 +84,31 @@ public class InquiryResultUtil {
   public static InquiryResult fetchInquiryResultById(int inquiryResultId) {
     return inquiryResultDao.fetchOneById(inquiryResultId);
   }
-  
+
   /**
    * Get the last result for a inquiryCriteria by Id.
    *
    * @param inquiryCriteriaId id of inquiryCriteria
+   * @param statsOnly         if the results from the stats only should be loaded*
    * @return InquiryResult of the InquiryCriteria
    */
   public static InquiryResult fetchLatestInquiryResultForInquiryCriteriaById(
-      int inquiryCriteriaId) {
+      int inquiryCriteriaId, boolean statsOnly) {
     DSLContext dslContext = ResourceManager.getDslContext();
     return dslContext
         .selectFrom(Tables.INQUIRY_RESULT)
-        .where(Tables.INQUIRY_RESULT.INQUIRY_CRITERIA_ID.equal(inquiryCriteriaId))
+        .where(Tables.INQUIRY_RESULT.INQUIRY_CRITERIA_ID.equal(inquiryCriteriaId)
+            .and(Tables.INQUIRY_RESULT.STATISTICS_ONLY.eq(statsOnly)))
         .and(Tables.INQUIRY_RESULT.EXECUTED_AT.equal(
             dslContext
                 .select(DSL.max(Tables.INQUIRY_RESULT.EXECUTED_AT))
                 .from(Tables.INQUIRY_RESULT)
-                .where(Tables.INQUIRY_RESULT.INQUIRY_CRITERIA_ID.equal(inquiryCriteriaId))
-        ))
+                .where(Tables.INQUIRY_RESULT.INQUIRY_CRITERIA_ID.equal(inquiryCriteriaId)
+                    .and(Tables.INQUIRY_RESULT.STATISTICS_ONLY.eq(statsOnly)
+                    ))))
         .fetchOneInto(InquiryResult.class);
   }
-  
+
   /**
    * Get the latest inquiry result for certain inquiry details.
    *
@@ -122,7 +128,7 @@ public class InquiryResultUtil {
         ))
         .fetchOneInto(InquiryResult.class);
   }
-  
+
   /**
    * Insert a new inquiry result into the database.
    *
@@ -137,7 +143,7 @@ public class InquiryResultUtil {
     inquiryResultRecord.refresh();
     return inquiryResultRecord.getId();
   }
-  
+
   /**
    * Update an inquiry result in the database.
    *
@@ -146,7 +152,7 @@ public class InquiryResultUtil {
   public static void updateInquiryResult(InquiryResult inquiryResult) {
     inquiryResultDao.update(inquiryResult);
   }
-  
+
   /**
    * Get a list of inquiries for a certain entity type, where no notifications have been sent yet.
    *
@@ -162,8 +168,8 @@ public class InquiryResultUtil {
       return getInquiryResultsForNotification(entityType);
     }
   }
-  
-  
+
+
   /**
    * Get a list of inquiries for a certain entity type, where no notifications have been sent yet.
    * Do not include empty results.
@@ -190,8 +196,8 @@ public class InquiryResultUtil {
             .and(Tables.REQUESTED_ENTITY.NAME.equal(entityType)))
         .fetchInto(InquiryResult.class);
   }
-  
-  
+
+
   /**
    * Get a list of inquiries for a certain entity type, where no notifications have been sent yet.
    * Include empty results.
@@ -218,7 +224,7 @@ public class InquiryResultUtil {
             .and(Tables.REQUESTED_ENTITY.NAME.equal(entityType)))
         .fetchInto(InquiryResult.class);
   }
-  
+
   /**
    * Set the notification sent flag for a list of inquiryResults.
    *
