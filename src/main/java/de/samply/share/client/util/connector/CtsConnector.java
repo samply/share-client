@@ -214,14 +214,12 @@ public class CtsConnector {
         for (ResourceReferenceInfo resourceReferenceInfo : resourceReferenceInfoList) {
           IIdType idType = resourceReferenceInfo.getResourceReference().getReferenceElement();
           idType = getEncryptedId(idType, encrypt, crypt);
-          // TODO: Validate FHIR URL?
           resourceReferenceInfo.getResourceReference().setReference(idType.getValue());
         }
         bundleEntryComponentList.set(i, bundleEntryComponent);
       }
       bundle.setEntry(bundleEntryComponentList);
     } catch (GeneralSecurityException e) {
-      logger.error(e.getMessage(), e);
       throw new CtsConnectorException(e);
     }
     return fhirUtil.encodeResourceToJson(bundle);
