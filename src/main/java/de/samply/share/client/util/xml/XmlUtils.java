@@ -4,6 +4,7 @@ import de.samply.share.client.util.connector.exception.XmlPareException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -111,6 +112,8 @@ public class XmlUtils {
     String xmlString;
     try {
       TransformerFactory transformerFactory = TransformerFactory.newInstance();
+      transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
       Transformer transformer = transformerFactory.newTransformer();
       DOMSource source = new DOMSource(document);
       StringWriter writer = new StringWriter();
