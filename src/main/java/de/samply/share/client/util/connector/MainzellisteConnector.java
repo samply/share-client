@@ -176,8 +176,8 @@ public class MainzellisteConnector {
           return bundle;
         }
       }
-      checkNonNull(patient, "A required resource is empty: " + FhirUtil.FHIR_RESOURCE_PATIENT);
-      checkNonNull(coverage, "A required resource is empty: " + FhirUtil.FHIR_RESOURCE_COVERAGE);
+      checkNonNull(patient, getMissingErrorMessage(FhirUtil.FHIR_RESOURCE_PATIENT));
+      checkNonNull(coverage, getMissingErrorMessage(FhirUtil.FHIR_RESOURCE_COVERAGE));
     } catch (ConflictException | MandatoryAttributeException | IllegalArgumentException e) {
       throw new MainzellisteConnectorException(e);
     }
@@ -202,25 +202,21 @@ public class MainzellisteConnector {
     try {
       Node identifyingDataNode =
           xmlDoc.getElementsByTagName(XmlUtils.IDENTIFYING_DATA_ELEMENT).item(0);
-      checkNonNull(identifyingDataNode, "A required element is empty: "
-          + XmlUtils.IDENTIFYING_DATA_ELEMENT);
+      checkNonNull(identifyingDataNode, getMissingErrorMessage(XmlUtils.IDENTIFYING_DATA_ELEMENT));
 
       Element identifyingDataElement = (Element) identifyingDataNode;
       Node nodePatient = identifyingDataElement.getElementsByTagName(
           XmlUtils.PATIENT_ELEMENT).item(0);
       checkNonNull(nodePatient,
-          "A required element is empty: " + XmlUtils.PATIENT_ELEMENT);
+          getMissingErrorMessage(XmlUtils.PATIENT_ELEMENT));
       CtsPatient patient = getCtsPatientFromXml(xmlDoc);
 
       Node medicalDataNode = xmlDoc.getElementsByTagName(XmlUtils.MEDICAL_DATA_ELEMENT).item(0);
-      checkNonNull(medicalDataNode, "A required element is empty: "
-          + XmlUtils.MEDICAL_DATA_ELEMENT);
-      Node nodeMedicalDataPatient = null;
+      checkNonNull(medicalDataNode, getMissingErrorMessage(XmlUtils.MEDICAL_DATA_ELEMENT));
       Element medicalDataNodeElement = (Element) medicalDataNode;
       Node nodeBirthdate =
           medicalDataNodeElement.getElementsByTagName(XmlUtils.BIRTHDATE_ELEMENT).item(0);
-      checkNonNull(nodeBirthdate, "A required element is empty: " + XmlUtils.BIRTHDATE_ELEMENT);
-      nodeBirthdate.setTextContent(patient.getGeburtsjahr() + "-" + "01" + "-" + "01");
+      checkNonNull(nodeBirthdate, getMissingErrorMessage(XmlUtils.BIRTHDATE_ELEMENT));
       nodeBirthdate.setTextContent(concatenateDate(String.valueOf(
           patient.getGeburtsjahr()), "01", "01"));
       JsonObject jsonIdatObject = createJsonPatient(patient);
@@ -437,7 +433,6 @@ public class MainzellisteConnector {
                 IDAT_VERSICHERUNGSNUMMER));
       }
     } catch (MandatoryAttributeException e) {
-      logger.warn("Error at identifying patient data: " + e.getMessage());
       throw new MandatoryAttributeException(e.getMessage());
     }
     return jsonIdatObject;
@@ -489,7 +484,6 @@ public class MainzellisteConnector {
           XmlUtils.VERSICHERUNGSNUMMER_ELEMENT);
       jsonIdatObject.addProperty(IDAT_VERSICHERUNGSNUMMER, versicherungsnummerElement);
     } catch (MandatoryAttributeException e) {
-      logger.warn("Error at identifying patient data: " + e.getMessage());
       throw new MandatoryAttributeException(e.getMessage());
     }
     return jsonIdatObject;

@@ -25,7 +25,6 @@ import org.xml.sax.SAXException;
  * Utils for processing the XML content.
  */
 public class XmlUtils {
-  private static final Logger logger = LoggerFactory.getLogger(XmlUtils.class);
   public static final boolean EMPTY_NULL_CHECK = true;
   public static final boolean NO_EMPTY_NULL_CHECK = false;
   public static final String IDENTIFYING_DATA_ELEMENT = "identifying-data";
@@ -40,13 +39,9 @@ public class XmlUtils {
   public static final String ADRESSEPLZ_ELEMENT = "adresseplz";
   public static final String ADRESSESTADT_ELEMENT = "adressestadt";
   public static final String ADRESSESTRASSE_ELEMENT = "adressestrasse";
-  public static final String MEDICAL_DATA__ELEMENT = "medical-data";
-  public static final String MEDICAL_DATA_ELEMENT = MEDICAL_DATA__ELEMENT;
+  public static final String MEDICAL_DATA_ELEMENT = "medical-data";
   public static final String TOKEN_ELEMENT = "token";
   public static final String BIRTHDATE_ELEMENT = "birthdate";
-
-  public XmlUtils() {
-  }
 
   /**
  * xml utils.

@@ -170,12 +170,7 @@ public class CtsConnector {
     InputStream xmlInputStream = CharSource.wrap(xmlString)
             .asByteSource(StandardCharsets.UTF_8).openStream();
     Document xmlDocument;
-    try {
-      xmlDocument = xmlUtils.domBuilder(xmlInputStream);
-    } catch (XmlPareException e) {
-      logger.error(e.getMessage(), e);
-      throw new XmlPareException(e.getMessage());
-    }
+    xmlDocument = xmlUtils.domBuilder(xmlInputStream);
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
     Document pseudonymizedXml = null;
     pseudonymizedXml = mainzellisteConnector.getPatientXmlPseudonym(xmlDocument);
