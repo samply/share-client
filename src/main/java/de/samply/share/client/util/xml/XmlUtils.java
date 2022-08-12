@@ -12,8 +12,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -56,7 +54,13 @@ public class XmlUtils {
           throws IOException, XmlPareException {
     final DocumentBuilder dBuilder;
     try {
-      dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+      docFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+      docFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+      docFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+      docFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+      docFactory.setXIncludeAware(false);
+      dBuilder = docFactory.newDocumentBuilder();
       Document xmlDoc = dBuilder.parse(inputStream);
       xmlDoc.getDocumentElement().normalize();
       return xmlDoc;
