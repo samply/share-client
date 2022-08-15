@@ -98,7 +98,7 @@
     <twbs-pagination.version>1.4.1</twbs-pagination.version>
     <jqplot.version>1.0.9.d96a669-1</jqplot.version>
     <hapi.version>5.7.2</hapi.version>
-    <directory-sync.version>0.1.1</directory-sync.version>
+    <directory-sync.version>0.2.0</directory-sync.version>
     <togglz.version>2.8.0</togglz.version>
     <swagger-ui.version>4.1.3</swagger-ui.version>
     <microprofile-openapi-api.version>3.0</microprofile-openapi-api.version>
