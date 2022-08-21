@@ -19,7 +19,6 @@ ENV PROJECT=$PROJECT
 RUN ["rm", "-fr", "/usr/local/tomcat/webapps"]
 
 COPY --from=extract /connector/extracted/ /usr/local/tomcat/webapps/ROOT/
-RUN chown -R tomcat /usr/local/tomcat/
 # Adding fontconfig and libfreetype6 for rendering the BK Export, cf. https://stackoverflow.com/questions/55454036
 RUN	apt-get update && apt-get install -y fontconfig libfreetype6 && \
     rm -rf /var/lib/apt/lists/*
@@ -45,7 +44,6 @@ ADD https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${
 ENV JAVA_OPTS "-Dlog4j.configurationFile=${CATALINA_HOME}/conf/log4j2.xml"
 ADD src/docker/start.sh                         /docker/
 RUN chmod +x                                    /docker/start.sh
-RUN chown -R tomcat /docker/
-RUN chown -R tomcat ${CATALINA_HOME}/conf/
+RUN chown -R tomcat /docker/ ${CATALINA_HOME}/conf/
 USER tomcat
 CMD ["sh", "-c", "/docker/start.sh"]
