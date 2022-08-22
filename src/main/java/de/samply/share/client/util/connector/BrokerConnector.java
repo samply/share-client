@@ -81,6 +81,8 @@ import org.slf4j.LoggerFactory;
 public class BrokerConnector {
 
   private static final Logger logger = LoggerFactory.getLogger(BrokerConnector.class);
+  public static final double EPSILON = 0.12;
+  public static final double SENSITIVITY = 1; //while counting query sensitivity = 1
   private transient HttpConnector httpConnector;
   private Broker broker;
   private Credentials credentials;
@@ -182,7 +184,7 @@ public class BrokerConnector {
         return broker.getName();
       }
     } catch (IOException | URISyntaxException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
     return broker.getAddress();
@@ -216,7 +218,7 @@ public class BrokerConnector {
         return BrokerStatusType.BS_UNREACHABLE;
       }
     } catch (IOException | URISyntaxException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -245,7 +247,7 @@ public class BrokerConnector {
       response.close();
       return retCode == HttpStatus.SC_NO_CONTENT;
     } catch (IOException | URISyntaxException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -281,7 +283,7 @@ public class BrokerConnector {
 
       return retCode;
     } catch (IOException | URISyntaxException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -327,7 +329,7 @@ public class BrokerConnector {
           XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(responseString));
           inquiriesIdList = unmarshaller.unmarshal(reader, InquiriesIdList.class).getValue();
         } catch (Exception e) {
-          logger.error(e.getMessage(),e);
+          logger.error(e.getMessage(), e);
           throw new BrokerConnectorException("Error reading inquiries", e);
         }
 
@@ -342,7 +344,7 @@ public class BrokerConnector {
         return queryIds;
       }
     } catch (IOException | URISyntaxException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
     return new HashMap<>();
@@ -440,7 +442,7 @@ public class BrokerConnector {
         return responseString;
       }
     } catch (IOException | URISyntaxException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
     return null;
   }
@@ -485,7 +487,7 @@ public class BrokerConnector {
         return queryElement.getValue();
       }
     } catch (IOException | URISyntaxException | JAXBException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
     return null;
@@ -530,7 +532,7 @@ public class BrokerConnector {
               .unmarshal(new StreamSource(stringReader), Inquiry.class);
           return inquiryElement.getValue();
         } catch (JAXBException e) {
-          logger.error(e.getMessage(),e);
+          logger.error(e.getMessage(), e);
           throw new BrokerConnectorException(e);
         }
       } else {
@@ -540,7 +542,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -580,7 +582,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException | JAXBException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -620,7 +622,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException | JAXBException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -657,7 +659,7 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -676,7 +678,7 @@ public class BrokerConnector {
 
       reply(inquiryDetails, replyString);
     } catch (IOException | URISyntaxException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -693,12 +695,14 @@ public class BrokerConnector {
       throws BrokerConnectorException {
     ReplyEntity replyDonor = new ReplyEntity();
     replyDonor.setLabel("Donors");
-    replyDonor.setCount(LaplaceMechanism.privatize(result.getNumberOfPatients(), 1, 0.12));
+    replyDonor.setCount(
+        LaplaceMechanism.privatize(result.getNumberOfPatients(), SENSITIVITY, EPSILON));
     replyDonor.setStratifications(result.getStratificationsOfPatients());
 
     ReplyEntity replySample = new ReplyEntity();
     replySample.setLabel("Samples");
-    replySample.setCount(LaplaceMechanism.privatize(result.getNumberOfSpecimens(), 1, 0.12));
+    replySample.setCount(
+        LaplaceMechanism.privatize(result.getNumberOfSpecimens(), SENSITIVITY, EPSILON));
     replySample.setStratifications(result.getStratificationsOfSpecimens());
 
     Reply reply = new Reply();
@@ -710,7 +714,7 @@ public class BrokerConnector {
     try {
       reply(inquiryDetails, mapper.writeValueAsString(reply));
     } catch (URISyntaxException | IOException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }
@@ -829,13 +833,14 @@ public class BrokerConnector {
       }
 
     } catch (IOException | URISyntaxException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }
 
   /**
    * Send the site name of the bridgehead to the searchbroker.
+   *
    * @param siteName the site name of the bridgehead
    * @return http response code
    * @throws BrokerConnectorException BrokerConnectorException
@@ -850,15 +855,16 @@ public class BrokerConnector {
           AUTH_HEADER_VALUE_SAMPLY + " " + credentials.getPasscode());
       return httpClient.execute(httpHost, httpPut);
     } catch (IOException | URISyntaxException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }
 
   /**
    * Get all site names which are stored in the searchbroker.
+   *
    * @return site names as list
-   * @throws URISyntaxException URISyntaxException
+   * @throws URISyntaxException       URISyntaxException
    * @throws BrokerConnectorException BrokerConnectorException
    */
   public List<String> getSiteNames() throws URISyntaxException, BrokerConnectorException {
@@ -879,7 +885,7 @@ public class BrokerConnector {
       }
       return new ArrayList<>();
     } catch (IOException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       throw new BrokerConnectorException(e);
     }
   }

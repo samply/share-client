@@ -14,6 +14,7 @@ public class LaplaceMechanismTest {
   @CsvFileSource(resources = "LaplaceMechanismTest.csv")
   public void testGetDisguisedNumber(int number, int result)
       throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    //to get the same randomness for each test invocation
     SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
     sr.setSeed("testSeed12".getBytes("us-ascii"));
     assertEquals(result,

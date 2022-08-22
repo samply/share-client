@@ -5,7 +5,7 @@ import java.security.SecureRandom;
 /**
  * This class implements the laplacian mechanism.
  *
- * @author Tobias Kussel
+ * @author Tobias Kussel, Deniz Tas
  */
 public class LaplaceMechanism {
 
@@ -24,7 +24,7 @@ public class LaplaceMechanism {
   }
 
   /**
-   * Permute a value with the (epsilo, 0) laplacian mechanism.
+   * Permute a value with the (epsilon, 0) laplacian mechanism.
    *
    * @param value       clear value to permute
    * @param sensitivity sensitivity of query
