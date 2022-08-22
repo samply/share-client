@@ -292,7 +292,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal config file");
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -315,7 +315,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal common_urls file", ue);
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -338,7 +338,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal common_operator file");
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -361,7 +361,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal bridgehead_info file", ue);
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -384,7 +384,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal CTS file", ue);
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -872,7 +872,7 @@ public class ApplicationBean implements Serializable {
    * Initialize the settings for the share client.
    */
   @PostConstruct
-  public void init() throws CredentialNotFoundException {
+  public void init() {
     // On startup, check if there are changes to be done in the database
     try {
       logger.info("Migrating Flyway...");
@@ -942,12 +942,17 @@ public class ApplicationBean implements Serializable {
       initCrypt();
     }
     if (featureManager.getFeatureState(ClientFeature.BBMRI_DIRECTORY_SYNC).isEnabled()) {
-      DirectoryApi directoryApi = createDirectoryApi().get();
-      DirectoryService directoryService = new DirectoryService(directoryApi);
-      FhirApi fhirApi = createFhirApi();
-      FhirReporting fhirReporting = new FhirReporting(ctx, fhirApi);
-      sync = new Sync(fhirApi, fhirReporting, directoryApi, directoryService);
-      sync.initResources();
+      DirectoryApi directoryApi;
+      try {
+        directoryApi = createDirectoryApi().get();
+        DirectoryService directoryService = new DirectoryService(directoryApi);
+        FhirApi fhirApi = createFhirApi();
+        FhirReporting fhirReporting = new FhirReporting(ctx, fhirApi);
+        sync = new Sync(fhirApi, fhirReporting, directoryApi, directoryService);
+        sync.initResources();
+      } catch (CredentialNotFoundException e) {
+        logger.error(e.getMessage());
+      }
     }
     logger.info("Application Bean initialized");
 
