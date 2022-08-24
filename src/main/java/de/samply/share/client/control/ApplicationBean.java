@@ -19,7 +19,6 @@ import de.samply.config.util.FileFinderUtil;
 import de.samply.config.util.JaxbUtil;
 import de.samply.directory_sync.Sync;
 import de.samply.directory_sync.directory.DirectoryApi;
-import de.samply.directory_sync.directory.DirectoryService;
 import de.samply.directory_sync.fhir.FhirApi;
 import de.samply.directory_sync.fhir.FhirReporting;
 import de.samply.project.directory.client.DktkProjectDirectory;
@@ -192,7 +191,6 @@ public class ApplicationBean implements Serializable {
   private ConnectCheckResult projectPseudonAvailability = new ConnectCheckResult();
   private static Crypt crypt;
   private FhirContext ctx = FhirContext.forR4();
-  private static Sync sync;
 
 
   public static Locale getLocale() {
@@ -942,24 +940,16 @@ public class ApplicationBean implements Serializable {
       initCrypt();
     }
     if (featureManager.getFeatureState(ClientFeature.BBMRI_DIRECTORY_SYNC).isEnabled()) {
-      DirectoryApi directoryApi;
-      try {
-        directoryApi = createDirectoryApi().get();
-        DirectoryService directoryService = new DirectoryService(directoryApi);
-        FhirApi fhirApi = createFhirApi();
-        FhirReporting fhirReporting = new FhirReporting(ctx, fhirApi);
-        sync = new Sync(fhirApi, fhirReporting, directoryApi, directoryService);
-        sync.initResources();
-      } catch (CredentialNotFoundException e) {
-        logger.error(e.getMessage());
-      }
+      IGenericClient client = ctx
+          .newRestfulGenericClient(ApplicationBean.getUrlsForDirectory().getLdmUrl());
+      client.registerInterceptor(new LoggingInterceptor(true));
+      FhirApi fhirApi = new FhirApi(client);
+      FhirReporting fhirReporting = new FhirReporting(ctx, fhirApi);
+      Sync sync = new Sync(fhirApi, fhirReporting, null, null);
+      sync.initResources();
     }
     logger.info("Application Bean initialized");
 
-  }
-
-  public static Sync getSync() {
-    return sync;
   }
 
   private static void initCrypt() {
