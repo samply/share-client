@@ -2,6 +2,9 @@ package de.samply.share.client.control;
 
 import static org.omnifaces.util.Faces.getServletContext;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import com.google.common.base.Splitter;
 import de.dth.mdr.validator.MdrConnection;
 import de.dth.mdr.validator.MdrValidator;
@@ -14,6 +17,10 @@ import de.samply.common.mdrclient.MdrConnectionException;
 import de.samply.common.mdrclient.MdrInvalidResponseException;
 import de.samply.config.util.FileFinderUtil;
 import de.samply.config.util.JaxbUtil;
+import de.samply.directory_sync.Sync;
+import de.samply.directory_sync.directory.DirectoryApi;
+import de.samply.directory_sync.fhir.FhirApi;
+import de.samply.directory_sync.fhir.FhirReporting;
 import de.samply.project.directory.client.DktkProjectDirectory;
 import de.samply.project.directory.client.DktkProjectDirectoryParameters;
 import de.samply.project.directory.client.ProjectDirectory;
@@ -83,6 +90,7 @@ import de.samply.share.common.model.dto.UserAgent;
 import de.samply.share.common.utils.Constants;
 import de.samply.share.common.utils.ProjectInfo;
 import de.samply.web.mdrfaces.MdrContext;
+import io.vavr.control.Either;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -103,6 +111,7 @@ import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
+import javax.security.auth.login.CredentialNotFoundException;
 import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -111,7 +120,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.HttpClients;
 import org.flywaydb.core.api.FlywayException;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
@@ -179,6 +190,7 @@ public class ApplicationBean implements Serializable {
   private ConnectCheckResult patientListAvailability = new ConnectCheckResult();
   private ConnectCheckResult projectPseudonAvailability = new ConnectCheckResult();
   private static Crypt crypt;
+  private FhirContext ctx = FhirContext.forR4();
 
 
   public static Locale getLocale() {
@@ -278,7 +290,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal config file");
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -301,7 +313,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal common_urls file", ue);
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -324,7 +336,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal common_operator file");
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -347,7 +359,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal bridgehead_info file", ue);
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -370,7 +382,7 @@ public class ApplicationBean implements Serializable {
     } catch (UnmarshalException ue) {
       throw new RuntimeException("Unable to unmarshal CTS file", ue);
     } catch (SAXException | JAXBException | ParserConfigurationException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -927,6 +939,15 @@ public class ApplicationBean implements Serializable {
       logger.info("initializing crypt...");
       initCrypt();
     }
+    if (featureManager.getFeatureState(ClientFeature.BBMRI_DIRECTORY_SYNC).isEnabled()) {
+      IGenericClient client = ctx
+          .newRestfulGenericClient(ApplicationBean.getUrlsForDirectory().getLdmUrl());
+      client.registerInterceptor(new LoggingInterceptor(true));
+      FhirApi fhirApi = new FhirApi(client);
+      FhirReporting fhirReporting = new FhirReporting(ctx, fhirApi);
+      Sync sync = new Sync(fhirApi, fhirReporting, null, null);
+      sync.initResources();
+    }
     logger.info("Application Bean initialized");
 
   }
@@ -1066,6 +1087,26 @@ public class ApplicationBean implements Serializable {
       setComponentInfoViewModel(new ProjectPseudonymizationBasicInfoConnector(),
           projectPseudonAvailability);
     }
+  }
+
+  private Either<OperationOutcome, DirectoryApi> createDirectoryApi()
+      throws CredentialNotFoundException {
+    List<Credentials> credentialsList = CredentialsUtil
+        .getCredentialsByTarget(TargetType.TT_DIRECTORY);
+    if (credentialsList.size() < 1) {
+      throw new CredentialNotFoundException("No directory credentials found");
+    }
+    Credentials credentials = credentialsList.get(0);
+    return DirectoryApi.createWithLogin(HttpClients.createDefault(),
+        ApplicationBean.getUrlsForDirectory().getDirectoryUrl(), credentials.getUsername(),
+        credentials.getPasscode());
+  }
+
+  private FhirApi createFhirApi() {
+    IGenericClient client = ctx
+        .newRestfulGenericClient(ApplicationBean.getUrlsForDirectory().getLdmUrl());
+    client.registerInterceptor(new LoggingInterceptor(true));
+    return new FhirApi(client);
   }
 
   private void setComponentInfoViewModel(IcomponentBasicInfoConnector basicInfoConnector,

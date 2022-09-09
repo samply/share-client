@@ -17,6 +17,7 @@ import de.samply.share.model.common.QueryResultStatistic;
 import de.samply.share.model.cql.CqlResult;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
@@ -129,6 +130,16 @@ public class LdmConnectorCql extends
   public boolean isFirstResultPageAvailable(String location) throws LdmConnectorException {
     // TODO: Check if we can work without pages
     return false;
+  }
+
+  /**
+   * Create a subject list for an entity.
+   * @param location the measure location url
+   * @return location url for the subject list
+   * @throws LdmClientException exception which can be thrown while posting the query to the ldm
+   */
+  public String createSubjectList(URI location) throws LdmClientException {
+    return ldmClient.createSubjectList(location);
   }
 
 
