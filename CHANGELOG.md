@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - create sublist for cql results
 - changed NumberDisguiser to LaplaceMechanism
+- init resources for directory sync
 
 ## [7.7.2 - 2022-07-27]
 ### Fixed
