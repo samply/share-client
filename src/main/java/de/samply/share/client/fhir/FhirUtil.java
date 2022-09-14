@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 public class FhirUtil {
 
   private static final Logger logger = LoggerFactory.getLogger(FhirUtil.class);
-
+  public static final String FHIR_RESOURCE_PATIENT = "patient";
+  public static final String FHIR_RESOURCE_COVERAGE = "coverage";
   private final FhirContext ctx;
 
   public FhirUtil(FhirContext ctx) {
