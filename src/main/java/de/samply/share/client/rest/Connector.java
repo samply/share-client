@@ -458,7 +458,7 @@ public class Connector {
       InquiryLine inquiryLine, InquiryDetails inquiryDetails) {
     List<InquiryResult> inquiryResultList = new ArrayList<>();
     if (ApplicationUtils.isLanguageCql()) {
-      inquiryResultList = InquiryResultUtil.fetchLastTwoInquiryResult(inquiryDetails.getId());
+      inquiryResultList = InquiryResultUtil.fetchLastTwoInquiryResult(inquiryDetails.getId(), true);
     } else if (ApplicationUtils.isLanguageQuery()) {
       inquiryResultList.add(
           InquiryResultUtil.fetchLatestInquiryResultForInquiryDetailsById(inquiryDetails.getId()));
@@ -501,7 +501,7 @@ public class Connector {
       return inquiryResult.getSize().toString();
 
     } catch (Exception e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       return Messages.getString(defaultErrorMessage);
     }
 
@@ -544,7 +544,7 @@ public class Connector {
       return brokerName;
 
     } catch (Exception e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       return UNKNOWN;
     }
 

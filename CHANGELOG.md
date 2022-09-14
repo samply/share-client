@@ -4,10 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [7.7.3 - 2022-08-15]
+## [7.9.0 - 2022-08-15]
 ### Added
 - Add Rest api for the XML specification of nNGM
 - Delete methods of the nNGM option 2 from the FHIR api 
+## [7.8.0 - 2022-08-08]
+### Added
+- create sublist for cql results
+- changed NumberDisguiser to LaplaceMechanism
+- init resources for directory sync
+
 ## [7.7.2 - 2022-07-27]
 ### Fixed
 - Translate German remaining sentences for English version of main site

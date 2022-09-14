@@ -37,7 +37,7 @@ public class CqlResultFactory {
 
     for (InquiryCriteria inquiryCriteria : inquiryCriteriaList) {
       InquiryResult inquiryResult = InquiryResultUtil
-          .fetchLatestInquiryResultForInquiryCriteriaById(inquiryCriteria.getId());
+          .fetchLatestInquiryResultForInquiryCriteriaById(inquiryCriteria.getId(), true);
       if (InquiryCriteriaEntityType.PATIENT.getName().equals(inquiryCriteria.getEntityType())) {
         queryResult.setNumberOfPatients(inquiryResult.getSize());
         List<Stratification> stratifications = readStratifications(inquiryResult);
@@ -61,7 +61,7 @@ public class CqlResultFactory {
           .readValue(inquiryResult.getStratifications(), new TypeReference<List<Stratification>>() {
           });
     } catch (IOException e) {
-      logger.error(e.getMessage(),e);
+      logger.error(e.getMessage(), e);
       return new ArrayList<>();
     }
   }
