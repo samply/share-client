@@ -255,11 +255,15 @@ public class LdmConnectorCql extends
   }
 
   private String createQueryForMonitoring() {
+    // Gender and AgeClass are necessary because the Measure Resource references that Expressions
     return "library Retrieve\n"
         + "using FHIR version '4.0.0'\n"
         + "\n"
         + "define InInitialPopulation:\n"
-        + "  true";
+        + "  true\n"
+        + "define Gender:\n"
+        + "    null\n"
+        + "define AgeClass:\n"
+        + "    null\n";
   }
-
 }

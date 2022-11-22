@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.9.1 - 2022-11-22]
+### Fixed
+- Fix Monitoring Query ([#211](https://github.com/samply/share-client/pull/211))
+### Security
+- Updated various dependencies
+
 ## [7.9.0 - 2022-10-19]
 ### Added
 - Add Rest api for the XML specification of nNGM
