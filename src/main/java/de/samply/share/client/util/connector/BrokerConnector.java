@@ -81,8 +81,9 @@ import org.slf4j.LoggerFactory;
 public class BrokerConnector {
 
   private static final Logger logger = LoggerFactory.getLogger(BrokerConnector.class);
-  public static final double EPSILON = 0.12;
-  public static final double SENSITIVITY = 1; //while counting query sensitivity = 1
+  public static final double EPSILON = 0.28;
+  public static final double DONOR_SENSITIVITY = 1; //while counting query sensitivity = 1
+  public static final double SAMPLE_SENSITIVITY = 10; //most patients will have about 10 samples
   private transient HttpConnector httpConnector;
   private Broker broker;
   private Credentials credentials;
@@ -695,14 +696,17 @@ public class BrokerConnector {
       throws BrokerConnectorException {
     ReplyEntity replyDonor = new ReplyEntity();
     replyDonor.setLabel("Donors");
-    replyDonor.setCount(
-        LaplaceMechanism.privatize(result.getNumberOfPatients(), SENSITIVITY, EPSILON));
+    long donorCount = LaplaceMechanism.privatize(result.getNumberOfPatients(), DONOR_SENSITIVITY,
+        EPSILON);
+    replyDonor.setCount(donorCount);
     replyDonor.setStratifications(result.getStratificationsOfPatients());
 
     ReplyEntity replySample = new ReplyEntity();
     replySample.setLabel("Samples");
-    replySample.setCount(
-        LaplaceMechanism.privatize(result.getNumberOfSpecimens(), SENSITIVITY, EPSILON));
+    long sampleCount = donorCount == 0
+        ? 0
+        : LaplaceMechanism.privatize(result.getNumberOfSpecimens(), SAMPLE_SENSITIVITY, EPSILON);
+    replySample.setCount(sampleCount);
     replySample.setStratifications(result.getStratificationsOfSpecimens());
 
     Reply reply = new Reply();
