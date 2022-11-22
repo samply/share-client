@@ -119,7 +119,7 @@
     <commons-io.version>2.11.0</commons-io.version>
     <log4j.version>2.17.2</log4j.version>
     <slf4j.version>1.7.36</slf4j.version>
-    <protobuf-java.version>3.19.4</protobuf-java.version>
+    <protobuf-java.version>3.21.9</protobuf-java.version>
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
     <json-smart.version>1.3.3</json-smart.version>
   </properties>
