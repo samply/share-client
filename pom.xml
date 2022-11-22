@@ -112,7 +112,7 @@
     <primefaces.version>11.0.0</primefaces.version>
     <junit-jupiter.version>5.8.2</junit-jupiter.version>
     <mockito-core.version>4.2.0</mockito-core.version>
-    <jackson-dataformat-xml.version>2.13.2</jackson-dataformat-xml.version>
+    <jackson-dataformat-xml.version>2.14.0</jackson-dataformat-xml.version>
 
     <sonar.organization>samply</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -174,17 +174,6 @@
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
       <version>${jackson-dataformat-xml.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-databind</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.13.2.2</version>
     </dependency>
 
     <dependency>
