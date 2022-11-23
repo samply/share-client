@@ -121,7 +121,7 @@
     <slf4j.version>1.7.36</slf4j.version>
     <protobuf-java.version>3.21.9</protobuf-java.version>
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
-    <json-smart.version>1.3.3</json-smart.version>
+    <json-smart.version>2.4.8</json-smart.version>
   </properties>
 
   <dependencies>
