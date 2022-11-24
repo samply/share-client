@@ -5,9 +5,29 @@ import java.security.SecureRandom;
 /**
  * This class implements the laplacian mechanism.
  *
- * @author Tobias Kussel, Deniz Tas
+ * @author Tobias Kussel, Deniz Tas, Alexander Kiel
  */
 public class LaplaceMechanism {
+
+  /**
+   * Permute a value with the (epsilon, 0) laplacian mechanism.
+   *
+   * @param value       clear value to permute
+   * @param sensitivity sensitivity of query
+   * @param epsilon     epsilon parameter of differential privacy
+   * @return the permuted value
+   */
+  public static long privatize(long value, double sensitivity, double epsilon) {
+    return privatize(value, sensitivity, epsilon, new SecureRandom());
+  }
+
+  static long privatize(long value, double sensitivity, double epsilon, SecureRandom rand) {
+    if (value > 0) {
+      return Math.max(0, Math.round((value + laplace(0, sensitivity / epsilon, rand)) / 10) * 10);
+    } else {
+      return 0;
+    }
+  }
 
   /**
    * Draw from a laplacian distribution.
@@ -22,27 +42,4 @@ public class LaplaceMechanism {
     double uniform = min + random * (max - min);
     return mu - b * Math.signum(uniform) * Math.log(1 - 2 * Math.abs(uniform));
   }
-
-  /**
-   * Permute a value with the (epsilon, 0) laplacian mechanism.
-   *
-   * @param value       clear value to permute
-   * @param sensitivity sensitivity of query
-   * @param epsilon     epsilon parameter of differential privacy
-   */
-  public static long privatize(double value, double sensitivity, double epsilon,
-      SecureRandom rand) {
-    value = (long) (value + LaplaceMechanism.laplace(0, sensitivity / epsilon, rand));
-    if (value > 0) {
-      long rem = (long) (value % 10);
-      return (long) (rem >= 5 ? (value - rem + 10) : (value - rem));
-    } else {
-      return 0;
-    }
-  }
-
-  public static long privatize(double value, double sensitivity, double epsilon) {
-    return privatize(value, sensitivity, epsilon, new SecureRandom());
-  }
-
 }
