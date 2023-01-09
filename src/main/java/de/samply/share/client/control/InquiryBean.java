@@ -791,10 +791,7 @@ public class InquiryBean implements Serializable {
   public List<String> loadSubListUrls() {
     List<InquiryResult> inquiryResultList = InquiryResultUtil.fetchLastTwoInquiryResult(
         latestInquiryDetails.getId(), false);
-    List<String> locations = new ArrayList<>();
-    locations.add(inquiryResultList.get(0).getLocation());
-    locations.add(inquiryResultList.get(1).getLocation());
-    return locations;
+    return inquiryResultList.stream().map(InquiryResult::getLocation).collect(Collectors.toList());
   }
 
   /**
