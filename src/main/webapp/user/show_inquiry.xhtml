@@ -335,10 +335,12 @@
                 <br/>
                 <p:linkButton value="Specimen" styleClass="ui-button-raised ui-button-secondary"
                               style="font-size:1.4em; margin-right: .5rem;"
+                              rendered="#{fn:length(sublist) > 0}"
                               href="#{sublist[0]}"
                               target="_blank"/>
                 <p:linkButton value="Patient" styleClass="ui-button-raised ui-button-secondary"
                               style="font-size:1.4em; margin-right: .5rem;"
+                              rendered="#{fn:length(sublist) > 1}"
                               href="#{sublist[1]}"
                               target="_blank"/>
             </div>

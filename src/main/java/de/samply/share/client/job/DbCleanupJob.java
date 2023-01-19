@@ -1,6 +1,7 @@
 package de.samply.share.client.job;
 
 import de.samply.share.client.control.ApplicationBean;
+import de.samply.share.client.control.ApplicationUtils;
 import de.samply.share.client.model.EnumConfigurationTimings;
 import de.samply.share.client.model.db.enums.EventMessageType;
 import de.samply.share.client.model.db.enums.InquiryStatusType;
@@ -35,7 +36,9 @@ public class DbCleanupJob implements Job {
   @Override
   public void execute(JobExecutionContext jobExecutionContext) {
     moveOldInquiries();
-    checkResultAvailability();
+    if (ApplicationUtils.isDktk()) {
+      checkResultAvailability();
+    }
   }
 
   /**
@@ -45,13 +48,13 @@ public class DbCleanupJob implements Job {
     int daysThreshold = ConfigurationUtil.getConfigurationTimingsElementValue(
         EnumConfigurationTimings.JOB_MOVE_INQUIRIES_TO_ARCHIVE_AFTER_DAYS);
     logger.debug("Archiving all inquiries older than " + daysThreshold + " days.");
-    List<InquiryDetails> inquiryDetailsList = InquiryDetailsUtil
-        .getInquiryDetailsOlderThanDays(daysThreshold);
+    List<InquiryDetails> inquiryDetailsList = InquiryDetailsUtil.getInquiryDetailsOlderThanDays(
+        daysThreshold);
 
     for (InquiryDetails inquiryDetails : inquiryDetailsList) {
-      EventLogUtil
-          .insertEventLogEntryForInquiryId(EventMessageType.E_ARCHIVE_INQUIRY_AFTER_THRESHOLD,
-              inquiryDetails.getInquiryId(), Integer.toString(daysThreshold));
+      EventLogUtil.insertEventLogEntryForInquiryId(
+          EventMessageType.E_ARCHIVE_INQUIRY_AFTER_THRESHOLD, inquiryDetails.getInquiryId(),
+          Integer.toString(daysThreshold));
       Inquiry inquiry = InquiryUtil.fetchInquiryById(inquiryDetails.getInquiryId());
       inquiry.setArchivedAt(SamplyShareUtils.getCurrentSqlTimestamp());
       Utils.setStatus(inquiryDetails, InquiryStatusType.IS_ARCHIVED);
@@ -78,8 +81,8 @@ public class DbCleanupJob implements Job {
     List<InquiryResult> inquiryResults = InquiryResultUtil.fetchInquiryResults();
 
     for (InquiryResult inquiryResult : inquiryResults) {
-      InquiryDetails inquiryDetails = InquiryDetailsUtil
-          .fetchInquiryDetailsById(inquiryResult.getInquiryDetailsId());
+      InquiryDetails inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(
+          inquiryResult.getInquiryDetailsId());
       if (!(inquiryDetails.getStatus().equals(InquiryStatusType.IS_LDM_ERROR))) {
         try {
           ldmConnector.getPageCount(inquiryResult.getLocation());
@@ -101,11 +104,10 @@ public class DbCleanupJob implements Job {
    * @param inquiryResult the inquiry result to "remove"
    */
   private void removeResult(InquiryResult inquiryResult) {
-    InquiryDetails inquiryDetails = InquiryDetailsUtil
-        .fetchInquiryDetailsById(inquiryResult.getInquiryDetailsId());
-    EventLogUtil
-        .insertEventLogEntryForInquiryId(EventMessageType.E_ARCHIVE_INQUIRY_RESULT_UNAVAILABLE,
-            inquiryDetails.getInquiryId());
+    InquiryDetails inquiryDetails = InquiryDetailsUtil.fetchInquiryDetailsById(
+        inquiryResult.getInquiryDetailsId());
+    EventLogUtil.insertEventLogEntryForInquiryId(
+        EventMessageType.E_ARCHIVE_INQUIRY_RESULT_UNAVAILABLE, inquiryDetails.getInquiryId());
     inquiryResult.setValidUntil(SamplyShareUtils.getCurrentSqlTimestamp());
     inquiryResult.setLocation("");
     InquiryResultUtil.updateInquiryResult(inquiryResult);
@@ -122,9 +124,8 @@ public class DbCleanupJob implements Job {
    */
 
   private boolean checkInquiryID(List<InquiryResult> inquiryResults, InquiryResult inquiryResult) {
-    return inquiryResults.stream()
-        .anyMatch(inquiryResultTmp
-            -> inquiryResultTmp.getInquiryDetailsId().equals(inquiryResult.getInquiryDetailsId())
+    return inquiryResults.stream().anyMatch(inquiryResultTmp ->
+        inquiryResultTmp.getInquiryDetailsId().equals(inquiryResult.getInquiryDetailsId())
             && !inquiryResultTmp.getIsError());
   }
 }
