@@ -122,6 +122,7 @@
     <protobuf-java.version>3.21.9</protobuf-java.version>
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
     <json-smart.version>1.3.3</json-smart.version>
+    <batik.version>1.16</batik.version>
   </properties>
 
   <dependencies>
@@ -205,7 +206,21 @@
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.xmlgraphics</groupId>
+          <artifactId>batik-all</artifactId>
+        </exclusion>
       </exclusions>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-all -->
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-all</artifactId>
+      <version>${batik.version}</version>
     </dependency>
     <dependency>
       <groupId>de.samply</groupId>
@@ -632,7 +647,9 @@
               </goals>
               <configuration>
                 <target>
-                  <copy file="docs/faces-config-${project.context}.xml" toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml" overwrite="true"/>
+                  <copy file="docs/faces-config-${project.context}.xml"
+                    toFile="${project.basedir}/src/main/webapp/WEB-INF/faces-config.xml"
+                    overwrite="true"/>
                 </target>
               </configuration>
             </execution>
