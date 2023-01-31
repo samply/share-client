@@ -330,12 +330,7 @@ public class MainzellisteConnector {
     patientNew.setMeta(meta);
     List<Identifier> identifierList = new ArrayList<>();
     Identifier identifier = new Identifier();
-    String identifierSystem = originalPatient.getIdentifierFirstRep().getSystem();
-    if (identifierSystem != null) {
-      identifier.setSystem(identifierSystem);
-    } else {
-      identifier.setSystem(PATIENT_IDENTIFIER_SYSTEM);
-    }
+    identifier.setSystem(PATIENT_IDENTIFIER_SYSTEM);
     identifierList.add(identifier);
     patientNew.setIdentifier(identifierList);
     return patientNew;
