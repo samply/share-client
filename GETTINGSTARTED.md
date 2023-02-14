@@ -60,7 +60,8 @@ After the configuration of Tomcat and Postgres run the maven command `mvn clean 
 #### Docker (Only works with Maven profile "samply")
 If you want to use [Docker](https://www.docker.com/) for testing your changes you can do it by running the following commands.
 * `mvn clean install` to create a WAR-file for the Docker image
-* Run at the directory of the share-client project the following script to deploy a Postgres container and then a connector container:
+* Run at the directory of the share-client project the following script to deploy a Postgres container and then a connector container
+* (For NonRoot container use image bitnami/postgresql:9.6):
     
 
         
