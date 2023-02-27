@@ -76,7 +76,7 @@
     <version.jooq>3.14.15</version.jooq>
     <jta.version>1.1</jta.version>
     <quartz.version>2.3.2</quartz.version>
-    <omnifaces.version>1.14.1</omnifaces.version>
+    <omnifaces.version>4.1</omnifaces.version>
     <simple-xml-safe.version>2.7.1</simple-xml-safe.version>
     <jbcrypt.version>0.4</jbcrypt.version>
     <jersey.version>1.19.4</jersey.version>
