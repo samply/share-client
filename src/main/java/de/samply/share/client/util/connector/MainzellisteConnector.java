@@ -188,7 +188,7 @@ public class MainzellisteConnector {
   /**
    * prepare xml transaction to be sent to the edc system.
    *
-   * @param xmlDoc xml tree.
+   * @param xmlDoc xml tree
    * @return xmlDoc
    * @throws NotFoundException              Not Found Exception
    * @throws NotAuthorizedException         Not Authorized Exception
@@ -226,14 +226,26 @@ public class MainzellisteConnector {
       tokenNode.setTextContent(encryptedId.get(MAINZELLISTE_IDTYPE_ENC_ID).getAsString());
       identifyingDataNode.appendChild(tokenNode);
     } catch (ConflictException | MandatoryAttributeException
-        | IllegalArgumentException | XmlPareException e) {
+             | IllegalArgumentException | XmlPareException e) {
       throw new MainzellisteConnectorException(e);
     }
     return xmlDoc;
   }
 
-  private String concatenateDate(String year, String month, String day) {
-    return year + "-" + month + "-" + day;
+  protected String concatenateDate(String year, String month, String day) {
+    StringBuilder stringBuilder = new StringBuilder(10);
+    stringBuilder.append(year);
+    stringBuilder.append('-');
+    if (month.length() == 1) {
+      stringBuilder.append('0');
+    }
+    stringBuilder.append(month);
+    stringBuilder.append('-');
+    if (day.length() == 1) {
+      stringBuilder.append('0');
+    }
+    stringBuilder.append(day);
+    return stringBuilder.toString();
   }
 
 
@@ -859,7 +871,7 @@ public class MainzellisteConnector {
   /**
    * validate a date.
    *
-   * @param date       date as String
+   * @param date          date as String
    * @param dateFormatter Date Time Formatter
    * @return boolean
    */

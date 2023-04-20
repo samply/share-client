@@ -35,9 +35,9 @@ public class XmlUtils {
   public static final String GEBURTSMONAT_ELEMENT = "geburtsmonat";
   public static final String GEBURTSJAHR_ELEMENT = "geburtsjahr";
   public static final String VERSICHERUNGSNUMMER_ELEMENT = "versicherungsnummer";
-  public static final String ADRESSEPLZ_ELEMENT = "adresseplz";
-  public static final String ADRESSESTADT_ELEMENT = "adressestadt";
-  public static final String ADRESSESTRASSE_ELEMENT = "adressestrasse";
+  public static final String ADRESSEPLZ_ELEMENT = "adresse.plz";
+  public static final String ADRESSESTADT_ELEMENT = "adresse.stadt";
+  public static final String ADRESSESTRASSE_ELEMENT = "adresse.strasse";
   public static final String MEDICAL_DATA_ELEMENT = "medical-data";
   public static final String TOKEN_ELEMENT = "token";
   public static final String BIRTHDATE_ELEMENT = "birthdate";
