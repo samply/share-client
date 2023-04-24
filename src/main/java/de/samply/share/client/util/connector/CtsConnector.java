@@ -4,7 +4,6 @@ import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.util.ResourceReferenceInfo;
-import com.google.common.io.CharSource;
 import com.mchange.rmi.NotAuthorizedException;
 import de.samply.share.client.control.ApplicationBean;
 import de.samply.share.client.crypt.Crypt;
@@ -19,6 +18,7 @@ import de.samply.share.client.util.db.ConfigurationUtil;
 import de.samply.share.client.util.xml.XmlUtils;
 import de.samply.share.common.utils.SamplyShareUtils;
 import jakarta.ws.rs.NotFoundException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -87,11 +87,11 @@ public class CtsConnector {
    * upload endpoint.
    *
    * @param bundleString the patient bundle as String.
-   * @throws IOException              IOException
-   * @throws NotFoundException        NotFoundException
-   * @throws NotAuthorizedException   NotAuthorizedException
+   * @throws IOException                    IOException
+   * @throws NotFoundException              NotFoundException
+   * @throws NotAuthorizedException         NotAuthorizedException
    * @throws MainzellisteConnectorException MainzellisteConnectorException
-   * @throws CtsConnectorException CtsConnectorException
+   * @throws CtsConnectorException          CtsConnectorException
    */
   public Response postFhirToCts(String bundleString, MediaType mediaType)
       throws IOException,
@@ -159,7 +159,7 @@ public class CtsConnector {
    * Pseudonymize any patient data in the bundle.
    *
    * @param xmlString the patient bundle which should be pseudonimised
-   * @return the pseudonimised bundle
+   * @return the pseudonimised xml
    * @throws IOException            IOException
    * @throws ConfigurationException ConfigurationException
    * @throws DataFormatException    DataFormatException
@@ -167,8 +167,9 @@ public class CtsConnector {
   private Document pseudonymiseXml(String xmlString)
       throws IOException, NotFoundException,
       NotAuthorizedException, MainzellisteConnectorException, XmlPareException {
-    InputStream xmlInputStream = CharSource.wrap(xmlString)
-            .asByteSource(StandardCharsets.UTF_8).openStream();
+    byte[] bytes = xmlString.getBytes(StandardCharsets.UTF_8);
+    InputStream xmlInputStream = new ByteArrayInputStream(bytes);
+
     Document xmlDocument;
     xmlDocument = xmlUtils.domBuilder(xmlInputStream);
     MainzellisteConnector mainzellisteConnector = ApplicationBean.getMainzellisteConnector();
@@ -235,7 +236,7 @@ public class CtsConnector {
    * @throws GeneralSecurityException GeneralSecurityException
    */
   public static IIdType getEncryptedId(IIdType idType, boolean encrypt, Crypt crypt)
-          throws GeneralSecurityException {
+      throws GeneralSecurityException {
     String id = idType.getIdPart();
     if (id == null || "".equals(id)) {
       logger.error("Reference or URL does not contain an ID of a resource " + idType.getValue());
@@ -287,21 +288,20 @@ public class CtsConnector {
 
   /**
    * Takes a stringified XML file, assumed to be containing identifying patient data (IDAT),
-   * replaces the IDAT with a pseudonym, and then sends the pseudonymized xml to the CTS data
-   * upload endpoint.
+   * replaces the IDAT with a pseudonym, and then sends the pseudonymized xml to the CTS data upload
+   * endpoint.
    *
    * @param xmlString the patient bundle as String.
-   * @throws IOException              IOException
-   * @throws NotFoundException        NotFoundException
-   * @throws NotAuthorizedException   NotAuthorizedException
+   * @throws IOException                    IOException
+   * @throws NotFoundException              NotFoundException
+   * @throws NotAuthorizedException         NotAuthorizedException
    * @throws MainzellisteConnectorException MainzellisteConnectorException
-   * @throws CtsConnectorException CtsConnectorException
+   * @throws CtsConnectorException          CtsConnectorException
    */
   public Response postXmlToCts(String xmlString)
-          throws IOException,
-          NotFoundException, NotAuthorizedException, XmlPareException,
-          MainzellisteConnectorException, CtsConnectorException {
-
+      throws IOException,
+      NotFoundException, NotAuthorizedException, XmlPareException,
+      MainzellisteConnectorException, CtsConnectorException {
     Document pseudonymXmlDocument = pseudonymiseXml(xmlString);
     String pseudonymXmlAsString = xmlUtils.xmlDocToString(pseudonymXmlDocument);
     HttpEntity entity = new StringEntity(pseudonymXmlAsString, Consts.UTF_8);
@@ -314,7 +314,7 @@ public class CtsConnector {
       response = httpClient.execute(httpPost);
       int statusCode = response.getStatusLine().getStatusCode();
       String message =
-              "CTS server response: statusCode:" + statusCode + "; response: " + response;
+          "CTS server response: statusCode:" + statusCode + "; response: " + response;
       String responseBody = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
       if (responseBody != null && !responseBody.isEmpty()) {
         message += ";body: " + responseBody;
