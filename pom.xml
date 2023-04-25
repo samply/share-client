@@ -112,7 +112,7 @@
     <primefaces.version>11.0.0</primefaces.version>
     <junit-jupiter.version>5.9.1</junit-jupiter.version>
     <mockito-core.version>4.9.0</mockito-core.version>
-    <jackson-dataformat-xml.version>2.14.0</jackson-dataformat-xml.version>
+    <jackson-dataformat-xml.version>2.15.0</jackson-dataformat-xml.version>
 
     <sonar.organization>samply</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
