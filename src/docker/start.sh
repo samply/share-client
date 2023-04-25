@@ -37,13 +37,13 @@ sed -i "s|{https-proxy-password}|${HTTPS_PROXY_PASSWORD:-}|"  "$file"
 sed -i "s|{no-proxy-hosts}|${NO_PROXY_HOSTS:-}|"              "$file"
 
 file=${CATALINA_HOME}/conf/${PROJECT}_common_urls.xml
-sed -i "s#{store-url}#${STORE_URL}#"                      "$file"
-sed -i "s#{id-manager-url}#${ID_MANAGER_URL}#"            "$file"
-sed -i "s#{mdr-url}#${MDR_URL}#"                          "$file"
-sed -i "s#{directory-url}#${DIRECTORY_URL}#"              "$file"
-sed -i "s#{share-url}#${SHARE_URL}#"                      "$file"
-sed -i "s#{patientlist-url}#${PATIENTLIST_URL}#"          "$file"
-sed -i "s#{projectpseudonymisation-url}#${PROJECTPSEUDONYMISATION_URL}#"                      "$file"
+sed -i "s#{store-url}#${STORE_URL:-http://store:8080}#"                      "$file"
+sed -i "s#{id-manager-url}#${ID_MANAGER_URL:-http://idmanager:8080/}#"            "$file"
+sed -i "s#{mdr-url}#${MDR_URL:-https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr}#"  "$file"
+sed -i "s#{directory-url}#${DIRECTORY_URL:-http://localhost}#"              "$file"
+sed -i "s#{share-url}#${SHARE_URL:-http://:}#"                      "$file"
+sed -i "s#{patientlist-url}#${PATIENTLIST_URL:-http://localhost}#"          "$file"
+sed -i "s#{projectpseudonymisation-url}#${PROJECTPSEUDONYMISATION_URL:-http://localhost}#"                      "$file"
 
 file=${CATALINA_HOME}/conf/secrets.properties
 sed -i "s|{id-manager-apikey}|${ID_MANAGER_APIKEY}|"      "$file"
