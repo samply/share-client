@@ -10,7 +10,7 @@ RUN mkdir -p /connector/extracted && \
 FROM tomcat:9-jre8-temurin
 
 ## Define for which project this image is build
-ARG PROJECT=samply
+ARG PROJECT=dktk
 ENV PROJECT=$PROJECT
 
 RUN ["rm", "-fr", "/usr/local/tomcat/webapps"]
@@ -44,30 +44,40 @@ ADD src/docker/start.sh                         /docker/
 RUN chmod +x                                    /docker/start.sh
 CMD ["sh", "-c", "/docker/start.sh"]
 
-ENV POSTGRES_HOST=bridgehead-ccp-connector-db
+ENV POSTGRES_HOST=bridgehead-connector-db
 ENV POSTGRES_PORT=5432
 ENV POSTGRES_USER=samplyconnector
 ENV POSTGRES_DB=samplyconnector
 
 #TODO:
 ENV LOG_LEVEL=error
-ENV TEST_PROJECT=c4
+ENV TEST_PROJECT=dktk
 ENV PROJECT_DIR=/dktk
 ENV PROTOCOL=http
 ENV CONTEXT=dktk
-ENV HTTPS_PROXY_HOST=http://bridgehead-forward-proxy:3128
+ENV NO_PROXY=localhost,connector,connector_db
 ENV CATALINA_DIR=/usr/local/tomcat/conf/Catalina/localhost
-ENV NNGM_PROFILE=http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert
+ENV DEPLOYMENT_CONTEXT=nngm-connector
 
 ENV FEATURE_DKTK_CENTRAL_SEARCH=false
-ENV NO_PROXY=localhost,connector,connector_db
 ENV FEATURE_NNGM_CTS=true
-ENV SHARE_URL=http://:
-ENV CONNECTOR_ENABLE_METRICS=false
-ENV NNGM_MAGICPL_URL=https://test.verbis.dkfz.de/nngm/magicpl
-ENV DEPLOYMENT_CONTEXT=ccp-connector
-ENV SOURCE_PROJECT_DIR=src/docker/dktk
 ENV FEATURE_NNGM_ENCRYPT_ID=false
-ENV NNGM_MAINZELLISTE_URL=https://test.verbis.dkfz.de/nngm/mainzelliste
 ENV FEATURE_BBMRI_DIRECTORY_SYNC=false
-ENV HTTP_PROXY_HOST=http://bridgehead-forward-proxy:3128
+ENV CONNECTOR_ENABLE_METRICS=false
+ENV SOURCE_PROJECT_DIR=src/docker/dktk
+
+ENV NNGM_MAINZELLISTE_URL=https://test.verbis.dkfz.de/nngm/mainzelliste
+ENV PATIENTLIST_URL="http://bridgehead-patientlist:8080/Patientlist"
+ENV PROJECTPSEUDONYMISATION_URL="http://bridgehead-id-manager:8080/html/projectSelection.html"
+ENV CCP_CENTRALSEARCH_URL="https://centralsearch-test.dktk.dkfz.de/"
+ENV CCP_DECENTRALSEARCH_URL="https://decentralsearch-test.ccp-it.dktk.dkfz.de/"
+ENV NNGM_MAGICPL_URL=https://test.verbis.dkfz.de/nngm/magicpl
+ENV NNGM_PROFILE=http://uk-koeln.de/fhir/StructureDefinition/Patient/nNGM/pseudonymisiert
+
+ENV PORT="8080"
+ENV MDR_URL="https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
+ENV QUERY_LANGUAGE="QUERY"
+ENV ID_MANAGER_URL="http://bridgehead-id-manager:8080"
+ENV HOST="bridgehead-connector"
+ENV CONNECTOR_SHARE_URL="${PROTOCOL}://${HOST}:${PORT}"
+ENV SHARE_URL="${PROTOCOL}://${HOST}:${PORT}"
